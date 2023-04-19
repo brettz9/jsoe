@@ -4,6 +4,9 @@ JavaScript Object Editor.
 
 Editing of arbitrary JavaScript objects.
 
+See a [demo](https://brettz9.github.io/idb-manager/index-pages.html) of an
+app using this tool.
+
 ## Formats
 
 Formats are a collection of allowed types.

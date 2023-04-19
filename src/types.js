@@ -1,7 +1,7 @@
-import {jml} from '../node_modules/jamilih/dist/jml-es.js';
+import {jml} from '../vendor/jamilih/dist/jml-es.js';
 import {
   Typeson, getJSONType, structuredCloningThrowing
-} from '../node_modules/typeson-registry/dist/index.js';
+} from '../vendor/typeson-registry/dist/index.js';
 
 import Formats from './formats.js';
 

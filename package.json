@@ -1,6 +1,6 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
@@ -21,7 +21,9 @@
     "instrument-remove": "run-p -c instrument-remove-cache instrument-remove-instrumented",
     "copy-pages": "cp node_modules/sceditor/minified/themes/default.min.css vendor/sceditor/minified/themes/default.min.css && cp node_modules/sceditor/minified/sceditor.min.js vendor/sceditor/minified/sceditor.min.js && cp node_modules/sceditor/minified/formats/bbcode.js vendor/sceditor/minified/formats/bbcode.js && cp node_modules/sceditor/minified/formats/xhtml.js vendor/sceditor/minified/formats/xhtml.js",
     "copy-index": "cp src/index-instrumented.html instrumented/index.html",
-    "copy": "run-p copy-pages copy-index",
+    "copy-jamilih": "cp node_modules/jamilih/dist/jml-es.js vendor/jamilih/dist/jml-es.js",
+    "copy-typeson-registry": "cp node_modules/typeson-registry/dist/index.js vendor/typeson-registry/dist/index.js",
+    "copy": "run-p copy-jamilih copy-typeson-registry",
     "instrument": "run-s -c instrument-remove instrument-add copy-index",
     "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; nyc report",
     "cypress": "cypress run; nyc report",

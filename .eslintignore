@@ -4,4 +4,5 @@ instrumented
 ignore
 src/deepEqual.js
 src/main-pages.js
+vendor
 !.*.js

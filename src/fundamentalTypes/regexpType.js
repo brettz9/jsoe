@@ -1,5 +1,5 @@
 import {$e} from '../utils/templateUtils.js';
-import {jml} from '../../node_modules/jamilih/dist/jml-es.js';
+import {jml} from '../../vendor/jamilih/dist/jml-es.js';
 import Types from '../types.js';
 
 /**

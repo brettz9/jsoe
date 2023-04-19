@@ -1,5 +1,5 @@
 import Types from './types.js';
-import {jml} from '../node_modules/jamilih/dist/jml-es.js';
+import {jml} from '../vendor/jamilih/dist/jml-es.js';
 
 import {$e, DOM} from './utils/templateUtils.js';
 import dialogs from './utils/dialogs.js';

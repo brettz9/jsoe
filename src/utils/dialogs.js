@@ -1,5 +1,5 @@
 /* eslint-disable promise/avoid-new */
-import {jml, nbsp} from '../../node_modules/jamilih/dist/jml-es.js';
+import {jml, nbsp} from '../../vendor/jamilih/dist/jml-es.js';
 import {$e} from './templateUtils.js';
 
 const localeStrings = {

@@ -1,5 +1,5 @@
 /* globals sceditor */
-import {jml} from '../../node_modules/jamilih/dist/jml-es.js';
+import {jml} from '../../vendor/jamilih/dist/jml-es.js';
 import {$e} from '../utils/templateUtils.js';
 
 import dialogs from '../utils/dialogs.js';

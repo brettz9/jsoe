@@ -2,7 +2,7 @@ import Formats from '../formats.js';
 import Types from '../types.js';
 import {
   Typeson, unescapeKeyPathComponent, structuredCloningThrowing
-} from '../../node_modules/typeson-registry/dist/index.js';
+} from '../../vendor/typeson-registry/dist/index.js';
 import {
   typesonPathToJSONPointer
 } from '../utils/jsonPointer.js';
