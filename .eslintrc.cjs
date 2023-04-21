@@ -24,6 +24,7 @@ module.exports = {
       'console',
       'Date.toISOString',
       'document.body',
+      'document.createDocumentFragment',
       'document.querySelector',
       'document.querySelectorAll',
       'Error',

@@ -1,6 +1,6 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
@@ -9,10 +9,10 @@
   "scripts": {
     "eslint": "eslint --ext=js,cjs,md,html .",
     "lint": "npm run eslint --",
-    "coverage": "open-cli http://localhost:8086/coverage/lcov-report/",
-    "open": "open-cli http://localhost:8086/",
-    "start": "node server 8086",
-    "start-instrumented": "node server 8086 instrumented",
+    "coverage": "open-cli http://localhost:8087/coverage/lcov-report/",
+    "open": "open-cli http://localhost:8087/demo/",
+    "start": "node server 8087",
+    "start-instrumented": "node server 8087 instrumented",
     "cypress:open": "cypress open",
     "rollup": "rollup -c",
     "instrument-add": "nyc instrument src instrumented",

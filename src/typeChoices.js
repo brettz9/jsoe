@@ -3,13 +3,16 @@ import Formats from './formats.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
+ * Defaults to structured cloning.
  * @todo Compose from format metadata, so can make user customizable.
  * @param {object} cfg
- * @param {string} cfg.schema
- * @param {boolean} cfg.hasKeyPath
- * @returns {JamilihArray[]}
+ * @param {string} [cfg.schema] (NOT IN USE)
+ * @param {boolean} [cfg.hasKeyPath] Whether or not a key path is expected; if
+ *   true, an indexedDB key is not allowed here as a key does not support
+ *   the object type which is needed for a key path.
+ * @returns {DocumentFragment}
  */
-export const getFormatAndSchemaChoices = ({schema, hasKeyPath}) => {
+export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
   const hasSchema = typeof schema === 'string';
   return [
     ['JSON only', {value: 'json'}],
@@ -44,24 +47,34 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath}) => {
         }]
     */
   ].map(([optText, optAtts]) => {
-    return ['option', optAtts, [optText]];
-  });
+    return jml('option', optAtts, [optText]);
+  }).reduce((frag, option) => {
+    frag.append(option);
+    return frag;
+  }, document.createDocumentFragment());
 };
 
 /**
  * Builds a selector and container for types.
  * @param {object} cfg
- * @param {string} cfg.schema The schema name
- * @param {object} cfg.schemaContent The schema content
- * @param {boolean} cfg.hasValue If false and `hasKeyPath` is `true`,
- *   will initialize with an object
- * @param {boolean} cfg.singleValue
- * @param {boolean} cfg.hasKeyPath
- * @param {string} cfg.typeNamespace
- * @returns {{
+ * @param {string} [cfg.schema] The schema name (NOT IN USE)
+ * @param {object} [cfg.schemaContent] The schema content (NOT IN USE)
+ * @param {boolean} [cfg.hasValue] Set to `true` if you are supplying
+ *   your own value. If `false` and `hasKeyPath` is `true`,
+ *   will initialize with an object.
+ * @param {boolean} [cfg.singleValue] (NOT IN USE)
+ * @param {boolean} [cfg.hasKeyPath] If this is set (because there is a keyPath
+ *   to be found within the object) and `hasValue` is true, an object type
+ *   will be set and required at the root level. This option will also
+ *   prevent selection of indexedDB key at root (since a key cannot be a
+ *   plain object).
+ * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
+ *   instances of typeChoices on the page
+ * @returns {[
  *   mainTypeChoices: HTMLSelectElement,
  *   typesHolder: HTMLDivElement
- * }} The selector for types and the container for them
+ * ]} The selector for types and the container for them. Both should be
+ *   added to the page.
  */
 function typeChoices ({
   schema,
@@ -81,7 +94,6 @@ function typeChoices ({
         this.$buildTypeChoices();
       },
       $buildTypeChoices () {
-        const typesHolder = this.nextElementSibling;
         DOM.removeChildren(typesHolder);
         jml({'#': Formats.buildTypeChoices({
           topRoot: $e(typesHolder, 'div[data-type]'),
@@ -98,7 +110,7 @@ function typeChoices ({
     $on: {change () {
       this.$buildTypeChoices();
     }}
-  }, getFormatAndSchemaChoices({schema, hasKeyPath}));
+  }, [getFormatAndSchemaChoices({schema, hasKeyPath})]);
   const typesHolder = jml('div', {class: 'typesHolder', $custom: {
     $getTypeRoot () {
       return $e(this, 'div[data-type]');
@@ -119,7 +131,7 @@ function typeChoices ({
     schemaContent
   })}, typesHolder);
 
-  return {mainTypeChoices, typesHolder};
+  return [mainTypeChoices, typesHolder];
 }
 
 export default typeChoices;
