@@ -71,8 +71,8 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
  *   instances of typeChoices on the page
  * @returns {[
- *   mainTypeChoices: HTMLSelectElement,
- *   typesHolder: HTMLDivElement
+ *   mainTypeChoices: MainTypeChoices,
+ *   typesHolder: TypesHolder
  * ]} The selector for types and the container for them. Both should be
  *   added to the page.
  */
@@ -89,10 +89,36 @@ function typeChoices ({
     hidden: singleValue,
     // is: 'main-type-choices',
     $custom: {
+      /**
+       * Sets the desired format and rebuilds the type choices.
+       * @callback SetFormat
+       * @param {string} valueFormat
+       * @returns {void}
+       */
+
+      /**
+       * Rebuilds the type choices.
+       * @callback TypeChoiceBuilder
+       * @returns {void}
+       */
+
+      /**
+       * @typedef {HTMLSelectElement} MainTypeChoices
+       * @property {SetFormat} $setFormat
+       * @property {TypeChoiceBuilder} $buildTypeChoices
+       */
+
+      /**
+       * @type {SetFormat}
+       */
       $setFormat (valueFormat) {
         this.value = valueFormat;
         this.$buildTypeChoices();
       },
+
+      /**
+       * @type {TypeChoiceBuilder}
+       */
       $buildTypeChoices () {
         DOM.removeChildren(typesHolder);
         jml({'#': Formats.buildTypeChoices({
@@ -111,10 +137,33 @@ function typeChoices ({
       this.$buildTypeChoices();
     }}
   }, [getFormatAndSchemaChoices({schema, hasKeyPath})]);
+
+  /**
+   * @callback TypeRootGetter
+   * @returns {void}
+   */
+
+  /**
+   * @callback TypeSelectGetter
+   * @returns {void}
+   */
+
+  /**
+   * @typedef {HTMLDivElement} TypesHolder
+   * @property {TypeRootGetter} $getTypeRoot
+   * @property {TypeSelectGetter} $getTypeSelect
+   */
+
   const typesHolder = jml('div', {class: 'typesHolder', $custom: {
+    /**
+     * @type {TypeRootGetter}
+     */
     $getTypeRoot () {
       return $e(this, 'div[data-type]');
     },
+    /**
+     * @type {TypeSelectGetter}
+     */
     $getTypeSelect () {
       return $e(this, `.typeChoices-${typeNamespace}`);
     }
