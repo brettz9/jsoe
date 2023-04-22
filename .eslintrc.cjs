@@ -3,7 +3,7 @@
 module.exports = {
   extends: ['ash-nazg/sauron-node-overrides', 'plugin:cypress/recommended'],
   parserOptions: {
-    ecmaVersion: 2021
+    ecmaVersion: 2022
   },
   settings: {
     jsdoc: {

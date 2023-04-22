@@ -1,7 +1,7 @@
 import * as structuredCloning from './structuredCloning.js';
 
 /**
- * @type {FormatIterator}
+ * @type {import('./structuredCloning.js').FormatIterator}
  */
 export const iterate = (records, stateObj) => {
   console.log('records', records, stateObj);

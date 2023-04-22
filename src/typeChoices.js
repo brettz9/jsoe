@@ -1,4 +1,4 @@
-import Formats from './formats.js';
+import Formats, {iterateFormat} from './formats.js';
 import Types from './types.js';
 import {jml} from '../vendor/jamilih/dist/jml-es.js';
 
@@ -233,6 +233,16 @@ export const buildTypeChoices = ({
       const root = $e(typeContainer, 'div[data-type]');
       const form = root.closest('form');
       return Types.validValuesSet({form, typeNamespace});
+    },
+
+    /**
+     * @param {StructuredCloneValue} value
+     * @param {import('./types.js').StateObject} stateObj
+     */
+    async setValue (value, stateObj) {
+      const rootEditUI = await iterateFormat(format, value, stateObj);
+      const type = Types.getTypeForRoot(rootEditUI);
+      sel.$addTypeAndEditUI({type, editUI: rootEditUI});
     }
   };
 };

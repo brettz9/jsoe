@@ -246,11 +246,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
 /**
  * @callback FormatIterator
  * @param {StructuredCloneValue} records
- * @param {{
- *   format: string
- *   error: Error
- *   rootUI: Element
- * }} stateObj
+ * @param {import('../types.js').StateObject} stateObj
  * @returns {Promise<Element>}
  */
 

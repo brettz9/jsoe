@@ -1,6 +1,7 @@
 import {jml} from '../vendor/jamilih/dist/jml-es.js';
 import {buildTypeChoices} from './typeChoices.js';
 import Types from './types.js';
+import {iterateFormat} from './formats.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
@@ -90,6 +91,7 @@ export function formatAndTypeChoices ({
   hasKeyPath,
   typeNamespace
 }) {
+  const format = 'structuredCloning';
   const formatChoices = jml('select', {
     class: 'formatChoices',
     hidden: singleValue,
@@ -178,7 +180,7 @@ export function formatAndTypeChoices ({
   jml({'#': buildTypeChoices({
     resultType: 'both',
     topRoot: $e(typesHolder, 'div[data-type]'),
-    format: 'structuredCloning',
+    format,
     typeNamespace,
     requireObject: hasKeyPath,
     objectHasValue: hasValue,
@@ -224,6 +226,19 @@ export function formatAndTypeChoices ({
       const root = typesHolder.$getTypeRoot();
       const form = root.closest('form');
       return Types.validValuesSet({form, typeNamespace});
+    },
+
+    /**
+     * @param {StructuredCloneValue} value
+     * @param {import('./types.js').StateObject} stateObj
+     */
+    async setValue (value, stateObj) {
+      const rootEditUI = await iterateFormat(
+        formatChoices.value, value, stateObj
+      );
+      const type = Types.getTypeForRoot(rootEditUI);
+      const sel = typesHolder.$getTypeSelect();
+      sel.$addTypeAndEditUI({type, editUI: rootEditUI});
     }
   };
 }

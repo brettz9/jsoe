@@ -1,6 +1,6 @@
 export {default as Types} from './types.js';
 
-export {default as Formats} from './formats.js';
+export {default as Formats, iterateFormat} from './formats.js';
 
 export {
   buildTypeChoices as typeChoices

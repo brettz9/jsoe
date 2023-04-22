@@ -247,6 +247,8 @@ Types.getTypeForRoot = (root) => {
  *   typeNamespace: string,
  *   "readonly": boolean,
  *   format: string,
+ *   error: Error,
+ *   rootUI: Element,
  *   schemaContent: string,
  *   getPossibleSchemasForPathAndType: (
  *     keypath: string,

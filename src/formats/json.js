@@ -8,7 +8,7 @@ export const types = () => [
 ];
 
 /**
- * @type {FormatIterator}
+ * @type {import('./structuredCloning.js').FormatIterator}
  */
 export const iterate = (records, stateObj) => {
   // Todo (low): Add a more optimal (`JSON.stringify`-based iterator)

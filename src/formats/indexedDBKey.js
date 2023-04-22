@@ -46,7 +46,7 @@ export const convertFromTypeson = (typesonType) => {
 };
 
 /**
- * @type {FormatIterator}
+ * @type {import('./structuredCloning.js').FormatIterator}
  */
 export const iterate = (records, stateObj) => {
   stateObj.format = 'indexedDBKey';

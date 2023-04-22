@@ -26,4 +26,15 @@ const Formats = {
   }
 };
 
+/**
+ * @type {import('./formats/structuredCloning.js').FormatIterator}
+ */
+export async function iterateFormat (format, record, stateObj) {
+  return await Formats.availableFormats[format]
+    .iterate(record, {
+      format,
+      ...stateObj
+    });
+}
+
 export default Formats;

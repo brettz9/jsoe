@@ -4,6 +4,7 @@ import {
   typeChoices,
   getFormatAndSchemaChoices,
   formatAndTypeChoices,
+  iterateFormat,
   Types // , Formats
 } from '../src/index.js';
 
@@ -47,6 +48,14 @@ jml('section', {role: 'main'}, [
       }
     }
   }, ['Log value']],
+
+  ['button', {
+    $on: {
+      async click () {
+        await keyPathNotExpectedTypeChoices.setValue(42);
+      }
+    }
+  }, ['Initialize with a value']],
 
   ['h2', [
     'Format and type choices: Key path expected (object required at root)'
@@ -106,9 +115,31 @@ jml('section', {role: 'main'}, [
             console.log(typeSelection.getValue());
           }
         }
-      }, ['Log value']]
+      }, ['Log value']],
+
+      ['button', {
+        $on: {
+          async click () {
+            await typeSelection.setValue(42);
+          }
+        }
+      }, ['Initialize with a value']]
     ]];
   })(),
+
+  ['h2', [
+    'Convert arbitrary value to an editable menu'
+  ]],
+
+  await iterateFormat('structuredCloning', new Date('1999-01-01')),
+
+  ['h2', [
+    'Convert arbitrary value to a readonly menu'
+  ]],
+
+  await iterateFormat('structuredCloning', new Date('1999-01-01'), {
+    readonly: true
+  }),
 
   ['h2', [
     'Convert structured cloning string representation to value and log'
