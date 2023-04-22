@@ -1,0 +1,58 @@
+input:invalid {
+  background-color: pink;
+}
+
+[data-type="undef"] {
+  background-color: green;
+}
+[data-type="null"] {
+  background-color: lightgreen;
+}
+[data-type="true"] {
+  background-color: blue;
+  color: white;
+}
+[data-type="false"] {
+  background-color: pink;
+}
+[data-type="number"] {
+  background-color: violet;
+}
+[data-type="string"] {
+  background-color: lightblue;
+}
+[data-type="array"], [data-type="sparseArrays"], [data-type="arrayNonindexKeys"] {
+  background-color: lightyellow;
+}
+[data-type="object"] {
+  background-color: orange;
+}
+
+
+[data-type="arrayReference"] {
+  color: white;
+  background-color: indigo;
+}
+[data-type="objectReference"] {
+  color: white;
+  background-color: purple;
+}
+[data-type="date"] {
+  background-color: teal;
+}
+[data-type="regexp"] {
+  background-color: yellow;
+}
+[data-type="SpecialNumber"], [data-type="Infinities"] {
+  background-color: red;
+}
+[data-type="BooleanObject"], [data-type="NumberObject"], [data-type="StringObject"] {
+  background-color: aqua;
+}
+[data-type="blobHTML"] {
+  background-color: sandybrown;
+}
+
+[class^="propertyName-"] {
+  background-color: yellow;
+}
