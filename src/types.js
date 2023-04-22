@@ -29,6 +29,7 @@ import InfinitiesSuperType from './superTypes/InfinitiesSuperType.js';
 import SpecialNumberSuperType from './superTypes/SpecialNumberSuperType.js';
 
 /**
+ * Utility to retrieve the property value given a legend element.
  * @param {HTMLLegendElement} legend
  * @returns {string}
  */
@@ -240,15 +241,18 @@ copyTypeObjs([
 ]);
 
 /**
+ * Utility to retrieve the type out of a type root element.
  * @public
- * @param {RootElement} root
- * @returns {string|boolean} Why would it not exist?
+ * @param {?RootElement} root
+ * @returns {string|undefined} Why would it not exist?
  */
 Types.getTypeForRoot = (root) => {
   return root && root.dataset.type;
 };
 
 /**
+ * Utility to get the value out of a type root element with a given
+ *   state and path.
  * @public
  * @param {RootElement} root
  * @param {StateObject} stateObj
@@ -262,6 +266,7 @@ Types.getValueForRoot = (root, stateObj, currentPath) => {
 };
 
 /**
+ * Utility to get the form control (e.g., input element) for a root.
  * @public
  * @param {RootElement} root
  * @returns {null|HTMLInputElement}
@@ -276,6 +281,7 @@ Types.getFormControlForRoot = (root) => {
 };
 
 /**
+ * Utility to get the value for a root using its ancestor and state.
  * @public
  * @param {string|Element} selOrEl
  * @param {StateObject} stateObj
