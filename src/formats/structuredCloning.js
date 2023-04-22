@@ -1,5 +1,6 @@
 import Formats from '../formats.js';
 import Types from '../types.js';
+import {buildTypeChoices} from '../typeChoices.js';
 import {
   Typeson, unescapeKeyPathComponent, structuredCloningThrowing
 } from '../../vendor/typeson-registry/dist/index.js';
@@ -104,7 +105,7 @@ const encapsulateObserver = (stateObj) => {
         typeNamespace,
         type: newType,
         bringIntoFocus: false,
-        buildTypeChoices: Formats.buildTypeChoices,
+        buildTypeChoices,
         format,
         schemaContent,
         schemaState: getPossibleSchemasForPathAndType,

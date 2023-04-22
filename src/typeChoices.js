@@ -1,193 +1,207 @@
-import {jml} from '../vendor/jamilih/dist/jml-es.js';
 import Formats from './formats.js';
 import Types from './types.js';
+import {jml} from '../vendor/jamilih/dist/jml-es.js';
+
 import {$e, DOM} from './utils/templateUtils.js';
+import dialogs from './utils/dialogs.js';
 
 /**
- * Defaults to structured cloning.
- * @todo Compose from format metadata, so can make user customizable.
- * @param {object} cfg
- * @param {string} [cfg.schema] (NOT IN USE)
- * @param {boolean} [cfg.hasKeyPath] Whether or not a key path is expected; if
- *   true, an indexedDB key is not allowed here as a key does not support
- *   the object type which is needed for a key path.
- * @returns {DocumentFragment}
+ * An arbitrary Structured Clone, JSON, etc. value.
+ * @typedef {any} StructuredCloneValue
  */
-export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
-  const hasSchema = typeof schema === 'string';
-  return [
-    ['JSON only', {value: 'json'}],
-    ...(hasKeyPath
-      ? []
-      : [['IndexedDB key', {value: 'indexedDBKey'}]]),
-    ['Structured Clone (via Typeson JSON)', {
-      value: 'structuredCloning', selected: !hasSchema
-    }]
-    /* schema:
-    ...(hasSchema
-      ? [
-        [`Schema + arbitrary: ${schema}`, {
-          value: 'schemaAndArbitrary',
-          dataset: {schema}
-        }],
-        [`Schema only: ${schema}`, {
-          value: 'schemaOnly',
-          dataset: {schema},
-          selected: hasSchema
-        }]
-      ]
-      : []
-    )
-    */
-    /*
-        // This can be supported for editing only
-        ['Arbitrary (Non-Typeson-serializable will be read-only)', {
-            value: 'arbitrary',
-            title: 'Any value that the typeson-registry supports ' +
-              'for structured cloning'
-        }]
-    */
-  ].map(([optText, optAtts]) => {
-    return jml('option', optAtts, [optText]);
-  }).reduce((frag, option) => {
-    frag.append(option);
-    return frag;
-  }, document.createDocumentFragment());
-};
 
 /**
- * Builds a selector and container for types.
+ * @callback BuildTypeChoices
  * @param {object} cfg
- * @param {string} [cfg.schema] The schema name (NOT IN USE)
- * @param {object} [cfg.schemaContent] The schema content (NOT IN USE)
- * @param {boolean} [cfg.hasValue] Set to `true` if you are supplying
- *   your own value. If `false` and `hasKeyPath` is `true`,
- *   will initialize with an object.
- * @param {boolean} [cfg.singleValue] (NOT IN USE)
- * @param {boolean} [cfg.hasKeyPath] If this is set (because there is a keyPath
- *   to be found within the object) and `hasValue` is true, an object type
- *   will be set and required at the root level. This option will also
- *   prevent selection of indexedDB key at root (since a key cannot be a
- *   plain object).
- * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
- *   instances of typeChoices on the page
- * @returns {[
- *   mainTypeChoices: MainTypeChoices,
- *   typesHolder: TypesHolder
- * ]} The selector for types and the container for them. Both should be
- *   added to the page.
+ * @param {string} cfg.format
+ * @param {string} cfg.typeNamespace
+ * @param {StructuredCloneValue} cfg.value
+ * @param {boolean} [cfg.setValue=false]
+ * @param {string} cfg.state
+ * @param {string} cfg.keySelectClass
+ * @param {boolean} cfg.requireObject
+ * @param {boolean} cfg.objectHasValue
+ * @param {RootElement} cfg.topRoot Always a `div` element?
+ * @param {string} cfg.schema Schema name
+ * @param {string} cfg.schemaContent Schema contents
+ * @returns {[select: Element, typeContainer: Element]}
  */
-function typeChoices ({
+
+/**
+ * @type {BuildTypeChoices}
+ */
+export const buildTypeChoices = ({
+  format,
+  typeNamespace,
+  value,
+  setValue = false,
+  state,
+  // itemIndex = 0,
+  keySelectClass,
+  requireObject,
+  objectHasValue,
+  topRoot,
   schema,
-  schemaContent,
-  hasValue,
-  singleValue,
-  hasKeyPath,
-  typeNamespace
-}) {
-  const mainTypeChoices = jml('select', {
-    class: 'mainTypeChoices',
-    hidden: singleValue,
-    // is: 'main-type-choices',
+  schemaContent
+}) => {
+  // console.log('format', format, 'state', state, 'path', typeNamespace);
+  const typeOptions = requireObject
+    ? [Types.getOptionForType('object')]
+    : Types.getTypeOptionsForFormatAndState(format, state);
+
+  let editUI;
+  const sel = jml('select', {
+    hidden: requireObject,
+    class: `typeChoices-${typeNamespace}${keySelectClass
+      ? ' ' + keySelectClass
+      : ''
+    }`,
+    // is: 'type-choices',
     $custom: {
-      /**
-       * Sets the desired format and rebuilds the type choices.
-       * @callback SetFormat
-       * @param {string} valueFormat
-       * @returns {void}
-       */
-
-      /**
-       * Rebuilds the type choices.
-       * @callback TypeChoiceBuilder
-       * @returns {void}
-       */
-
-      /**
-       * @typedef {HTMLSelectElement} MainTypeChoices
-       * @property {SetFormat} $setFormat
-       * @property {TypeChoiceBuilder} $buildTypeChoices
-       */
-
-      /**
-       * @type {SetFormat}
-       */
-      $setFormat (valueFormat) {
-        this.value = valueFormat;
-        this.$buildTypeChoices();
+      $setType ({type, baseValue, bringIntoFocus}) {
+        this.value = type;
+        this.$setStyles();
+        this.$addAndValidateEditUI({baseValue, bringIntoFocus});
       },
+      $setTypeNoEditUI ({type}) {
+        this.value = type;
+        this.$setStyles();
+      },
+      $setStyles () {
+        const {value: type} = this;
+        this.dataset.type = type; // Used for styling
+        const parEl = this.parentElement;
+        if (parEl.nodeName.toLowerCase() === 'fieldset') {
+          parEl.dataset.type = type;
+          DOM.filterChildElements(parEl, 'legend').forEach((legend) => {
+            legend.dataset.type = type;
+          });
+        }
+      },
+      $getTypeRoot () {
+        const container = this.$getContainer();
+        /* istanbul ignore if -- How to replicate? */
+        if (!container) {
+          return false;
+        }
+        return $e(container, 'div[data-type]');
+      },
+      $addAndValidateEditUI ({baseValue, bringIntoFocus} = {}) {
+        const {value: type} = this;
 
-      /**
-       * @type {TypeChoiceBuilder}
-       */
-      $buildTypeChoices () {
-        DOM.removeChildren(typesHolder);
-        jml({'#': Formats.buildTypeChoices({
-          topRoot: $e(typesHolder, 'div[data-type]'),
-          resultType: 'both',
-          format: this.value,
+        const container = this.$getContainer();
+        DOM.removeChildren(container);
+
+        if (!type) { return; }
+        let topRoot = this.$getTopRoot();
+
+        // Todo (low): Try to avoid need for `baseValue`
+        //    (needed by arrayNonindexKeys for setting an array
+        //    length and avoiding errors); could set all
+        //    values through here?
+        editUI = Types.getUIForModeAndType({
+          readonly: false,
           typeNamespace,
-          requireObject: hasKeyPath,
-          objectHasValue: hasValue,
-          schema,
-          schemaContent
-        })}, typesHolder);
+          type,
+          bringIntoFocus,
+          hasValue: type === 'arrayNonindexKeys' && baseValue,
+          value: baseValue,
+          buildTypeChoices,
+          format,
+          topRoot
+        });
+        this.$addEditUI({editUI});
+        this.$validate();
+        topRoot = this.$getTopRoot(); // May be existing now
+        // Needed; Array/object ref somewhere could now be valid or invalid
+        Types.validateAllReferences({topRoot});
+      },
+      $addTypeAndEditUI ({type, editUI}) {
+        this.$setTypeNoEditUI({type});
+        this.$addEditUI({editUI});
+      },
+      $addEditUI ({editUI}) {
+        const container = this.$getContainer();
+        jml(editUI, container);
+      },
+      $getContainer () {
+        return this.nextElementSibling;
+      },
+      $getTopRoot () {
+        return topRoot || this.$getTypeRoot();
+      },
+      $validate () {
+        const {value: type} = this;
+        const container = this.$getContainer();
+        if (!container.firstElementChild) {
+          return false;
+        }
+        const editUI = container.firstElementChild;
+        return Types.validate({
+          type, root: editUI, topRoot: this.$getTopRoot()
+        });
       }
     },
-    $on: {change () {
-      this.$buildTypeChoices();
+    $on: {change (e) {
+      // We don't want form `onchange` to run `$checkForKeyDuplicates`
+      //   again (through `addAndValidateEditUI`->`validateAllReferences`)
+      e.stopPropagation();
+      this.$addAndValidateEditUI();
+      this.$setStyles();
     }}
-  }, [getFormatAndSchemaChoices({schema, hasKeyPath})]);
+  }, [
+    ['option', {value: ''}, [
+      '(Choose a type)'
+    ]],
+    ...typeOptions.map(
+      ([optText, optAtts]) => [
+        'option',
+        optAtts ||
+          /* istanbul ignore next -- Should always have atts */
+          {},
+        [optText]
+      ]
+    )
+  ]);
+  if (setValue || (requireObject && !objectHasValue)) {
+    setTimeout(async () => {
+      if (!setValue) { // if (requireObject && !objectHasValue) {
+        // Todo (low): We could auto-populate keypath if has
+        //   keypath (and we probably also only want if
+        //   not autoincrement)
+        value = {};
+      }
+      try {
+        const rootEditUI = await Formats.availableFormats[format].iterate(
+          value,
+          {
+            readonly: false,
+            typeNamespace,
+            schema,
+            schemaContent
+          }
+        );
+        const type = Types.getTypeForRoot(rootEditUI);
+        sel.$addTypeAndEditUI({type, editUI: rootEditUI});
+      } catch (err) {
+        /* istanbul ignore next -- At least some errors handled earlier */
+        dialogs.alert({
+          message: 'The object to be added had types not supported ' +
+            'by the current format.'
+        });
+        /* istanbul ignore next -- How to trigger? */
+        console.log('err', err);
+      }
+    });
+  }
 
-  /**
-   * @callback TypeRootGetter
-   * @returns {void}
-   */
-
-  /**
-   * @callback TypeSelectGetter
-   * @returns {void}
-   */
-
-  /**
-   * @typedef {HTMLDivElement} TypesHolder
-   * @property {TypeRootGetter} $getTypeRoot
-   * @property {TypeSelectGetter} $getTypeSelect
-   */
-
-  const typesHolder = jml('div', {class: 'typesHolder', $custom: {
-    /**
-     * @type {TypeRootGetter}
-     */
-    $getTypeRoot () {
-      return $e(this, 'div[data-type]');
-    },
-    /**
-     * @type {TypeSelectGetter}
-     */
-    $getTypeSelect () {
-      return $e(this, `.typeChoices-${typeNamespace}`);
-    }
-  }});
-
-  jml({'#': Formats.buildTypeChoices({
-    resultType: 'both',
-    topRoot: $e(typesHolder, 'div[data-type]'),
-    format: 'structuredCloning',
-    typeNamespace,
-    requireObject: hasKeyPath,
-    objectHasValue: hasValue,
-    schema,
-    schemaContent
-  })}, typesHolder);
+  const typeContainer = jml('div', {class: 'typeContainer'});
 
   return {
-    mainTypeChoices,
-    typesHolder,
-    // Easier for Jamilih
-    domArray: [mainTypeChoices, typesHolder],
-
-    // Normal API
+    domArray: [
+      sel,
+      typeContainer
+    ],
 
     /**
      * @param {import('./types.js').StateObject} [stateObj] Will
@@ -196,10 +210,10 @@ function typeChoices ({
      * @returns {StructuredCloneValue}
      */
     getValue (stateObj, currentPath) {
-      const root = typesHolder.$getTypeRoot();
+      const root = $e(typeContainer, 'div[data-type]');
       return Types.getValueForRoot(root, {
         typeNamespace,
-        format: mainTypeChoices.value,
+        format,
         ...stateObj
       }, currentPath);
     },
@@ -208,7 +222,7 @@ function typeChoices ({
      * @returns {string|undefined}
      */
     getType () {
-      const root = typesHolder.$getTypeRoot();
+      const root = $e(typeContainer, 'div[data-type]');
       return Types.getTypeForRoot(root);
     },
 
@@ -216,11 +230,9 @@ function typeChoices ({
      * @returns {boolean}
      */
     validValuesSet () {
-      const root = typesHolder.$getTypeRoot();
+      const root = $e(typeContainer, 'div[data-type]');
       const form = root.closest('form');
       return Types.validValuesSet({form, typeNamespace});
     }
   };
-}
-
-export default typeChoices;
+};

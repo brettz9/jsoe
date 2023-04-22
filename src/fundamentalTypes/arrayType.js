@@ -646,14 +646,14 @@ const arrayType = {
       ], arrayItems);
       // We must ensure fieldset is built before passing it
       jml({'#': [
-        ...buildTypeChoices({
+        ...(buildTypeChoices({
           resultType,
           topRoot,
           format,
           state: type,
           itemIndex,
           typeNamespace
-        }),
+        }).domArray),
         nbsp.repeat(2),
         ['button', {$on: {click (e) {
           e.preventDefault();

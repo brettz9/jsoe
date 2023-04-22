@@ -3,5 +3,10 @@ export {default as Types} from './types.js';
 export {default as Formats} from './formats.js';
 
 export {
-  default as typeChoices, getFormatAndSchemaChoices
+  buildTypeChoices as typeChoices
 } from './typeChoices.js';
+
+export {
+  formatAndTypeChoices,
+  getFormatAndSchemaChoices
+} from './formatAndTypeChoices.js';
