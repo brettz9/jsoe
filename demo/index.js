@@ -1,35 +1,58 @@
 import {jml, body} from '../node_modules/jamilih/dist/jml-es-noinnerh.js';
 
 import {
-  typeChoices, getFormatAndSchemaChoices
-  // Types, Formats
+  typeChoices, getFormatAndSchemaChoices,
+  Types // , Formats
 } from '../src/index.js';
+
+const keyPathNotExpectedTypeChoices = typeChoices({
+  hasKeyPath: false,
+  typeNamespace: 'demo-keypath-not-expected'
+});
 
 jml('section', {role: 'main'}, [
   ['h2', [
-    'Key path expected (object required at root)'
+    'No key path expected (type can vary at root)'
   ]],
 
-  // First element returned has:
-  //   $setFormat(valueFormat) - Sets format and rebuilds type choices
-  //   $buildTypeChoices() - Rebuilds type choices
+  // Put inside form so can validate
+  ['form', [
+    ...keyPathNotExpectedTypeChoices.domArray
+  ]],
 
-  // Second element returned (typesHolder) has two simple DOM-getting methods
-  //   for retrieving items within the types holder:
-  //   $getTypeRoot()
-  //   $getTypeSelect()
+  ['button', {
+    $on: {
+      click () {
+        // eslint-disable-next-line no-alert -- Simple demo
+        alert(keyPathNotExpectedTypeChoices.getType());
+      }
+    }
+  }, ['Get type']],
+
+  ['button', {
+    $on: {
+      click () {
+        // eslint-disable-next-line no-alert -- Simple demo
+        alert(keyPathNotExpectedTypeChoices.validValuesSet());
+      }
+    }
+  }, ['Is valid']],
+
+  ['button', {
+    $on: {
+      click () {
+        console.log(keyPathNotExpectedTypeChoices.getValue());
+      }
+    }
+  }, ['Log value']],
+
+  ['h2', [
+    'Key path expected (object required at root)'
+  ]],
   ...typeChoices({
     hasKeyPath: true,
     typeNamespace: 'demo-keypath-expected'
-  }),
-
-  ['h2', [
-    'No key path expected (type can vary at root)'
-  ]],
-  ...typeChoices({
-    hasKeyPath: false,
-    typeNamespace: 'demo-keypath-not-expected'
-  }),
+  }).domArray,
 
   ['h2', [
     'Format choices without type selection ' +
@@ -37,5 +60,20 @@ jml('section', {role: 'main'}, [
   ]],
   ['select', [
     getFormatAndSchemaChoices()
-  ]]
+  ]],
+
+  ['h2', [
+    'Convert structured cloning string representation to value and log'
+  ]],
+  ['input', {
+    placeholder: 'e.g., ["abc", 17]',
+    $on: {
+      change () {
+        const value = Types.getValueForString(this.value, {
+          format: 'structuredCloning'
+        })[0];
+        console.log(value);
+      }
+    }
+  }]
 ], body);

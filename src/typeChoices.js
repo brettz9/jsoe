@@ -1,5 +1,6 @@
 import {jml} from '../vendor/jamilih/dist/jml-es.js';
 import Formats from './formats.js';
+import Types from './types.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
@@ -180,7 +181,46 @@ function typeChoices ({
     schemaContent
   })}, typesHolder);
 
-  return [mainTypeChoices, typesHolder];
+  return {
+    mainTypeChoices,
+    typesHolder,
+    // Easier for Jamilih
+    domArray: [mainTypeChoices, typesHolder],
+
+    // Normal API
+
+    /**
+     * @param {import('./types.js').StateObject} [stateObj] Will
+     *   auto-set `typeNamespace` and `format`
+     * @param {string} [currentPath]
+     * @returns {StructuredCloneValue}
+     */
+    getValue (stateObj, currentPath) {
+      const root = typesHolder.$getTypeRoot();
+      return Types.getValueForRoot(root, {
+        typeNamespace,
+        format: mainTypeChoices.value,
+        ...stateObj
+      }, currentPath);
+    },
+
+    /**
+     * @returns {string|undefined}
+     */
+    getType () {
+      const root = typesHolder.$getTypeRoot();
+      return Types.getTypeForRoot(root);
+    },
+
+    /**
+     * @returns {boolean}
+     */
+    validValuesSet () {
+      const root = typesHolder.$getTypeRoot();
+      const form = root.closest('form');
+      return Types.validValuesSet({form, typeNamespace});
+    }
+  };
 }
 
 export default typeChoices;
