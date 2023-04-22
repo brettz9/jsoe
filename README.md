@@ -4,7 +4,8 @@ JavaScript Object Editor.
 
 Editing of arbitrary JavaScript objects.
 
-See a [demo](https://brettz9.github.io/idb-manager/index-pages.html) of an
+See a [demo](https://es-joy.github.io/jsoe/demo/) of this tool or
+[a demo](https://brettz9.github.io/idb-manager/index-pages.html) of an
 app using this tool.
 
 ## Formats
