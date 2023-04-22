@@ -1,7 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const sparseUndefinedType = {
   option: ['Sparse undefined'],

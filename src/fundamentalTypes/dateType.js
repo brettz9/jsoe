@@ -3,7 +3,7 @@ import {jml} from '../../vendor/jamilih/dist/jml-es.js';
 import Types from '../types.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const dateType = {
   option: ['Date'],

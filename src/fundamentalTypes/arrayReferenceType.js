@@ -5,7 +5,7 @@ import {
 } from '../utils/jsonPointer.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const arrayReferenceType = {
   option: ['Array reference'],

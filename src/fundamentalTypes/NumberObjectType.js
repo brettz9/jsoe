@@ -2,7 +2,7 @@ import {$e} from '../utils/templateUtils.js';
 import Types from '../types.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const NumberObjectType = {
   option: ['NumberObject'],

@@ -8,7 +8,7 @@ import {
 } from '../utils/jsonPointer.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const arrayType = {
   option: ['Array'],

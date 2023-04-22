@@ -1,7 +1,7 @@
 import {$e, $$e} from '../utils/templateUtils.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const BooleanObjectType = {
   option: ['BooleanObject'],

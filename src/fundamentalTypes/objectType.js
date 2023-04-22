@@ -1,7 +1,7 @@
 import Types from '../types.js';
 
 /**
- * @type {TypeObject}
+ * @type {import('../types.js').TypeObject}
  */
 const objectType = {
   option: ['Object'],
