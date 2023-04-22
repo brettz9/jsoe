@@ -238,6 +238,7 @@ export const buildTypeChoices = ({
     /**
      * @param {StructuredCloneValue} value
      * @param {import('./types.js').StateObject} stateObj
+     * @returns {Promise<void>}
      */
     async setValue (value, stateObj) {
       const rootEditUI = await getControlsForFormatAndValue(
