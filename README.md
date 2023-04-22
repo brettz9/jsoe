@@ -53,7 +53,6 @@ separate enumeration.
 
 ## To-dos
 
-1. Create demo
 1. Add tests of demo (lower priority as have tests in `idb-manager`)
 1. Support Schemas based on a JSON serialization of Zod
 1. Expand fundamental types
