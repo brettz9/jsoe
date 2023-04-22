@@ -1,7 +1,7 @@
 import {jml} from '../vendor/jamilih/dist/jml-es.js';
 import {buildTypeChoices} from './typeChoices.js';
 import Types from './types.js';
-import {iterateFormat} from './formats.js';
+import {getControlsForFormatAndValue} from './formats.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
@@ -233,7 +233,7 @@ export function formatAndTypeChoices ({
      * @param {import('./types.js').StateObject} stateObj
      */
     async setValue (value, stateObj) {
-      const rootEditUI = await iterateFormat(
+      const rootEditUI = await getControlsForFormatAndValue(
         formatChoices.value, value, stateObj
       );
       const type = Types.getTypeForRoot(rootEditUI);

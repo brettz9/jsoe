@@ -1,4 +1,4 @@
-import Formats, {iterateFormat} from './formats.js';
+import Formats, {getControlsForFormatAndValue} from './formats.js';
 import Types from './types.js';
 import {jml} from '../vendor/jamilih/dist/jml-es.js';
 
@@ -240,7 +240,9 @@ export const buildTypeChoices = ({
      * @param {import('./types.js').StateObject} stateObj
      */
     async setValue (value, stateObj) {
-      const rootEditUI = await iterateFormat(format, value, stateObj);
+      const rootEditUI = await getControlsForFormatAndValue(
+        format, value, stateObj
+      );
       const type = Types.getTypeForRoot(rootEditUI);
       sel.$addTypeAndEditUI({type, editUI: rootEditUI});
     }

@@ -29,7 +29,7 @@ const Formats = {
 /**
  * @type {import('./formats/structuredCloning.js').FormatIterator}
  */
-export async function iterateFormat (format, record, stateObj) {
+export async function getControlsForFormatAndValue (format, record, stateObj) {
   return await Formats.availableFormats[format]
     .iterate(record, {
       format,

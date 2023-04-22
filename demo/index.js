@@ -4,7 +4,7 @@ import {
   typeChoices,
   getFormatAndSchemaChoices,
   formatAndTypeChoices,
-  iterateFormat,
+  getControlsForFormatAndValue,
   Types // , Formats
 } from '../src/index.js';
 
@@ -131,15 +131,20 @@ jml('section', {role: 'main'}, [
     'Convert arbitrary value to an editable menu'
   ]],
 
-  await iterateFormat('structuredCloning', new Date('1999-01-01')),
+  await getControlsForFormatAndValue(
+    'structuredCloning', new Date('1999-01-01')
+  ),
 
   ['h2', [
     'Convert arbitrary value to a readonly menu'
   ]],
 
-  await iterateFormat('structuredCloning', new Date('1999-01-01'), {
-    readonly: true
-  }),
+  await getControlsForFormatAndValue(
+    'structuredCloning',
+    new Date('1999-01-01'), {
+      readonly: true
+    }
+  ),
 
   ['h2', [
     'Convert structured cloning string representation to value and log'
