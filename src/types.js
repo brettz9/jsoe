@@ -251,6 +251,21 @@ Types.getTypeForRoot = (root) => {
 };
 
 /**
+ * @typedef {{
+ *   typeNamespace: string,
+ *   "readonly": boolean,
+ *   format: string,
+ *   schemaContent: string,
+ *   getPossibleSchemasForPathAndType: (
+ *     keypath: string,
+ *     parentPath: string,
+ *     arrayOrObjectPropertyName: string,
+ *     valueType: string
+ *   ) => StateObject
+ * }} StateObject
+ */
+
+/**
  * Utility to get the value out of a type root element with a given
  *   state and path.
  * @public

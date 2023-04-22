@@ -16,22 +16,7 @@ import * as json from './json.js';
  */
 
 /**
- * @typedef {{
- *   typeNamespace: string,
-*   "readonly": boolean,
-*   format: string,
-*   schemaContent: string,
-*   getPossibleSchemasForPathAndType: (
-*     keypath: string,
-*     parentPath: string,
-*     arrayOrObjectPropertyName: string,
-*     valueType: string
-*   ) => StateObject
-* }} StateObject
- */
-
-/**
- * @param {StateObject} stateObj
+ * @param {import('../types.js').StateObject} stateObj
  * @returns {EncapsulateObserver}
  */
 const encapsulateObserver = (stateObj) => {
