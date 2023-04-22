@@ -55,42 +55,34 @@ const Types = {};
  *   present, use `stringRegex`
  * @property {RegExp} [stringRegexEnd] Used for string parsing. If not
  *   present, use `stringRegex`
- * @property {
- *   (ArbitraryValue) => boolean
- * } [valueMatch] Function to check whether this subtype matches
+ * @property {(ArbitraryValue) => boolean} [valueMatch] Function to
+ *   check whether this subtype matches
  * @property {string} [superType] The greater fundamental type to which
  *   the type belongs
  * @property {(s: string) => ArbitraryValue} toValue Converts from
  *   string to value. May use `stringRegex` to find components.
- * @property {
- *   (info: {root?: HTMLDivElement}) => ArbitraryValue
+ * @property {(info: {root?: HTMLDivElement}) =>
+ *  ArbitraryValue
  * } getValue Gets the value for the type
- * @property {
- *   (info: {root?: HTMLDivElement}) => void
- * } [setValue] Should set the value of the form's `getInput` element
- * @property {
- *   (info: {
- *     value?: ArbitraryValue,
- *     typeNamespace?: string,
- *     type?: string,
- *     topRoot?: HTMLDivElement,
- *     resultType?: "keys"|"values"|"both",
- *     format?: string
- *   }) => JamilihArray
- * } viewUI
- * @property {
- *   (info: {
- *     value?: ArbitraryValue,
- *     typeNamespace?: string,
- *   }) => JamilihArray
- * } editUI
- * @property {
- *   (info: {root: HTMLDivElement}) =>
- *     HTMLInputElement|HTMLTextareaElement|HTMLSelectElement
- * } getInput Gets the form control (with `value`)
- * @property {
- *   (path: string, value: ArbitraryValue) => ArbitraryValue
- * } [resolveReference] Gets the reference. For array and object
+ * @property {(info: {root?: HTMLDivElement}) => void} [setValue] Should set
+ *   the value of the form's `getInput` element
+ * @property {(info: {
+ *   value?: ArbitraryValue,
+ *   typeNamespace?: string,
+ *   type?: string,
+ *   topRoot?: HTMLDivElement,
+ *   resultType?: "keys"|"values"|"both",
+ *   format?: string
+ * }) => JamilihArray} viewUI
+ * @property {(info: {
+ *   value?: ArbitraryValue,
+ *   typeNamespace?: string,
+ * }) => JamilihArray} editUI
+ * @property {(info: {root: HTMLDivElement}) =>
+ *   HTMLInputElement|HTMLTextareaElement|HTMLSelectElement} getInput Gets the
+ *   form control (with `value`)
+ * @property {(path: string, value: ArbitraryValue) =>
+ *   ArbitraryValue} [resolveReference] Gets the reference. For array and object
  *   references types only
  * @property {(info: {root: HTMLDivElement, topRoot?: HTMLDivElement}) => {
  *   message: string,
@@ -271,11 +263,14 @@ Types.getTypeForRoot = (root) => {
  * @public
  * @param {RootElement} root
  * @param {StateObject} stateObj
- * @param {string} currentPath
+ * @param {string} [currentPath]
  * @returns {StructuredCloneValue}
  */
 Types.getValueForRoot = (root, stateObj, currentPath) => {
-  return Types.availableTypes[Types.getTypeForRoot(root)].getValue({
+  const typeObject = /** @type {TypeObject} */ (
+    Types.availableTypes[Types.getTypeForRoot(root)]
+  );
+  return typeObject.getValue({
     root, stateObj, currentPath
   });
 };
