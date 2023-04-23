@@ -1,5 +1,13 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.2.0
+
+- refactor(BREAKING): `typeChoices`->`formatAndTypeChoices`;
+    add different `typeChoices`, adding methods to both
+- feat: add `getControlsForFormatAndValue` utility
+- fix: ensure `setValue` removes existing content
+- feat: add stylesheet
+
 ## 0.1.0
 
 - refactor: have `getFormatAndSchemaChoices` return fragment of options
