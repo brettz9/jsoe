@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.3.0
+
+- feat: negative zero support
+- chore: bump jamilih, typeson-registry, devDeps.
+
 ## 0.2.0
 
 - refactor(BREAKING): `typeChoices`->`formatAndTypeChoices`;

@@ -25,7 +25,8 @@ import BooleanObjectType from './fundamentalTypes/BooleanObjectType.js';
 import NumberObjectType from './fundamentalTypes/NumberObjectType.js';
 import StringObjectType from './fundamentalTypes/StringObjectType.js';
 import sparseUndefinedType from './fundamentalTypes/sparseUndefinedType.js';
-import InfinitiesSuperType from './superTypes/InfinitiesSuperType.js';
+import SpecialRealNumberSuperType from
+  './superTypes/SpecialRealNumberSuperType.js';
 import SpecialNumberSuperType from './superTypes/SpecialNumberSuperType.js';
 
 /**
@@ -121,7 +122,7 @@ Types.availableTypes = {
   //   passed in:
   userObject: ['User objects'],
   undef: undefinedType,
-  Infinities: InfinitiesSuperType,
+  SpecialRealNumber: SpecialRealNumberSuperType,
   SpecialNumber: SpecialNumberSuperType,
 
   regexp: regexpType,

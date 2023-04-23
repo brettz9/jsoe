@@ -42,6 +42,7 @@ module.exports = {
       'Number.parseFloat',
       'Number.parseInt',
       'Object.assign',
+      'Object.is',
       'Object.keys',
       'Object.entries',
       'Object.values',

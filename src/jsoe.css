@@ -43,7 +43,7 @@ input:invalid {
 [data-type="regexp"] {
   background-color: yellow;
 }
-[data-type="SpecialNumber"], [data-type="Infinities"] {
+[data-type="SpecialNumber"], [data-type="SpecialRealNumber"] {
   background-color: red;
 }
 [data-type="BooleanObject"], [data-type="NumberObject"], [data-type="StringObject"] {

@@ -48,8 +48,8 @@ These map to a subset of JavaScript language structures. Note that false and tru
 These are collections of individual types, justified by the subitems not being so frequent as to necessitate their own
 separate enumeration.
 
-- Infinities (`Infinity`, `-Infinity`) - Used with IndexedDB keys
-- Special Number (`Infinity`, `-Infinity`, `NaN`) - Used with Structured Cloning values
+- Special Real Number (`Infinity`, `-Infinity`, `-0`) - Used with IndexedDB keys (even though -0 apparently [to be converted](https://github.com/w3c/IndexedDB/issues/375) to 0)
+- Special Number (`Infinity`, `-Infinity`, `-0`, `NaN`) - Used with Structured Cloning values
 
 ## To-dos
 

@@ -9,16 +9,18 @@ import {$e} from '../utils/templateUtils.js';
  * @type {SuperTypeObject}
  */
 const SpecialNumberSuperType = {
-  option: ['SpecialNumber', {title: '`NaN`, `Infinity`, `-Infinity`'}],
-  childTypes: ['infinity', 'negativeInfinity', 'nan'],
-  stringRegex: /^(?:NaN|-?Infinity)$/u,
+  option: ['Special Number', {title: '`NaN`, `Infinity`, `-Infinity`, `-0`'}],
+  childTypes: ['infinity', 'negativeInfinity', 'nan', 'negativeZero'],
+  stringRegex: /^(?:NaN|-?Infinity|-0)$/u,
   toValue (s) {
     return {
-      value: s === 'NaN'
-        ? Number.NaN
-        : s === 'Infinity'
-          ? Number.POSITIVE_INFINITY
-          : Number.NEGATIVE_INFINITY
+      value: s === '-0'
+        ? -0
+        : s === 'NaN'
+          ? Number.NaN
+          : s === 'Infinity'
+            ? Number.POSITIVE_INFINITY
+            : Number.NEGATIVE_INFINITY
     };
   },
   getSelect ({root}) {
@@ -35,7 +37,9 @@ const SpecialNumberSuperType = {
     this.getSelect({root}).value = String(value);
   },
   viewUI ({value}) {
-    return ['i', {dataset: {type: 'SpecialNumber'}}, [String(value)]];
+    return ['i', {dataset: {type: 'SpecialNumber'}}, [
+      Object.is(value, -0) ? '-0' : String(value)
+    ]];
   },
   editUI ({typeNamespace, value = Number.NaN}) {
     return ['div', {dataset: {type: 'SpecialNumber'}}, [
@@ -52,7 +56,10 @@ const SpecialNumberSuperType = {
           }, ['Infinity']],
           ['option', {
             value: '-Infinity', selected: value === Number.NEGATIVE_INFINITY
-          }, ['-Infinity']]
+          }, ['-Infinity']],
+          ['option', {
+            value: '-0', selected: Object.is(value, -0)
+          }, ['-0']]
         ]]
       ]]
     ]];

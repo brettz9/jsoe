@@ -5,7 +5,7 @@ import * as structuredCloning from './structuredCloning.js';
  * @returns {string[]}
  */
 export const types = () => [
-  'number', 'Infinities', 'string', 'ValidDate', 'array'
+  'number', 'SpecialRealNumber', 'string', 'ValidDate', 'array'
 ];
 
 // A hack until we simply pass in our own types or do own parsing
@@ -18,7 +18,7 @@ export const types = () => [
 export const testInvalid = (newType, value) => {
   switch (newType) {
   /* istanbul ignore next -- Shouldn't occur as it is a preset */
-  case 'Infinities':
+  case 'SpecialRealNumber':
     /* istanbul ignore next -- Shouldn't occur as it is a preset */
     return Number.isNaN(value);
   case 'ValidDate':
@@ -38,7 +38,8 @@ export const testInvalid = (newType, value) => {
  */
 export const convertFromTypeson = (typesonType) => {
   return {
-    SpecialNumber: 'Infinities', // This shouldn't occur as it is a preset
+    // This shouldn't occur as it is a preset
+    SpecialNumber: 'SpecialRealNumber',
     date: 'ValidDate',
     // sparseArrays: 'array',
     arrayNonindexKeys: 'array'
