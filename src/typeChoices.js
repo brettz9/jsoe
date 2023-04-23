@@ -89,9 +89,6 @@ export const buildTypeChoices = ({
       $addAndValidateEditUI ({baseValue, bringIntoFocus} = {}) {
         const {value: type} = this;
 
-        const container = this.$getContainer();
-        DOM.removeChildren(container);
-
         if (!type) { return; }
         let topRoot = this.$getTopRoot();
 
@@ -122,6 +119,7 @@ export const buildTypeChoices = ({
       },
       $addEditUI ({editUI}) {
         const container = this.$getContainer();
+        DOM.removeChildren(container);
         jml(editUI, container);
       },
       $getContainer () {
