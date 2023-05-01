@@ -1,91 +1,103 @@
-function ownKeys(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),r.push.apply(r,n);}return r}function _objectSpread2(e){for(var t=1;t<arguments.length;t++){var r=null!=arguments[t]?arguments[t]:{};t%2?ownKeys(Object(r),!0).forEach((function(t){_defineProperty(e,t,r[t]);})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(r)):ownKeys(Object(r)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(r,t));}));}return e}function _typeof(e){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},_typeof(e)}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,_toPropertyKey(n.key),n);}}function _createClass(e,t,r){return t&&_defineProperties(e.prototype,t),r&&_defineProperties(e,r),Object.defineProperty(e,"prototype",{writable:!1}),e}function _defineProperty(e,t,r){return (t=_toPropertyKey(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function _slicedToArray(e,t){return function _arrayWithHoles(e){if(Array.isArray(e))return e}(e)||function _iterableToArrayLimit(e,t){var r=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=r){var n,o,a,i,c=[],s=!0,u=!1;try{if(a=(r=r.call(e)).next,0===t){if(Object(r)!==r)return;s=!1;}else for(;!(s=(n=a.call(r)).done)&&(c.push(n.value),c.length!==t);s=!0);}catch(e){u=!0,o=e;}finally{try{if(!s&&null!=r.return&&(i=r.return(),Object(i)!==i))return}finally{if(u)throw o}}return c}}(e,t)||_unsupportedIterableToArray(e,t)||function _nonIterableRest(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _toConsumableArray(e){return function _arrayWithoutHoles(e){if(Array.isArray(e))return _arrayLikeToArray(e)}(e)||function _iterableToArray(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||_unsupportedIterableToArray(e)||function _nonIterableSpread(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _unsupportedIterableToArray(e,t){if(e){if("string"==typeof e)return _arrayLikeToArray(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?_arrayLikeToArray(e,t):void 0}}function _arrayLikeToArray(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function _toPropertyKey(e){var t=function _toPrimitive(e,t){if("object"!=typeof e||null===e)return e;var r=e[Symbol.toPrimitive];if(void 0!==r){var n=r.call(e,t||"default");if("object"!=typeof n)return n;throw new TypeError("@@toPrimitive must return a primitive value.")}return ("string"===t?String:Number)(e)}(e,"string");return "symbol"==typeof t?t:String(t)}var e=_createClass((function TypesonPromise(e){_classCallCheck(this,TypesonPromise),this.p=new Promise(e);}));e.__typeson__type__="TypesonPromise","undefined"!=typeof Symbol&&(e.prototype[Symbol.toStringTag]="TypesonPromise"),e.prototype.then=function(t,r){var n=this;return new e((function(e,o){n.p.then((function(r){e(t?t(r):r);})).catch((function(e){return r?r(e):Promise.reject(e)})).then(e,o);}))},e.prototype.catch=function(e){return this.then(null,e)},e.resolve=function(t){return new e((function(e){e(t);}))},e.reject=function(t){return new e((function(e,r){r(t);}))},["all","race","allSettled"].forEach((function(t){e[t]=function(r){return new e((function(e,n){Promise[t](r.map((function(e){return e&&e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,n);}))};}));var t={}.toString,r={}.hasOwnProperty,n=Object.getPrototypeOf,o=r.toString;function isThenable(e,t){return isObject(e)&&"function"==typeof e.then&&(!t||"function"==typeof e.catch)}function toStringTag(e){return t.call(e).slice(8,-1)}function hasConstructorOf(e,t){if(!e||"object"!==_typeof(e))return !1;var a=n(e);if(!a)return null===t;var i=r.call(a,"constructor")&&a.constructor;return "function"!=typeof i?null===t:t===i||(null!==t&&o.call(i)===o.call(t)||"function"==typeof t&&"string"==typeof i.__typeson__type__&&i.__typeson__type__===t.__typeson__type__)}function isPlainObject(e){return !(!e||"Object"!==toStringTag(e))&&(!n(e)||hasConstructorOf(e,Object))}function isUserObject(e){if(!e||"Object"!==toStringTag(e))return !1;var t=n(e);return !t||(hasConstructorOf(e,Object)||isUserObject(t))}function isObject(e){return e&&"object"===_typeof(e)}function escapeKeyPathComponent(e){return e.replace(/''/g,"''''").replace(/^$/,"''").replace(/~/g,"~0").replace(/\./g,"~1")}function unescapeKeyPathComponent(e){return e.replace(/~1/g,".").replace(/~0/g,"~").replace(/^''$/,"").replace(/''''/g,"''")}function getByKeyPath(e,t){if(""===t)return e;var r=t.indexOf(".");if(r>-1){var n=e[unescapeKeyPathComponent(t.slice(0,r))];return void 0===n?void 0:getByKeyPath(n,t.slice(r+1))}return e[unescapeKeyPathComponent(t)]}function setAtKeyPath(e,t,r){if(""===t)return r;var n=t.indexOf(".");return n>-1?setAtKeyPath(e[unescapeKeyPathComponent(t.slice(0,n))],t.slice(n+1),r):(e[unescapeKeyPathComponent(t)]=r,e)}function getJSONType(e){return null===e?"null":Array.isArray(e)?"array":_typeof(e)}function _await(e,t,r){return r?t?t(e):e:(e&&e.then||(e=Promise.resolve(e)),t?e.then(t):e)}var a=Object.keys,i$1=Array.isArray,c={}.hasOwnProperty,s=["type","replaced","iterateIn","iterateUnsetNumeric"];function _async(e){return function(){for(var t=[],r=0;r<arguments.length;r++)t[r]=arguments[r];try{return Promise.resolve(e.apply(this,t))}catch(e){return Promise.reject(e)}}}function nestedPathsFirst(e,t){if(""===e.keypath)return -1;var r=e.keypath.match(/\./g)||0,n=t.keypath.match(/\./g)||0;return r&&(r=r.length),n&&(n=n.length),r>n?-1:r<n?1:e.keypath<t.keypath?-1:e.keypath>t.keypath}var u=function(){function Typeson(e){_classCallCheck(this,Typeson),this.options=e,this.plainObjectReplacers=[],this.nonplainObjectReplacers=[],this.revivers={},this.types={};}return _createClass(Typeson,[{key:"stringify",value:function stringify(e,t,r,n){n=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),n),{},{stringification:!0});var o=this.encapsulate(e,null,n);return i$1(o)?JSON.stringify(o[0],t,r):o.then((function(e){return JSON.stringify(e,t,r)}))}},{key:"stringifySync",value:function stringifySync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!0}))}},{key:"stringifyAsync",value:function stringifyAsync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!1}))}},{key:"parse",value:function parse(e,t,r){return r=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),r),{},{parse:!0}),this.revive(JSON.parse(e,t),r)}},{key:"parseSync",value:function parseSync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"parseAsync",value:function parseAsync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"specialTypeNames",value:function specialTypeNames(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.returnTypeNames=!0,this.encapsulate(e,t,r)}},{key:"rootTypeName",value:function rootTypeName(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.iterateNone=!0,this.encapsulate(e,t,r)}},{key:"encapsulate",value:function encapsulate(t,r,n){var o=_async((function(t,r){return _await(Promise.all(r.map((function(e){return e[1].p}))),(function(n){return _await(Promise.all(n.map(_async((function(n){var a=!1,i=[],c=_slicedToArray(r.splice(0,1),1),s=_slicedToArray(c[0],7),u=s[0],p=s[2],l=s[3],y=s[4],f=s[5],h=s[6],v=_encapsulate(u,n,p,l,i,!0,h),b=hasConstructorOf(v,e);return function _invoke(e,t){var r=e();return r&&r.then?r.then(t):t(r)}((function(){if(u&&b)return _await(v.p,(function(e){y[f]=e;var r=o(t,i);return a=!0,r}))}),(function(e){return a?e:(u?y[f]=v:t=b?v.p:v,o(t,i))}))})))),(function(){return t}))}))})),u=(n=_objectSpread2(_objectSpread2({sync:!0},this.options),n)).sync,p=this,l={},y=[],f=[],h=[],v=!("cyclic"in n)||n.cyclic,b=n.encapsulateObserver,d=_encapsulate("",t,v,r||{},h);function finish(e){var t=Object.values(l);if(n.iterateNone)return t.length?t[0]:getJSONType(e);if(t.length){if(n.returnTypeNames)return _toConsumableArray(new Set(t));e&&isPlainObject(e)&&!c.call(e,"$types")?e.$types=l:e={$:e,$types:{$:l}};}else isObject(e)&&c.call(e,"$types")&&(e={$:e,$types:!0});return !n.returnTypeNames&&e}function _adaptBuiltinStateObjectProperties(e,t,r){Object.assign(e,t);var n=s.map((function(t){var r=e[t];return delete e[t],r}));r(),s.forEach((function(t,r){e[t]=n[r];}));}function _encapsulate(t,r,o,s,u,h,v){var d,_={},O=_typeof(r),j=b?function(n){var a=v||s.type||getJSONType(r);b(Object.assign(n||_,{keypath:t,value:r,cyclic:o,stateObj:s,promisesData:u,resolvingTypesonPromise:h,awaitingTypesonPromise:hasConstructorOf(r,e)},{type:a}));}:null;if(["string","boolean","number","undefined"].includes(O))return void 0===r||Number.isNaN(r)||r===Number.NEGATIVE_INFINITY||r===Number.POSITIVE_INFINITY||0===r?(d=s.replaced?r:replace(t,r,s,u,!1,h,j))!==r&&(_={replaced:d}):d=r,j&&j(),d;if(null===r)return j&&j(),r;if(o&&!s.iterateIn&&!s.iterateUnsetNumeric&&r&&"object"===_typeof(r)){var m=y.indexOf(r);if(!(m<0))return l[t]="#",j&&j({cyclicKeypath:f[m]}),"#"+f[m];!0===o&&(y.push(r),f.push(t));}var g,S=isPlainObject(r),P=i$1(r),T=(S||P)&&(!p.plainObjectReplacers.length||s.replaced)||s.iterateIn?r:replace(t,r,s,u,S||P,null,j);if(T!==r?(d=T,_={replaced:T}):""===t&&hasConstructorOf(r,e)?(u.push([t,r,o,s,void 0,void 0,s.type]),d=r):P&&"object"!==s.iterateIn||"array"===s.iterateIn?(g=new Array(r.length),_={clone:g}):(["function","symbol"].includes(_typeof(r))||"toJSON"in r||hasConstructorOf(r,e)||hasConstructorOf(r,Promise)||hasConstructorOf(r,ArrayBuffer))&&!S&&"object"!==s.iterateIn?d=r:(g={},s.addLength&&(g.length=r.length),_={clone:g}),j&&j(),n.iterateNone)return g||d;if(!g)return d;if(s.iterateIn){var w=function _loop(n){var a={ownKeys:c.call(r,n)};_adaptBuiltinStateObjectProperties(s,a,(function(){var a=t+(t?".":"")+escapeKeyPathComponent(n),i=_encapsulate(a,r[n],Boolean(o),s,u,h);hasConstructorOf(i,e)?u.push([a,i,Boolean(o),s,g,n,s.type]):void 0!==i&&(g[n]=i);}));};for(var A in r)w(A);j&&j({endIterateIn:!0,end:!0});}else a(r).forEach((function(n){var a=t+(t?".":"")+escapeKeyPathComponent(n);_adaptBuiltinStateObjectProperties(s,{ownKeys:!0},(function(){var t=_encapsulate(a,r[n],Boolean(o),s,u,h);hasConstructorOf(t,e)?u.push([a,t,Boolean(o),s,g,n,s.type]):void 0!==t&&(g[n]=t);}));})),j&&j({endIterateOwn:!0,end:!0});if(s.iterateUnsetNumeric){for(var C=r.length,k=function _loop2(n){if(!(n in r)){var a=t+(t?".":"")+n;_adaptBuiltinStateObjectProperties(s,{ownKeys:!1},(function(){var t=_encapsulate(a,void 0,Boolean(o),s,u,h);hasConstructorOf(t,e)?u.push([a,t,Boolean(o),s,g,n,s.type]):void 0!==t&&(g[n]=t);}));}},N=0;N<C;N++)k(N);j&&j({endIterateUnsetNumeric:!0,end:!0});}return g}function replace(e,t,r,n,o,a,i){for(var c=o?p.plainObjectReplacers:p.nonplainObjectReplacers,s=c.length;s--;){var y=c[s];if(y.test(t,r)){var f=y.type;if(p.revivers[f]){var h=l[e];l[e]=h?[f].concat(h):f;}return Object.assign(r,{type:f,replaced:!0}),!u&&y.replaceAsync||y.replace?(i&&i({replacing:!0}),_encapsulate(e,y[u||!y.replaceAsync?"replace":"replaceAsync"](t,r),v&&"readonly",r,n,a,f)):(i&&i({typeDetected:!0}),_encapsulate(e,t,v&&"readonly",r,n,a,f))}}return t}return h.length?u&&n.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():Promise.resolve(o(d,h)).then(finish):!u&&n.throwOnBadSyncType?function(){throw new TypeError("Async method requested but sync result obtained")}():n.stringification&&u?[finish(d)]:u?finish(d):Promise.resolve(finish(d))}},{key:"encapsulateSync",value:function encapsulateSync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"encapsulateAsync",value:function encapsulateAsync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"revive",value:function revive(t,r){var n=t&&t.$types;if(!n)return t;if(!0===n)return t.$;var o=(r=_objectSpread2(_objectSpread2({sync:!0},this.options),r)).sync,c=[],s={},u=!0;n.$&&isPlainObject(n.$)&&(t=t.$,n=n.$,u=!1);var l=this;function executeReviver(e,t){var r=_slicedToArray(l.revivers[e]||[],1)[0];if(!r)throw new Error("Unregistered type: "+e);return o&&!("revive"in r)?t:r[o&&r.revive?"revive":!o&&r.reviveAsync?"reviveAsync":"revive"](t,s)}var y=[];function checkUndefined(e){return hasConstructorOf(e,p)?void 0:e}var f,h=function revivePlainObjects(){var r=[];if(Object.entries(n).forEach((function(e){var t=_slicedToArray(e,2),o=t[0],a=t[1];"#"!==a&&[].concat(a).forEach((function(e){_slicedToArray(l.revivers[e]||[null,{}],2)[1].plain&&(r.push({keypath:o,type:e}),delete n[o]);}));})),r.length)return r.sort(nestedPathsFirst).reduce((function reducer(r,n){var o=n.keypath,a=n.type;if(isThenable(r))return r.then((function(e){return reducer(e,{keypath:o,type:a})}));var i=getByKeyPath(t,o);if(hasConstructorOf(i=executeReviver(a,i),e))return i.then((function(e){var r=setAtKeyPath(t,o,e);r===e&&(t=r);}));var c=setAtKeyPath(t,o,i);c===i&&(t=c);}),void 0)}();return hasConstructorOf(h,e)?f=h.then((function(){return t})):(f=function _revive(t,r,o,s,l){if(!u||"$types"!==t){var f=n[t],h=i$1(r);if(h||isPlainObject(r)){var v=h?new Array(r.length):{};for(a(r).forEach((function(n){var a=_revive(t+(t?".":"")+escapeKeyPathComponent(n),r[n],o||v,v,n),i=function set(e){return hasConstructorOf(e,p)?v[n]=void 0:void 0!==e&&(v[n]=e),e};hasConstructorOf(a,e)?y.push(a.then((function(e){return i(e)}))):i(a);})),r=v;c.length;){var b=_slicedToArray(c[0],4),d=b[0],_=b[1],O=b[2],j=b[3],m=getByKeyPath(d,_);if(void 0===m)break;O[j]=m,c.splice(0,1);}}if(!f)return r;if("#"===f){var g=getByKeyPath(o,r.slice(1));return void 0===g&&c.push([o,r.slice(1),s,l]),g}return [].concat(f).reduce((function reducer(t,r){return hasConstructorOf(t,e)?t.then((function(e){return reducer(e,r)})):executeReviver(r,t)}),r)}}("",t,null),y.length&&(f=e.resolve(f).then((function(t){return e.all([t].concat(y))})).then((function(e){return _slicedToArray(e,1)[0]})))),isThenable(f)?o&&r.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():hasConstructorOf(f,e)?f.p.then(checkUndefined):f:!o&&r.throwOnBadSyncType?function(){throw new TypeError("Async method requested but sync result obtained")}():o?checkUndefined(f):Promise.resolve(checkUndefined(f))}},{key:"reviveSync",value:function reviveSync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!0}))}},{key:"reviveAsync",value:function reviveAsync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!1}))}},{key:"register",value:function register(e,t){var r=this;t=t||{};var n=function R(e){i$1(e)?e.forEach((function(e){return R(e)})):e&&a(e).forEach((function(n){if("#"===n)throw new TypeError("# cannot be used as a type name as it is reserved for cyclic objects");if(l.includes(n))throw new TypeError("Plain JSON object types are reserved as type names");var o=e[n],a=o&&o.testPlainObjects?r.plainObjectReplacers:r.nonplainObjectReplacers,c=a.filter((function(e){return e.type===n}));if(c.length&&(a.splice(a.indexOf(c[0]),1),delete r.revivers[n],delete r.types[n]),"function"==typeof o){var s=o;o={test:function test(e){return e&&e.constructor===s},replace:function replace(e){return _objectSpread2({},e)},revive:function revive(e){return Object.assign(Object.create(s.prototype),e)}};}else if(i$1(o)){var u=_slicedToArray(o,3);o={test:u[0],replace:u[1],revive:u[2]};}if(o&&o.test){var p={type:n,test:o.test.bind(o)};o.replace&&(p.replace=o.replace.bind(o)),o.replaceAsync&&(p.replaceAsync=o.replaceAsync.bind(o));var y="number"==typeof t.fallback?t.fallback:t.fallback?0:Number.POSITIVE_INFINITY;if(o.testPlainObjects?r.plainObjectReplacers.splice(y,0,p):r.nonplainObjectReplacers.splice(y,0,p),o.revive||o.reviveAsync){var f={};o.revive&&(f.revive=o.revive.bind(o)),o.reviveAsync&&(f.reviveAsync=o.reviveAsync.bind(o)),r.revivers[n]=[f,{plain:o.testPlainObjects}];}r.types[n]=o;}}));};return [].concat(e).forEach((function(e){return n(e)})),this}}]),Typeson}(),p=_createClass((function Undefined(){_classCallCheck(this,Undefined);}));p.__typeson__type__="TypesonUndefined";var l=["null","boolean","number","string","array","object"];
+function ownKeys(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),r.push.apply(r,n);}return r}function _objectSpread2(e){for(var t=1;t<arguments.length;t++){var r=null!=arguments[t]?arguments[t]:{};t%2?ownKeys(Object(r),!0).forEach((function(t){_defineProperty(e,t,r[t]);})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(r)):ownKeys(Object(r)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(r,t));}));}return e}function _typeof(e){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},_typeof(e)}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,_toPropertyKey(n.key),n);}}function _createClass(e,t,r){return t&&_defineProperties(e.prototype,t),r&&_defineProperties(e,r),Object.defineProperty(e,"prototype",{writable:!1}),e}function _defineProperty(e,t,r){return (t=_toPropertyKey(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function _slicedToArray(e,t){return function _arrayWithHoles(e){if(Array.isArray(e))return e}(e)||function _iterableToArrayLimit(e,t){var r=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=r){var n,o,i,a,c=[],s=!0,u=!1;try{if(i=(r=r.call(e)).next,0===t){if(Object(r)!==r)return;s=!1;}else for(;!(s=(n=i.call(r)).done)&&(c.push(n.value),c.length!==t);s=!0);}catch(e){u=!0,o=e;}finally{try{if(!s&&null!=r.return&&(a=r.return(),Object(a)!==a))return}finally{if(u)throw o}}return c}}(e,t)||_unsupportedIterableToArray(e,t)||function _nonIterableRest(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _toConsumableArray(e){return function _arrayWithoutHoles(e){if(Array.isArray(e))return _arrayLikeToArray(e)}(e)||function _iterableToArray(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||_unsupportedIterableToArray(e)||function _nonIterableSpread(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _unsupportedIterableToArray(e,t){if(e){if("string"==typeof e)return _arrayLikeToArray(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?_arrayLikeToArray(e,t):void 0}}function _arrayLikeToArray(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function _toPropertyKey(e){var t=function _toPrimitive(e,t){if("object"!=typeof e||null===e)return e;var r=e[Symbol.toPrimitive];if(void 0!==r){var n=r.call(e,t||"default");if("object"!=typeof n)return n;throw new TypeError("@@toPrimitive must return a primitive value.")}return ("string"===t?String:Number)(e)}(e,"string");return "symbol"==typeof t?t:String(t)}var e=_createClass((function TypesonPromise(e){_classCallCheck(this,TypesonPromise),this.p=new Promise(e);}));e.__typeson__type__="TypesonPromise","undefined"!=typeof Symbol&&Object.defineProperty(e.prototype,Symbol.toStringTag,{get:function get(){return "TypesonPromise"}}),e.prototype.then=function(t,r){var n=this;return new e((function(e,o){n.p.then((function(r){e(t?t(r):r);})).catch((function(e){return r?r(e):Promise.reject(e)})).then(e,o);}))},e.prototype.catch=function(e){return this.then((function(){}),e)},e.resolve=function(t){return new e((function(e){e(t);}))},e.reject=function(t){return new e((function(e,r){r(t);}))},e.all=function(t){return new e((function(e,r){Promise.all(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.race=function(t){return new e((function(e,r){Promise.race(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.allSettled=function(t){return new e((function(e,r){Promise.allSettled(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))};var t=Object.hasOwn,r=Object.getPrototypeOf;function isThenable(e,t){return isObject(e)&&"function"==typeof e.then&&(!t||"function"==typeof e.catch)}function toStringTag(e){return Object.prototype.toString.call(e).slice(8,-1)}function hasConstructorOf(e,n){if(!e||"object"!==_typeof(e))return !1;var o=r(e);if(!o)return null===n;var i=t(o,"constructor")&&o.constructor;return "function"!=typeof i?null===n:n===i||(null!==n&&Function.prototype.toString.call(i)===Function.prototype.toString.call(n)||"function"==typeof n&&"string"==typeof i.__typeson__type__&&i.__typeson__type__===n.__typeson__type__)}function isPlainObject(e){return !(!e||"Object"!==toStringTag(e))&&(!r(e)||hasConstructorOf(e,Object))}function isUserObject(e){if(!e||"Object"!==toStringTag(e))return !1;var t=r(e);return !t||(hasConstructorOf(e,Object)||isUserObject(t))}function isObject(e){return null!==e&&"object"===_typeof(e)}function escapeKeyPathComponent(e){return e.replace(/''/g,"''''").replace(/^$/,"''").replace(/~/g,"~0").replace(/\./g,"~1")}function unescapeKeyPathComponent(e){return e.replace(/~1/g,".").replace(/~0/g,"~").replace(/^''$/,"").replace(/''''/g,"''")}function getByKeyPath(e,t){if(""===t)return e;if(null===e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var r=t.indexOf(".");if(r>-1){var n=e[unescapeKeyPathComponent(t.slice(0,r))];return void 0===n?void 0:getByKeyPath(n,t.slice(r+1))}return e[unescapeKeyPathComponent(t)]}function setAtKeyPath(e,t,r){if(""===t)return r;if(!e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var n=t.indexOf(".");return n>-1?setAtKeyPath(e[unescapeKeyPathComponent(t.slice(0,n))],t.slice(n+1),r):(e[unescapeKeyPathComponent(t)]=r,e)}function getJSONType(e){return null===e?"null":Array.isArray(e)?"array":_typeof(e)}function _await(e,t,r){return r?t?t(e):e:(e&&e.then||(e=Promise.resolve(e)),t?e.then(t):e)}var n=Object.keys,o=Object.hasOwn,i$1=Array.isArray,a=["type","replaced","iterateIn","iterateUnsetNumeric","addLength"];function _async(e){return function(){for(var t=[],r=0;r<arguments.length;r++)t[r]=arguments[r];try{return Promise.resolve(e.apply(this,t))}catch(e){return Promise.reject(e)}}}function nestedPathsFirst(e,t){var r,n;if(""===e.keypath)return -1;var o=null!==(r=e.keypath.match(/\./g))&&void 0!==r?r:0,i=null!==(n=t.keypath.match(/\./g))&&void 0!==n?n:0;return o&&(o=o.length),i&&(i=i.length),o>i?-1:o<i?1:e.keypath<t.keypath?-1:e.keypath>t.keypath?1:0}var c=function(){function Typeson(e){_classCallCheck(this,Typeson),this.options=e,this.plainObjectReplacers=[],this.nonplainObjectReplacers=[],this.revivers={},this.types={};}return _createClass(Typeson,[{key:"stringify",value:function stringify(e,t,r,n){n=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),n),{},{stringification:!0});var o=this.encapsulate(e,null,n);return i$1(o)?JSON.stringify(o[0],t,r):o.then((function(e){return JSON.stringify(e,t,r)}))}},{key:"stringifySync",value:function stringifySync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!0}))}},{key:"stringifyAsync",value:function stringifyAsync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!1}))}},{key:"parse",value:function parse(e,t,r){return r=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),r),{},{parse:!0}),this.revive(JSON.parse(e,t),r)}},{key:"parseSync",value:function parseSync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"parseAsync",value:function parseAsync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"specialTypeNames",value:function specialTypeNames(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.returnTypeNames=!0,this.encapsulate(e,t,r)}},{key:"rootTypeName",value:function rootTypeName(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.iterateNone=!0,this.encapsulate(e,t,r)}},{key:"encapsulate",value:function encapsulate(t,r,c){var s=this,u=_objectSpread2(_objectSpread2({sync:!0},this.options),c),y=u.sync,p={},l=[],f=[],v=[],h=!("cyclic"in u)||u.cyclic,d=u.encapsulateObserver,b=function finish(e){var t=Object.values(p);if(u.iterateNone)return t.length?t[0]:getJSONType(e);if(t.length){if(u.returnTypeNames)return _toConsumableArray(new Set(t));e&&isPlainObject(e)&&!o(e,"$types")?e.$types=p:e={$:e,$types:{$:p}};}else isObject(e)&&o(e,"$types")&&(e={$:e,$types:!0});return !u.returnTypeNames&&e},_=_async((function(t,r){return _await(Promise.all(r.map((function(e){return e[1].p}))),(function(n){return _await(Promise.all(n.map(_async((function(n){var o=!1,i=[],a=_slicedToArray(r.splice(0,1),1),c=_slicedToArray(a[0],7),s=c[0],u=c[2],y=c[3],p=c[4],l=c[5],f=c[6],v=m(s,n,u,y,i,!0,f),h=hasConstructorOf(v,e);return function _invoke(e,t){var r=e();return r&&r.then?r.then(t):t(r)}((function(){if(s&&h)return _await(v.p,(function(e){p[l]=e;var r=_(t,i);return o=!0,r}))}),(function(e){return o?e:(s?p[l]=v:t=h?v.p:v,_(t,i))}))})))),(function(){return t}))}))})),O=function _adaptBuiltinStateObjectProperties(e,t,r){Object.assign(e,t);var n=a.map((function(t){var r=e[t];return delete e[t],r}));r(),a.forEach((function(t,r){e[t]=n[r];}));},m=function _encapsulate(t,r,a,c,y,v,h){var b,_={},m=_typeof(r),g=d?function(n){var o,i=null!==(o=null!=h?h:c.type)&&void 0!==o?o:getJSONType(r);d(Object.assign(null!=n?n:_,{keypath:t,value:r,cyclic:a,stateObj:c,promisesData:y,resolvingTypesonPromise:v,awaitingTypesonPromise:hasConstructorOf(r,e)},{type:i}));}:null;if(["string","boolean","number","undefined"].includes(m))return void 0===r||Number.isNaN(r)||r===Number.NEGATIVE_INFINITY||r===Number.POSITIVE_INFINITY||0===r?(b=c.replaced?r:j(t,r,c,y,!1,v,g))!==r&&(_={replaced:b}):b=r,g&&g(),b;if(null===r)return g&&g(),r;if(a&&!c.iterateIn&&!c.iterateUnsetNumeric&&r&&"object"===_typeof(r)){var S=l.indexOf(r);if(!(S<0))return p[t]="#",g&&g({cyclicKeypath:f[S]}),"#"+f[S];!0===a&&(l.push(r),f.push(t));}var P,T,w=isPlainObject(r),A=i$1(r),C=(w||A)&&(!s.plainObjectReplacers.length||c.replaced)||c.iterateIn?r:j(t,r,c,y,w||A,null,g);if(C!==r?(b=C,_={replaced:C}):""===t&&hasConstructorOf(r,e)?(y.push([t,r,a,c,void 0,void 0,c.type]),b=r):A&&"object"!==c.iterateIn||"array"===c.iterateIn?(P=new Array(r.length),_={clone:P}):(["function","symbol"].includes(_typeof(r))||"toJSON"in r||hasConstructorOf(r,e)||hasConstructorOf(r,Promise)||hasConstructorOf(r,ArrayBuffer))&&!w&&"object"!==c.iterateIn?b=r:(P={},c.addLength&&(P.length=r.length),_={clone:P}),g&&g(),u.iterateNone)return null!==(T=P)&&void 0!==T?T:b;if(!P)return b;if(c.iterateIn){var k=function _loop(n){var i={ownKeys:o(r,n)};O(c,i,(function(){var o=t+(t?".":"")+escapeKeyPathComponent(n),i=_encapsulate(o,r[n],Boolean(a),c,y,v);hasConstructorOf(i,e)?y.push([o,i,Boolean(a),c,P,n,c.type]):void 0!==i&&(P[n]=i);}));};for(var N in r)k(N);g&&g({endIterateIn:!0,end:!0});}else n(r).forEach((function(n){var o=t+(t?".":"")+escapeKeyPathComponent(n);O(c,{ownKeys:!0},(function(){var t=_encapsulate(o,r[n],Boolean(a),c,y,v);hasConstructorOf(t,e)?y.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));})),g&&g({endIterateOwn:!0,end:!0});if(c.iterateUnsetNumeric){for(var I=r.length,E=function _loop2(n){if(!(n in r)){var o="".concat(t).concat(t?".":"").concat(n);O(c,{ownKeys:!1},(function(){var t=_encapsulate(o,void 0,Boolean(a),c,y,v);hasConstructorOf(t,e)?y.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));}},K=0;K<I;K++)E(K);g&&g({endIterateUnsetNumeric:!0,end:!0});}return P},j=function replace(e,t,r,n,o,i,a){for(var c=o?s.plainObjectReplacers:s.nonplainObjectReplacers,u=c.length;u--;){var l=c[u];if(l.test(t,r)){var f=l.type;if(s.revivers[f]){var v=p[e];p[e]=v?[f].concat(v):f;}if(Object.assign(r,{type:f,replaced:!0}),(y||!l.replaceAsync)&&!l.replace)return a&&a({typeDetected:!0}),m(e,t,h&&"readonly",r,n,i,f);a&&a({replacing:!0});var d=void 0;if(y||!l.replaceAsync){if(void 0===l.replace)throw new TypeError("Missing replacer");d=l.replace(t,r);}else d=l.replaceAsync(t,r);return m(e,d,h&&"readonly",r,n,i,f)}}return t},g=m("",t,h,null!=r?r:{},v);if(v.length)return y&&u.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():Promise.resolve(_(g,v)).then(b);if(!y&&u.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return u.stringification&&y?[b(g)]:y?b(g):Promise.resolve(b(g))}},{key:"encapsulateSync",value:function encapsulateSync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"encapsulateAsync",value:function encapsulateAsync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"revive",value:function revive(t,r){var o=this,a=_objectSpread2(_objectSpread2({sync:!0},this.options),r),c=a.sync;function finishRevival(e){if(c)return e;if(a.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return Promise.resolve(e)}if(!t||"object"!==_typeof(t)||Array.isArray(t))return finishRevival(t);var u=t.$types;if(!0===u)return finishRevival(t.$);if(!u||"object"!==_typeof(u)||Array.isArray(u))return finishRevival(t);var y=[],p={},l=!0;u.$&&isPlainObject(u.$)&&(t=t.$,u=u.$,l=!1);var f=function executeReviver(e,t){var r,n=_slicedToArray(null!==(r=o.revivers[e])&&void 0!==r?r:[],1)[0];if(!n)throw new Error("Unregistered type: "+e);if(c&&!("revive"in n))return t;if(!c&&n.reviveAsync)return n.reviveAsync(t,p);if(n.revive)return n.revive(t,p);throw new Error("Missing reviver")},v=[];function checkUndefined(e){return hasConstructorOf(e,s)?void 0:e}var h,d=function revivePlainObjects(){var r=[];if(!u)throw new Error("Found bad `types`");if(Object.entries(u).forEach((function(e){var t=_slicedToArray(e,2),n=t[0],i=t[1];"#"!==i&&[].concat(i).forEach((function(e){var t;_slicedToArray(null!==(t=o.revivers[e])&&void 0!==t?t:[null,{}],2)[1].plain&&(r.push({keypath:n,type:e}),delete u[n]);}));})),r.length)return r.sort(nestedPathsFirst).reduce((function reducer(r,n){var o=n.keypath,i=n.type;if(isThenable(r))return r.then((function(e){return reducer(e,{keypath:o,type:i})}));var a=getByKeyPath(t,o);if(hasConstructorOf(a=f(i,a),e))return a.then((function(e){var r=setAtKeyPath(t,o,e);r===e&&(t=r);}));var c=setAtKeyPath(t,o,a);c===a&&(t=c);}),void 0)}();return hasConstructorOf(d,e)?h=d.then((function(){return t})):(h=function _revive(t,r,o,a,c){if(!l||"$types"!==t){var p=u[t],h=i$1(r);if(h||isPlainObject(r)){var d=h?new Array(r.length):{};for(n(r).forEach((function(n){var i=_revive(t+(t?".":"")+escapeKeyPathComponent(n),r[n],null!=o?o:d,d,n),a=function set(e){return hasConstructorOf(e,s)?d[n]=void 0:void 0!==e&&(d[n]=e),e};hasConstructorOf(i,e)?v.push(i.then((function(e){return a(e)}))):a(i);})),r=d;y.length;){var b=_slicedToArray(y[0],4),_=b[0],O=b[1],m=b[2],j=b[3],g=getByKeyPath(_,O);if(void 0===g)break;m[j]=g,y.splice(0,1);}}if(!p)return r;if("#"===p){var S=getByKeyPath(o,r.slice(1));return void 0===S&&y.push([o,r.slice(1),a,c]),S}return [].concat(p).reduce((function reducer(t,r){if(hasConstructorOf(t,e))return t.then((function(e){return reducer(e,r)}));if("string"!=typeof r)throw new TypeError("Bad type JSON");return f(r,t)}),r)}}("",t,null),v.length&&(h=e.resolve(h).then((function(t){return e.all([t].concat(v))})).then((function(e){return _slicedToArray(e,1)[0]})))),isThenable(h)?c&&a.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():hasConstructorOf(h,e)?h.p.then(checkUndefined):h:!c&&a.throwOnBadSyncType?function(){throw new TypeError("Async method requested but sync result obtained")}():c?checkUndefined(h):Promise.resolve(checkUndefined(h))}},{key:"reviveSync",value:function reviveSync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!0}))}},{key:"reviveAsync",value:function reviveAsync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!1}))}},{key:"register",value:function register(e,t){var r=this,o=null!=t?t:{},a=function R(e){i$1(e)?e.forEach((function(e){return R(e)})):n(e).forEach((function(t){var n;if("#"===t)throw new TypeError("# cannot be used as a type name as it is reserved for cyclic objects");if(u.includes(t))throw new TypeError("Plain JSON object types are reserved as type names");var a=e[t],c=a&&"function"!=typeof a&&!Array.isArray(a)&&a.testPlainObjects?r.plainObjectReplacers:r.nonplainObjectReplacers,s=c.filter((function(e){return e.type===t}));if(s.length&&(c.splice(c.indexOf(s[0]),1),delete r.revivers[t],delete r.types[t]),"function"==typeof a){var y=a;a={test:function test(e){return e&&e.constructor===y},replace:function replace(e){return _objectSpread2({},e)},revive:function revive(e){return Object.assign(Object.create(y.prototype),e)}};}else if(i$1(a)){var p=_slicedToArray(a,3);a={test:p[0],replace:p[1],revive:p[2]};}if(null!==(n=a)&&void 0!==n&&n.test){var l={type:t,test:a.test.bind(a)};a.replace&&(l.replace=a.replace.bind(a)),a.replaceAsync&&(l.replaceAsync=a.replaceAsync.bind(a));var f="number"==typeof o.fallback?o.fallback:o.fallback?0:Number.POSITIVE_INFINITY;if(a.testPlainObjects?r.plainObjectReplacers.splice(f,0,l):r.nonplainObjectReplacers.splice(f,0,l),a.revive||a.reviveAsync){var v={};a.revive&&(v.revive=a.revive.bind(a)),a.reviveAsync&&(v.reviveAsync=a.reviveAsync.bind(a)),r.revivers[t]=[v,{plain:a.testPlainObjects}];}r.types[t]=a;}}));};return [].concat(e).forEach((function(e){return a(e)})),this}}]),Typeson}(),s=_createClass((function Undefined(){_classCallCheck(this,Undefined);}));s.__typeson__type__="TypesonUndefined";var u=["null","boolean","number","string","array","object"];
 
 /*
  * base64-arraybuffer
  * https://github.com/niklasvh/base64-arraybuffer
  *
- * Copyright (c) 2017 Brett Zamir, 2012 Niklas von Hertzen
+ * Copyright (c) 2017-2023 Brett Zamir, 2012 Niklas von Hertzen
  * Licensed under the MIT license.
  */
-var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'; // Use a lookup table to find the index.
 
-var lookup = new Uint8Array(256);
-
-for (var i = 0; i < chars.length; i++) {
-  lookup[chars.codePointAt(i)] = i;
-}
 /**
- * @param {ArrayBuffer} arraybuffer
- * @param {Integer} byteOffset
- * @param {Integer} lngth
- * @returns {string}
+ * @typedef {number} Integer
  */
 
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+// Use a lookup table to find the index.
+var lookup = new Uint8Array(256);
+for (var i = 0; i < chars.length; i++) {
+  lookup[/** @type {number} */chars.codePointAt(i)] = i;
+}
+
+/**
+ * @param {ArrayBuffer} arraybuffer
+ * @param {Integer} [byteOffset]
+ * @param {Integer} [lngth]
+ * @returns {string}
+ */
 var encode = function encode(arraybuffer, byteOffset, lngth) {
   if (lngth === null || lngth === undefined) {
     lngth = arraybuffer.byteLength; // Needed for Safari
   }
 
-  var bytes = new Uint8Array(arraybuffer, byteOffset || 0, // Default needed for Safari
+  var bytes = new Uint8Array(arraybuffer, byteOffset || 0,
+  // Default needed for Safari
   lngth);
   var len = bytes.length;
   var base64 = '';
-
   for (var _i = 0; _i < len; _i += 3) {
     base64 += chars[bytes[_i] >> 2];
     base64 += chars[(bytes[_i] & 3) << 4 | bytes[_i + 1] >> 4];
     base64 += chars[(bytes[_i + 1] & 15) << 2 | bytes[_i + 2] >> 6];
     base64 += chars[bytes[_i + 2] & 63];
   }
-
   if (len % 3 === 2) {
     base64 = base64.slice(0, -1) + '=';
   } else if (len % 3 === 1) {
     base64 = base64.slice(0, -2) + '==';
   }
-
   return base64;
 };
+
 /**
  * @param {string} base64
  * @returns {ArrayBuffer}
  */
-
 var decode = function decode(base64) {
   var len = base64.length;
+  if (len % 4) {
+    throw new Error('Bad base64 length: not divisible by four');
+  }
   var bufferLength = base64.length * 0.75;
   var p = 0;
   var encoded1, encoded2, encoded3, encoded4;
-
   if (base64[base64.length - 1] === '=') {
     bufferLength--;
-
     if (base64[base64.length - 2] === '=') {
       bufferLength--;
     }
   }
-
   var arraybuffer = new ArrayBuffer(bufferLength),
-      bytes = new Uint8Array(arraybuffer);
-
+    bytes = new Uint8Array(arraybuffer);
   for (var _i2 = 0; _i2 < len; _i2 += 4) {
-    encoded1 = lookup[base64.codePointAt(_i2)];
-    encoded2 = lookup[base64.codePointAt(_i2 + 1)];
-    encoded3 = lookup[base64.codePointAt(_i2 + 2)];
-    encoded4 = lookup[base64.codePointAt(_i2 + 3)];
+    // We know the result will not be undefined, as we have a text
+    //   length divisible by four
+    encoded1 = lookup[/** @type {number} */base64.codePointAt(_i2)];
+    encoded2 = lookup[/** @type {number} */base64.codePointAt(_i2 + 1)];
+    encoded3 = lookup[/** @type {number} */base64.codePointAt(_i2 + 2)];
+    encoded4 = lookup[/** @type {number} */base64.codePointAt(_i2 + 3)];
     bytes[p++] = encoded1 << 2 | encoded2 >> 4;
     bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
     bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
   }
-
   return arraybuffer;
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const arraybuffer = {
     arraybuffer: {
         test (x) { return toStringTag(x) === 'ArrayBuffer'; },
-        replace (b, stateObj) {
+        replace (
+            b,
+            /**
+             * @type {import('typeson').StateObject &
+             *   {buffers?: ArrayBuffer[]}}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
@@ -96,14 +108,26 @@ const arraybuffer = {
             stateObj.buffers.push(b);
             return encode(b);
         },
-        revive (b64, stateObj) {
+        revive (
+            b64,
+            /**
+             * @type {import('typeson').StateObject &
+             *   {buffers?: ArrayBuffer[]}}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
             if (typeof b64 === 'object') {
-                return stateObj.buffers[b64.index];
+                return stateObj.buffers[
+                    /**
+                     * @type {{index: import('typeson').Integer}}
+                     */
+                    (b64).index
+                ];
             }
-            const buffer = decode(b64);
+            const buffer = decode(/** @type {string} */ (b64));
             stateObj.buffers.push(buffer);
             return buffer;
         }
@@ -114,6 +138,9 @@ const arraybuffer = {
 
 /* globals BigInt */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const bigintObject = {
     bigintObject: {
         test (x) {
@@ -123,27 +150,33 @@ const bigintObject = {
         revive (s) {
             // Filed this to avoid error: https://github.com/eslint/eslint/issues/11810
             // eslint-disable-next-line no-new-object
-            return new Object(BigInt(s));
+            return new Object(BigInt(/** @type {string} */ (s)));
         }
     }
 };
 
 /* globals BigInt */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const bigint = {
     bigint: {
         test (x) {
             return typeof x === 'bigint';
         },
         replace: String,
-        revive: BigInt
+        // eslint-disable-next-line unicorn/prefer-native-coercion-functions
+        revive (s) {
+            return BigInt(/** @type {string} */ (s));
+        }
     }
 };
 
 /**
  * Not currently in use internally, but provided for parity.
  * @param {ArrayBuffer} buf
- * @returns {Uint8Array}
+ * @returns {string}
  */
 
 /**
@@ -209,6 +242,9 @@ function string2arraybuffer (str) {
 
 /* globals XMLHttpRequest, Blob, FileReader */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const blob = {
     blob: {
         test (x) { return toStringTag(x) === 'Blob'; },
@@ -228,7 +264,10 @@ const blob = {
                 stringContents: req.responseText
             };
         },
-        revive ({type, stringContents}) {
+        revive (obj) {
+            const {
+                type, stringContents
+            } = /** @type {{type: string, stringContents: string}} */ (obj);
             return new Blob([string2arraybuffer(stringContents)], {type});
         },
         replaceAsync (b) {
@@ -287,8 +326,14 @@ function generateUUID () { //  Adapted from original: public domain/MIT: http://
     });
 }
 
+/**
+ * @type {{[key: (symbol|string)]: any}}
+ */
 const cloneableObjectsByUUID = {};
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const cloneable = {
     cloneable: {
         test (x) {
@@ -301,7 +346,11 @@ const cloneable = {
             cloneableObjectsByUUID[uuid] = clonable;
             return {uuid, encapsulated};
         },
-        revive ({uuid, encapsulated}) {
+        revive (obj) {
+            const {
+                uuid, encapsulated
+            } = /** @type {{uuid: string, encapsulated: any}} */ (obj);
+
             return cloneableObjectsByUUID[uuid][Symbol.for('cloneRevive')](
                 encapsulated
             );
@@ -311,13 +360,20 @@ const cloneable = {
 
 /* globals crypto */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const cryptokey = {
     cryptokey: {
         test (x) {
             return toStringTag(x) === 'CryptoKey' && x.extractable;
         },
-        replaceAsync (key) {
+        replaceAsync (
+            /** @type {CryptoKey} */
+            key
+        ) {
             return new e(async (resolve, reject) => {
+                /** @type {JsonWebKey} */
                 let jwk;
                 try {
                     jwk = await crypto.subtle.exportKey('jwk', key);
@@ -334,16 +390,39 @@ const cryptokey = {
                 });
             });
         },
-        revive ({jwk, algorithm, usages}) {
-            return crypto.subtle.importKey('jwk', jwk, algorithm, true, usages);
+        revive (obj) {
+            const {
+                jwk, algorithm, usages
+            } = /**
+              * @type {{
+              *   jwk: JsonWebKey,
+              *   algorithm: KeyAlgorithm,
+              *   usages: KeyUsage[]
+              * }}
+              */ (obj);
+
+            return crypto.subtle.importKey(
+                'jwk', jwk, algorithm, true, usages
+            );
         }
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const dataview = {
     dataview: {
         test (x) { return toStringTag(x) === 'DataView'; },
-        replace ({buffer, byteOffset, byteLength}, stateObj) {
+        replace (
+            {buffer, byteOffset, byteLength},
+            /**
+             * @type {import('typeson').StateObject & {
+             *  buffers?: ArrayBuffer[]
+             * }}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
@@ -358,7 +437,15 @@ const dataview = {
                 byteLength
             };
         },
-        revive (b64Obj, stateObj) {
+        revive (
+            b64Obj,
+            /**
+             * @type {import('typeson').StateObject & {
+             *  buffers?: ArrayBuffer[]
+             * }}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
@@ -375,6 +462,9 @@ const dataview = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const date = {
     date: {
         test (x) { return toStringTag(x) === 'Date'; },
@@ -394,6 +484,9 @@ const date = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const error = {
     error: {
         test (x) { return toStringTag(x) === 'Error'; },
@@ -405,13 +498,23 @@ const error = {
             };
         },
         revive (obj) {
-            const e = new Error(obj.message);
-            [
-                'name', 'cause', 'stack', 'fileName', 'lineNumber',
-                'columnNumber'
-            ].forEach((prop) => {
-                e[prop] = obj[prop];
-            });
+            const e = /**
+             * @type {{
+             *   name: string,
+             *   cause: Error,
+             *   stack: string,
+             *   fileName?: string,
+             *   lineNumber?: import('typeson').Integer,
+             *   columnNumber?: import('typeson').Integer
+             * }}
+             */ (new Error(obj.message));
+            e.name = obj.name;
+            e.cause = obj.cause;
+            e.stack = obj.stack;
+            e.fileName = obj.fileName;
+            e.lineNumber = obj.lineNumber;
+            e.columnNumber = obj.columnNumber;
+
             return e;
         }
     }
@@ -419,11 +522,15 @@ const error = {
 
 /* globals InternalError */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const errors = {};
 
 // JS standard
 [
-    TypeError, RangeError, SyntaxError, ReferenceError, EvalError, URIError
+    TypeError, RangeError, SyntaxError, ReferenceError,
+    EvalError, URIError
 ].forEach((error) => create$2(error));
 
 /* c8 ignore next 3 */
@@ -435,11 +542,22 @@ if (typeof AggregateError !== 'undefined') {
 // @ts-ignore Non-standard
 typeof InternalError === 'function' && create$2(InternalError);
 
+/* eslint-disable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/131 */
+/**
+ * Non-standard.
+ * @typedef {{
+ *     new (message?: string, options?: ErrorOptions): EvalError;
+ * (message?: string, options?: ErrorOptions): EvalError;
+ * }} InternalErrorConstructor
+ */
+/* eslint-enable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/131 */
+
 /**
  * Comprises all built-in errors.
- * @param {
- *   TypeError|RangeError|SyntaxError|ReferenceError|EvalError|URIError|
- *   AggregateError|InternalError
+ * @param {TypeErrorConstructor|RangeErrorConstructor|
+ *   SyntaxErrorConstructor|ReferenceErrorConstructor|
+ *   EvalErrorConstructor|URIErrorConstructor|
+ *   AggregateErrorConstructor|InternalErrorConstructor
  * } Ctor
  * @returns {void}
  */
@@ -458,18 +576,38 @@ function create$2 (Ctor) {
         revive (obj) {
             const isAggregateError = typeof AggregateError !== 'undefined' &&
                 Ctor === AggregateError;
-            const e = isAggregateError
-                ? new Ctor(obj.errors, obj.message)
-                : new Ctor(obj.message);
-            [
-                'name', 'cause', 'stack', 'fileName', 'lineNumber',
-                'columnNumber'
-            ].forEach((prop) => {
-                e[prop] = obj[prop];
-            });
+            const e = /**
+                * @type {{
+                *   name: string,
+                *   cause: Error,
+                *   stack: string,
+                *   fileName?: string,
+                *   lineNumber?: import('typeson').Integer,
+                *   columnNumber?: import('typeson').Integer
+                * }}
+                */ (isAggregateError
+                    ? new /** @type {AggregateErrorConstructor} */ (
+                        Ctor
+                    )(obj.errors, obj.message)
+                    : new /**
+                    * @type {TypeErrorConstructor|RangeErrorConstructor|
+                    *   SyntaxErrorConstructor|ReferenceErrorConstructor|
+                    *   EvalErrorConstructor|URIErrorConstructor|
+                    *   InternalErrorConstructor}
+                    */ (Ctor)(obj.message));
+
+            e.name = obj.name;
+            e.cause = obj.cause;
+            e.stack = obj.stack;
+            e.fileName = obj.fileName;
+            e.lineNumber = obj.lineNumber;
+            e.columnNumber = obj.columnNumber;
+
             /* c8 ignore next 6 */
             if (isAggregateError) {
-                e.errors = obj.errors;
+                /** @type {AggregateError} */ (
+                    e
+                ).errors = obj.errors;
             }
             return e;
         }
@@ -478,6 +616,9 @@ function create$2 (Ctor) {
 
 /* globals XMLHttpRequest, File, FileReader */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const file = {
     file: {
         test (x) { return toStringTag(x) === 'File'; },
@@ -533,6 +674,9 @@ const file = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const filelist = {
     file: file.file,
     filelist: {
@@ -558,7 +702,7 @@ const filelist = {
                     this.length = this._files.length;
                 }
                 /**
-                 * @param {Integer} index
+                 * @param {import('typeson').Integer} index
                  * @returns {File}
                  */
                 item (index) {
@@ -580,6 +724,9 @@ const filelist = {
 
 /* globals createImageBitmap */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const imagebitmap = {
     imagebitmap: {
         test (x) {
@@ -590,7 +737,9 @@ const imagebitmap = {
         },
         replace (bm) {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = /** @type {CanvasRenderingContext2D} */ (
+                canvas.getContext('2d')
+            );
             ctx.drawImage(bm, 0, 0);
             // Although `width` and `height` are part of `ImageBitMap`,
             //   these will be auto-created for us when reviving with the
@@ -611,7 +760,9 @@ const imagebitmap = {
             return req.responseText;
             */
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = /** @type {CanvasRenderingContext2D} */ (
+                canvas.getContext('2d')
+            );
             const img = document.createElement('img');
             // The onload is needed by some browsers per http://stackoverflow.com/a/4776378/271577
             img.addEventListener('load', function () {
@@ -624,20 +775,34 @@ const imagebitmap = {
         },
         reviveAsync (o) {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = /** @type {CanvasRenderingContext2D} */ (
+                canvas.getContext('2d')
+            );
             const img = document.createElement('img');
             // The onload is needed by some browsers per http://stackoverflow.com/a/4776378/271577
             img.addEventListener('load', function () {
                 ctx.drawImage(img, 0, 0);
             });
             img.src = o; // o.dataURL;
-            return createImageBitmap(canvas); // Returns a promise
+
+            return new e(async (resolve, reject) => {
+                try {
+                    const resp = await createImageBitmap(canvas);
+                    resolve(resp);
+                /* c8 ignore next 3 */
+                } catch (err) {
+                    reject(err);
+                }
+            });
         }
     }
 };
 
 /* globals ImageData */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const imagedata = {
     imagedata: {
         test (x) { return toStringTag(x) === 'ImageData'; },
@@ -657,6 +822,9 @@ const imagedata = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const infinity = {
     infinity: {
         test (x) { return x === Number.POSITIVE_INFINITY; },
@@ -665,12 +833,18 @@ const infinity = {
     }
 };
 
+/**
+ * @type {import('typeson').Spec}
+ */
 const IntlCollator = {
     test (x) { return hasConstructorOf(x, Intl.Collator); },
     replace (c) { return c.resolvedOptions(); },
     revive (options) { return new Intl.Collator(options.locale, options); }
 };
 
+/**
+ * @type {import('typeson').Spec}
+ */
 const IntlDateTimeFormat = {
     test (x) { return hasConstructorOf(x, Intl.DateTimeFormat); },
     replace (dtf) { return dtf.resolvedOptions(); },
@@ -679,6 +853,9 @@ const IntlDateTimeFormat = {
     }
 };
 
+/**
+ * @type {import('typeson').Spec}
+ */
 const IntlNumberFormat = {
     test (x) { return hasConstructorOf(x, Intl.NumberFormat); },
     replace (nf) { return nf.resolvedOptions(); },
@@ -691,6 +868,9 @@ const intlTypes = {
     IntlNumberFormat
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const map = {
     map: {
         test (x) { return toStringTag(x) === 'Map'; },
@@ -699,6 +879,9 @@ const map = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const nan = {
     nan: {
         test (x) { return Number.isNaN(x); },
@@ -707,6 +890,9 @@ const nan = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const negativeInfinity = {
     negativeInfinity: {
         test (x) { return x === Number.NEGATIVE_INFINITY; },
@@ -715,6 +901,9 @@ const negativeInfinity = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const negativeZero = {
     negativeZero: {
         test (x) {
@@ -730,6 +919,9 @@ const negativeZero = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const nonbuiltinIgnore = {
     nonbuiltinIgnore: {
         test (x) {
@@ -761,6 +953,9 @@ const nonbuiltinIgnore = {
 
 // This module is for objectified primitives (such as `new Number(3)` or
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const primitiveObjects = {
     // String Object (not primitive string which need no type spec)
     StringObject: {
@@ -792,6 +987,9 @@ const primitiveObjects = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const regexp = {
     regexp: {
         test (x) { return toStringTag(x) === 'RegExp'; },
@@ -811,8 +1009,14 @@ const regexp = {
 
 // Here we allow the exact same non-plain object, function, and symbol
 
+/**
+ * @type {{[key: string]: any}}
+ */
 const resurrectableObjectsByUUID = {};
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const resurrectable = {
     resurrectable: {
         test (x) {
@@ -831,25 +1035,36 @@ const resurrectable = {
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const set = {
     set: {
         test (x) { return toStringTag(x) === 'Set'; },
         replace (st) {
             return [...st.values()];
         },
-        revive (values) { return new Set(values); }
+        revive (values) {
+            return new Set(values);
+        }
     }
 };
 
 /* eslint-env browser, node */
 
 // Support all kinds of typed arrays (views of ArrayBuffers)
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const typedArraysSocketIO = {};
 
 /**
- * @param {
- *   Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|
- *   Uint32Array|Float32Array|Float64Array
+ * @param {Int8ArrayConstructor|Uint8ArrayConstructor|
+ *   Uint8ClampedArrayConstructor|Int16ArrayConstructor|
+ *   Uint16ArrayConstructor|Int32ArrayConstructor|
+ *   Uint32ArrayConstructor|Float32ArrayConstructor|
+ *   Float64ArrayConstructor
  * } TypedArray
  * @returns {void}
  */
@@ -900,20 +1115,42 @@ if (typeof Int8Array === 'function') {
 
 /* eslint-env browser, node */
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const typedArrays = {};
 
 /**
- * @param {
- *   Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|
- *   Uint32Array|Float32Array|Float64Array
- * } TypedArray
+ * @typedef {Int8ArrayConstructor|Uint8ArrayConstructor|
+ *   Uint8ClampedArrayConstructor|
+ *   Int16ArrayConstructor|Uint16ArrayConstructor|
+ *   Int32ArrayConstructor|Uint32ArrayConstructor|
+ *   Float32ArrayConstructor|
+ *   Float64ArrayConstructor} TypedArrayConstructor
+ */
+
+/**
+ * @param {TypedArrayConstructor} TypedArray
  * @returns {void}
  */
 function create (TypedArray) {
-    const typeName = TypedArray.name;
+    const typeName =
+        /**
+         * @type {TypedArrayConstructor & {name: string}}
+         */
+        (TypedArray).name;
+
     typedArrays[typeName.toLowerCase()] = {
         test (x) { return toStringTag(x) === typeName; },
-        replace ({buffer, byteOffset, length: l}, stateObj) {
+        replace (
+            {buffer, byteOffset, length: l},
+            /**
+             * @type {import('typeson').StateObject & {
+             *   buffers?: ArrayBuffer[]
+             * }}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
@@ -928,7 +1165,15 @@ function create (TypedArray) {
                 length: l
             };
         },
-        revive (b64Obj, stateObj) {
+        revive (
+            b64Obj,
+            /**
+             * @type {import('typeson').StateObject & {
+             *   buffers?: ArrayBuffer[]
+             * }}
+             */
+            stateObj
+        ) {
             if (!stateObj.buffers) {
                 stateObj.buffers = [];
             }
@@ -963,6 +1208,9 @@ if (typeof Int8Array === 'function') {
 
 // This does not preserve `undefined` in sparse arrays; see the `undef`
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const undef$1 = {
     undef: {
         test (x, stateObj) {
@@ -970,14 +1218,17 @@ const undef$1 = {
                 (stateObj.ownKeys || !('ownKeys' in stateObj));
         },
         replace (n) { return 0; },
-        revive (s) {
+        revive (s$1) {
             // Will add `undefined` (returning `undefined` would instead
             //   avoid explicitly setting)
-            return new p();
+            return new s();
         }
     }
 };
 
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const userObject = {
     userObject: {
         test (x, stateObj) { return isUserObject(x); },
@@ -986,6 +1237,9 @@ const userObject = {
     }
 };
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const arrayNonindexKeys = [
     {
         arrayNonindexKeys: {
@@ -1024,13 +1278,14 @@ const arrayNonindexKeys = [
                 if (Array.isArray(o)) {
                     return o;
                 }
+
+                /**
+                 * @type {{[key: string]: any}}
+                 */
                 const arr = [];
                 // No map here as may be a sparse array (including
                 //   with `length` set)
-                // Todo: Reenable when Node `engines` >= 7
-                // Object.entries(o).forEach(([key, val]) => {
-                Object.keys(o).forEach((key) => {
-                    const val = o[key];
+                Object.entries(o).forEach(([key, val]) => {
                     arr[key] = val;
                 });
                 return arr;
@@ -1048,6 +1303,9 @@ const arrayNonindexKeys = [
     }
 ];
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const specialNumbers = [
     nan,
     infinity,
@@ -1071,6 +1329,9 @@ const specialNumbers = [
   Symbols are similarly not included.
 */
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const expObj$1 = [
     undef$1,
     // ES5
@@ -1111,11 +1372,17 @@ This preset will only include the Error types and you can register your
 custom types after having registered these.
 */
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const postmessage = [
     error,
     errors
 ];
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const socketio = [
     expObj$1,
     // Leave ArrayBuffer as is, and let socket.io stream it instead.
@@ -1124,6 +1391,9 @@ const socketio = [
     typedArraysSocketIO
 ];
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const sparseUndefined = [
     {
         sparseArrays: {
@@ -1148,6 +1418,9 @@ const sparseUndefined = [
 
 /* This preset includes types for the Structured Cloning Algorithm. */
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const expObj = [
     // Todo: Might also register synchronous `ImageBitmap` and
     //    `Blob`/`File`/`FileList`?
@@ -1188,7 +1461,10 @@ const expObj = [
 
 /* globals DOMException */
 
-var structuredCloningThrowing = expObj.concat({
+/**
+ * @type {import('typeson').Preset}
+ */
+const structuredCloningThrowing = expObj.concat({
     checkDataCloneException: {
         test (val) {
             // Should also throw with:
@@ -1263,16 +1539,22 @@ var structuredCloningThrowing = expObj.concat({
     }
 });
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const undef = [
     sparseUndefined,
     undef$1
 ];
 
+/**
+ * @type {import('typeson').Preset}
+ */
 const universal = [
     expObj$1
     // TODO: Add types that are de-facto universal even though not
     //   built-in into ecmasript standard.
 ];
 
-export { l as JSON_TYPES, u as Typeson, e as TypesonPromise, p as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
+export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
 //# sourceMappingURL=index.js.map

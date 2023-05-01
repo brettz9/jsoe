@@ -21,7 +21,7 @@ const numberType = {
     return {value: Number(s)};
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = String(value);
@@ -30,7 +30,7 @@ const numberType = {
     const val = this.getInput({root}).value;
     return {
       message: 'Not a valid (finite) number',
-      valid: val && val.match(/^-?(\d+|\d*\.\d+)$/u)
+      valid: Boolean(val && (/^-?(\d+|\d*\.\d+)$/u).test(val))
     };
   },
   getValue ({root}) {

@@ -1,9 +1,22 @@
+import {jml} from 'jamilih';
 import {$e} from '../utils/templateUtils.js';
-import {jml} from '../../vendor/jamilih/dist/jml-es.js';
 import Types from '../types.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @typedef {(
+ *   legitimateInvalid?: true|undefined
+ * ) => void} SetValidity
+ */
+
+/**
+ * @type {import('../types.js').TypeObject & {
+ *   dateRegex: RegExp,
+ *   isInvalid: (cfg: {root: HTMLDivElement}) => boolean,
+ *   isValueInvalid: (
+ *     value: import('../formats.js').StructuredCloneValue
+ *   ) => boolean
+ *   valid?: true
+ * }}
  */
 const dateType = {
   option: ['Date'],
@@ -21,12 +34,14 @@ const dateType = {
     return {value: new Date(s)};
   },
   getInput ({root}) {
-    return $e(root, 'input[type="date"]');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input[type="date"]'));
   },
   setValue ({root, value}) {
     const notANum = value && Number.isNaN(value.getTime());
     if (notANum) {
-      $e(root, '.invalidDate').$setValidity(true);
+      /** @type {HTMLElement & {$setValidity: SetValidity}} */ (
+        $e(root, '.invalidDate')
+      ).$setValidity(true);
       return;
     }
     const dateStr = new Date(Date.parse(value)).toISOString();
@@ -50,12 +65,14 @@ const dateType = {
       };
     }
     return {
-      valid: val.match(new RegExp(this.dateRegex, 'u')),
+      valid: new RegExp(this.dateRegex, 'u').test(val),
       message: 'Must match a valid date'
     }; // Input shouldn't allow anyways
   },
   isInvalid ({root}) {
-    return !this.valid && $e(root, '.invalidDate').checked;
+    return !this.valid && /** @type {HTMLInputElement} */ (
+      $e(root, '.invalidDate')
+    ).checked;
   },
   getValue ({root}) {
     if (this.isInvalid({root})) {
@@ -77,11 +94,11 @@ const dateType = {
   },
   // Change to default to `new Date()` when can't be `NaN`
   //   value (keys)?
-  editUI ({topRoot, typeNamespace, value = ''}) {
+  editUI ({typeNamespace, value = ''}) {
     const notANum = this.isValueInvalid(value);
     const invalid = this.valid
       ? ''
-      : jml('div', [
+      : /** @type {HTMLDivElement} */ (jml('div', [
         ['label', [
           'Invalid date',
           ['input', {
@@ -90,25 +107,36 @@ const dateType = {
             checked: notANum,
             name: `${typeNamespace}-invalidDate`,
             $custom: {
+              /**
+               * @type {SetValidity}
+               */
               $setValidity (legitimateInvalid) {
                 console.log('legitimateInvalid', legitimateInvalid);
                 if (legitimateInvalid === true) {
-                  this.checked = true;
+                  /** @type {HTMLInputElement} */ (this).checked = true;
                 }
-                const label = invalid.previousElementSibling;
+                const label = /** @type {HTMLLabelElement} */ (
+                  /** @type {HTMLDivElement} */ (
+                    invalid
+                  ).previousElementSibling
+                );
                 label.hidden = Boolean(legitimateInvalid);
-                const root = label.parentElement;
-                Types.validate({type: 'date', root, topRoot});
+                const root = /** @type {HTMLDivElement} */ (
+                  label.parentElement
+                );
+                Types.validate({type: 'date', root});
               }
             },
             $on: {
               click (e) {
-                this.$setValidity();
+                /** @type {Element & {$setValidity: SetValidity}} */ (
+                  this
+                ).$setValidity();
               }
             }
           }]
         ]]
-      ]);
+      ]));
     return ['div', {dataset: {type: this.valid ? 'ValidDate' : 'date'}}, [
       ['label', {
         hidden: notANum

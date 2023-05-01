@@ -5,13 +5,16 @@ import {
 } from '../utils/jsonPointer.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').TypeObject & {type: "array"}}
  */
 const arrayReferenceType = {
   option: ['Array reference'],
   type: 'array',
   stringRegex: /^arrayRef\((?:|\/[^)]*)\)$/u,
-  toValue (s, {rootHolder, parent, parentPath}) {
+  toValue (s, info) {
+    const {
+      rootHolder, parent, parentPath
+    } = /** @type {import('../types.js').RootInfo} */ (info);
     const path = s.slice(`${this.type}Ref(`.length, -1);
     rootHolder.push([this.type, parent, parentPath, path]);
     return {assign: false};
@@ -37,7 +40,7 @@ const arrayReferenceType = {
     }
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = value;
@@ -50,7 +53,7 @@ const arrayReferenceType = {
       if (!stateObj.paths) {
         stateObj.paths = {};
       }
-      stateObj.paths[currentPath] = {
+      stateObj.paths[/** @type {string} */ (currentPath)] = {
         referentPath,
         // Todo (low): Should be utilized along with
         //   other validation checking
@@ -64,6 +67,11 @@ const arrayReferenceType = {
     const {type} = this;
     const input = this.getInput({root});
     const path = input.value;
+
+    /**
+     * @param {string|undefined} message
+     * @returns {{valid: false, message: string|undefined}}
+     */
     const invalidMessage = (message) => {
       return {valid: false, message};
     };
@@ -89,7 +97,7 @@ const arrayReferenceType = {
         'arrayNonindexKeys'
         // 'sparseArrays'
       ].includes(
-        Types.getTypeForRoot(referent)
+        /** @type {string} */ (Types.getTypeForRoot(referent))
       );
     };
     let message;
@@ -101,19 +109,23 @@ const arrayReferenceType = {
         //    order)
         const legends = DOM.filterChildElements(
           // Ensure we are only getting one array level at a time
-          $e(referent, '.arrayItems'), ['fieldset', 'legend']
+          /** @type {Element} */ ($e(referent, '.arrayItems')),
+          ['fieldset', 'legend']
         );
         const childPropertyValues = legends.map(
-          (legend) => getPropertyValueFromLegend(legend)
+          (legend) => getPropertyValueFromLegend(
+            /** @type {HTMLLegendElement} */ (legend)
+          )
         );
         const partMatchIndex = childPropertyValues.indexOf(pathPart);
         if (partMatchIndex === -1) {
           message = "Specified path doesn't exist";
           return true;
         }
-        referent = $e(
-          legends[partMatchIndex].parentElement, 'div[data-type]'
-        );
+        referent = /** @type {HTMLDivElement} */ ($e(
+          /** @type {Element} */ (legends[partMatchIndex].parentElement),
+          'div[data-type]'
+        ));
         if (referent === root) {
           message = "Can't reference self";
           return true;
@@ -143,11 +155,11 @@ const arrayReferenceType = {
     // Condition to confirm that referenced element is an array or
     //    object (or reference) with the designated `type`
     const referentType = Types.getTypeForRoot(referent);
-    const referentBaseType = [
+    const referentBaseType = /** @type {(string|null|undefined)[]} */ ([
       'array',
       'arrayNonindexKeys'
       // 'sparseArrays'
-    ].includes(referentType)
+    ]).includes(referentType)
       ? 'array'
       : (referentType === 'object'
         ? 'object'
@@ -165,11 +177,14 @@ const arrayReferenceType = {
     };
   },
   validateAll ({topRoot}) {
-    const type = `${this.type}Reference`;
+    const type = /** @type {import('../types.js').AvailableType} */ (
+      `${this.type}Reference`
+    );
     $$e(topRoot, `div[data-type="${type}"]`).forEach((root) => {
       Types.validate({
         type,
-        root,
+        // eslint-disable-next-line object-shorthand -- TS
+        root: /** @type {HTMLDivElement} */ (root),
         topRoot
       });
     });

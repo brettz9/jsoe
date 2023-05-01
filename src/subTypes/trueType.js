@@ -1,7 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').TypeObject & {ct: number}}
  */
 const trueType = {
   option: ['Boolean (true)', {value: 'true'}],
@@ -16,7 +16,7 @@ const trueType = {
   ct: 0,
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   editUI ({typeNamespace}) {
     this.ct++;

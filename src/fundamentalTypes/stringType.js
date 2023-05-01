@@ -10,7 +10,7 @@ const stringType = {
     return {value: s.slice(1, -1)};
   },
   getInput ({root}) {
-    return $e(root, 'textarea');
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = value;

@@ -6,7 +6,7 @@ const U = {nbsp, upArrow, downArrow};
 
 /**
  * @param {string} sel
- * @returns {Element}
+ * @returns {Element|null}
  */
 const $ = (sel) => document.querySelector(sel);
 
@@ -19,11 +19,14 @@ const $$ = (sel) => [...document.querySelectorAll(sel)];
 /**
  * @param {Element|string} el
  * @param {string} descendentsSel
- * @returns {Element}
+ * @returns {HTMLElement|null}
  */
 const $e = (el, descendentsSel) => {
-  el = typeof el === 'string' ? $(el) : el;
-  return el.querySelector(descendentsSel);
+  const elem = typeof el === 'string' ? $(el) : el;
+  if (!elem) {
+    return null;
+  }
+  return elem.querySelector(descendentsSel);
 };
 
 /**
@@ -32,8 +35,11 @@ const $e = (el, descendentsSel) => {
  * @returns {Element[]}
  */
 const $$e = (el, descendentsSel) => {
-  el = typeof el === 'string' ? $(el) : el;
-  return [...el.querySelectorAll(descendentsSel)];
+  const elem = typeof el === 'string' ? $(el) : el;
+  if (!elem) {
+    return [];
+  }
+  return [...elem.querySelectorAll(descendentsSel)];
 };
 
 /**
@@ -41,9 +47,12 @@ const $$e = (el, descendentsSel) => {
  * @returns {void}
  */
 const removeChildren = (node) => {
-  node = typeof node === 'string' ? $(node) : node;
-  while (node.hasChildNodes()) {
-    node.lastChild.remove();
+  const nde = typeof node === 'string' ? $(node) : node;
+  if (!nde) {
+    throw new Error('Node not found!');
+  }
+  while (nde.hasChildNodes()) {
+    nde.lastChild?.remove();
   }
 };
 
@@ -76,14 +85,20 @@ const filterChildElements = (el, selectors) => {
     });
     return matchingChildElements;
   };
-  el = typeof el === 'string' ? $(el) : el;
-  let filtered = [el];
+  const elem = typeof el === 'string' ? $(el) : el;
+  if (!elem) {
+    throw new Error('Element not found!');
+  }
+  let filtered = [elem];
   selectors = Array.isArray(selectors) ? selectors : [selectors];
   selectors.forEach((sel) => {
     filtered = filtered.reduce((els, childElement) => {
+      if (!childElement) {
+        return els;
+      }
       els.push(...getMatchingChildrenForElement(childElement, sel));
       return els;
-    }, []);
+    }, /** @type {Element[]} */ ([]));
   });
   return filtered;
 };

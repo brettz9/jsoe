@@ -1,5 +1,5 @@
 import {$e} from '../utils/templateUtils.js';
-import Types from '../types.js';
+import numberType from './numberType.js';
 
 /**
  * @type {import('../types.js').TypeObject}
@@ -12,10 +12,12 @@ const NumberObjectType = {
     return {value: new Number(s)};
   },
   validate ({root}) {
-    return Types.availableTypes.number.validate({root});
+    return /** @type {Required<import('../types.js').TypeObject>} */ (
+      numberType
+    ).validate({root});
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   getValue ({root}) {
     return this.toValue(this.getInput({root}).value).value;

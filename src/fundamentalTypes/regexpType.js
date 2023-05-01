@@ -1,9 +1,9 @@
+import {jml} from 'jamilih';
 import {$e} from '../utils/templateUtils.js';
-import {jml} from '../../vendor/jamilih/dist/jml-es.js';
 import Types from '../types.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').TypeObject & {allowedFlags: string[]}}
  */
 const regexpType = {
   option: ['RegExp'],
@@ -16,18 +16,29 @@ const regexpType = {
     }})$`, 'u');
   },
   toValue (s) {
-    const [, str, flags] = s.match(this.stringRegex());
+    /* istanbul ignore if */
+    if (typeof this.stringRegex !== 'function') {
+      throw new TypeError('Guard for TS');
+    }
+    const [, str, flags] = s.match(
+      /** @type {Required<import('../types.js').TypeObject>} */ (
+        this
+      ).stringRegex()
+    ) || [];
     return {value: new RegExp(str, flags)};
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = value.source;
-    this.getSelect({root}).$set([...value.flags]);
+    /** @type {HTMLSelectElement & {$set: (flags: string[]) => void}} */
+    (/** @type {Required<import('../types.js').TypeObject>} */ (
+      this
+    ).getSelect({root})).$set([...value.flags]);
   },
   getSelect ({root}) {
-    return $e(root, 'select');
+    return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },
   validate ({root}) {
     try {
@@ -36,14 +47,16 @@ const regexpType = {
     } catch (err) {
       return {
         valid: false,
-        message: err.message
+        message: /** @type {Error} */ (err).message
       };
     }
   },
   getValue ({root}) {
     return new RegExp(
       this.getInput({root}).value, // .replace(/\\/g, '\\\\'),
-      [...this.getSelect({root}).selectedOptions].reduce((s, opt) => {
+      [...(/** @type {Required<import('../types.js').TypeObject>} */ (
+        this
+      )).getSelect({root}).selectedOptions].reduce((s, opt) => {
         return s + opt.value;
       }, '')
     );
@@ -54,11 +67,17 @@ const regexpType = {
   },
   editUI ({typeNamespace, value = {source: '', flags: ''}}) {
     // Todo (low): Add RegExp syntax highlighter
-    const select = jml(
+    const select = /** @type {HTMLSelectElement} */ (jml(
       'select',
       {multiple: true, size: 5, $custom: {
+        /**
+         * @param {string[]} valArr
+         * @returns {void}
+         */
         $set (valArr) { // A useful reusable method for multiple selects
-          [...this.options].forEach((opt) => {
+          [...(/** @type {HTMLSelectElement} */ (
+            this
+          )).options].forEach((opt) => {
             opt.selected = valArr.includes(opt.value);
           });
         }
@@ -68,21 +87,23 @@ const regexpType = {
           selected: value.flags.includes(flag)
         }, [flag]];
       })
+    ));
+    const root = /** @type {HTMLDivElement} */ (
+      jml('div', {dataset: {type: 'regexp'}}, [
+        ['label', [
+          'Source ',
+          ['input', {
+            name: `${typeNamespace}-regexp`, type: 'text',
+            value: value.source
+          }]
+        ]],
+        ['br'],
+        ['label', [
+          'Flags ',
+          select
+        ]]
+      ])
     );
-    const root = jml('div', {dataset: {type: 'regexp'}}, [
-      ['label', [
-        'Source ',
-        ['input', {
-          name: `${typeNamespace}-regexp`, type: 'text',
-          value: value.source
-        }]
-      ]],
-      ['br'],
-      ['label', [
-        'Flags ',
-        select
-      ]]
-    ]);
     // Could be disallowed flags; we might instead try in
     //   advance which will work
     select.addEventListener('change', () => {

@@ -6,3 +6,6 @@ src/deepEqual.js
 src/main-pages.js
 vendor
 !.*.js
+
+src/formats/schemaOnly.js
+src/formats/schemaAndArbitrary.js

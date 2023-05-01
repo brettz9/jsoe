@@ -1,7 +1,7 @@
 import {$e, $$e} from '../utils/templateUtils.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').TypeObject & {ct: number}}
  */
 const BooleanObjectType = {
   option: ['BooleanObject'],
@@ -13,13 +13,15 @@ const BooleanObjectType = {
     };
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   getValue ({root}) {
-    return this.toValue(String(this.getInput({root}).checked)).value;
+    return this.toValue(String(/** @type {HTMLInputElement} */ (
+      this.getInput({root})
+    ).checked)).value;
   },
   setValue ({root, value}) {
-    const inputs = $$e(root, 'input');
+    const inputs = /** @type {HTMLInputElement[]} */ ($$e(root, 'input'));
     const input = inputs[value.valueOf() ? 0 : 1];
     input.checked = true;
   },

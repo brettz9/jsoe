@@ -1,64 +1,55 @@
-import * as structuredCloning from './structuredCloning.js';
+import structuredCloning from './structuredCloning.js';
 
 /**
- * @returns {string[]}
+ * @type {Map<import('../types.js').AvailableType,
+ *   import('../types.js').AvailableType>
+ * }
  */
-export const types = () => [
-  'null', 'true', 'false', 'number', 'string', 'array', 'object'
-];
+const typesonToJson = new Map([
+  ['arrayNonindexKeys', 'array']
+]);
 
-/**
- * @type {import('./structuredCloning.js').FormatIterator}
- */
-export const iterate = (records, stateObj) => {
-  // Todo (low): Add a more optimal (`JSON.stringify`-based iterator)
-  const recs = records;
-  // I believe this escaping should be by Typeson itself
-  // if (records && typeof records === 'object' && records.$types) {
-  //   recs = {$: records, $types: true};
-  // }
-  stateObj.format = 'json';
-  return structuredCloning.iterate(recs, stateObj);
-};
-
-// A hack until we simply pass in our own types or do own parsing
-/**
- * @param {string} typesonType
- * @returns {string}
- */
-export const convertFromTypeson = (typesonType) => {
-  return {
-    // sparseArrays: 'array',
-    arrayNonindexKeys: 'array'
-  }[typesonType];
-};
-
-/**
- * @param {string} newType
- * @param {GenericArray} value
- * @returns {boolean|undefined}
- */
-export const testInvalid = (newType, value) => {
-  switch (newType) {
-  case 'array':
-    return Object.keys(value).length !== value.length;
-  /* istanbul ignore next -- Shouldn't occur */
-  default:
+/** @type {import('../formats.js').Format} */
+const json = {
+  types: () => [
+    'null', 'true', 'false', 'number', 'string', 'array', 'object'
+  ],
+  iterate (records, stateObj) {
+    // Todo (low): Add a more optimal (`JSON.stringify`-based iterator)
+    const recs = records;
+    // I believe this escaping should be by Typeson itself
+    // if (records && typeof records === 'object' && records.$types) {
+    //   recs = {$: records, $types: true};
+    // }
+    stateObj.format = 'json';
+    return structuredCloning.iterate(recs, stateObj);
+  },
+  // A hack until we simply pass in our own types or do own parsing
+  convertFromTypeson (typesonType) {
+    return typesonToJson.get(typesonType);
+  },
+  testInvalid (newType, value) {
+    switch (newType) {
+    case 'array':
+      return Object.keys(value).length !==
+      /** @type {Array<import('../formats.js').StructuredCloneValue>} */ (
+        value
+      ).length;
     /* istanbul ignore next -- Shouldn't occur */
-    return undefined; // Todo: Fix?
+    default:
+      /* istanbul ignore next -- Shouldn't occur */
+      return undefined; // Todo: Fix?
+    }
+  },
+  getTypesForState (state) {
+    /* istanbul ignore else -- No other states apparently */
+    if (!state || ['array', 'object'].includes(state)) {
+      return this.types();
+    }
+    // Todo: Should this throw?
+    /* istanbul ignore next -- No other states apparently */
+    return undefined;
   }
 };
 
-/**
- * @param {string} state
- * @returns {string[]|undefined}
- */
-export const getTypesForState = function (state) {
-  /* istanbul ignore else -- No other states apparently */
-  if (!state || ['array', 'object'].includes(state)) {
-    return this.types();
-  }
-  // Todo: Should this throw?
-  /* istanbul ignore next -- No other states apparently */
-  return undefined;
-};
+export default json;

@@ -37,6 +37,7 @@ module.exports = {
       'location.hash',
       'location.href',
       'location.pathname',
+      'Map',
       'MutationObserver',
       'Number.isNaN',
       'Number.parseFloat',

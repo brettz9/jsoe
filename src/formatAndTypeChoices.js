@@ -1,4 +1,4 @@
-import {jml} from '../vendor/jamilih/dist/jml-es.js';
+import {jml} from 'jamilih';
 import {buildTypeChoices} from './typeChoices.js';
 import Types from './types.js';
 import {getControlsForFormatAndValue} from './formats.js';
@@ -16,7 +16,8 @@ import {$e, DOM} from './utils/templateUtils.js';
  */
 export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
   const hasSchema = typeof schema === 'string';
-  return [
+  // eslint-disable-next-line max-len -- Long
+  return /** @type {[optText: string, opts: {value: string, selected?: boolean}][]} */ ([
     ['JSON only', {value: 'json'}],
     ...(hasKeyPath
       ? []
@@ -48,13 +49,25 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
               'for structured cloning'
         }]
     */
-  ].map(([optText, optAtts]) => {
-    return jml('option', optAtts, [optText]);
-  }).reduce((frag, option) => {
+  ]).map(([optText, optAtts]) => {
+    return /** @type {HTMLOptionElement} */ (
+      jml('option', optAtts, [optText])
+    );
+  }).reduce((
+    frag,
+    option
+  ) => {
     frag.append(option);
     return frag;
   }, document.createDocumentFragment());
 };
+
+/**
+ * @callback SetValue
+ * @param {import('./formats.js').StructuredCloneValue} value
+ * @param {import('./types.js').StateObject} stateObj
+ * @returns {Promise<void>}
+ */
 
 /**
  * Builds a selector and container for types.
@@ -77,9 +90,10 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   typesHolder: TypesHolder,
  *   domArray: [formatChoices: FormatChoices, typesHolder: TypesHolder],
  *   getValue: (stateObj: import('./types.js').StateObject,
- *     currentPath: string) => StructuredCloneValue,
- *   getType: () => string|undefined,
- *   validValuesSet: () => boolean
+ *     currentPath: string) => import('./formats.js').StructuredCloneValue,
+ *   getType: () => string|null|undefined,
+ *   validValuesSet: () => boolean,
+ *   setValue: SetValue
  * }} The selector for types and the container for them. Both should be
  *   added to the page.
  */
@@ -92,7 +106,7 @@ export function formatAndTypeChoices ({
   typeNamespace
 }) {
   const format = 'structuredCloning';
-  const formatChoices = jml('select', {
+  const formatChoices = /** @type {HTMLSelectElement} */ (jml('select', {
     class: 'formatChoices',
     hidden: singleValue,
     // is: 'main-type-choices',
@@ -130,8 +144,10 @@ export function formatAndTypeChoices ({
       $buildTypeChoices () {
         DOM.removeChildren(typesHolder);
         jml({'#': buildTypeChoices({
-          topRoot: $e(typesHolder, 'div[data-type]'),
-          resultType: 'both',
+          topRoot: /** @type {HTMLDivElement} */ (
+            $e(typesHolder, 'div[data-type]')
+          ),
+          // resultType: 'both',
           format: this.value,
           typeNamespace,
           requireObject: hasKeyPath,
@@ -142,18 +158,20 @@ export function formatAndTypeChoices ({
       }
     },
     $on: {change () {
-      this.$buildTypeChoices();
+      /** @type {Element & {$buildTypeChoices: TypeChoiceBuilder}} */ (
+        this
+      ).$buildTypeChoices();
     }}
-  }, [getFormatAndSchemaChoices({schema, hasKeyPath})]);
+  }, [getFormatAndSchemaChoices({schema, hasKeyPath})]));
 
   /**
    * @callback TypeRootGetter
-   * @returns {void}
+   * @returns {Element|null}
    */
 
   /**
    * @callback TypeSelectGetter
-   * @returns {void}
+   * @returns {HTMLSelectElement|null}
    */
 
   /**
@@ -162,24 +180,30 @@ export function formatAndTypeChoices ({
    * @property {TypeSelectGetter} $getTypeSelect
    */
 
-  const typesHolder = jml('div', {class: 'typesHolder', $custom: {
-    /**
-     * @type {TypeRootGetter}
-     */
-    $getTypeRoot () {
-      return $e(this, 'div[data-type]');
-    },
-    /**
-     * @type {TypeSelectGetter}
-     */
-    $getTypeSelect () {
-      return $e(this, `.typeChoices-${typeNamespace}`);
-    }
-  }});
+  const typesHolder = /** @type {HTMLDivElement} */ (
+    jml('div', {class: 'typesHolder', $custom: {
+      /**
+       * @type {TypeRootGetter}
+       * @this {Element}
+       */
+      $getTypeRoot () {
+        return $e(this, 'div[data-type]');
+      },
+      /**
+       * @type {TypeSelectGetter}
+       * @this {HTMLSelectElement}
+       */
+      $getTypeSelect () {
+        return /** @type {HTMLSelectElement} */ (
+          $e(this, `.typeChoices-${typeNamespace}`)
+        );
+      }
+    }})
+  );
 
   jml({'#': buildTypeChoices({
-    resultType: 'both',
-    topRoot: $e(typesHolder, 'div[data-type]'),
+    // resultType: 'both',
+    topRoot: /** @type {HTMLDivElement} */ ($e(typesHolder, 'div[data-type]')),
     format,
     typeNamespace,
     requireObject: hasKeyPath,
@@ -200,46 +224,67 @@ export function formatAndTypeChoices ({
      * @param {import('./types.js').StateObject} [stateObj] Will
      *   auto-set `typeNamespace` and `format`
      * @param {string} [currentPath]
-     * @returns {StructuredCloneValue}
+     * @returns {import('./formats.js').StructuredCloneValue}
      */
     getValue (stateObj, currentPath) {
-      const root = typesHolder.$getTypeRoot();
-      return Types.getValueForRoot(root, {
+      // eslint-disable-next-line max-len -- Long
+      const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
+        typesHolder
+      ).$getTypeRoot();
+      return Types.getValueForRoot(/** @type {HTMLDivElement} */ (root), {
         typeNamespace,
-        format: formatChoices.value,
+        format: /** @type {import('./formats.js').AvailableFormat} */ (
+          formatChoices.value
+        ),
         ...stateObj
       }, currentPath);
     },
 
     /**
-     * @returns {string|undefined}
+     * @returns {string|null|undefined}
      */
     getType () {
-      const root = typesHolder.$getTypeRoot();
-      return Types.getTypeForRoot(root);
+      // eslint-disable-next-line max-len -- Long
+      const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
+        typesHolder
+      ).$getTypeRoot();
+      return Types.getTypeForRoot(/** @type {HTMLDivElement} */ (root));
     },
 
     /**
      * @returns {boolean}
      */
     validValuesSet () {
-      const root = typesHolder.$getTypeRoot();
-      const form = root.closest('form');
+      // eslint-disable-next-line max-len -- Long
+      const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
+        typesHolder
+      ).$getTypeRoot();
+      const form = /** @type {HTMLFormElement} */ (
+        /** @type {Element} */ (root).closest('form')
+      );
       return Types.validValuesSet({form, typeNamespace});
     },
 
-    /**
-     * @param {StructuredCloneValue} value
-     * @param {import('./types.js').StateObject} stateObj
-     * @returns {Promise<void>}
-     */
+    /** @type {SetValue} */
     async setValue (value, stateObj) {
-      const rootEditUI = await getControlsForFormatAndValue(
-        formatChoices.value, value, stateObj
+      const rootEditUI = /** @type {HTMLDivElement} */ (
+        await getControlsForFormatAndValue(
+          /** @type {import('./formats.js').AvailableFormat} */ (
+            formatChoices.value
+          ),
+          value,
+          stateObj
+        )
       );
-      const type = Types.getTypeForRoot(rootEditUI);
-      const sel = typesHolder.$getTypeSelect();
-      sel.$addTypeAndEditUI({type, editUI: rootEditUI});
+      const type = /** @type {string} */ (Types.getTypeForRoot(rootEditUI));
+      // eslint-disable-next-line max-len -- Long
+      const sel = /** @type {HTMLDivElement & {$getTypeSelect: TypeSelectGetter}} */ (
+        typesHolder
+      ).$getTypeSelect();
+      // eslint-disable-next-line max-len -- Long
+      /** @type {HTMLSelectElement & {$addTypeAndEditUI: import('./typeChoices.js').AddTypeAndEditUI}} */ (
+        sel
+      ).$addTypeAndEditUI({type, editUI: rootEditUI});
     }
   };
 }

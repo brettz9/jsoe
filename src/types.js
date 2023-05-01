@@ -1,7 +1,7 @@
-import {jml} from '../vendor/jamilih/dist/jml-es.js';
+import {jml} from 'jamilih';
 import {
   Typeson, getJSONType, structuredCloningThrowing
-} from '../vendor/typeson-registry/dist/index.js';
+} from 'typeson-registry';
 
 import Formats from './formats.js';
 
@@ -36,64 +36,111 @@ import SpecialNumberSuperType from './superTypes/SpecialNumberSuperType.js';
  */
 export const getPropertyValueFromLegend = (legend) => {
   const propElem = $e(legend, '*[data-prop="true"]');
+  if (!propElem || !propElem.textContent) {
+    throw new Error(
+      'No property with text present on the supplied legend element'
+    );
+  }
   return propElem.nodeName.toLowerCase() === 'input'
-    ? propElem.value
+    ? /** @type {HTMLInputElement} */ (propElem).value
     : String(Number.parseInt(propElem.textContent) - 1); // 1-based to 0-based
 };
 
 const Types = {};
 
 /**
+ * @typedef {import('./formats.js').StructuredCloneValue} StructuredCloneValue
+ */
+
+/**
+ * @typedef {import('jamilih').JamilihArray} JamilihArray
+ */
+
+/**
+ * @typedef {{
+ *   format: import('./formats.js').AvailableFormat,
+ *   endMatchTypeObjs: TypeObject[],
+ *   remnant: string,
+ *   rootHolder: [
+ *     type: string, parent: object, parentPath: string|number, path: string
+ *   ][],
+ *   parent: object,
+ *   parentPath: string|number
+ * }} RootInfo
+ */
+
+/**
  * @typedef {object} TypeObject
- * @property {JamilihArray} option Creates the option HTML. May set an option
- *   `title` or `value`
+ * @property {[
+ *   string, {value?: AvailableType, title?: string}?
+ * ]} option Creates the option HTML. May set an option `title` or `value`
  * @property {boolean} [array] Private context variable. Whether or not
  *   it is an array. Do not use in other types.
  * @property {string[]} [regexEndings] Used for string parsing.
- * @property {RegExp} [stringRegex] Used for string parsing. If not
- *   present, use `stringRegexBegin` and `stringRegexEnd`
+ * @property {RegExp|((nonGrouping?: boolean) => RegExp)} [stringRegex] Used
+ *   for string parsing. If not present, use `stringRegexBegin` and
+ *   `stringRegexEnd`.
  * @property {RegExp} [stringRegexBegin] Used for string parsing. If not
  *   present, use `stringRegex`
  * @property {RegExp} [stringRegexEnd] Used for string parsing. If not
  *   present, use `stringRegex`
- * @property {(ArbitraryValue) => boolean} [valueMatch] Function to
+ * @property {(v: StructuredCloneValue) => boolean} [valueMatch] Function to
  *   check whether this subtype matches
  * @property {string} [superType] The greater fundamental type to which
  *   the type belongs
- * @property {(s: string) => ArbitraryValue} toValue Converts from
- *   string to value. May use `stringRegex` to find components.
- * @property {(info: {root?: HTMLDivElement}) =>
- *  ArbitraryValue
- * } getValue Gets the value for the type
- * @property {(info: {root?: HTMLDivElement}) => void} [setValue] Should set
- *   the value of the form's `getInput` element
+ * @property {(
+ *   s: string, info?: RootInfo
+ * ) => StructuredCloneValue} toValue Converts from string to value. May use
+ *   `stringRegex` to find components.
  * @property {(info: {
- *   value?: ArbitraryValue,
+ *   root: HTMLDivElement,
+ *   stateObj?: StateObject,
+ *   currentPath?: string
+ * }) =>
+ *  StructuredCloneValue
+ * } getValue Gets the value for the type
+ * @property {(
+ *   info: {
+ *     root: HTMLDivElement,
+ *     value: StructuredCloneValue
+ *   }
+ * ) => void} [setValue] Should set the value of the form's `getInput` element
+ * @property {(info: {
+ *   value?: StructuredCloneValue,
  *   typeNamespace?: string,
- *   type?: string,
+ *   type?: AvailableType,
  *   topRoot?: HTMLDivElement,
  *   resultType?: "keys"|"values"|"both",
- *   format?: string
+ *   format: import('./formats.js').AvailableFormat
  * }) => JamilihArray} viewUI
  * @property {(info: {
- *   value?: ArbitraryValue,
+ *   value?: StructuredCloneValue,
  *   typeNamespace?: string,
+ *   bringIntoFocus?: boolean,
+ *   format?: import('./formats.js').AvailableFormat,
+ *   resultType?: "keys"|"values"|"both",
+ *   type?: AvailableType,
+ *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
+ *   topRoot?: HTMLDivElement
  * }) => JamilihArray} editUI
  * @property {(info: {root: HTMLDivElement}) =>
- *   HTMLInputElement|HTMLTextareaElement|HTMLSelectElement} getInput Gets the
- *   form control (with `value`)
- * @property {(path: string, value: ArbitraryValue) =>
- *   ArbitraryValue} [resolveReference] Gets the reference. For array and object
- *   references types only
+ *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
+ *   HTMLButtonElement} getInput Gets the form control (with `value`)
+ * @property {(
+ *   info: {root: HTMLDivElement}
+ * ) => HTMLSelectElement} [getSelect]
+ * @property {(path: string, value: StructuredCloneValue) =>
+ *   StructuredCloneValue} [resolveReference] Gets the reference. For array
+ *   and object references types only
  * @property {(info: {root: HTMLDivElement, topRoot?: HTMLDivElement}) => {
- *   message: string,
+ *   message?: string,
  *   valid: boolean
  * }} [validate] Message will be used if validity is false.
  * @property {(info: {topRoot: HTMLDivElement}) => void} [validateAll] For
  *   validation of array and object references only.
  * @property {{
  *   structuredCloning: {
- *     after: string,
+ *     after: AvailableType,
  *     contexts: string[]
  *   }
  * }} [stateDependent] The type after which it should be placed and its
@@ -201,62 +248,95 @@ Types.availableTypes = {
   },
 
   // We're catching this instead of using this
-  sparseUndefined: sparseUndefinedType
-};
-Types.availableTypes.ValidDate = {
-  valid: true
-};
-/*
-Types.availableTypes.sparseArrays = {
+  sparseUndefined: sparseUndefinedType,
+
+  ValidDate: {
+    valid: true
+  },
+  /*
+  sparseArrays: {
+      sparse: true
+  },
+  */
+  arrayNonindexKeys: {
     sparse: true
-};
-*/
-Types.availableTypes.arrayNonindexKeys = {
-  sparse: true
+  }
 };
 
 /**
- * @param {[copyTo: string, copyFrom: string]} replacements
+ * @typedef {"null"|"true"|"false"|"number"|"bigint"|"string"|"arrayReference"|
+*   "objectReference"|"array"|"object"|"date"|"userObject"|"undef"|
+*   "SpecialRealNumber"|"SpecialNumber"|"regexp"|"BooleanObject"|
+*   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
+*   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
+*   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
+*   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
+*   "IntlDateTimeFormat"|"IntlNumberFormat"|"sparseUndefined"|"ValidDate"|
+*   "arrayNonindexKeys"} AvailableType
+*/
+
+/**
+ * @param {[
+ *   copyTo: AvailableType, copyFrom: AvailableType
+ * ]} replacements
  * @returns {void}
  */
 const copyTypeObjs = (replacements) => {
   replacements.forEach(([copyFrom, copyTo]) => {
-    Object.assign(Types.availableTypes[copyTo], Types.availableTypes[copyFrom]);
+    Object.assign(Types.availableTypes[
+      /** @type {AvailableType} */
+      (copyTo)
+    ], Types.availableTypes[
+      /** @type {AvailableType} */
+      (copyFrom)
+    ]);
   });
 };
-copyTypeObjs([
-  ['date', 'ValidDate'],
+
+copyTypeObjs(
   [
-    'array',
-    'arrayNonindexKeys'
+    // @ts-expect-error How to cast?
+    ['date', 'ValidDate'],
     // 'sparseArrays'
+    // @ts-expect-error How to cast?
+    ['array', 'arrayNonindexKeys']
   ]
-]);
+);
 
 /**
  * Utility to retrieve the type out of a type root element.
  * @public
  * @param {?RootElement} root
- * @returns {string|undefined} Why would it not exist?
+ * @returns {string|undefined|null} Why would it not exist?
  */
 Types.getTypeForRoot = (root) => {
   return root && root.dataset.type;
 };
 
 /**
- * @typedef {{
- *   typeNamespace: string,
- *   "readonly": boolean,
- *   format: string,
- *   error: Error,
- *   rootUI: Element,
- *   schemaContent: string,
- *   getPossibleSchemasForPathAndType: (
+ * @typedef {(
  *     keypath: string,
- *     parentPath: string,
- *     arrayOrObjectPropertyName: string,
- *     valueType: string
- *   ) => StateObject
+*     parentPath: string,
+*     arrayOrObjectPropertyName: string,
+*     valueType: string
+*   ) => StateObject} GetPossibleSchemasForPathAndType
+ */
+
+/**
+ * @typedef {{
+ *   typeNamespace?: string,
+ *   "readonly"?: boolean,
+ *   format?: import('./formats.js').AvailableFormat,
+ *   error?: Error,
+ *   rootUI?: Element,
+ *   schema?: string,
+ *   schemaContent?: object,
+ *   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
+ *   paths?: {[currentPath: string]: {
+ *     referentPath: string,
+ *     expectArrayReferent: boolean
+ *   }},
+ *   handlingReference?: boolean
  * }} StateObject
  */
 
@@ -271,7 +351,10 @@ Types.getTypeForRoot = (root) => {
  */
 Types.getValueForRoot = (root, stateObj, currentPath) => {
   const typeObject = /** @type {TypeObject} */ (
-    Types.availableTypes[Types.getTypeForRoot(root)]
+    Types.availableTypes[
+      /** @type {AvailableType} */
+      (Types.getTypeForRoot(root))
+    ]
   );
   return typeObject.getValue({
     root, stateObj, currentPath
@@ -282,10 +365,14 @@ Types.getValueForRoot = (root, stateObj, currentPath) => {
  * Utility to get the form control (e.g., input element) for a root.
  * @public
  * @param {RootElement} root
- * @returns {null|HTMLInputElement}
+ * @returns {null|
+ *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|HTMLButtonElement}
  */
 Types.getFormControlForRoot = (root) => {
-  const typeObj = Types.availableTypes[Types.getTypeForRoot(root)];
+  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[
+    /** @type {AvailableType} */
+    (Types.getTypeForRoot(root))
+  ]);
   /* istanbul ignore if -- All have except aliases */
   if (!typeObj.getInput) {
     return null;
@@ -301,16 +388,21 @@ Types.getFormControlForRoot = (root) => {
  * @returns {StructuredCloneValue}
  */
 Types.getValueFromRootAncestor = (selOrEl, stateObj) => {
-  return Types.getValueForRoot($e(selOrEl, 'div[data-type]'), stateObj);
+  return Types.getValueForRoot(
+    /** @type {RootElement} */
+    ($e(selOrEl, 'div[data-type]')),
+    stateObj
+  );
 };
 
 /**
  * @public
  * @param {string|Element} selOrEl
- * @returns {null|HTMLInputElement}
+ * @returns {null|HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
+ *   HTMLButtonElement}
  */
 Types.getFormControlFromRootAncestor = (selOrEl) => {
-  const root = $e(selOrEl, 'div[data-type]');
+  const root = /** @type {RootElement} */ ($e(selOrEl, 'div[data-type]'));
   if (!root) {
     return null;
   }
@@ -319,8 +411,8 @@ Types.getFormControlFromRootAncestor = (selOrEl) => {
 
 /**
  * @param {string} format
- * @param {string} state
- * @returns {string[]}
+ * @param {string} [state]
+ * @returns {AvailableType[]|undefined}
  */
 Types.getTypesForFormatAndState = (
   format, state
@@ -328,68 +420,85 @@ Types.getTypesForFormatAndState = (
 
 /**
  * @public
- * @param {string} type
- * @returns {JamilihArray}
+ * @param {AvailableType} type
+ * @returns {[string, {value: AvailableType, title?: string}]}
  */
 Types.getOptionForType = (type) => {
-  const optInfo = [...Types.availableTypes[type].option];
-  optInfo[1] = {value: type, ...optInfo[1]};
-  return optInfo;
+  /** @type {[string, {value?: AvailableType, title?: string}?]} */
+  const optInfo = [
+    ...(/** @type {TypeObject} */ (
+      Types.availableTypes[type]
+    )).option
+  ];
+  optInfo[1] = {value: type, ...(optInfo[1])};
+  return /** @type {[string, {value: AvailableType, title?: string}]} */ (
+    optInfo
+  );
 };
 
 /**
  * @public
  * @param {string} format
- * @param {string} parserState
- * @returns {JamilihArray[]}
+ * @param {string} [parserState]
+ * @returns {[string, {value: AvailableType, title?: string}][]}
  */
 Types.getTypeOptionsForFormatAndState = (format, parserState) => {
   const typesForFormatAndState = Types.getTypesForFormatAndState(
     format, parserState
   );
+  if (!typesForFormatAndState) {
+    throw new Error('Unexpected type for format and state');
+  }
   return typesForFormatAndState.map((type) => {
     return Types.getOptionForType(type);
   });
 };
 
+/* eslint-disable jsdoc/valid-types -- readonly reserved */
 /**
  * @public
  * @param {object} cfg
- * @param {boolean} cfg."readonly"
- * @param {"both"|"keys"|"values"} cfg.resultType
- * @param {string} cfg.typeNamespace
- * @param {string} cfg.type
- * @param {RootElement} cfg.topRoot
- * @param {boolean} cfg.bringIntoFocus
- * @param {BuildTypeChoices} cfg.buildTypeChoices
- * @param {string} cfg.format
- * @param {string} cfg.schemaContent
- * @param {StateObject} cfg.schemaState Not currently in use and may
- *   need to change the type
+ * @param {boolean} [cfg.readonly]
+ * @param {"both"|"keys"|"values"} [cfg.resultType]
+ * @param {string} [cfg.typeNamespace]
+ * @param {AvailableType} cfg.type
+ * @param {RootElement} [cfg.topRoot]
+ * @param {boolean|undefined} cfg.bringIntoFocus
+ * @param {import('./typeChoices.js').BuildTypeChoices} [cfg.buildTypeChoices]
+ * @param {import('./formats.js').AvailableFormat} cfg.format
+ * @param {object} [cfg.schemaContent]
+ * @param {GetPossibleSchemasForPathAndType} [cfg.schemaState] Not currently
+ *   in use
  * @param {StructuredCloneValue} cfg.value
  * @param {boolean} cfg.hasValue
+ * @param {StructuredCloneValue} [cfg.replaced]
  * @returns {Element}
  */
 Types.getUIForModeAndType = ({
   readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
-  buildTypeChoices, format, schemaContent, schemaState, value, hasValue
+  buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
+  replaced
 }) => {
-  const typeObj = Types.availableTypes[type];
-  const root = jml(
-    ...typeObj[readonly ? 'viewUI' : 'editUI'](
-      hasValue
-        ? {
-          typeNamespace, type, buildTypeChoices,
-          format, schemaContent, schemaState,
-          resultType, topRoot, bringIntoFocus, value
-        }
-        : {
-          typeNamespace, type, buildTypeChoices,
-          format, schemaContent, schemaState,
-          resultType, topRoot, bringIntoFocus
-        }
-    )
-  );
+  /* eslint-enable jsdoc/valid-types -- readonly reserved */
+  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
+  const arg = hasValue
+    ? {
+      typeNamespace, type, buildTypeChoices,
+      format, schemaContent, schemaState,
+      resultType, topRoot, bringIntoFocus, value,
+      replaced
+    }
+    : {
+      typeNamespace, type, buildTypeChoices,
+      format, schemaContent, schemaState,
+      resultType, topRoot, bringIntoFocus,
+      replaced
+    };
+  const root = /** @type {HTMLDivElement} */ (jml(
+    ...(readonly
+      ? typeObj.viewUI(arg)
+      : typeObj.editUI(arg))
+  ));
   if (!readonly && typeObj.validate) {
     const formControl = typeObj.getInput({root});
     formControl.addEventListener('input', () => {
@@ -399,8 +508,17 @@ Types.getUIForModeAndType = ({
   return root;
 };
 
+/**
+ * @type {{
+ *   [key: string]: {
+ *     [key: string]: {type: AvailableType, after: AvailableType}[]
+ *   }
+ * }}
+ */
 Types.contexts = {};
-Object.entries(Types.availableTypes).forEach(([type, {stateDependent}]) => {
+Object.entries(Types.availableTypes).forEach(([typ, typeObj]) => {
+  const type = /** @type {AvailableType} */ (typ);
+  const {stateDependent} = /** @type {TypeObject} */ (typeObj);
   if (stateDependent) {
     Object.entries(stateDependent).forEach(([format, formatStateDependent]) => {
       if (!Types.contexts[format]) {
@@ -421,8 +539,8 @@ Object.entries(Types.availableTypes).forEach(([type, {stateDependent}]) => {
  * @public
  * @param {object} cfg
  * @param {HTMLFormElement} cfg.form
- * @param {string} cfg.typeNamespace
- * @param {string} cfg.keySelectClass
+ * @param {string} [cfg.typeNamespace]
+ * @param {string} [cfg.keySelectClass]
  * @returns {boolean}
  */
 Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
@@ -435,10 +553,13 @@ Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
     return false;
   }
 
-  const typeChoices = $$e(
-    form,
-    keySelectClass ? `.${keySelectClass}` : `.typeChoices-${typeNamespace}`
-  );
+  const typeChoices =
+    /** @type {(HTMLSelectElement & {$validate: () => boolean})[]} */ (
+      $$e(
+        form,
+        keySelectClass ? `.${keySelectClass}` : `.typeChoices-${typeNamespace}`
+      )
+    );
   return (
     // Specific value type set if present (any descendant, not
     //   only the first) chosen
@@ -475,7 +596,8 @@ Types.validateAllReferences = ({topRoot}) => {
 
   // Could just hard-code arrayReference and objectReference,
   //  but we'll try to avoid depending on specific types
-  Object.values(Types.availableTypes).forEach((typeObject) => {
+  Object.values(Types.availableTypes).forEach((typeObj) => {
+    const typeObject = /** @type {TypeObject} */ (typeObj);
     if (typeObject.validateAll) {
       typeObject.validateAll({topRoot});
     }
@@ -487,15 +609,20 @@ Types.validateAllReferences = ({topRoot}) => {
 };
 
 /**
+ * @type {null|((info: {topRoot: HTMLDivElement}) => void)}
+ */
+Types.customValidateAllReferences = null;
+
+/**
  * @public
  * @param {object} cfg
- * @param {string} cfg.type
+ * @param {AvailableType} cfg.type
  * @param {RootElement} cfg.root
- * @param {RootElement} cfg.topRoot
+ * @param {RootElement} [cfg.topRoot]
  * @returns {boolean}
  */
 Types.validate = ({type, root, topRoot}) => {
-  const typeObj = Types.availableTypes[type];
+  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
   // Todo (low): We limit for now to input boxes which have `validate`
   if (typeObj.validate) {
     const {valid, message} = typeObj.validate({root, topRoot});
@@ -514,13 +641,13 @@ Types.validate = ({type, root, topRoot}) => {
 
 /**
  * @param {object} cfg
- * @param {string} cfg.type
+ * @param {AvailableType} cfg.type
  * @param {RootElement} cfg.root
  * @param {StructuredCloneValue} cfg.value
  * @returns {void}
  */
 Types.setValue = ({type, root, value}) => {
-  const typeObj = Types.availableTypes[type];
+  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
   if (typeObj.setValue) {
     typeObj.setValue({root, value});
   }
@@ -549,68 +676,86 @@ function escapeRegex (str) {
  * @public
  * @param {string} s
  * @param {object} cfg
- * @param {string} cfg.format
+ * @param {import('./formats.js').AvailableFormat} cfg.format
  * @param {string} cfg.state
  * @param {TypeObject[]} [cfg.endMatchTypeObjs=[]]
  * @param {boolean} [cfg.firstRun=true]
- * @param {
- *   [
- *     type: string,
- *     parent: array|object,
- *     parentPath: string,
- *     path: string
- *   ]
- * } [cfg.rootHolder=[]]
- * @param {ArbitraryArray|ArbitraryObject} cfg.parent
- * @param {string} cfg.parentPath
- * @returns {{
- *   value: ArbitraryValue,
+ * @param {[
+ *   type: string,
+ *   parent: {[key: string]: any},
+ *   parentPath: string|number,
+ *   path: string
+ * ][]} [cfg.rootHolder=[]]
+ * @param {{[key: string]: any}} cfg.parent
+ * @param {string|number} cfg.parentPath
+ * @returns {[
+ *   value: StructuredCloneValue,
  *   remnant: string,
  *   beginOnly: boolean,
  *   assign: boolean
- * }}
+ * ]}
  */
 Types.getValueForString = (s, {
   format, state, endMatchTypeObjs = [], firstRun = true,
   rootHolder = [], parent, parentPath
 }) => {
-  let assign = true;
-  let match;
   const allowedTypes = Types.getTypesForFormatAndState(format, state);
+  if (!allowedTypes) {
+    throw new Error('Could not get types for format and state');
+  }
   const allowedTypeObjs = Object.entries(
     Types.availableTypes
-  ).filter(([type]) => allowedTypes.includes(type));
+  ).filter(([type]) => {
+    return allowedTypes.includes(/** @type {AvailableType} */ (type));
+  });
   const allowedTypeObjsVals = allowedTypeObjs.map(([, arr]) => arr);
 
-  const endings = '|' + allowedTypeObjsVals.reduce((arr, typeObj) => {
+  const reduced = allowedTypeObjsVals.reduce((array, typObj) => {
+    const typeObj = /** @type {TypeObject} */ (typObj);
+    let arr = /** @type {string[]} */ (array);
     if (typeObj.regexEndings) {
       arr.push(...typeObj.regexEndings);
       arr = [...new Set(arr)];
     }
     return arr;
-  }, []).map((str) => escapeRegex(str)).join('|');
+  }, []);
+  const endings = '|' + /** @type {string[]} */ (
+    reduced
+  ).map((str) => escapeRegex(str)).join('|');
 
-  let found = allowedTypeObjs.find(([_type, typeObj]) => {
+  /**
+   * @type {RegExpMatchArray|boolean|null}
+   */
+  let match = null;
+  let found = allowedTypeObjs.find(([_type, typObj]) => {
+    const typeObj = /** @type {TypeObject} */ (typObj);
     let {stringRegex} = typeObj;
-    if (typeof stringRegex === 'function') {
+    if (typeof typeObj.stringRegex === 'function') {
       stringRegex = typeObj.stringRegex(true);
     }
     stringRegex = stringRegex
       // Strip off terminal (dollar sign) when matching substrings
       ? new RegExp(
-        stringRegex.source.slice(0, -1) + '(?=$' + endings + ')',
+        /** @type {RegExp} */ (
+          stringRegex
+        ).source.slice(0, -1) + '(?=$' + endings + ')',
         'u'
       )
       : stringRegex;
-    match = stringRegex && s && s.match(stringRegex);
+    match = Boolean(stringRegex && s) && s.match(
+      /** @type {RegExp} */ (stringRegex)
+    );
     return match;
   });
 
-  let beginOnly;
+  let beginOnly = false;
   if (found === undefined) {
-    found = allowedTypeObjs.find(([_type, typeObj]) => {
+    found = allowedTypeObjs.find(([_type, typObj]) => {
+      const typeObj = /** @type {TypeObject} */ (typObj);
       const {stringRegexBegin} = typeObj;
-      match = stringRegexBegin && s && s.match(stringRegexBegin);
+      match = Boolean(stringRegexBegin && s) && s.match(
+        /** @type {RegExp} */ (stringRegexBegin)
+      );
       if (match) {
         beginOnly = true;
         endMatchTypeObjs.push(typeObj);
@@ -618,13 +763,16 @@ Types.getValueForString = (s, {
       return match;
     });
   }
+  let assign = true;
   if (found !== undefined) {
-    let remnant = s.slice(match[0].length);
-    s = s.slice(0, match[0].length);
+    // @ts-ignore The `found` is evaluated again, so sets `match` to non-null
+    const [content, innerContent] = /** @type {RegExpMatchArray} */ (match);
+    let remnant = s.slice(content.length);
+    s = s.slice(0, content.length);
     // console.log('s0', s, '::', remnant, match);
     let valObj;
     try {
-      valObj = found[1].toValue(match[1] || s, {
+      valObj = /** @type {TypeObject} */ (found[1]).toValue(innerContent || s, {
         format,
         endMatchTypeObjs,
         remnant,
@@ -646,7 +794,7 @@ Types.getValueForString = (s, {
 
     if (beginOnly && endMatchTypeObjs.length) {
       const endMatch = remnant.match(
-        endMatchTypeObjs.slice(-1)[0].stringRegexEnd
+        /** @type {RegExp} */ (endMatchTypeObjs.slice(-1)[0].stringRegexEnd)
       );
       if (endMatch) {
         endMatchTypeObjs.pop(); // Safe now to extract
@@ -660,8 +808,12 @@ Types.getValueForString = (s, {
       try {
         const topRoot = typeson.revive(value);
         rootHolder.forEach(([type, parent, parentPath, path]) => {
-          const val = Types.availableTypes[type + 'Reference']
-            .resolveReference(path, topRoot);
+          const typeObject = Types.availableTypes[
+            /** @type {AvailableType} */ (type + 'Reference')
+          ];
+
+          // @ts-expect-error Reference method exists
+          const val = typeObject.resolveReference(path, topRoot);
           const basicType = getJSONType(val);
           // eslint-disable-next-line max-len -- Long
           /* istanbul ignore else -- Successful reference always an object/array? */

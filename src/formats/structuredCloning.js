@@ -1,19 +1,29 @@
+import {
+  Typeson, unescapeKeyPathComponent, structuredCloningThrowing
+} from 'typeson-registry';
+
 import Formats from '../formats.js';
 import Types from '../types.js';
 import {buildTypeChoices} from '../typeChoices.js';
 import {
-  Typeson, unescapeKeyPathComponent, structuredCloningThrowing
-} from '../../vendor/typeson-registry/dist/index.js';
-import {
   typesonPathToJSONPointer
 } from '../utils/jsonPointer.js';
 
-import * as json from './json.js';
+import json from './json.js';
 
 /**
- * @callback EncapsulateObserver
- * @param {TypesonObserver} observerObj
- * @returns {void}
+ * @typedef {(info: {
+ *   propName: string,
+ *   type: import('../types.js').AvailableType,
+ *   value: import('../formats.js').StructuredCloneValue,
+ *   bringIntoFocus?: boolean,
+ *   schemaContent?: object,
+ *   schemaState?: import('../types.js').GetPossibleSchemasForPathAndType
+ * }) => Element} AddAndSetArrayElement
+ */
+
+/**
+ * @typedef {import('typeson-registry').ObserverData} EncapsulateObserver
  */
 
 /**
@@ -22,9 +32,17 @@ import * as json from './json.js';
  */
 const encapsulateObserver = (stateObj) => {
   const {
-    typeNamespace, readonly, format, schemaContent,
+    typeNamespace, readonly, format: frmt, schemaContent,
     getPossibleSchemasForPathAndType
   } = stateObj;
+
+  const format = /** @type {import('../formats.js').AvailableFormat} */ (frmt);
+
+  /**
+   * @type {{[key: string]: Element & {
+   *   $addAndSetArrayElement: AddAndSetArrayElement
+   * }}}
+   */
   const parents = {};
   return (observerObj) => {
     const {
@@ -62,6 +80,7 @@ const encapsulateObserver = (stateObj) => {
 
     // console.log('observerObj', observerObj);
 
+    /** @type {import('../types.js').AvailableType} */
     let newType;
     let newValue = value;
 
@@ -79,11 +98,17 @@ const encapsulateObserver = (stateObj) => {
     } else {
       try {
         newType = canonicalToAvailableType(
-          format, state, type, value
+          format,
+          state,
+          /**
+           * @type {import('../types.js').AvailableType}
+           */
+          (type),
+          value
         ); // Todo (low): Add state for second argument
       } catch (err) {
         console.log('err', type, err);
-        stateObj.error = err;
+        stateObj.error = /** @type {Error} */ (err);
         return;
       }
     }
@@ -123,7 +148,10 @@ const encapsulateObserver = (stateObj) => {
         //     type wanting the serialized data
         replaced
       });
-      parents[''] = stateObj.rootUI;
+      parents[''] = /**
+      * @type {Element &
+      *   {$addAndSetArrayElement: AddAndSetArrayElement}}
+      */ (stateObj.rootUI);
       return;
     }
 
@@ -140,9 +168,10 @@ const encapsulateObserver = (stateObj) => {
       //   for circulars there?), could change Typeson to report `readonly`
       //   for the nested items, in which case, we could block out `readonly`
       //   instead of doing this here
-      if (!ui || !ui.$addAndSetArrayElement) {
+      if (!ui || !('$addAndSetArrayElement' in ui)) {
         return;
       }
+
       const root = ui.$addAndSetArrayElement({
         propName: arrayOrObjectPropertyName,
         type: newType,
@@ -160,12 +189,27 @@ const encapsulateObserver = (stateObj) => {
         */
       });
       if (!readonly) {
-        Types.setValue({type: newType, root, value: newValue});
-        Types.validate({type: newType, root, topRoot: stateObj.rootUI});
+        Types.setValue({
+          type: newType,
+          // eslint-disable-next-line object-shorthand -- TS
+          root: /** @type {HTMLDivElement} */ (root),
+          value: newValue
+        });
+        Types.validate({
+          type: newType,
+          // eslint-disable-next-line object-shorthand -- TS
+          root: /** @type {HTMLDivElement} */ (root),
+          topRoot: /** @type {HTMLDivElement} */ (stateObj.rootUI)
+        });
       }
 
       if (hasChildren) {
-        parents[keypath] = root;
+        parents[keypath] = /**
+          * @type {Element &
+          *   {$addAndSetArrayElement: AddAndSetArrayElement}}
+          */ (
+            root
+          );
       }
     });
   };
@@ -183,23 +227,37 @@ const replaceTypes = (originTypes, replacements) => {
 };
 
 /**
- * @param {string} format
+ * @param {import('../formats.js').AvailableFormat} format
  * @param {string} state
- * @param {string} valType
- * @param {ArbitraryValue} v
+ * @param {import('../types.js').AvailableType} valType
+ * @param {import('../formats.js').StructuredCloneValue} v
  * @throws {Error}
- * @returns {string}
+ * @returns {import('../types.js').AvailableType}
  */
 const canonicalToAvailableType = (format, state, valType, v) => {
   const frmt = Formats.availableFormats[format];
   const {getTypesForState, convertFromTypeson, testInvalid} = frmt;
   const allowableTypes = getTypesForState.call(frmt, state);
+  /* istanbul ignore if -- Guard */
+  if (!allowableTypes) {
+    throw new Error('Unexpected undefined type for state');
+  }
+
+  /**
+   * @type {import('../types.js').AvailableType|undefined}
+   */
   let ret;
   console.log('format, state, valType, v', format, state, valType, v);
+
+  /**
+   * @param {string} newValType
+   * @throws {Error}
+   * @returns {never}
+   */
   const isInvalid = (newValType) => {
     console.log('newValType', newValType);
     const err = new Error('Invalid');
-    err.newValType = newValType;
+    /** @type {Error & {newValType: string}} */ (err).newValType = newValType;
     throw err;
   };
   if (convertFromTypeson) {
@@ -218,13 +276,17 @@ const canonicalToAvailableType = (format, state, valType, v) => {
     }
     return false;
   })) {
-    return ret;
+    return /** @type {import('../types.js').AvailableType} */ (ret);
   }
   console.log('ret', ret);
   allowableTypes.some((allowableType) => {
+    // eslint-disable-next-line max-len -- Long
+    const typeObj = /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
+      Types.availableTypes[allowableType]
+    );
     const {
       valueMatch, superType, childTypes
-    } = Types.availableTypes[allowableType];
+    } = typeObj;
     if (
       (superType && valueMatch &&
         // Currently using for `true` and `false`
@@ -245,95 +307,87 @@ const canonicalToAvailableType = (format, state, valType, v) => {
 
 /**
  * @callback FormatIterator
- * @param {StructuredCloneValue} records
+ * @param {import('../formats.js').StructuredCloneValue} records
  * @param {import('../types.js').StateObject} stateObj
  * @returns {Promise<Element>}
  */
 
-/**
- * @type {FormatIterator}
- */
-export const iterate = (records, stateObj) => {
-  console.log('records', records);
-  if (!stateObj.format) {
-    stateObj.format = 'structuredCloning';
-  }
-  // Todo: Replace this with async typeson?
-  // eslint-disable-next-line promise/avoid-new
-  return new Promise((resolve, reject) => {
-    const typeson = new Typeson({
-      encapsulateObserver: encapsulateObserver(stateObj)
-    }).register(structuredCloningThrowing);
-    typeson.encapsulate(records);
-    // Todo (low): We might want to run async encapsulate for
-    //   async types (and put this after Promise resolves)
-    if (stateObj.error) {
-      reject(stateObj.error);
-    } else {
-      resolve(stateObj.rootUI);
+/** @type {import('../formats.js').Format} */
+const structuredCloning = {
+  iterate (records, stateObj) {
+    console.log('records', records);
+    if (!stateObj.format) {
+      stateObj.format = 'structuredCloning';
     }
-  });
-};
-
-/**
- * @param {string} state
- * @returns {string[]}
- */
-export const getTypesForState = function (state) {
-  if (state && Types.contexts.structuredCloning[state]) {
-    const typesForFormat = this.getTypesForState() ||
-      /* istanbul ignore next -- types should be an array */
-      [];
-    Types.contexts.structuredCloning[state].forEach(({type, after}) => {
-      const precedingIdx = typesForFormat.indexOf(after);
-      typesForFormat.splice(precedingIdx + 1, 0, type);
+    // Todo: Replace this with async typeson?
+    // eslint-disable-next-line promise/avoid-new
+    return new Promise((resolve, reject) => {
+      const typeson = new Typeson({
+        encapsulateObserver: encapsulateObserver(stateObj)
+      }).register(structuredCloningThrowing);
+      typeson.encapsulate(records);
+      // Todo (low): We might want to run async encapsulate for
+      //   async types (and put this after Promise resolves)
+      if (stateObj.error) {
+        reject(stateObj.error);
+      } else {
+        resolve(/** @type {Required<import('../types.js').StateObject>} */ (
+          stateObj
+        ).rootUI);
+      }
     });
-    return typesForFormat;
-  }
-  return this.types();
-  /*
-  // Todo (low): These need to specify their own inner contexts
-  if (['map', 'set'].includes(state)) {return;}
-  if ('int8array', 'uint8array', 'uint8clampedarray',
-    'int16array', 'uint16array', 'int32array',
-    'uint32array', 'float32array', 'float64array'
-  ).includes(state)) {return;}
-  */
-};
-
-/**
- * @returns {string[]}
- */
-export const types = () => {
-  const jsonTypes = json.types();
-  replaceTypes(jsonTypes, [
-    [
-      'array',
-      // 'sparseArrays',
-      'arrayNonindexKeys'
-    ]
-  ]);
-  return [
-    // This type is only for throwing upon cloning errors:
-    // 'checkDataCloneException'
-    // This type might be supported by evaluable JS or config passed in:
-    // 'userObject'
-    ...jsonTypes,
-    'undef', // Explicit undefined only
-    'bigint',
-    'SpecialNumber', // '`NaN`, `Infinity`, `-Infinity`'},
-    'date',
-    'regexp',
-    'BooleanObject',
-    'NumberObject',
-    'StringObject',
-    'blobHTML'
-    // Ok, but will need some work
-    //     'map', 'set',
-    //     'blob', 'file', 'filelist'
-    //     'arraybuffer', 'arraybufferview'
-    //     'dataview', 'imagedata', 'imagebitmap',
+  },
+  getTypesForState (state) {
+    if (state && Types.contexts.structuredCloning[state]) {
+      const typesForFormat = this.getTypesForState() ||
+        /* istanbul ignore next -- types should be an array */
+        [];
+      Types.contexts.structuredCloning[state].forEach(({type, after}) => {
+        const precedingIdx = typesForFormat.indexOf(after);
+        typesForFormat.splice(precedingIdx + 1, 0, type);
+      });
+      return typesForFormat;
+    }
+    return this.types();
     /*
+    // Todo (low): These need to specify their own inner contexts
+    if (['map', 'set'].includes(state)) {return;}
+    if ('int8array', 'uint8array', 'uint8clampedarray',
+      'int16array', 'uint16array', 'int32array',
+      'uint32array', 'float32array', 'float64array'
+    ).includes(state)) {return;}
+    */
+  },
+  types () {
+    const jsonTypes = json.types();
+    replaceTypes(jsonTypes, [
+      [
+        'array',
+        // 'sparseArrays',
+        'arrayNonindexKeys'
+      ]
+    ]);
+    return [
+      // This type is only for throwing upon cloning errors:
+      // 'checkDataCloneException'
+      // This type might be supported by evaluable JS or config passed in:
+      // 'userObject'
+      ...jsonTypes,
+      'undef', // Explicit undefined only
+      'bigint',
+      'SpecialNumber', // '`NaN`, `Infinity`, `-Infinity`'},
+      'date',
+      'regexp',
+      'BooleanObject',
+      'NumberObject',
+      'StringObject',
+      'blobHTML'
+      // Ok, but will need some work
+      //     'map', 'set',
+      //     'blob', 'file', 'filelist'
+      //     'arraybuffer', 'arraybufferview'
+      //     'dataview', 'imagedata', 'imagebitmap',
+      /*
               // Typed Arrays
               'int8array',
               'uint8array',
@@ -350,5 +404,8 @@ export const types = () => {
               'IntlDateTimeFormat',
               'IntlNumberFormat'
               */
-  ];
+    ];
+  }
 };
+
+export default structuredCloning;

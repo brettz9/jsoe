@@ -40,6 +40,10 @@ const getJSONPointerParts = (path) => {
 };
 
 /**
+ * @typedef {any} ArbitraryObject
+ */
+
+/**
  * @param {ArbitraryObject} obj
  * @param {string} pathPart
  * @returns {ArbitraryObject|string}

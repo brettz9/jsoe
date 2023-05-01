@@ -12,7 +12,7 @@ const StringObjectType = {
   },
   option: ['StringObject'],
   getInput ({root}) {
-    return $e(root, 'textarea');
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
   },
   getValue ({root}) {
     return this.toValue(this.getInput({root}).value).value;

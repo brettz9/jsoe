@@ -10,14 +10,14 @@ const undefinedType = {
     return {value: undefined};
   },
   getValue () {
-    return this.toValue().value;
+    return this.toValue('').value;
   },
   viewUI (/* {value} */) {
     return ['i', {dataset: {type: 'undef'}}, ['undefined']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   editUI ({typeNamespace}) {
     return ['div', {dataset: {type: 'undef'}}, [

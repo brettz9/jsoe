@@ -1,8 +1,9 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @typedef {TypeObject} SuperTypeObject
- * @property {string[]} childTypes
+ * @typedef {import('../types.js').TypeObject & {
+ *   childTypes: string[]
+ * }} SuperTypeObject
  */
 
 /**
@@ -24,17 +25,23 @@ const SpecialNumberSuperType = {
     };
   },
   getSelect ({root}) {
-    return $e(root, 'select');
+    return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return $e(root, 'select');
+    return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },
   getValue ({root}) {
-    return this.toValue(this.getSelect({root}).value).value;
+    return this.toValue(
+      /** @type {Required<import('../types.js').TypeObject>} */ (
+        this
+      ).getSelect({root}).value
+    ).value;
   },
   setValue ({root, value}) {
-    this.getSelect({root}).value = String(value);
+    /** @type {Required<import('../types.js').TypeObject>} */ (
+      this
+    ).getSelect({root}).value = String(value);
   },
   viewUI ({value}) {
     return ['i', {dataset: {type: 'SpecialNumber'}}, [

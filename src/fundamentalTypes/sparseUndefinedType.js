@@ -14,6 +14,12 @@ const sparseUndefinedType = {
       ]
     }
   },
+  toValue (_s) {
+    return {value: undefined};
+  },
+  getValue () {
+    return this.toValue('').value;
+  },
   /* istanbul ignore next -- Catching instead of this placeholder */
   viewUI (/* {value} */) {
     return ['i', {
@@ -22,7 +28,7 @@ const sparseUndefinedType = {
   },
   /* istanbul ignore next -- Catching instead of this placeholder */
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   /* istanbul ignore next -- Catching instead of this placeholder */
   editUI ({typeNamespace}) {

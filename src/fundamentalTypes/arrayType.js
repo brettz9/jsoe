@@ -1,4 +1,4 @@
-import {jml, nbsp} from '../../vendor/jamilih/dist/jml-es.js';
+import {jml, nbsp} from 'jamilih';
 
 import Types, {getPropertyValueFromLegend} from '../types.js';
 import {$e, U, DOM} from '../utils/templateUtils.js';
@@ -8,35 +8,86 @@ import {
 } from '../utils/jsonPointer.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @typedef {number} Integer
+ */
+/**
+ * @callback ParseInt
+ * @this {HTMLInputElement}
+ * @returns {false|Integer}
+ */
+/**
+ * @typedef {() => HTMLInputElement[]} InputsExceedingLength
+ */
+/**
+ * @callback GetPropertyInputs
+ * @returns {HTMLInputElement[]}
+ */
+
+/**
+ * @callback RedrawMoveArrows
+ * @returns {void}
+ */
+/**
+ * @typedef {() => HTMLDivElement & {
+ *   $inputsExceedingLength: InputsExceedingLength,
+ *   $getPropertyInputs: GetPropertyInputs,
+ *   $redrawMoveArrows: RedrawMoveArrows
+ * }} GetArrayItems
+ */
+/**
+ * @typedef {() => Promise<void>} Validate
+ */
+
+/**
+ * @callback Resort
+ * @param {{alwaysFocus?: true}} cfg
+ * @returns {void}
+ */
+
+/**
+ * @typedef {() => HTMLInputElement|undefined} GetPropertyInput
+ */
+
+/**
+ * @type {import('../types.js').TypeObject & {sparse: boolean|undefined}}
  */
 const arrayType = {
   option: ['Array'],
   array: true,
+  sparse: undefined,
   regexEndings: [',', ']'],
   stringRegexBegin: /^\[/u,
   stringRegexEnd: /^\]/u,
-  toValue (s, {
-    format,
-    /* istanbul ignore next -- Just a guard */
-    endMatchTypeObjs = [],
-    remnant: innerContents,
-    rootHolder
-  }) {
+  toValue (s, info) {
+    const {
+      /* istanbul ignore next -- Just a guard */
+      endMatchTypeObjs = [],
+      remnant: innerContents,
+      rootHolder
+    } = /** @type {import('../types.js').RootInfo} */ (info);
+    // eslint-disable-next-line prefer-destructuring -- TS
+    const format = /** @type {import('../types.js').RootInfo} */ (info).format;
+
     const {sparse} = this;
     const state = sparse
       ? 'arrayNonindexKeys'
     // ? 'sparseArrays'
       : (this.array ? 'array' : 'object');
+    /** @type {{[key: (string|number)]: any}} */
     const retObj = this.array ? [] : {};
     let stringVal = innerContents !== undefined
       ? innerContents
       /* istanbul ignore next -- Unreachable? */
       : s;
+
+    /**
+     * @param {boolean} beginOnly
+     * @returns {boolean}
+     */
     const checkEnd = (beginOnly) => {
       if (beginOnly && endMatchTypeObjs.length) {
         const endMatch = stringVal.match(
-          endMatchTypeObjs.slice(-1)[0].stringRegexEnd
+          /** @type {RegExp} */ (endMatchTypeObjs.slice(-1)[0].stringRegexEnd)
         );
         if (endMatch) {
           endMatchTypeObjs.pop(); // Safe now to extract
@@ -90,6 +141,11 @@ const arrayType = {
       }
       return {value: retObj, remnant: stringVal};
     }
+
+    /**
+     * @param {boolean} [notFirstRun]
+     * @returns {void}
+     */
     const parse = (notFirstRun) => {
       if (!stringVal) {
         return;
@@ -122,7 +178,10 @@ const arrayType = {
       }
       // console.log('vvv', stringVal, beginOnly, v);
       if (assign) {
-        retObj[pr] = v;
+        // eslint-disable-next-line max-len -- Long
+        /** @type {{[key: string]: import('../formats.js').StructuredCloneValue}} */ (
+          retObj
+        )[pr] = v;
       }
       if (checkEnd(beginOnly)) {
         return;
@@ -134,19 +193,31 @@ const arrayType = {
   },
   getValue ({root, stateObj = {}, currentPath = ''}) {
     const top = currentPath === '';
-    const arrayItems = $e(root, '.arrayItems');
+    const arrayItems = /** @type {Element} */ ($e(root, '.arrayItems'));
     const fieldsets = arrayItems.children;
+
+    /**
+     * @type {({[key: string]: any})|any[]}
+     */
     const ret = root.dataset.type === 'object'
       ? {}
       : !this.sparse
         ? []
-        : Array.from({length: Number.parseInt(DOM.filterChildElements(
-          root,
-          ['div', 'div', 'label', 'input']
-        )[0].value)});
+        : Array.from({length: Number.parseInt(
+          /** @type {HTMLInputElement} */ (DOM.filterChildElements(
+            root,
+            ['div', 'div', 'label', 'input']
+          )[0]).value
+        )});
 
     // Todo: Should this be renamed per return arguments to
     //   `getRefOrVal` or is it ok?
+
+    /**
+     * @param {HTMLDivElement} root
+     * @param {string} currentPathPart
+     * @returns {[boolean, boolean?]}
+     */
     const getValOrRef = (root, currentPathPart) => {
       const value = Types.getValueForRoot(
         root, stateObj, currentPath + '/' + currentPathPart
@@ -160,21 +231,25 @@ const arrayType = {
     };
     [...fieldsets].forEach((fieldset) => {
       const legend = fieldset.firstElementChild;
-      const propVal = getPropertyValueFromLegend(legend);
-      const root = $e(fieldset, 'div[data-type]');
+      const propVal = getPropertyValueFromLegend(
+        /** @type {HTMLLegendElement} */ (legend)
+      );
+      const root = /** @type {HTMLDivElement} */ (
+        $e(fieldset, 'div[data-type]')
+      );
       /* istanbul ignore if -- Should err first? */
       if (!root) {
         return;
       }
 
-      const objectProperty = $e(legend, 'input');
+      const objectProperty = $e(/** @type {Element} */ (legend), 'input');
       const [isVal, value] = getValOrRef(
         root,
         propVal
       );
       if (isVal) {
         if (objectProperty) {
-          ret[propVal] = value;
+          /** @type {{[key: string]: any}} */ (ret)[propVal] = value;
         } else {
           ret.push(value);
         }
@@ -190,13 +265,15 @@ const arrayType = {
               obj: ret
             });
 
-          referencePath = getJSONPointerParts(referencePath);
-          const referenceFinalPathPart = referencePath.pop();
-          const referenceParentObj = referencePath.reduce(
+          const referencePathJsonPtr = getJSONPointerParts(referencePath);
+          const referenceFinalPathPart = referencePathJsonPtr.pop();
+          const referenceParentObj = referencePathJsonPtr.reduce(
             (obj, pathPart) => reduceJSONPointerParts(obj, pathPart),
             ret
           );
-          referenceParentObj[referenceFinalPathPart] = referentObj;
+          /** @type {{[key: string]: any}} */ (referenceParentObj)[
+            /** @type {string} */ (referenceFinalPathPart)
+          ] = referentObj;
         }
       );
     }
@@ -207,6 +284,15 @@ const arrayType = {
   viewUI ({typeNamespace, type, value, topRoot, resultType, format}) {
     // const {sparse} = this;
     let itemIndex = -1;
+
+    /**
+     * @param {{
+     *   itemIndex: number,
+     *   typeNamespace?: string,
+     *   propName: string
+     * }} cfg
+     * @returns {import('jamilih').JamilihArray}
+     */
     const buildLegend = ({
       /* className, type, arrayItems, */
       itemIndex, typeNamespace, propName
@@ -228,74 +314,105 @@ const arrayType = {
         ]]
       ]];
     };
-    const div = jml('div', {
-      class: 'arrayHolder',
-      dataset: {type},
-      $custom: {
-        $addAndSetArrayElement ({
-          propName, type, value, bringIntoFocus,
-          schemaContent, schemaState
-        }) {
-          const fieldset = this.$addArrayElement({propName});
-          const root = Types.getUIForModeAndType({
-            resultType,
-            readonly: true,
-            typeNamespace, type, topRoot,
-            bringIntoFocus,
-            format, schemaContent, schemaState,
-            value,
-            hasValue: true // type === 'sparseArrays' && value
-          });
-          jml(root, fieldset);
-          return root;
-        },
-        $addArrayElement ({propName}) {
-          itemIndex++;
-          const arrayItems = this.$getArrayItems();
-          const className = `${type}Item`;
-          const fieldset = jml('fieldset', [
-            buildLegend({
-              className, itemIndex, type, typeNamespace,
-              arrayItems, propName
-            })
-          ], arrayItems);
-          return fieldset;
-        },
-        $getArrayItems () {
-          return this.lastElementChild.lastElementChild;
+    const div = /** @type {HTMLDivElement} */ (
+      jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
+        class: 'arrayHolder',
+        dataset: {type},
+        $custom: {
+          /**
+           * @param {{
+           *   propName: name,
+           *   type: import('../types.js').AvailableType,
+           *   value: import('../formats.js').StructuredCloneValue,
+           *   bringIntoFocus: boolean,
+           *   schemaContent: object,
+           *   schemaState:
+           *     import('../types.js').GetPossibleSchemasForPathAndType
+           * }} cfg
+           * @returns {Element}
+           */
+          $addAndSetArrayElement ({
+            propName, type, value, bringIntoFocus,
+            schemaContent, schemaState
+          }) {
+            const fieldset = this.$addArrayElement({propName});
+            const root = Types.getUIForModeAndType({
+              resultType,
+              readonly: true,
+              typeNamespace, type, topRoot,
+              bringIntoFocus,
+              format, schemaContent, schemaState,
+              value,
+              hasValue: true // type === 'sparseArrays' && value
+            });
+            jml(root, fieldset);
+            return root;
+          },
+          /**
+           * @param {{propName: string}} cfg
+           * @returns {HTMLFieldSetElement}
+           */
+          $addArrayElement ({propName}) {
+            itemIndex++;
+            const arrayItems = this.$getArrayItems();
+            // const className = `${type}Item`;
+            const fieldset = /** @type {HTMLFieldSetElement} */ (
+              jml('fieldset', [
+                buildLegend({
+                  // className,
+                  // type,
+                  // arrayItems,
+                  itemIndex,
+                  typeNamespace,
+                  propName
+                })
+              ], arrayItems)
+            );
+            return fieldset;
+          },
+          $getArrayItems () {
+            return this.lastElementChild.lastElementChild;
+          }
         }
-      }
-    }, [
-      DOM.initialCaps(type).replace(/s$/u, ''), nbsp.repeat(2),
-      ['button', {$on: {click (e) {
-        e.preventDefault();
-        const {target} = e;
-        const arrayContents = $e(
-          target.closest('.arrayHolder'),
-          '.arrayContents'
-        );
-        arrayContents.hidden = !arrayContents.hidden;
-        target.textContent = arrayContents.hidden ? '+' : '-';
-      }}}, ['-']],
-      ['div', {class: 'arrayContents'}, [
-        this.array
-          ? ['div', [
-            'Array length: ',
-            ['span', [
-              (value && value.length) || 0
+      }), [
+        DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
+          type
+        )).replace(/s$/u, ''), nbsp.repeat(2),
+        // Why is this necessary
+        /** @type {import('jamilih').JamilihArray} */
+        (['button', {$on: {click (/** @type {Event} */ e) {
+          e.preventDefault();
+          const {target} = e;
+          const arrayContents = /** @type {HTMLDivElement} */ ($e(
+            /** @type {Element} */
+            (/** @type {Element} */ (target).closest('.arrayHolder')),
+            '.arrayContents'
+          ));
+          arrayContents.hidden = !arrayContents.hidden;
+          /** @type {Element} */ (
+            target
+          ).textContent = arrayContents.hidden ? '+' : '-';
+        }}}, ['-']]),
+        ['div', {class: 'arrayContents'}, [
+          this.array
+            ? ['div', [
+              'Array length: ',
+              ['span', [
+                (value && value.length) || 0
+              ]]
             ]]
-          ]]
-          : '',
-        ['div', {
-          class: 'arrayItems'
-        }]
-      ]]
-    ]);
+            : '',
+          ['div', {
+            class: 'arrayItems'
+          }]
+        ]]
+      ])
+    );
     return [div];
   },
   getInput ({root}) {
     // One element we are guaranteed to have for adding validation
-    return $e(root, 'button');
+    return /** @type {HTMLButtonElement} */ ($e(root, 'button'));
   },
   // Unlike other items, we don't use the `value`, as it wil always be
   //    an array (or object if called by that method) and we handle the
@@ -308,16 +425,34 @@ const arrayType = {
     const itemAdjust = type === 'object' ? 1 : 0;
     let itemIndex = itemAdjust - 1;
     const editableProperties = type !== 'array';
+
+    /**
+     * @param {HTMLInputElement} input
+     * @param {true|undefined} alwaysFocus
+     * @returns {void}
+     */
     const bringFocus = (input, alwaysFocus) => {
       if (bringIntoFocus || alwaysFocus) {
         input.scrollIntoView();
         input.focus();
       }
     };
+
+    /**
+     * @callback SwapGroup
+     * @param {Element} holder
+     * @param {"up"|"down"} direction
+     * @returns {void}
+     */
+
+    /**
+     * @type {SwapGroup}
+     * @this {HTMLDivElement}
+     */
     const $swapGroup = function (holder, direction) {
-      const group = holder.parentElement;
+      const group = /** @type {HTMLElement} */ (holder.parentElement);
       const swapGroup = group[
-        (direction === 'up' ? 'previous' : 'next') + 'ElementSibling'
+        (direction === 'up' ? 'previousElementSibling' : 'nextElementSibling')
       ];
       /* istanbul ignore if -- Just a guard */
       if (!swapGroup || swapGroup.nodeName.toLowerCase() !== 'fieldset') {
@@ -336,8 +471,20 @@ const arrayType = {
         swapCountElem.textContent = base;
         baseCountElem.textContent = swap;
       } else {
-        const swapCountElem = group.$getPropertyInput();
-        const baseCountElem = swapGroup.$getPropertyInput();
+        // eslint-disable-next-line max-len -- Long
+        const swapCountElem = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */
+          (/**
+           * @type {HTMLFieldSetElement & {$getPropertyInput: GetPropertyInput}}
+           */ (
+              group
+            ).$getPropertyInput());
+        // eslint-disable-next-line max-len -- Long
+        const baseCountElem = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */
+          (/**
+           * @type {HTMLFieldSetElement & {$getPropertyInput: GetPropertyInput}}
+           */ (
+              swapGroup
+            ).$getPropertyInput());
         if (typeof swapCountElem.$parseInt() === 'number' ||
           typeof baseCountElem.$parseInt() === 'number'
         ) {
@@ -358,9 +505,20 @@ const arrayType = {
       } else {
         group.before(swapGroup);
       }
-      Types.validateAllReferences({topRoot}); // Needed
-      this.$redrawMoveArrows();
+      Types.validateAllReferences({
+        // eslint-disable-next-line object-shorthand -- TS
+        topRoot: /** @type {HTMLDivElement} */ (topRoot)
+      }); // Needed
+
+      /** @type {HTMLDivElement & {$redrawMoveArrows: RedrawMoveArrows}} */ (
+        this
+      ).$redrawMoveArrows();
     };
+
+    /**
+     * @type {RedrawMoveArrows}
+     * @this {HTMLDivElement & {$swapGroup: SwapGroup}}
+     */
     const $redrawMoveArrows = function () {
       DOM.filterChildElements(this, [
         'fieldset', `.${type}Item-arrowHolder-${typeNamespace}`
@@ -387,6 +545,19 @@ const arrayType = {
         }
       });
     };
+
+    /**
+     * @typedef {() => void} ValidateLegend
+     */
+
+    /**
+     * @type {ValidateLegend}
+     * @this {HTMLInputElement & {
+     *   $arrayItems: HTMLDivElement & {
+     *     $getPropertyInputs: GetPropertyInputs
+     *   }
+     * }}
+     */
     const $validateLegend = function () {
       const propertyNameInputs = this.$arrayItems.$getPropertyInputs();
       const invalidStr = propertyNameInputs.some((input) => {
@@ -425,10 +596,42 @@ const arrayType = {
         return invalidStr; // Don't give a chance to become valid
       });
     };
+
+    /**
+     * @typedef {HTMLDivElement & {
+     *   $inputsExceedingLength: InputsExceedingLength,
+     *   $getPropertyInputs: GetPropertyInputs,
+     *   $redrawMoveArrows: RedrawMoveArrows
+     * }} ArrayItems
+     */
+
+    /**
+     * @param {{
+     *   className: string,
+     *   splice: "append"|number|undefined,
+     *   itemIndex: number,
+     *   typeNamespace: string|undefined,
+     *   arrayItems: ArrayItems,
+     *   propName: string|undefined
+     * }} cfg
+     * @returns {import('jamilih').JamilihArray}
+     */
     const buildLegend = ({
       className, splice, itemIndex, /* type, */ typeNamespace,
       arrayItems, propName
     }) => {
+      /**
+       * @callback ValidateLength
+       * @param {boolean} [avoidDialog]
+       * @returns {Promise<void>}
+       */
+
+      /**
+       * @type {ValidateLength}
+       * @this {HTMLInputElement & {
+       *   $validateLength: ValidateLength
+       * }}
+       */
       const $validateLength = async function (avoidDialog) {
         if (!sparse) {
           return undefined;
@@ -443,15 +646,20 @@ const arrayType = {
             'array item beyond the length. Click "Ok" to allow to ' +
             'permit and extend the array length or "Cancel" otherwise.'
         });
-        const arrLengthInput = $e(arrayItems.previousElementSibling, 'input');
+        const arrLengthInput = /** @type {HTMLInputElement} */ (
+          $e(
+            /** @type {Element} */ (arrayItems.previousElementSibling),
+            'input'
+          )
+        );
         const highest = inputsExceedingLength.map(
           (i) => Number.parseInt(i.value)
         ).sort().slice(-1)[0];
-        arrLengthInput.value = highest + 1;
+        arrLengthInput.value = String(highest + 1);
         return this.$validateLength(true);
       };
-      return editableProperties
-        ? ['legend', [
+      if (editableProperties) {
+        return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse
             ? 'Item'
             : {'#': [
@@ -476,6 +684,13 @@ const arrayType = {
             pattern: sparse ? '\\d' : '',
             */
             $custom: {
+              /**
+               * @type {Validate}
+               * @this {HTMLInputElement & {
+               *   $validateLength: ValidateLength,
+               *   $validateLegend: ValidateLegend
+               * }}
+               */
               async $validate () {
                 try {
                   try {
@@ -487,9 +702,17 @@ const arrayType = {
                   /* await */ this.$validateLegend();
                   // Todo (low): We could make this more efficient by waiting
                   //   until all added (when pre-populating)
-                  Types.validateAllReferences({topRoot}); // Needed
+                  Types.validateAllReferences({
+                    // eslint-disable-next-line object-shorthand -- TS
+                    topRoot: /** @type {HTMLDivElement} */ (topRoot)
+                  }); // Needed
                 } catch (err) {}
               },
+
+              /**
+               * @type {ParseInt}
+               * @this {HTMLInputElement}
+               */
               $parseInt () {
                 if (!(/^\d+$/u).test(this.value)) {
                   return false;
@@ -499,20 +722,49 @@ const arrayType = {
               $validateLegend,
               $arrayItems: arrayItems,
               $validateLength,
+              /**
+               * @type {Resort}
+               * @this {HTMLInputElement}
+               */
               $resort ({alwaysFocus}) {
-                const inputs = this.$arrayItems.$getPropertyInputs();
+                const inputs = /**
+                * @type {(HTMLInputElement & {
+                *   $parseInt: ParseInt
+                * })[]}
+                */
+                  (/**
+                   * @type {HTMLInputElement & {
+                   *   $arrayItems: HTMLDivElement & {
+                   *     $getPropertyInputs: GetPropertyInputs
+                   *   }
+                   * }}
+                   */ (
+                      this
+                    ).$arrayItems.$getPropertyInputs());
                 if (inputs.length === 1) {
                   return;
                 }
-                const getFieldset = (el) => el.closest('fieldset');
+                /**
+                 * @param {Element} el
+                 * @returns {Element}
+                 */
+                const getFieldset = (el) => /** @type {HTMLFieldSetElement} */ (
+                  el.closest('fieldset')
+                );
                 const thisFieldset = getFieldset(this);
-                const intVal = this.$parseInt();
+                // eslint-disable-next-line max-len -- Long
+                const intVal = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */ (
+                  this
+                ).$parseInt();
                 if (intVal === false) {
                   inputs.reverse().some((input) => {
                     if (input === this) { // No need to search further
                       return true;
                     }
-                    const intValOlder = input.$parseInt();
+                    const intValOlder =
+                      /** @type {HTMLInputElement & {$parseInt: ParseInt}} */ (
+                        input
+                      ).$parseInt();
                     // Not sorting non-integers
                     if (typeof intValOlder !== 'number') {
                       return false;
@@ -524,8 +776,17 @@ const arrayType = {
                   });
                   return;
                 }
+
+                /**
+                 * @param {boolean} [latest]
+                 * @returns {boolean}
+                 */
                 const getNearest = (latest) => {
+                  /**
+                   * @type {HTMLInputElement|undefined}
+                   */
                   let nearest;
+
                   inputs.some((input) => {
                     if (input === this) {
                       return false;
@@ -539,6 +800,12 @@ const arrayType = {
                       }
                       return false;
                     }
+
+                    /**
+                     * @param {Integer} a
+                     * @param {Integer} b
+                     * @returns {boolean}
+                     */
                     const cmp = (a, b) => {
                       return latest ? a > b : a < b;
                     };
@@ -558,6 +825,10 @@ const arrayType = {
                   const method = latest ? 'after' : 'before';
                   // Ensure move *after* splice that will occur after this
                   setTimeout(() => {
+                    /* c8 ignore next 3 */
+                    if (!nearest) {
+                      return;
+                    }
                     getFieldset(nearest)[method](thisFieldset);
                     bringFocus(this, alwaysFocus);
                     arrayItems.$redrawMoveArrows();
@@ -570,6 +841,13 @@ const arrayType = {
               }
             },
             $on: {
+              /**
+               * @param {Event} e
+               * @this {HTMLInputElement & {
+               *   $validate: Validate,
+               *   $resort: Resort
+               * }}
+               */
               change (e) {
                 this.$validate();
                 // We don't want form `onchange` to run
@@ -580,20 +858,31 @@ const arrayType = {
             },
             class: `propertyName-${typeNamespace}`
           }]
+        ]]);
+      }
+      return /** @type {import('jamilih').JamilihArray} */ (['legend', [
+        'Item ',
+        ['span', {
+          dataset: {prop: true, array: true},
+          className
+        }, [
+          propName !== undefined ? propName : String(itemIndex)
         ]]
-        : ['legend', [
-          'Item ',
-          ['span', {
-            dataset: {prop: true, array: true},
-            className
-          }, [
-            propName !== undefined ? propName : String(itemIndex)
-          ]]
-        ]];
+      ]]);
     };
+
+    /**
+     * @param {HTMLDivElement & {
+     *   $getPropertyInputs: GetPropertyInputs
+     * }} arrayItems
+     * @returns {void}
+     */
     const decrementItemIndex = (arrayItems) => {
       if (sparse) {
-        itemIndex = arrayItems.$getPropertyInputs().reduce(
+        // eslint-disable-next-line max-len -- Long
+        itemIndex = /** @type {(HTMLInputElement & {$parseInt: ParseInt})[]} */ (
+          arrayItems.$getPropertyInputs()
+        ).reduce(
           (highest, input) => {
             const intVal = input.$parseInt();
             return intVal !== false && intVal > highest ? intVal : highest;
@@ -604,6 +893,24 @@ const arrayType = {
         itemIndex--;
       }
     };
+
+    /**
+     * @callback AddArrayElement
+     * @param {{
+     *   propName?: string,
+     *   splice?: "append"|number,
+     *   alwaysFocus?: true
+     * }} cfg
+     * @returns {void}
+     */
+
+    /**
+     * @type {AddArrayElement}
+     * @this {HTMLButtonElement & {
+     *   $getArrayItems: GetArrayItems,
+     *   $addArrayElement: AddArrayElement
+     * }}
+     */
     const $addArrayElement = function ({propName, splice, alwaysFocus}) {
       // console.log('propName', propName);
       const arrayItems = this.$getArrayItems();
@@ -616,7 +923,12 @@ const arrayType = {
         } else if (typeof splice === 'number') {
           itemIndex = splice + 1;
         } else if (typeof splice !== 'string') {
-          itemIndex = arrayItems.$getPropertyInputs().reduce(
+          // eslint-disable-next-line max-len -- Long
+          itemIndex = /** @type {(HTMLInputElement & {$parseInt: ParseInt})[]} */ (
+            // eslint-disable-next-line max-len -- Long
+            /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */
+            (arrayItems).$getPropertyInputs()
+          ).reduce(
             (highest, input) => {
               const intVal = input.$parseInt();
               return intVal !== false && intVal > highest ? intVal : highest;
@@ -629,47 +941,74 @@ const arrayType = {
       }
       const thisButton = this; // eslint-disable-line consistent-this
       const className = `${type}Item`;
-      const fieldset = jml('fieldset', {
+      const fieldset = /** @type {HTMLFieldSetElement} */ (jml('fieldset', {
         $custom: {
+          /** @type {GetPropertyInput} */
           $getPropertyInput () {
-            return DOM.filterChildElements(
-              this,
+            return /** @type {HTMLInputElement} */ (DOM.filterChildElements(
+              /** @type {HTMLFieldSetElement} */ (this),
               ['legend', `input.propertyName-${typeNamespace}`]
-            ).pop();
+            ).pop());
           }
         }
       }, [
         buildLegend({
-          className, splice, itemIndex, type, typeNamespace,
-          arrayItems, propName
+          className,
+          splice,
+          itemIndex,
+          // type,
+          typeNamespace,
+          arrayItems,
+          propName
         })
-      ], arrayItems);
+      ], arrayItems));
       // We must ensure fieldset is built before passing it
       jml({'#': [
-        ...(buildTypeChoices({
-          resultType,
-          topRoot,
-          format,
+        ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
+          buildTypeChoices
+        )({
+          // resultType,
+          // eslint-disable-next-line object-shorthand -- TS
+          topRoot: /** @type {HTMLDivElement} */ (topRoot),
+          // eslint-disable-next-line object-shorthand, max-len -- TS
+          format: /** @type {import('../formats.js').AvailableFormat} */ (format),
           state: type,
-          itemIndex,
+          // itemIndex,
           typeNamespace
         }).domArray),
         nbsp.repeat(2),
-        ['button', {$on: {click (e) {
+        ['button', {$on: {click (/** @type {Event} */ e) {
           e.preventDefault();
           // e.stopPropagation();
           let splice;
           if (sparse) {
-            const prevInputVal = fieldset.$getPropertyInput().$parseInt();
+            const prevInputVal =
+              /**
+               * @type {HTMLInputElement & {
+               *   $parseInt: ParseInt
+               * }}
+               */ (
+                /**
+                 * @type {HTMLFieldSetElement & {
+                 *   $getPropertyInput: GetPropertyInput
+                 * }}
+                 */ (
+                  fieldset
+                ).$getPropertyInput()).$parseInt();
             splice = prevInputVal === false ? 'append' : prevInputVal;
           }
           thisButton.$addArrayElement({
             splice, alwaysFocus: true
           });
-          const newArrayFieldset = arrayItems.lastElementChild;
+          const newArrayFieldset =
+            /** @type {Element & {$getPropertyInput: GetPropertyInput}} */ (
+              arrayItems.lastElementChild
+            );
           fieldset.after(newArrayFieldset);
           if (sparse) {
-            const newPrevInput = newArrayFieldset.$getPropertyInput();
+            const newPrevInput = /** @type {HTMLInputElement} */ (
+              newArrayFieldset.$getPropertyInput()
+            );
             bringFocus(newPrevInput, true);
           } else {
             DOM.filterChildElements(
@@ -677,31 +1016,56 @@ const arrayType = {
                 'fieldset', 'legend', '.' + className
               ]
             ).forEach((span, i) => {
-              span.textContent = Number.parseInt(i) + itemAdjust;
+              span.textContent = String(i + itemAdjust);
             });
           }
           // Maybe not needed as addition (without renumbering)
           //   wouldn't yet add type
-          Types.validateAllReferences({topRoot});
+          Types.validateAllReferences({
+            // eslint-disable-next-line object-shorthand -- TS
+            topRoot: /** @type {HTMLDivElement} */ (topRoot)
+          });
           arrayItems.$redrawMoveArrows();
         }}}, ['+']],
-        ['button', {$on: {click (e) {
-          e.preventDefault();
-          // e.stopPropagation();
-          fieldset.remove();
-          decrementItemIndex(arrayItems);
-          if (!sparse) {
-            DOM.filterChildElements(arrayItems, [
-              'fieldset', 'legend', '.' + className
-            ]).forEach((span, i) => {
-              span.textContent = Number.parseInt(i) + itemAdjust;
-            });
-          }
-          // Maybe not needed as removal would remove circular
-          Types.validateAllReferences({topRoot});
-          arrayItems.$redrawMoveArrows();
-        }}}, ['x']],
-        ['span', {class: `${type}Item-arrowHolder-${typeNamespace}`}, []]
+        /**
+         * @type {import('jamilih').JamilihArray}
+         */
+        ([
+          'button',
+          // @ts-ignore Can't seem to force optional Event
+          {
+            $on: {
+              click (/** @type {Event} */ e) {
+                e.preventDefault();
+                // e.stopPropagation();
+                fieldset.remove();
+                decrementItemIndex(arrayItems);
+                if (!sparse) {
+                  DOM.filterChildElements(arrayItems, [
+                    'fieldset', 'legend', '.' + className
+                  ]).forEach((span, i) => {
+                    span.textContent = String(i + itemAdjust);
+                  });
+                }
+                // Maybe not needed as removal would remove circular
+                Types.validateAllReferences({
+                  // eslint-disable-next-line object-shorthand -- TS
+                  topRoot: /** @type {HTMLDivElement} */ (topRoot)
+                });
+
+                /**
+                 * @type {HTMLDivElement & {
+                 *   $redrawMoveArrows: RedrawMoveArrows
+                 * }}
+                 */
+                (arrayItems).$redrawMoveArrows();
+              }
+            }
+          }, ['x']
+        ]),
+        ['span', {
+          class: `${type}Item-arrowHolder-${typeNamespace}`
+        }, []]
       ]}, fieldset);
       // Need to validate if adding more than one property (in
       //   case two have empty string)
@@ -709,7 +1073,14 @@ const arrayType = {
         const pns = arrayItems.$getPropertyInputs();
         /* istanbul ignore else -- Just a guard */
         if (pns.length) {
-          const input = pns.pop();
+          const input =
+            /**
+             * @type {HTMLInputElement & {
+             *   $validate: Validate,
+             *   $resort: Resort
+             * }}
+             */
+            (pns.pop());
           input.$validate();
           input.$resort({alwaysFocus});
           bringFocus(input, alwaysFocus);
@@ -718,9 +1089,28 @@ const arrayType = {
       arrayItems.$redrawMoveArrows();
     };
 
+    /**
+     * @callback GetArrayLength
+     * @returns {number}
+     */
+
+    /**
+     * @type {GetArrayLength}
+     * @this {HTMLDivElement}
+     */
     const $getArrayLength = function () {
-      return $e(this.previousElementSibling, 'input').value;
+      return Number(/** @type {HTMLInputElement} */ (
+        $e(/** @type {Element} */ (this.previousElementSibling), 'input')
+      ).value);
     };
+
+    /**
+     * @type {InputsExceedingLength}
+     * @this {HTMLDivElement & {
+     *   $getArrayLength: GetArrayLength,
+     *   $getPropertyInputs: GetPropertyInputs
+     * }}
+     */
     const $inputsExceedingLength = function () {
       const highestExpectedIndex = this.$getArrayLength() - 1;
       return this.$getPropertyInputs().filter(
@@ -738,147 +1128,176 @@ const arrayType = {
         return exceedsLength;
       });
     };
-    const div = jml('div', {
-      dataset: {type},
-      // is: 'array-or-object-editor',
-      $custom: {
-        $addAndSetArrayElement ({
-          propName, type, value, bringIntoFocus
-          // , schemaContent, schemaState
-        }) {
-          this.$addArrayElement({propName});
-          const typeChoices = this.$getTypeChoices();
-          typeChoices.$setType({type, baseValue: value, bringIntoFocus});
-          const root = typeChoices.$getTypeRoot();
-          const typeObj = Types.availableTypes[type];
-          if (typeObj.setValue) typeObj.setValue({root, value});
-          Types.validate({type, root, topRoot});
-          return root;
-        },
-        $getAddArrayElement () {
-          const el = this
-            .lastElementChild.firstElementChild.nextElementSibling;
-          return sparse ? el.nextElementSibling : el;
-        },
-        $addArrayElement ({propName, splice, alwaysFocus}) {
-          const addArrayElement = this.$getAddArrayElement();
-          addArrayElement.$addArrayElement({propName, splice, alwaysFocus});
-        },
-        $getArrayItems () {
-          const addArrayElement = this.$getAddArrayElement();
-          return addArrayElement.previousElementSibling;
-        },
-        $getTypeChoices () {
-          const arrayItems = this.$getArrayItems();
-          return $e(
-            arrayItems.lastElementChild,
-            `.typeChoices-${typeNamespace}`
-          );
-        }
-      },
-      $on: {click (e) {
-        // We needed to stop preventing the default for the
-        //    invalid date checkbox; is this sufficient to prevent
-        //    other stray clicks apparently meant for the array
-        //    and object reference checking?
-        if (e.target.type !== 'checkbox' && e.target.type !== 'radio') {
-          e.preventDefault();
-        }
-      }}
-    }, [
-      DOM.initialCaps(type).replace(/s$/u, ''), nbsp.repeat(2),
-      ['button', {$on: {click (e) {
-        e.preventDefault();
-        const {target} = e;
-        const arrayContents = $e(div, '.arrayContents');
-        arrayContents.hidden = !arrayContents.hidden;
-        target.textContent = arrayContents.hidden ? '+' : '-';
-      }}}, ['-']],
-      ['div', {class: 'arrayContents'}, [
-        sparse
-          ? ['div', [
-            ['label', [
-              'Array length: ',
-              ['input', {
-                type: 'number',
-                value: (value && value.length) || 0,
-                step: 1,
-                size: 4,
-                pattern: '\\d',
-                $on: {
-                  async change () {
-                    const arrayItems = $e(
-                      this.closest('.arrayContents'), '.arrayItems'
-                    );
-                    const propInputsBeyondLength =
-                      arrayItems.$inputsExceedingLength();
-                    try {
-                      if (propInputsBeyondLength.length) {
-                        await dialogs.confirm({
-                          message: 'Your new length will truncate the ' +
-                            'array causing items to be removed. Continue?'
-                        });
-                        propInputsBeyondLength.forEach((input) => {
-                          const fieldset = input.closest('fieldset');
-                          fieldset.remove();
-                        });
-                        // Maybe not needed as removal would remove circular
-                        Types.validateAllReferences({topRoot});
-                      }
-                      this.$oldvalue = this.value;
-                    } catch (err) {
-                      this.value = this.$oldvalue; // Revert
-                    }
-                  }
-                }
-              }]
-            ]]
-          ]]
-          : '',
-        ['div', {
-          class: 'arrayItems',
-          $custom: {
-            $swapGroup, $redrawMoveArrows, $getArrayLength,
-            $inputsExceedingLength,
-            $getPropertyInputs () {
-              return DOM.filterChildElements(
-                this,
-                ['fieldset', 'legend', `input.propertyName-${typeNamespace}`]
-              );
-            }
+    const addArrayElement = /** @type {import('jamilih').JamilihArray} */ (
+      ['button', {
+        class: 'addArrayElement',
+        // is: 'add-array-element',
+        $custom: {
+          $addArrayElement,
+          /**
+           * @type {GetArrayItems}
+           * @this {HTMLDivElement}
+           */
+          $getArrayItems () {
+            return (/**
+               * @type {HTMLDivElement & {
+               *   $inputsExceedingLength: InputsExceedingLength,
+               *   $getPropertyInputs: GetPropertyInputs,
+               *   $redrawMoveArrows: RedrawMoveArrows
+               * }}
+               */
+              (this.previousElementSibling)
+            );
           }
-        }],
-        ['button', {
-          class: 'addArrayElement',
-          // is: 'add-array-element',
-          $custom: {$addArrayElement, $getArrayItems () {
-            return this.previousElementSibling;
-          }},
-          $on: {click () {
-            this.$addArrayElement({alwaysFocus: true});
-            // Maybe not needed as addition (without renumbering)
-            //   wouldn't yet add type
-            Types.validateAllReferences({topRoot});
-          }}
-        }, ['+ Item']],
+        },
+        $on: {click () {
+          /**
+           * @type {HTMLButtonElement & {
+           *   $addArrayElement: AddArrayElement,
+           *   $getArrayItems: GetArrayItems
+           * }}
+           */
+          (this).$addArrayElement({alwaysFocus: true});
+          // Maybe not needed as addition (without renumbering)
+          //   wouldn't yet add type
+          Types.validateAllReferences({
+            // eslint-disable-next-line object-shorthand -- TS
+            topRoot: /** @type {HTMLDivElement} */ (topRoot)
+          });
+        }}
+      }, ['+ Item']]
+    );
+
+    const arrayContentsFirstChild = sparse
+      ? ['div', [
+        ['label', [
+          'Array length: ',
+          ['input', {
+            type: 'number',
+            value: (value && value.length) || 0,
+            step: 1,
+            size: 4,
+            pattern: '\\d',
+            $on: {
+              /**
+               * @this {HTMLInputElement & {
+               *   $oldvalue: string
+               * }}
+               * @returns {Promise<void>}
+               */
+              async change () {
+                const arrayItems = $e(
+                  /** @type {Element} */ (
+                    this.closest('.arrayContents')
+                  ),
+                  '.arrayItems'
+                );
+                const propInputsBeyondLength =
+                  /**
+                   * @type {HTMLElement & {
+                   *   $inputsExceedingLength: InputsExceedingLength
+                   * }}
+                   */
+                  (arrayItems).$inputsExceedingLength();
+                try {
+                  if (propInputsBeyondLength.length) {
+                    await dialogs.confirm({
+                      message: 'Your new length will truncate the ' +
+                        'array causing items to be removed. Continue?'
+                    });
+                    propInputsBeyondLength.forEach((input) => {
+                      const fieldset = /** @type {HTMLFieldSetElement} */ (
+                        input.closest('fieldset')
+                      );
+                      fieldset.remove();
+                    });
+                    // Maybe not needed as removal would remove circular
+                    Types.validateAllReferences({
+                      // eslint-disable-next-line object-shorthand -- TS
+                      topRoot: /** @type {HTMLDivElement} */ (topRoot)
+                    });
+                  }
+                  this.$oldvalue = this.value;
+                } catch (err) {
+                  this.value = this.$oldvalue; // Revert
+                }
+              }
+            }
+          }]
+        ]]
+      ]]
+      : '';
+
+    const arrayItems = ['div', {
+      class: 'arrayItems',
+      $custom: {
+        $swapGroup, $redrawMoveArrows, $getArrayLength,
+        $inputsExceedingLength,
+
+        /**
+         * @type {GetPropertyInputs}
+         * @this {HTMLDivElement}
+         */
+        $getPropertyInputs () {
+          return /** @type {HTMLInputElement[]} */ (DOM.filterChildElements(
+            this,
+            ['fieldset', 'legend', `input.propertyName-${typeNamespace}`]
+          ));
+        }
+      }
+    }];
+
+    const minusButton = ['button', {$on: {click (/** @type {Event} */ e) {
+      e.preventDefault();
+      const {target} = e;
+      const arrayContents = /** @type {HTMLDivElement} */ (
+        $e(div, '.arrayContents')
+      );
+      arrayContents.hidden = !arrayContents.hidden;
+      /** @type {Element} */ (
+        target
+      ).textContent = arrayContents.hidden ? '+' : '-';
+    }}}, ['-']];
+
+    const arrayContents = /** @type {import('jamilih').JamilihArray} */ (
+      ['div', {class: 'arrayContents'}, [
+        arrayContentsFirstChild,
+        arrayItems,
+        addArrayElement,
         ['button', {$on: {click () {
-          const arrayContents = this.closest('.arrayContents');
-          const arrayItems = $e(arrayContents, '.arrayItems');
+          const arrayContents = /** @type {Element} */ (
+            this.closest('.arrayContents')
+          );
+          const arrayItems =
+            // eslint-disable-next-line max-len -- Long
+            /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs;}} */ (
+              $e(arrayContents, '.arrayItems')
+            );
           const lastElement = arrayItems.lastElementChild;
           if (lastElement) {
             lastElement.remove();
             decrementItemIndex(arrayItems);
-            $e(arrayContents, '.arrayItems').$redrawMoveArrows();
+            // eslint-disable-next-line max-len -- Long
+            /** @type {HTMLDivElement & {$redrawMoveArrows: RedrawMoveArrows}} */ (
+              $e(arrayContents, '.arrayItems')
+            ).$redrawMoveArrows();
           }
           // Maybe not needed as removal would remove circular
-          Types.validateAllReferences({topRoot});
+          Types.validateAllReferences({
+            // eslint-disable-next-line object-shorthand -- TS
+            topRoot: /** @type {HTMLDivElement} */ (topRoot)
+          });
         }}}, ['- Last item']],
         // We could only add this when there was more than one
         ['button', {$on: {click () {
-          const arrayItems = $e(
-            this.closest('.arrayContents'),
-            '.arrayItems'
-          );
+          const arrayItems =
+            // eslint-disable-next-line max-len -- Long
+            /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */ ($e(
+              /** @type {Element} */ (
+                /** @type {Element} */ (this).closest('.arrayContents')
+              ),
+              '.arrayItems'
+            ));
           DOM.removeChildren(arrayItems);
           if (sparse) {
             decrementItemIndex(arrayItems);
@@ -886,10 +1305,102 @@ const arrayType = {
             itemIndex = -1;
           }
           // Maybe not needed as removal would remove circular
-          Types.validateAllReferences({topRoot});
+          Types.validateAllReferences({
+            // eslint-disable-next-line object-shorthand -- TS
+            topRoot: /** @type {HTMLDivElement} */ (topRoot)
+          });
         }}}, ['x All']]
       ]]
-    ]);
+    );
+
+    const div = /** @type {HTMLDivElement} */ (
+      jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
+        dataset: {type},
+        // is: 'array-or-object-editor',
+        $custom: {
+          // eslint-disable-next-line max-len -- Long
+          /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
+          $addAndSetArrayElement ({
+            propName, type, value, bringIntoFocus
+            // , schemaContent, schemaState
+          }) {
+            this.$addArrayElement({propName});
+            const typeChoices = this.$getTypeChoices();
+            typeChoices.$setType({type, baseValue: value, bringIntoFocus});
+            const root = typeChoices.$getTypeRoot();
+            const typeObj = /** @type {import('../types.js').TypeObject} */ (
+              Types.availableTypes[type]
+            );
+            if (typeObj.setValue) {
+              typeObj.setValue({root, value});
+            }
+            Types.validate({type, root, topRoot});
+            return root;
+          },
+
+          /**
+           * @typedef {() => Element} GetAddArrayElement
+           */
+
+          /** @type {GetAddArrayElement} */
+          $getAddArrayElement () {
+            const el = this
+              .lastElementChild.firstElementChild.nextElementSibling;
+            return sparse ? el.nextElementSibling : el;
+          },
+          /**
+           * @type {AddArrayElement}
+           * @this {HTMLDivElement & {
+           *   $getAddArrayElement: GetAddArrayElement
+           * }}
+           */
+          // @ts-ignore TS is apparently getting wrong $addArrayElement
+          $addArrayElement ({propName, splice, alwaysFocus}) {
+            const addArrayElement = this.$getAddArrayElement();
+            /**
+             * @type {HTMLButtonElement & {
+             *   $addArrayElement: AddArrayElement,
+             *   $getArrayItems: GetArrayItems
+             * }}
+             */
+            (addArrayElement).$addArrayElement({propName, splice, alwaysFocus});
+          },
+          $getArrayItems () {
+            const addArrayElement = this.$getAddArrayElement();
+            return addArrayElement.previousElementSibling;
+          },
+          $getTypeChoices () {
+            const arrayItems = this.$getArrayItems();
+            return $e(
+              arrayItems.lastElementChild,
+              `.typeChoices-${typeNamespace}`
+            );
+          }
+        },
+        $on: {
+          click (ev) {
+            const e = /** @type {Event} */ (ev);
+            // eslint-disable-next-line prefer-destructuring -- TS
+            const target = /** @type {HTMLInputElement} */ (e.target);
+
+            // We needed to stop preventing the default for the
+            //    invalid date checkbox; is this sufficient to prevent
+            //    other stray clicks apparently meant for the array
+            //    and object reference checking?
+            if (target.type !== 'checkbox' && target.type !== 'radio') {
+              e.preventDefault();
+            }
+          }
+        }
+      }), /** @type {import('jamilih').JamilihChildren} */ ([
+        DOM.initialCaps(
+          /** @type {import('../types.js').AvailableType} */
+          (type)
+        ).replace(/s$/u, ''), nbsp.repeat(2),
+        minusButton,
+        arrayContents
+      ]))
+    );
     topRoot = topRoot || div;
     return [div];
   }

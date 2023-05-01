@@ -1,4 +1,4 @@
-import {jml, body} from '../vendor/jamilih/dist/jml-es.js';
+import {jml, body} from 'jamilih';
 
 import {
   typeChoices,

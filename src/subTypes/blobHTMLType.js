@@ -1,16 +1,25 @@
 /* globals sceditor */
-import {jml} from '../../vendor/jamilih/dist/jml-es.js';
+import {jml} from 'jamilih';
 import {$e} from '../utils/templateUtils.js';
 
 import dialogs from '../utils/dialogs.js';
 import {isNullish} from '../utils/types.js';
 
+/**
+ * @type {import('../types.js').TypeObject & {
+ *   loadBlob: (blob: Blob) => Promise<FileReader>,
+ *   sceditorInstance: {val: (val?: string) => string|void}
+ * }}
+ */
 const blobHTMLType = {
   // Todo (low): Support other content-types
   option: ['Blob (text/html)'],
   stringRegex: /^data:text\/html(?:;base64)?,.*$/u,
   valueMatch: (v) => v.type === 'text/html',
   superType: 'blob',
+  sceditorInstance: {val () {
+    throw new Error('Not yet instantiated');
+  }},
   toValue (s) {
     // Todo (low): `Blob` untested; use https://stackoverflow.com/a/30407840/271577 ?
     /**
@@ -42,7 +51,7 @@ const blobHTMLType = {
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return $e(root, 'textarea');
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
   },
   getValue (/* {root} */) {
     return this.toValue(
@@ -50,7 +59,7 @@ const blobHTMLType = {
       // this.getInput({root}).value
     ).value;
   },
-  loadBlob (value) {
+  loadBlob (blob) {
     const reader = new FileReader();
     // eslint-disable-next-line promise/avoid-new
     return new Promise((resolve, reject) => {
@@ -64,32 +73,35 @@ const blobHTMLType = {
           reject(reader.error);
         }
       );
-      reader.readAsText(value);
+      reader.readAsText(blob);
     });
   },
   async setValue ({/* root, */ value}) {
     const {result} = await this.loadBlob(value);
-    this.sceditorInstance.val(result);
+    this.sceditorInstance.val(/** @type {string} */ (result));
     // this.getInput({root}).value = result;
   },
   viewUI ({value}) {
+    /** @type {string} */
     let val;
-    const div = jml('div', {dataset: {type: 'blobHTML'}}, [
-      'HTML: ',
-      ['button', {$on: {
-        click () {
-          dialogs.alert({message: ['div', [
-            'Source: ',
-            ['textarea', {class: 'view-source'}, [val]]
-          ]]});
-        }
-      }}, ['View source']]
-    ]);
+    const div = /** @type {HTMLDivElement} */ (
+      jml('div', {dataset: {type: 'blobHTML'}}, [
+        'HTML: ',
+        ['button', {$on: {
+          click () {
+            dialogs.alert({message: ['div', [
+              'Source: ',
+              ['textarea', {class: 'view-source'}, [val]]
+            ]]});
+          }
+        }}, ['View source']]
+      ])
+    );
     // eslint-disable-next-line promise/prefer-await-to-then
     this.loadBlob(value).then(({
       result
     }) => {
-      val = result;
+      val = /** @type {string} */ (result);
       jml('iframe', {
         sandbox: '',
         srcdoc: val
@@ -106,10 +118,16 @@ const blobHTMLType = {
     // return ['i', [`data:text/html,${value}`]];
   },
   editUI ({typeNamespace, value}) {
-    const textarea = jml('textarea', {name: `${typeNamespace}-blobHTML`});
-    const root = jml('div', {dataset: {type: 'blobHTML'}}, [
-      textarea
-    ]);
+    const textarea = /** @type {HTMLTextAreaElement} */ (
+      jml('textarea', {name: `${typeNamespace}-blobHTML`})
+    );
+    const root = /** @type {HTMLDivElement} */ (jml(
+      'div',
+      {dataset: {type: 'blobHTML'}},
+      [
+        textarea
+      ]
+    ));
     setTimeout(() => {
       // Push onto these: https://www.sceditor.com/documentation/formats/xhtml/
       // sceditor.formats.xhtml.converters array
@@ -150,7 +168,9 @@ const blobHTMLType = {
       });
       this.sceditorInstance = sceditor.instance(textarea);
       if (!isNullish(value)) {
-        this.setValue({root, value});
+        /** @type {Required<import('../types.js').TypeObject>} */ (
+          this
+        ).setValue({root, value});
       }
     });
     return [root];

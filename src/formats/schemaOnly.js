@@ -3,10 +3,13 @@
   sonarjs/no-empty-collection,
   sonarjs/no-identical-conditions,
   no-constant-binary-expression -- Just debugging */
-import Formats from '../formats.js';
+import {getTypeForFormatStateAndValue} from '../formats.js';
 import * as structuredCloning from './structuredCloning.js';
 import deepEqual from '../deepEqual.js';
 
+/**
+ * @typedef {import('./formats.js').StructuredCloneValue} StructuredCloneValue
+ */
 /**
  * @type {import('./structuredCloning.js').FormatIterator}
  */
@@ -31,11 +34,18 @@ export const iterate = (records, stateObj) => {
   const resolveRef = (/* {schema, possibleSchemaObject} */) => {
     // Todo?
   };
+
+  /**
+   * @param {object} cfg
+   * @param {StructuredCloneValue[]} cfg.list
+   * @param {StructuredCloneValue} cfg.value
+   * @returns {boolean}
+   */
   const valueInEnumList = ({list, value}) => {
     return list.some((en) => deepEqual(en, value));
   };
   const getTypesForValues = ({enumList}) => enumList.map(
-    (value) => Formats.getTypeForFormatStateAndValue({
+    (value) => getTypeForFormatStateAndValue({
       value,
       format: 'structuredCloning',
       state: 'arrayNonindexKeys'

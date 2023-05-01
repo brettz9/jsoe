@@ -1,67 +1,59 @@
-import * as structuredCloning from './structuredCloning.js';
+import structuredCloning from './structuredCloning.js';
 
-// Todo (low): Support ArrayBuffer
-/**
- * @returns {string[]}
- */
-export const types = () => [
-  'number', 'SpecialRealNumber', 'string', 'ValidDate', 'array'
-];
-
-// A hack until we simply pass in our own types or do own parsing
-
-/**
- * @param {string} newType
- * @param {Date|GenericArray} value
- * @returns {boolean}
- */
-export const testInvalid = (newType, value) => {
-  switch (newType) {
-  /* istanbul ignore next -- Shouldn't occur as it is a preset */
-  case 'SpecialRealNumber':
+/** @type {import('../formats.js').Format} */
+const indexedDBKey = {
+  types: () => [
+    'number', 'SpecialRealNumber', 'string', 'ValidDate', 'array'
+  ],
+  // A hack until we simply pass in our own types or do own parsing
+  testInvalid (newType, value) {
+    switch (newType) {
     /* istanbul ignore next -- Shouldn't occur as it is a preset */
-    return Number.isNaN(value);
-  case 'ValidDate':
-    return Number.isNaN(value.getTime());
-  case 'array':
-    return Object.keys(value).length !== value.length;
-  /* istanbul ignore next -- Shouldn't occur */
-  default:
+    case 'SpecialRealNumber':
+      /* istanbul ignore next -- Shouldn't occur as it is a preset */
+      return Number.isNaN(value);
+    case 'ValidDate':
+      return Number.isNaN(/** @type {Date} */ (value).getTime());
+    case 'array':
+      return Object.keys(value).length !==
+      /** @type {Array<import('../formats.js').StructuredCloneValue>} */ (
+        value
+      ).length;
     /* istanbul ignore next -- Shouldn't occur */
+    default:
+      /* istanbul ignore next -- Shouldn't occur */
+      return false; // Todo: Should this throw?
+    }
+  },
+  convertFromTypeson (typesonType) {
+    return typesonToIndexedDBKey.get(typesonType);
+  },
+  iterate (records, stateObj) {
+    stateObj.format = 'indexedDBKey';
+    return structuredCloning.iterate(records, stateObj);
+  },
+  getTypesForState (state) {
+    if (!state || ['array'].includes(state)) {
+      return this.types();
+    }
+    /* istanbul ignore next -- Can't be object, so shouldn't reach here */
     return undefined; // Todo: Should this throw?
   }
 };
 
-/**
- * @param {string} typesonType
- * @returns {string}
- */
-export const convertFromTypeson = (typesonType) => {
-  return {
-    // This shouldn't occur as it is a preset
-    SpecialNumber: 'SpecialRealNumber',
-    date: 'ValidDate',
-    // sparseArrays: 'array',
-    arrayNonindexKeys: 'array'
-  }[typesonType];
-};
+// Todo (low): Support ArrayBuffer
 
 /**
- * @type {import('./structuredCloning.js').FormatIterator}
- */
-export const iterate = (records, stateObj) => {
-  stateObj.format = 'indexedDBKey';
-  return structuredCloning.iterate(records, stateObj);
-};
+ * @type {Map<import('../types.js').AvailableType,
+*   import('../types.js').AvailableType>
+* }
+*/
+const typesonToIndexedDBKey = new Map([
+  // This shouldn't occur as it is a preset
+  ['SpecialNumber', 'SpecialRealNumber'],
+  ['date', 'ValidDate'],
+  // 'sparseArrays', 'array',
+  ['arrayNonindexKeys', 'array']
+]);
 
-/**
- * @param {"array"|undefined} state
- * @returns {undefined|string[]}
- */
-export const getTypesForState = function (state) {
-  if (!state || ['array'].includes(state)) {
-    return this.types();
-  }
-  /* istanbul ignore next -- Can't be object, so shouldn't reach here */
-  return undefined; // Todo: Should this throw?
-};
+export default indexedDBKey;

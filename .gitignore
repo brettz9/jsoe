@@ -5,3 +5,4 @@ coverage
 cypress/downloads
 cypress/screenshots
 instrumented
+dist

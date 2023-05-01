@@ -18,7 +18,7 @@ const bigintType = {
     return {value: BigInt(s.slice(0, -1))};
   },
   getInput ({root}) {
-    return $e(root, 'input');
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = String(value);
@@ -27,7 +27,7 @@ const bigintType = {
     const val = this.getInput({root}).value;
     return {
       message: 'Not a valid BigInt',
-      valid: val && val.match(/^-?(\d+)$/u)
+      valid: Boolean(val && (/^-?(\d+)$/u).test(val))
     };
   },
   getValue ({root}) {

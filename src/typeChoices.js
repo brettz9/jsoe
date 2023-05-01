@@ -1,30 +1,79 @@
+import {jml} from 'jamilih';
 import Formats, {getControlsForFormatAndValue} from './formats.js';
 import Types from './types.js';
-import {jml} from '../vendor/jamilih/dist/jml-es.js';
 
 import {$e, DOM} from './utils/templateUtils.js';
 import dialogs from './utils/dialogs.js';
 
 /**
- * An arbitrary Structured Clone, JSON, etc. value.
- * @typedef {any} StructuredCloneValue
+ * @typedef {(info: {type: string, editUI: Element}) => void} AddTypeAndEditUI
+ */
+
+/**
+ * @typedef {(info?: {
+ *   baseValue?: import('./formats.js').StructuredCloneValue,
+ *   bringIntoFocus?: boolean
+ * }) => void} AddAndValidateEditUI
+ */
+
+/**
+ * @typedef {() => void} SetStyles
+ */
+
+/**
+ * @typedef {Element & {
+ *   $addAndValidateEditUI: AddAndValidateEditUI,
+ *   $setStyles: SetStyles
+ * }} TypeChoicesElementAPI
+ */
+
+/**
+ * @callback GetValue
+ * @param {import('./types.js').StateObject} [stateObj] Will
+ *   auto-set `typeNamespace` and `format`
+ * @param {string} [currentPath]
+ * @returns {import('./formats.js').StructuredCloneValue}
+ */
+
+/**
+ * @callback GetType
+ * @returns {string|null|undefined}
+ */
+
+/**
+ * @callback ValidValuesSet
+ * @returns {boolean}
+ */
+
+/**
+ * @callback SetValue
+ * @param {import('./formats.js').StructuredCloneValue} value
+ * @param {import('./types.js').StateObject} stateObj
+ * @returns {Promise<void>}
  */
 
 /**
  * @callback BuildTypeChoices
- * @param {object} cfg
- * @param {string} cfg.format
- * @param {string} cfg.typeNamespace
- * @param {StructuredCloneValue} cfg.value
- * @param {boolean} [cfg.setValue=false]
- * @param {string} cfg.state
- * @param {string} cfg.keySelectClass
- * @param {boolean} cfg.requireObject
- * @param {boolean} cfg.objectHasValue
- * @param {RootElement} cfg.topRoot Always a `div` element?
- * @param {string} cfg.schema Schema name
- * @param {string} cfg.schemaContent Schema contents
- * @returns {[select: Element, typeContainer: Element]}
+ * @param {{
+ *   format: import('./formats.js').AvailableFormat,
+ *   typeNamespace?: string,
+ *   value?: import('./formats.js').StructuredCloneValue,
+ *   setValue?: boolean,
+ *   state?: string,
+ *   keySelectClass?: string,
+ *   requireObject?: boolean,
+ *   objectHasValue?: boolean,
+ *   topRoot: import('./types.js').RootElement,
+ *   schema?: string,
+ *   schemaContent?: object,
+ * }} cfg
+ * @returns {{
+ *   domArray: [select: Element, typeContainer: Element],
+ *   getValue: GetValue,
+ *   getType: GetType,
+ *   validValuesSet: ValidValuesSet,
+ *   setValue: SetValue
+ * }}
  */
 
 /**
@@ -50,7 +99,7 @@ export const buildTypeChoices = ({
     : Types.getTypeOptionsForFormatAndState(format, state);
 
   let editUI;
-  const sel = jml('select', {
+  const sel = /** @type {HTMLSelectElement} */ (jml('select', {
     hidden: requireObject,
     class: `typeChoices-${typeNamespace}${keySelectClass
       ? ' ' + keySelectClass
@@ -58,15 +107,27 @@ export const buildTypeChoices = ({
     }`,
     // is: 'type-choices',
     $custom: {
+      /**
+       * @param {object} cfg
+       * @param {string} cfg.type
+       * @param {import('./formats.js').StructuredCloneValue} cfg.baseValue
+       * @param {boolean} cfg.bringIntoFocus
+       * @returns {void}
+       */
       $setType ({type, baseValue, bringIntoFocus}) {
         this.value = type;
         this.$setStyles();
         this.$addAndValidateEditUI({baseValue, bringIntoFocus});
       },
+      /**
+       * @type {(info: {type: string}) => void} cfg
+       */
       $setTypeNoEditUI ({type}) {
         this.value = type;
         this.$setStyles();
       },
+
+      /** @type {SetStyles} */
       $setStyles () {
         const {value: type} = this;
         this.dataset.type = type; // Used for styling
@@ -74,7 +135,7 @@ export const buildTypeChoices = ({
         if (parEl.nodeName.toLowerCase() === 'fieldset') {
           parEl.dataset.type = type;
           DOM.filterChildElements(parEl, 'legend').forEach((legend) => {
-            legend.dataset.type = type;
+            /** @type {HTMLElement} */ (legend).dataset.type = type;
           });
         }
       },
@@ -86,6 +147,8 @@ export const buildTypeChoices = ({
         }
         return $e(container, 'div[data-type]');
       },
+
+      /** @type {AddAndValidateEditUI} */
       $addAndValidateEditUI ({baseValue, bringIntoFocus} = {}) {
         const {value: type} = this;
 
@@ -113,10 +176,15 @@ export const buildTypeChoices = ({
         // Needed; Array/object ref somewhere could now be valid or invalid
         Types.validateAllReferences({topRoot});
       },
+
+      /** @type {AddTypeAndEditUI} */
       $addTypeAndEditUI ({type, editUI}) {
         this.$setTypeNoEditUI({type});
         this.$addEditUI({editUI});
       },
+      /**
+       * @type {(info: {editUI: Element}) => void}
+       */
       $addEditUI ({editUI}) {
         const container = this.$getContainer();
         DOM.removeChildren(container);
@@ -128,6 +196,9 @@ export const buildTypeChoices = ({
       $getTopRoot () {
         return topRoot || this.$getTypeRoot();
       },
+      /**
+       * @returns {boolean}
+       */
       $validate () {
         const {value: type} = this;
         const container = this.$getContainer();
@@ -143,14 +214,16 @@ export const buildTypeChoices = ({
     $on: {change (e) {
       // We don't want form `onchange` to run `$checkForKeyDuplicates`
       //   again (through `addAndValidateEditUI`->`validateAllReferences`)
-      e.stopPropagation();
-      this.$addAndValidateEditUI();
-      this.$setStyles();
+      e?.stopPropagation();
+      /** @type {TypeChoicesElementAPI} */ (this).$addAndValidateEditUI();
+      /** @type {TypeChoicesElementAPI} */ (this).$setStyles();
     }}
   }, [
     ['option', {value: ''}, [
       '(Choose a type)'
     ]],
+    // [string, {value: AvailableType; title?: string | undefined;}]
+    // @ts-ignore Apparent TS bug
     ...typeOptions.map(
       ([optText, optAtts]) => [
         'option',
@@ -160,7 +233,7 @@ export const buildTypeChoices = ({
         [optText]
       ]
     )
-  ]);
+  ]));
   if (setValue || (requireObject && !objectHasValue)) {
     setTimeout(async () => {
       if (!setValue) { // if (requireObject && !objectHasValue) {
@@ -179,8 +252,15 @@ export const buildTypeChoices = ({
             schemaContent
           }
         );
-        const type = Types.getTypeForRoot(rootEditUI);
-        sel.$addTypeAndEditUI({type, editUI: rootEditUI});
+        const type = /** @type {string} */ (
+          Types.getTypeForRoot(/** @type {HTMLDivElement} */ (
+            rootEditUI
+          ))
+        );
+        // eslint-disable-next-line max-len -- Long
+        /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
+          sel
+        ).$addTypeAndEditUI({type, editUI: rootEditUI});
       } catch (err) {
         /* istanbul ignore next -- At least some errors handled earlier */
         dialogs.alert({
@@ -193,7 +273,9 @@ export const buildTypeChoices = ({
     });
   }
 
-  const typeContainer = jml('div', {class: 'typeContainer'});
+  const typeContainer = /** @type {HTMLDivElement} */ (
+    jml('div', {class: 'typeContainer'})
+  );
 
   return {
     domArray: [
@@ -201,49 +283,49 @@ export const buildTypeChoices = ({
       typeContainer
     ],
 
-    /**
-     * @param {import('./types.js').StateObject} [stateObj] Will
-     *   auto-set `typeNamespace` and `format`
-     * @param {string} [currentPath]
-     * @returns {StructuredCloneValue}
-     */
+    /** @type {GetValue} */
     getValue (stateObj, currentPath) {
-      const root = $e(typeContainer, 'div[data-type]');
-      return Types.getValueForRoot(root, {
-        typeNamespace,
-        format,
-        ...stateObj
-      }, currentPath);
+      const root = /** @type {HTMLDivElement} */ (
+        $e(typeContainer, 'div[data-type]')
+      );
+      return Types.getValueForRoot(
+        root,
+        /** @type {import('./types.js').StateObject} */ ({
+          typeNamespace,
+          format,
+          ...stateObj
+        }), currentPath
+      );
     },
 
-    /**
-     * @returns {string|undefined}
-     */
+    /** @type {GetType} */
     getType () {
-      const root = $e(typeContainer, 'div[data-type]');
+      const root = /** @type {HTMLDivElement} */ (
+        $e(typeContainer, 'div[data-type]')
+      );
       return Types.getTypeForRoot(root);
     },
 
-    /**
-     * @returns {boolean}
-     */
+    /** @type {ValidValuesSet} */
     validValuesSet () {
-      const root = $e(typeContainer, 'div[data-type]');
-      const form = root.closest('form');
+      const root = /** @type {HTMLDivElement} */ (
+        $e(typeContainer, 'div[data-type]')
+      );
+      const form = /** @type {HTMLFormElement} */ (root.closest('form'));
       return Types.validValuesSet({form, typeNamespace});
     },
 
-    /**
-     * @param {StructuredCloneValue} value
-     * @param {import('./types.js').StateObject} stateObj
-     * @returns {Promise<void>}
-     */
+    /** @type {SetValue} */
     async setValue (value, stateObj) {
-      const rootEditUI = await getControlsForFormatAndValue(
-        format, value, stateObj
+      const rootEditUI = /** @type {HTMLDivElement} */ (
+        await getControlsForFormatAndValue(
+          format, value, stateObj
+        )
       );
-      const type = Types.getTypeForRoot(rootEditUI);
-      sel.$addTypeAndEditUI({type, editUI: rootEditUI});
+      const type = /** @type {string} */ (Types.getTypeForRoot(rootEditUI));
+      /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
+        sel
+      ).$addTypeAndEditUI({type, editUI: rootEditUI});
     }
   };
 };
