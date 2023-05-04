@@ -1,4 +1,4 @@
-import {jml, nbsp} from 'jamilih';
+import {jml, nbsp} from '../vendor-imports.js';
 
 import Types, {getPropertyValueFromLegend} from '../types.js';
 import {$e, U, DOM} from '../utils/templateUtils.js';
@@ -49,12 +49,12 @@ import {
  */
 
 /**
- * @type {import('../types.js').TypeObject & {sparse: boolean|undefined}}
+ * @type {import('../types.js').TypeObject & {sparse?: boolean|undefined}}
  */
 const arrayType = {
   option: ['Array'],
   array: true,
-  sparse: undefined,
+  // sparse: undefined, // Don't add as will be copied
   regexEndings: [',', ']'],
   stringRegexBegin: /^\[/u,
   stringRegexEnd: /^\]/u,

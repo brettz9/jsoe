@@ -11,8 +11,8 @@ dependencies:
     specifier: 3.2.0
     version: 3.2.0
   typeson-registry:
-    specifier: 7.0.0
-    version: 7.0.0
+    specifier: 7.0.1
+    version: 7.0.1
 
 devDependencies:
   '@babel/core':
@@ -6902,8 +6902,8 @@ packages:
     hasBin: true
     dev: true
 
-  /typeson-registry@7.0.0:
-    resolution: {integrity: sha512-Jib2r7bAli8ILsWnf00dQz3Acsr+Rwzn9L1wcfMkM2Q2yLrReJrK+VDs+rXZwqxbOTOqz8JtelZzeKdjuSX8Aw==}
+  /typeson-registry@7.0.1:
+    resolution: {integrity: sha512-4beVUTISklxj/UgLQp1qt/00YY7DISLmgVYrQvVpsR7EunKp266dbbtoAgdvZwkK/wFwG0KTKoXsPWAK1aOfbg==}
     engines: {node: ^14.17.0 || >=16.0.0}
     dependencies:
       base64-arraybuffer-es6: 2.0.1

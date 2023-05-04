@@ -1,6 +1,6 @@
 import {
   Typeson, unescapeKeyPathComponent, structuredCloningThrowing
-} from 'typeson-registry';
+} from '../vendor-imports.js';
 
 import Formats from '../formats.js';
 import Types from '../types.js';

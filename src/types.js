@@ -1,7 +1,9 @@
-import {jml} from 'jamilih';
 import {
+  // jamilih
+  jml,
+  // typeson-registry
   Typeson, getJSONType, structuredCloningThrowing
-} from 'typeson-registry';
+} from './vendor-imports.js';
 
 import Formats from './formats.js';
 
@@ -36,14 +38,21 @@ import SpecialNumberSuperType from './superTypes/SpecialNumberSuperType.js';
  */
 export const getPropertyValueFromLegend = (legend) => {
   const propElem = $e(legend, '*[data-prop="true"]');
-  if (!propElem || !propElem.textContent) {
+  if (!propElem) {
+    throw new Error(
+      'No property on the supplied legend element'
+    );
+  }
+  if (propElem.nodeName.toLowerCase() === 'input') {
+    return /** @type {HTMLInputElement} */ (propElem).value;
+  }
+  if (!propElem.textContent) {
     throw new Error(
       'No property with text present on the supplied legend element'
     );
   }
-  return propElem.nodeName.toLowerCase() === 'input'
-    ? /** @type {HTMLInputElement} */ (propElem).value
-    : String(Number.parseInt(propElem.textContent) - 1); // 1-based to 0-based
+  // 1-based to 0-based
+  return String(Number.parseInt(propElem.textContent) - 1);
 };
 
 const Types = {};
@@ -277,8 +286,8 @@ Types.availableTypes = {
 
 /**
  * @param {[
- *   copyTo: AvailableType, copyFrom: AvailableType
- * ]} replacements
+ *   copyFrom: AvailableType, copyTo: AvailableType
+ * ][]} replacements
  * @returns {void}
  */
 const copyTypeObjs = (replacements) => {
@@ -295,11 +304,13 @@ const copyTypeObjs = (replacements) => {
 
 copyTypeObjs(
   [
-    // @ts-expect-error How to cast?
-    ['date', 'ValidDate'],
+    /** @type {[AvailableType, AvailableType]} */ (
+      ['date', 'ValidDate']
+    ),
     // 'sparseArrays'
-    // @ts-expect-error How to cast?
-    ['array', 'arrayNonindexKeys']
+    /** @type {[AvailableType, AvailableType]} */ (
+      ['array', 'arrayNonindexKeys']
+    )
   ]
 );
 

@@ -1,5 +1,5 @@
 /* eslint-disable promise/avoid-new */
-import {jml, nbsp, body} from 'jamilih';
+import {jml, nbsp, body} from '../vendor-imports.js';
 import {$e} from './templateUtils.js';
 
 /**

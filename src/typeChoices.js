@@ -1,4 +1,4 @@
-import {jml} from 'jamilih';
+import {jml} from './vendor-imports.js';
 import Formats, {getControlsForFormatAndValue} from './formats.js';
 import Types from './types.js';
 
