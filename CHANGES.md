@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.0
+
+- feat: TypeScript types
+
 ## 0.3.0
 
 - feat: negative zero support
