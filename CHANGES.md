@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.1
+
+- fix: add `main`
+
 ## 0.4.0
 
 - feat: TypeScript types
