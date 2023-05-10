@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.2
+
+- fix: TS types
+
 ## 0.4.1
 
 - fix: add `main`

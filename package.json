@@ -1,11 +1,14 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./src/index.js"
+    }
   },
   "description": "Editing of arbitrary JavaScript objects",
   "scripts": {
