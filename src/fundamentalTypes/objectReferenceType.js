@@ -1,4 +1,4 @@
-import Types from '../types.js';
+import arrayReferenceType from './arrayReferenceType.js';
 
 /**
  * @type {import('../types.js').TypeObject & {type: string}}
@@ -8,10 +8,10 @@ const objectReferenceType = {
   type: 'object',
   stringRegex: /^objectRef\((?:|\/[^)]*)\)$/u,
   toValue (...args) {
-    return Types.availableTypes.arrayReference.toValue.apply(this, args);
+    return arrayReferenceType.toValue.apply(this, args);
   },
   resolveReference (...args) {
-    return Types.availableTypes.arrayReference.resolveReference?.apply(
+    return arrayReferenceType.resolveReference?.apply(
       this, args
     );
   },
@@ -26,27 +26,27 @@ const objectReferenceType = {
     }
   },
   getInput (...args) {
-    return Types.availableTypes.arrayReference.getInput.apply(this, args);
+    return arrayReferenceType.getInput.apply(this, args);
   },
   setValue (...args) {
-    return Types.availableTypes.arrayReference.setValue?.apply(this, args);
+    return arrayReferenceType.setValue?.apply(this, args);
   },
   getValue (...args) {
-    return Types.availableTypes.arrayReference.getValue.apply(this, args);
+    return arrayReferenceType.getValue.apply(this, args);
   },
   validate (...args) {
     return /** @type {{message?: string | undefined; valid: boolean;}} */ (
-      Types.availableTypes.arrayReference.validate?.apply(this, args)
+      arrayReferenceType.validate?.apply(this, args)
     );
   },
   validateAll (...args) {
-    return Types.availableTypes.arrayReference.validateAll?.apply(this, args);
+    return arrayReferenceType.validateAll?.apply(this, args);
   },
   viewUI (...args) {
-    return Types.availableTypes.arrayReference.viewUI.apply(this, args);
+    return arrayReferenceType.viewUI.apply(this, args);
   },
   editUI (...args) {
-    return Types.availableTypes.arrayReference.editUI.apply(this, args);
+    return arrayReferenceType.editUI.apply(this, args);
   }
 };
 

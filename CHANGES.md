@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.4
+
+- fix: TS types (make `customValidateAllReferences` optional)
+
 ## 0.4.3
 
 - fix: TS types (`topRoot` optional in `buildTypeChoices`)

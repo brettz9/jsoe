@@ -55,6 +55,172 @@ export const getPropertyValueFromLegend = (legend) => {
   return String(Number.parseInt(propElem.textContent) - 1);
 };
 
+/**
+ * Utility to retrieve the type out of a type root element.
+ * @callback GetTypeForRoot
+ * @param {?RootElement} root
+ * @returns {string|undefined|null} Why would it not exist?
+ */
+
+/**
+ * Utility to get the value out of a type root element with a given
+ *   state and path.
+ * @callback GetValueForRoot
+ * @param {RootElement} root
+ * @param {StateObject} stateObj
+ * @param {string} [currentPath]
+ * @returns {StructuredCloneValue}
+ */
+
+/**
+ * Utility to get the form control (e.g., input element) for a root.
+ * @callback GetFormControlForRoot
+ * @param {RootElement} root
+ * @returns {null|
+ *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|HTMLButtonElement}
+ */
+
+/**
+ * Utility to get the value for a root using its ancestor and state.
+ * @callback GetValueFromRootAncestor
+ * @param {string|Element} selOrEl
+ * @param {StateObject} stateObj
+ * @returns {StructuredCloneValue}
+ */
+
+/**
+ * @callback GetFormControlFromRootAncestor
+ * @param {string|Element} selOrEl
+ * @returns {null|HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
+ *   HTMLButtonElement}
+ */
+
+/**
+ * @callback GetTypesForFormatAndState
+ * @param {string} format
+ * @param {string} [state]
+ * @returns {AvailableType[]|undefined}
+ */
+
+/**
+ * @callback GetOptionForType
+ * @param {AvailableType} type
+ * @returns {[string, {value: AvailableType, title?: string}]}
+ */
+
+/**
+ * @callback GetTypeOptionsForFormatAndState
+ * @param {string} format
+ * @param {string} [parserState]
+ * @returns {[string, {value: AvailableType, title?: string}][]}
+ */
+
+/* eslint-disable jsdoc/valid-types -- readonly reserved */
+/**
+ * @typedef {(cfg: {
+ *   readonly?: boolean,
+ *   resultType?: "both"|"keys"|"values",
+ *   typeNamespace?: string,
+ *   type: AvailableType,
+ *   topRoot?: RootElement,
+ *   bringIntoFocus?: boolean|undefined,
+ *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
+ *   format: import('./formats.js').AvailableFormat,
+ *   schemaContent?: object
+ *   schemaState?: GetPossibleSchemasForPathAndType,
+ *   value: StructuredCloneValue,
+ *   hasValue: boolean,
+ *   replaced?: StructuredCloneValue,
+ * }) => Element} GetUIForModeAndType
+ */
+/* eslint-enable jsdoc/valid-types -- readonly reserved */
+
+/**
+ * @typedef {(cfg: {
+ *   form: HTMLFormElement,
+ *   typeNamespace?: string,
+ *   keySelectClass?: string,
+ * }) => boolean} ValidValuesSet
+ */
+
+/**
+ * @typedef {(cfg: {
+ *   topRoot: RootElement
+ * }) => void} ValidateAllReferences
+ */
+
+/**
+ * @typedef {(cfg: {
+ *   type: AvailableType,
+ *   root: RootElement,
+ *   topRoot?: RootElement
+ * }) => boolean} Validate
+ */
+
+/**
+ * @typedef {(cfg: {
+ *   type: AvailableType,
+ *   root: RootElement,
+ *   value: StructuredCloneValue,
+ * }) => void} SetValue
+ */
+
+/**
+ * @typedef {(s: string, cfg: {
+ *   format: import('./formats.js').AvailableFormat,
+ *   state: string,
+ *   endMatchTypeObjs?: TypeObject[]
+ *   firstRun?: boolean,
+ *   rootHolder?: [
+ *     type: string,
+ *     parent: {[key: string]: any},
+ *     parentPath: string|number,
+ *     path: string
+ *   ][],
+ *   parent: {[key: string]: any},
+ *   parentPath: string|number
+ * }) => [
+*   value: StructuredCloneValue,
+*   remnant: string,
+*   beginOnly: boolean,
+*   assign: boolean
+* ]} GetValueForString
+*/
+
+/**
+ * @typedef {(
+ *   info: {topRoot: HTMLDivElement}
+ * ) => void} CustomValidateAllReferences
+ */
+
+/**
+ * @type {{
+ *   availableTypes: {
+ *     [key in AvailableType]: Partial<TypeObject>|string[]|
+ *       {valid: true}|{sparse: true}
+ *   },
+ *   getTypeForRoot: GetTypeForRoot,
+ *   getValueForRoot: GetValueForRoot,
+ *   getFormControlForRoot: GetFormControlForRoot,
+ *   getValueFromRootAncestor: GetValueFromRootAncestor,
+ *   getFormControlFromRootAncestor: GetFormControlFromRootAncestor,
+ *   getTypesForFormatAndState: GetTypesForFormatAndState,
+ *   getOptionForType: GetOptionForType,
+ *   getTypeOptionsForFormatAndState: GetTypeOptionsForFormatAndState,
+ *   getUIForModeAndType: GetUIForModeAndType,
+ *   contexts: {
+ *     [key: string]: {
+ *       [key: string]: {type: AvailableType, after: AvailableType}[]
+ *     }
+ *   },
+ *   validValuesSet: ValidValuesSet,
+ *   validateAllReferences: ValidateAllReferences,
+ *   validate: Validate,
+ *   setValue: SetValue,
+ *   getValueForString: GetValueForString,
+ *   customValidateAllReferences?: CustomValidateAllReferences
+ * }}
+ */
 const Types = {};
 
 /**
@@ -314,23 +480,17 @@ copyTypeObjs(
   ]
 );
 
-/**
- * Utility to retrieve the type out of a type root element.
- * @public
- * @param {?RootElement} root
- * @returns {string|undefined|null} Why would it not exist?
- */
 Types.getTypeForRoot = (root) => {
   return root && root.dataset.type;
 };
 
 /**
  * @typedef {(
- *     keypath: string,
-*     parentPath: string,
-*     arrayOrObjectPropertyName: string,
-*     valueType: string
-*   ) => StateObject} GetPossibleSchemasForPathAndType
+ *   keypath: string,
+ *   parentPath: string,
+ *   arrayOrObjectPropertyName: string,
+ *   valueType: string
+ * ) => StateObject} GetPossibleSchemasForPathAndType
  */
 
 /**
@@ -351,15 +511,6 @@ Types.getTypeForRoot = (root) => {
  * }} StateObject
  */
 
-/**
- * Utility to get the value out of a type root element with a given
- *   state and path.
- * @public
- * @param {RootElement} root
- * @param {StateObject} stateObj
- * @param {string} [currentPath]
- * @returns {StructuredCloneValue}
- */
 Types.getValueForRoot = (root, stateObj, currentPath) => {
   const typeObject = /** @type {TypeObject} */ (
     Types.availableTypes[
@@ -372,13 +523,6 @@ Types.getValueForRoot = (root, stateObj, currentPath) => {
   });
 };
 
-/**
- * Utility to get the form control (e.g., input element) for a root.
- * @public
- * @param {RootElement} root
- * @returns {null|
- *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|HTMLButtonElement}
- */
 Types.getFormControlForRoot = (root) => {
   const typeObj = /** @type {TypeObject} */ (Types.availableTypes[
     /** @type {AvailableType} */
@@ -391,13 +535,6 @@ Types.getFormControlForRoot = (root) => {
   return typeObj.getInput({root});
 };
 
-/**
- * Utility to get the value for a root using its ancestor and state.
- * @public
- * @param {string|Element} selOrEl
- * @param {StateObject} stateObj
- * @returns {StructuredCloneValue}
- */
 Types.getValueFromRootAncestor = (selOrEl, stateObj) => {
   return Types.getValueForRoot(
     /** @type {RootElement} */
@@ -406,12 +543,6 @@ Types.getValueFromRootAncestor = (selOrEl, stateObj) => {
   );
 };
 
-/**
- * @public
- * @param {string|Element} selOrEl
- * @returns {null|HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
- *   HTMLButtonElement}
- */
 Types.getFormControlFromRootAncestor = (selOrEl) => {
   const root = /** @type {RootElement} */ ($e(selOrEl, 'div[data-type]'));
   if (!root) {
@@ -420,20 +551,10 @@ Types.getFormControlFromRootAncestor = (selOrEl) => {
   return Types.getFormControlForRoot(root);
 };
 
-/**
- * @param {string} format
- * @param {string} [state]
- * @returns {AvailableType[]|undefined}
- */
 Types.getTypesForFormatAndState = (
   format, state
 ) => Formats.availableFormats[format].getTypesForState(state);
 
-/**
- * @public
- * @param {AvailableType} type
- * @returns {[string, {value: AvailableType, title?: string}]}
- */
 Types.getOptionForType = (type) => {
   /** @type {[string, {value?: AvailableType, title?: string}?]} */
   const optInfo = [
@@ -447,12 +568,6 @@ Types.getOptionForType = (type) => {
   );
 };
 
-/**
- * @public
- * @param {string} format
- * @param {string} [parserState]
- * @returns {[string, {value: AvailableType, title?: string}][]}
- */
 Types.getTypeOptionsForFormatAndState = (format, parserState) => {
   const typesForFormatAndState = Types.getTypesForFormatAndState(
     format, parserState
@@ -465,32 +580,11 @@ Types.getTypeOptionsForFormatAndState = (format, parserState) => {
   });
 };
 
-/* eslint-disable jsdoc/valid-types -- readonly reserved */
-/**
- * @public
- * @param {object} cfg
- * @param {boolean} [cfg.readonly]
- * @param {"both"|"keys"|"values"} [cfg.resultType]
- * @param {string} [cfg.typeNamespace]
- * @param {AvailableType} cfg.type
- * @param {RootElement} [cfg.topRoot]
- * @param {boolean|undefined} cfg.bringIntoFocus
- * @param {import('./typeChoices.js').BuildTypeChoices} [cfg.buildTypeChoices]
- * @param {import('./formats.js').AvailableFormat} cfg.format
- * @param {object} [cfg.schemaContent]
- * @param {GetPossibleSchemasForPathAndType} [cfg.schemaState] Not currently
- *   in use
- * @param {StructuredCloneValue} cfg.value
- * @param {boolean} cfg.hasValue
- * @param {StructuredCloneValue} [cfg.replaced]
- * @returns {Element}
- */
 Types.getUIForModeAndType = ({
   readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
   buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
   replaced
 }) => {
-  /* eslint-enable jsdoc/valid-types -- readonly reserved */
   const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
   const arg = hasValue
     ? {
@@ -519,13 +613,6 @@ Types.getUIForModeAndType = ({
   return root;
 };
 
-/**
- * @type {{
- *   [key: string]: {
- *     [key: string]: {type: AvailableType, after: AvailableType}[]
- *   }
- * }}
- */
 Types.contexts = {};
 Object.entries(Types.availableTypes).forEach(([typ, typeObj]) => {
   const type = /** @type {AvailableType} */ (typ);
@@ -546,14 +633,6 @@ Object.entries(Types.availableTypes).forEach(([typ, typeObj]) => {
   }
 });
 
-/**
- * @public
- * @param {object} cfg
- * @param {HTMLFormElement} cfg.form
- * @param {string} [cfg.typeNamespace]
- * @param {string} [cfg.keySelectClass]
- * @returns {boolean}
- */
 Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
   // If form is hidden, don't list errors by default
   if (!form.offsetParent ||
@@ -592,12 +671,6 @@ Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
  * @typedef {HTMLDivElement} RootElement
  */
 
-/**
- * @public
- * @param {object} cfg
- * @param {RootElement} cfg.topRoot
- * @returns {void}
- */
 Types.validateAllReferences = ({topRoot}) => {
   /* istanbul ignore if -- Unreachable? */
   if (!topRoot) {
@@ -619,19 +692,6 @@ Types.validateAllReferences = ({topRoot}) => {
   }
 };
 
-/**
- * @type {null|((info: {topRoot: HTMLDivElement}) => void)}
- */
-Types.customValidateAllReferences = null;
-
-/**
- * @public
- * @param {object} cfg
- * @param {AvailableType} cfg.type
- * @param {RootElement} cfg.root
- * @param {RootElement} [cfg.topRoot]
- * @returns {boolean}
- */
 Types.validate = ({type, root, topRoot}) => {
   const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
   // Todo (low): We limit for now to input boxes which have `validate`
@@ -650,13 +710,6 @@ Types.validate = ({type, root, topRoot}) => {
   return true;
 };
 
-/**
- * @param {object} cfg
- * @param {AvailableType} cfg.type
- * @param {RootElement} cfg.root
- * @param {StructuredCloneValue} cfg.value
- * @returns {void}
- */
 Types.setValue = ({type, root, value}) => {
   const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
   if (typeObj.setValue) {
@@ -683,29 +736,6 @@ function escapeRegex (str) {
 //          format to the URL, but that is still expecting our Router
 //          string syntax)
 
-/**
- * @public
- * @param {string} s
- * @param {object} cfg
- * @param {import('./formats.js').AvailableFormat} cfg.format
- * @param {string} cfg.state
- * @param {TypeObject[]} [cfg.endMatchTypeObjs=[]]
- * @param {boolean} [cfg.firstRun=true]
- * @param {[
- *   type: string,
- *   parent: {[key: string]: any},
- *   parentPath: string|number,
- *   path: string
- * ][]} [cfg.rootHolder=[]]
- * @param {{[key: string]: any}} cfg.parent
- * @param {string|number} cfg.parentPath
- * @returns {[
- *   value: StructuredCloneValue,
- *   remnant: string,
- *   beginOnly: boolean,
- *   assign: boolean
- * ]}
- */
 Types.getValueForString = (s, {
   format, state, endMatchTypeObjs = [], firstRun = true,
   rootHolder = [], parent, parentPath
