@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.5
+
+- fix: TS types (Make `stateObj` argument optional)
+
 ## 0.4.4
 
 - fix: TS types (make `customValidateAllReferences` optional)
