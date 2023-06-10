@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.3
+
+- fix: TS types (`topRoot` optional in `buildTypeChoices`)
+
 ## 0.4.2
 
 - fix: TS types

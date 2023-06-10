@@ -63,7 +63,7 @@ import dialogs from './utils/dialogs.js';
  *   keySelectClass?: string,
  *   requireObject?: boolean,
  *   objectHasValue?: boolean,
- *   topRoot: import('./types.js').RootElement,
+ *   topRoot?: import('./types.js').RootElement,
  *   schema?: string,
  *   schemaContent?: object,
  * }} cfg
