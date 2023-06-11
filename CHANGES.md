@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.4.6
+
+- fix: TS types
+
 ## 0.4.5
 
 - fix: TS types (Make `stateObj` argument optional)

@@ -168,17 +168,17 @@ export const getPropertyValueFromLegend = (legend) => {
 /**
  * @typedef {(s: string, cfg: {
  *   format: import('./formats.js').AvailableFormat,
- *   state: string,
+ *   state?: string,
  *   endMatchTypeObjs?: TypeObject[]
  *   firstRun?: boolean,
  *   rootHolder?: [
  *     type: string,
- *     parent: {[key: string]: any},
- *     parentPath: string|number,
+ *     parent: {[key: string]: any}|undefined,
+ *     parentPath: string|number|undefined,
  *     path: string
  *   ][],
- *   parent: {[key: string]: any},
- *   parentPath: string|number
+ *   parent?: {[key: string]: any},
+ *   parentPath?: string|number
  * }) => [
 *   value: StructuredCloneValue,
 *   remnant: string,
@@ -237,10 +237,13 @@ const Types = {};
  *   endMatchTypeObjs: TypeObject[],
  *   remnant: string,
  *   rootHolder: [
- *     type: string, parent: object, parentPath: string|number, path: string
+ *     type: string,
+ *     parent: object|undefined,
+ *     parentPath: string|number|undefined,
+ *     path: string
  *   ][],
- *   parent: object,
- *   parentPath: string|number
+ *   parent?: object,
+ *   parentPath?: string|number
  * }} RootInfo
  */
 
@@ -861,7 +864,9 @@ Types.getValueForString = (s, {
           if (
             ['array', 'object'].includes(type) && basicType === type
           ) {
-            parent[parentPath] = val;
+            /** @type {{[key: string]: any}} */ (
+              parent
+            )[/** @type {string|number} */ (parentPath)] = val;
           }
         });
         return [topRoot, remnant, beginOnly, assign];

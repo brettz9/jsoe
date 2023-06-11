@@ -5,6 +5,11 @@ import {getControlsForFormatAndValue} from './formats.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
+ * @callback TypeRootGetter
+ * @returns {HTMLDivElement|null}
+ */
+
+/**
  * Defaults to structured cloning.
  * @todo Compose from format metadata, so can make user customizable.
  * @param {object} cfg
@@ -165,11 +170,6 @@ export function formatAndTypeChoices ({
   }, [getFormatAndSchemaChoices({schema, hasKeyPath})]));
 
   /**
-   * @callback TypeRootGetter
-   * @returns {Element|null}
-   */
-
-  /**
    * @callback TypeSelectGetter
    * @returns {HTMLSelectElement|null}
    */
@@ -184,10 +184,10 @@ export function formatAndTypeChoices ({
     jml('div', {class: 'typesHolder', $custom: {
       /**
        * @type {TypeRootGetter}
-       * @this {Element}
+       * @this {HTMLDivElement}
        */
       $getTypeRoot () {
-        return $e(this, 'div[data-type]');
+        return /** @type {HTMLDivElement} */ ($e(this, 'div[data-type]'));
       },
       /**
        * @type {TypeSelectGetter}

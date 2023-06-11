@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('./formatAndTypeChoices.js').TypeRootGetter} TypeRootGetter
+ */
+
 export {default as Types} from './types.js';
 
 export {default as Formats, getControlsForFormatAndValue} from './formats.js';
