@@ -193,7 +193,7 @@ const arrayType = {
   },
   getValue ({root, stateObj = {}, currentPath = ''}) {
     const top = currentPath === '';
-    const arrayItems = /** @type {Element} */ ($e(root, '.arrayItems'));
+    const arrayItems = /** @type {HTMLElement} */ ($e(root, '.arrayItems'));
     const fieldsets = arrayItems.children;
 
     /**
@@ -235,14 +235,14 @@ const arrayType = {
         /** @type {HTMLLegendElement} */ (legend)
       );
       const root = /** @type {HTMLDivElement} */ (
-        $e(fieldset, 'div[data-type]')
+        $e(/** @type {HTMLElement} */ (fieldset), 'div[data-type]')
       );
       /* istanbul ignore if -- Should err first? */
       if (!root) {
         return;
       }
 
-      const objectProperty = $e(/** @type {Element} */ (legend), 'input');
+      const objectProperty = $e(/** @type {HTMLElement} */ (legend), 'input');
       const [isVal, value] = getValOrRef(
         root,
         propVal
@@ -384,12 +384,12 @@ const arrayType = {
           e.preventDefault();
           const {target} = e;
           const arrayContents = /** @type {HTMLDivElement} */ ($e(
-            /** @type {Element} */
-            (/** @type {Element} */ (target).closest('.arrayHolder')),
+            /** @type {HTMLElement} */
+            (/** @type {HTMLElement} */ (target).closest('.arrayHolder')),
             '.arrayContents'
           ));
           arrayContents.hidden = !arrayContents.hidden;
-          /** @type {Element} */ (
+          /** @type {HTMLElement} */ (
             target
           ).textContent = arrayContents.hidden ? '+' : '-';
         }}}, ['-']]),
@@ -451,9 +451,9 @@ const arrayType = {
      */
     const $swapGroup = function (holder, direction) {
       const group = /** @type {HTMLElement} */ (holder.parentElement);
-      const swapGroup = group[
+      const swapGroup = /** @type {HTMLElement} */ (group[
         (direction === 'up' ? 'previousElementSibling' : 'nextElementSibling')
-      ];
+      ]);
       /* istanbul ignore if -- Just a guard */
       if (!swapGroup || swapGroup.nodeName.toLowerCase() !== 'fieldset') {
         return;
@@ -648,7 +648,7 @@ const arrayType = {
         });
         const arrLengthInput = /** @type {HTMLInputElement} */ (
           $e(
-            /** @type {Element} */ (arrayItems.previousElementSibling),
+            /** @type {HTMLElement} */ (arrayItems.previousElementSibling),
             'input'
           )
         );
@@ -1100,7 +1100,7 @@ const arrayType = {
      */
     const $getArrayLength = function () {
       return Number(/** @type {HTMLInputElement} */ (
-        $e(/** @type {Element} */ (this.previousElementSibling), 'input')
+        $e(/** @type {HTMLElement} */ (this.previousElementSibling), 'input')
       ).value);
     };
 
@@ -1187,7 +1187,7 @@ const arrayType = {
                */
               async change () {
                 const arrayItems = $e(
-                  /** @type {Element} */ (
+                  /** @type {HTMLElement} */ (
                     this.closest('.arrayContents')
                   ),
                   '.arrayItems'
@@ -1265,13 +1265,14 @@ const arrayType = {
         arrayItems,
         addArrayElement,
         ['button', {$on: {click () {
-          const arrayContents = /** @type {Element} */ (
+          const arrayContents = /** @type {HTMLElement} */ (
+            // @ts-ignore Erring out of IDE
             this.closest('.arrayContents')
           );
           const arrayItems =
             // eslint-disable-next-line max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs;}} */ (
-              $e(arrayContents, '.arrayItems')
+              $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             );
           const lastElement = arrayItems.lastElementChild;
           if (lastElement) {
@@ -1279,7 +1280,7 @@ const arrayType = {
             decrementItemIndex(arrayItems);
             // eslint-disable-next-line max-len -- Long
             /** @type {HTMLDivElement & {$redrawMoveArrows: RedrawMoveArrows}} */ (
-              $e(arrayContents, '.arrayItems')
+              $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             ).$redrawMoveArrows();
           }
           // Maybe not needed as removal would remove circular
@@ -1293,8 +1294,8 @@ const arrayType = {
           const arrayItems =
             // eslint-disable-next-line max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */ ($e(
-              /** @type {Element} */ (
-                /** @type {Element} */ (this).closest('.arrayContents')
+              /** @type {HTMLElement} */ (
+                /** @type {HTMLElement} */ (this).closest('.arrayContents')
               ),
               '.arrayItems'
             ));

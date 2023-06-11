@@ -6,6 +6,10 @@ import {$e, DOM} from './utils/templateUtils.js';
 import dialogs from './utils/dialogs.js';
 
 /**
+ * @typedef {import('./index.js').SetType} SetType
+ */
+
+/**
  * @typedef {(info: {type: string, editUI: Element}) => void} AddTypeAndEditUI
  */
 
@@ -21,7 +25,7 @@ import dialogs from './utils/dialogs.js';
  */
 
 /**
- * @typedef {Element & {
+ * @typedef {HTMLElement & {
  *   $addAndValidateEditUI: AddAndValidateEditUI,
  *   $setStyles: SetStyles
  * }} TypeChoicesElementAPI
@@ -68,7 +72,7 @@ import dialogs from './utils/dialogs.js';
  *   schemaContent?: object,
  * }} cfg
  * @returns {{
- *   domArray: [select: Element, typeContainer: Element],
+ *   domArray: [select: HTMLElement, typeContainer: HTMLElement],
  *   getValue: GetValue,
  *   getType: GetType,
  *   validValuesSet: ValidValuesSet,
@@ -107,13 +111,7 @@ export const buildTypeChoices = ({
     }`,
     // is: 'type-choices',
     $custom: {
-      /**
-       * @param {object} cfg
-       * @param {string} cfg.type
-       * @param {import('./formats.js').StructuredCloneValue} cfg.baseValue
-       * @param {boolean} cfg.bringIntoFocus
-       * @returns {void}
-       */
+      /** @type {SetType} */
       $setType ({type, baseValue, bringIntoFocus}) {
         this.value = type;
         this.$setStyles();
@@ -183,7 +181,7 @@ export const buildTypeChoices = ({
         this.$addEditUI({editUI});
       },
       /**
-       * @type {(info: {editUI: Element}) => void}
+       * @type {(info: {editUI: HTMLElement}) => void}
        */
       $addEditUI ({editUI}) {
         const container = this.$getContainer();

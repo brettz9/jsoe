@@ -113,6 +113,7 @@ const dateType = {
               $setValidity (legitimateInvalid) {
                 console.log('legitimateInvalid', legitimateInvalid);
                 if (legitimateInvalid === true) {
+                  // @ts-ignore Erring out of IDE
                   /** @type {HTMLInputElement} */ (this).checked = true;
                 }
                 const label = /** @type {HTMLLabelElement} */ (
@@ -128,8 +129,9 @@ const dateType = {
               }
             },
             $on: {
+              // @ts-ignore Erring out of IDE
               click (e) {
-                /** @type {Element & {$setValidity: SetValidity}} */ (
+                /** @type {HTMLElement & {$setValidity: SetValidity}} */ (
                   this
                 ).$setValidity();
               }

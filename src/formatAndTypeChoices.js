@@ -163,7 +163,7 @@ export function formatAndTypeChoices ({
       }
     },
     $on: {change () {
-      /** @type {Element & {$buildTypeChoices: TypeChoiceBuilder}} */ (
+      /** @type {HTMLElement & {$buildTypeChoices: TypeChoiceBuilder}} */ (
         this
       ).$buildTypeChoices();
     }}

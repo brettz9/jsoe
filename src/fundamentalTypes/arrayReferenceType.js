@@ -109,7 +109,7 @@ const arrayReferenceType = {
         //    order)
         const legends = DOM.filterChildElements(
           // Ensure we are only getting one array level at a time
-          /** @type {Element} */ ($e(referent, '.arrayItems')),
+          /** @type {HTMLElement} */ ($e(referent, '.arrayItems')),
           ['fieldset', 'legend']
         );
         const childPropertyValues = legends.map(
@@ -123,7 +123,7 @@ const arrayReferenceType = {
           return true;
         }
         referent = /** @type {HTMLDivElement} */ ($e(
-          /** @type {Element} */ (legends[partMatchIndex].parentElement),
+          /** @type {HTMLElement} */ (legends[partMatchIndex].parentElement),
           'div[data-type]'
         ));
         if (referent === root) {

@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.5.0
+
+- chore: update `jamilih`, `typeson-registry`, devDeps.;
+  use nodeNext moduleResolution
+
 ## 0.4.6
 
 - fix: TS types

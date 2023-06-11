@@ -19,11 +19,11 @@ import json from './json.js';
  *   bringIntoFocus?: boolean,
  *   schemaContent?: object,
  *   schemaState?: import('../types.js').GetPossibleSchemasForPathAndType
- * }) => Element} AddAndSetArrayElement
+ * }) => HTMLElement} AddAndSetArrayElement
  */
 
 /**
- * @typedef {import('typeson-registry').ObserverData} EncapsulateObserver
+ * @typedef {import('typeson-registry').EncapsulateObserver} EncapsulateObserver
  */
 
 /**
@@ -39,7 +39,7 @@ const encapsulateObserver = (stateObj) => {
   const format = /** @type {import('../formats.js').AvailableFormat} */ (frmt);
 
   /**
-   * @type {{[key: string]: Element & {
+   * @type {{[key: string]: HTMLElement & {
    *   $addAndSetArrayElement: AddAndSetArrayElement
    * }}}
    */
@@ -149,7 +149,7 @@ const encapsulateObserver = (stateObj) => {
         replaced
       });
       parents[''] = /**
-      * @type {Element &
+      * @type {HTMLElement &
       *   {$addAndSetArrayElement: AddAndSetArrayElement}}
       */ (stateObj.rootUI);
       return;
@@ -205,7 +205,7 @@ const encapsulateObserver = (stateObj) => {
 
       if (hasChildren) {
         parents[keypath] = /**
-          * @type {Element &
+          * @type {HTMLElement &
           *   {$addAndSetArrayElement: AddAndSetArrayElement}}
           */ (
             root

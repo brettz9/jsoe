@@ -6,18 +6,20 @@ const U = {nbsp, upArrow, downArrow};
 
 /**
  * @param {string} sel
- * @returns {Element|null}
+ * @returns {HTMLElement|null}
  */
 const $ = (sel) => document.querySelector(sel);
 
 /**
  * @param {string} sel
- * @returns {Element[]}
+ * @returns {HTMLElement[]}
  */
-const $$ = (sel) => [...document.querySelectorAll(sel)];
+const $$ = (sel) => [...(/** @type {NodeListOf<HTMLElement>} */ (
+  document.querySelectorAll(sel)
+))];
 
 /**
- * @param {Element|string} el
+ * @param {HTMLElement|string} el
  * @param {string} descendentsSel
  * @returns {HTMLElement|null}
  */
@@ -30,16 +32,18 @@ const $e = (el, descendentsSel) => {
 };
 
 /**
- * @param {Element|string} el
+ * @param {HTMLElement|string} el
  * @param {string} descendentsSel
- * @returns {Element[]}
+ * @returns {HTMLElement[]}
  */
 const $$e = (el, descendentsSel) => {
   const elem = typeof el === 'string' ? $(el) : el;
   if (!elem) {
     return [];
   }
-  return [...elem.querySelectorAll(descendentsSel)];
+  return [...(/** @type {NodeListOf<HTMLElement>} */ (
+    elem.querySelectorAll(descendentsSel)
+  ))];
 };
 
 /**
@@ -57,7 +61,7 @@ const removeChildren = (node) => {
 };
 
 /**
- * @param {Element|string} sel
+ * @param {HTMLElement|string} sel
  * @returns {void}
  */
 const removeIfExists = (sel) => {
@@ -68,22 +72,22 @@ const removeIfExists = (sel) => {
 };
 
 /**
- * @param {Element} el
+ * @param {HTMLElement} el
  * @param {string|string[]} selectors
- * @returns {Element[]}
+ * @returns {HTMLElement[]}
  */
 const filterChildElements = (el, selectors) => {
   /**
-   * @param {Element} el
+   * @param {HTMLElement} el
    * @param {string} sel
-   * @returns {Element[]}
+   * @returns {HTMLElement[]}
    */
   const getMatchingChildrenForElement = (el, sel) => {
     const childElements = el.children;
     const matchingChildElements = [...childElements].filter((el) => {
       return el.matches(sel);
     });
-    return matchingChildElements;
+    return /** @type {HTMLElement[]} */ (matchingChildElements);
   };
   const elem = typeof el === 'string' ? $(el) : el;
   if (!elem) {
@@ -98,7 +102,7 @@ const filterChildElements = (el, selectors) => {
       }
       els.push(...getMatchingChildrenForElement(childElement, sel));
       return els;
-    }, /** @type {Element[]} */ ([]));
+    }, /** @type {HTMLElement[]} */ ([]));
   });
   return filtered;
 };

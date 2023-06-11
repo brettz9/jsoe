@@ -83,14 +83,14 @@ export const getPropertyValueFromLegend = (legend) => {
 /**
  * Utility to get the value for a root using its ancestor and state.
  * @callback GetValueFromRootAncestor
- * @param {string|Element} selOrEl
+ * @param {string|HTMLElement} selOrEl
  * @param {StateObject} stateObj
  * @returns {StructuredCloneValue}
  */
 
 /**
  * @callback GetFormControlFromRootAncestor
- * @param {string|Element} selOrEl
+ * @param {string|HTMLElement} selOrEl
  * @returns {null|HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
  *   HTMLButtonElement}
  */
@@ -131,7 +131,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   value: StructuredCloneValue,
  *   hasValue: boolean,
  *   replaced?: StructuredCloneValue,
- * }) => Element} GetUIForModeAndType
+ * }) => HTMLElement} GetUIForModeAndType
  */
 /* eslint-enable jsdoc/valid-types -- readonly reserved */
 

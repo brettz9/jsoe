@@ -78,8 +78,9 @@ const dialogs = {
     jml('div', {class: submitClass}, [
       ['br'], ['br'],
       ['button', {class: cancelClass, $on: {
+        // @ts-ignore Erring out of IDE
         click (e) {
-          e?.preventDefault();
+          e.preventDefault();
           if (cancel) {
             if (
               cancel.call(
