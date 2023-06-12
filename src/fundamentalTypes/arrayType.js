@@ -87,7 +87,11 @@ const arrayType = {
     const checkEnd = (beginOnly) => {
       if (beginOnly && endMatchTypeObjs.length) {
         const endMatch = stringVal.match(
-          /** @type {RegExp} */ (endMatchTypeObjs.slice(-1)[0].stringRegexEnd)
+          /** @type {RegExp} */ (
+            /** @type {import('../types.js').TypeObject} */ (
+              endMatchTypeObjs.at(-1)
+            ).stringRegexEnd
+          )
         );
         if (endMatch) {
           endMatchTypeObjs.pop(); // Safe now to extract
@@ -652,9 +656,9 @@ const arrayType = {
             'input'
           )
         );
-        const highest = inputsExceedingLength.map(
+        const highest = /** @type {number} */ (inputsExceedingLength.map(
           (i) => Number.parseInt(i.value)
-        ).sort().slice(-1)[0];
+        ).sort().at(-1));
         arrLengthInput.value = String(highest + 1);
         return this.$validateLength(true);
       };

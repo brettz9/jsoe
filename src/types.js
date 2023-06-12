@@ -727,7 +727,7 @@ Types.setValue = ({type, root, value}) => {
  */
 function escapeRegex (str) {
   return String(str)
-    .replace(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
+    .replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
 }
 
 // Todo (low): Should really add real parser
@@ -838,7 +838,9 @@ Types.getValueForString = (s, {
 
     if (beginOnly && endMatchTypeObjs.length) {
       const endMatch = remnant.match(
-        /** @type {RegExp} */ (endMatchTypeObjs.slice(-1)[0].stringRegexEnd)
+        /** @type {RegExp} */ (/** @type {TypeObject} */ (
+          endMatchTypeObjs.at(-1)
+        ).stringRegexEnd)
       );
       if (endMatch) {
         endMatchTypeObjs.pop(); // Safe now to extract

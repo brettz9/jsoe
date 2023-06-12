@@ -1,4 +1,3 @@
-
 const nbsp = '\u00A0';
 const upArrow = '\u2191';
 const downArrow = '\u2193';

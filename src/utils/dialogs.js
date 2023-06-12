@@ -18,7 +18,7 @@ const dialogs = {
   /** @type {Locale} */
   localeStrings: {},
   /**
-   * @param {Locale} [locale={}]
+   * @param {Locale} [locale]
    * @returns {void}
    */
   setLocale (locale = {}) {
@@ -100,7 +100,7 @@ const dialogs = {
   /**
    * @param {object} cfg
    * @param {(info: {e: Event, dialog: HTMLDialogElement}) => void} cfg.submit
-   * @param {string} [cfg.submitClass="submit"]
+   * @param {string} [cfg.submitClass]
    * @param {MakeCancelArgs} [cfg.args]
    * @returns {HTMLDialogElement}
    */
@@ -149,9 +149,9 @@ const dialogs = {
   },
   /**
    * @param {object} cfg
-   * @param {import('jamilih').JamilihAttributes} [cfg.atts={}]
+   * @param {import('jamilih').JamilihAttributes} [cfg.atts]
    * @param {string|{message: string}} cfg.message
-   * @param {string} [cfg.submitClass="submit"]
+   * @param {string} [cfg.submitClass]
    */
   confirm ({atts = {}, message, submitClass = 'submit'}) {
     ({message} = typeof message === 'string' ? {message} : message);

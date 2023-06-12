@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@brettz9/node-static": "^0.1.1",
-    "jamilih": "0.58.1",
+    "jamilih": "0.58.2",
     "sceditor": "3.2.0",
     "typeson-registry": "7.2.1"
   },
@@ -87,7 +87,7 @@
     "nyc": "^15.1.0",
     "open-cli": "^7.2.0",
     "rimraf": "^5.0.1",
-    "rollup": "3.25.0",
+    "rollup": "3.25.1",
     "rollup-plugin-istanbul": "^4.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "typescript": "^5.1.3"

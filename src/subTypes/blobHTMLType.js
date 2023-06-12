@@ -7,7 +7,7 @@ import {isNullish} from '../utils/types.js';
 
 /**
  * @type {import('../types.js').TypeObject & {
- *   loadBlob: (blob: Blob) => Promise<FileReader>,
+ *   loadBlob: (blob: Blob) => Promise<string>,
  *   sceditorInstance: {val: (val?: string) => string|void}
  * }}
  */
@@ -59,25 +59,11 @@ const blobHTMLType = {
       // this.getInput({root}).value
     ).value;
   },
-  loadBlob (blob) {
-    const reader = new FileReader();
-    // eslint-disable-next-line promise/avoid-new
-    return new Promise((resolve, reject) => {
-      reader.addEventListener('loadend', () => {
-        resolve(reader);
-      });
-      reader.addEventListener(
-        'error',
-        /* istanbul ignore next -- How to simulate? */
-        (_e) => {
-          reject(reader.error);
-        }
-      );
-      reader.readAsText(blob);
-    });
+  async loadBlob (blob) {
+    return await blob.text();
   },
   async setValue ({/* root, */ value}) {
-    const {result} = await this.loadBlob(value);
+    const result = await this.loadBlob(value);
     this.sceditorInstance.val(/** @type {string} */ (result));
     // this.getInput({root}).value = result;
   },
@@ -98,9 +84,9 @@ const blobHTMLType = {
       ])
     );
     // eslint-disable-next-line promise/prefer-await-to-then
-    this.loadBlob(value).then(({
+    this.loadBlob(value).then((
       result
-    }) => {
+    ) => {
       val = /** @type {string} */ (result);
       jml('iframe', {
         sandbox: '',

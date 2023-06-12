@@ -49,6 +49,7 @@ module.exports = {
       'Object.values',
       'Promise',
       'Set',
+      'String.replaceAll',
       'Uint8Array',
       'URL',
       'URLSearchParams',
