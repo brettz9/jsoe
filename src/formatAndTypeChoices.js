@@ -111,7 +111,7 @@ export function formatAndTypeChoices ({
   typeNamespace
 }) {
   const format = 'structuredCloning';
-  const formatChoices = /** @type {HTMLSelectElement} */ (jml('select', {
+  const formatChoices = /** @type {FormatChoices} */ (jml('select', {
     class: 'formatChoices',
     hidden: singleValue,
     // is: 'main-type-choices',
@@ -130,9 +130,10 @@ export function formatAndTypeChoices ({
        */
 
       /**
-       * @typedef {HTMLSelectElement} FormatChoices
-       * @property {SetFormat} $setFormat
-       * @property {TypeChoiceBuilder} $buildTypeChoices
+       * @typedef {HTMLSelectElement & {
+       *   $setFormat: SetFormat,
+       *   $buildTypeChoices: TypeChoiceBuilder
+       * }} FormatChoices
        */
 
       /**

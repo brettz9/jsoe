@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.5.1
+
+- fix: TS types
+
 ## 0.5.0
 
 - chore: update `jamilih`, `typeson-registry`, devDeps.;
