@@ -18,7 +18,7 @@ const $$ = (sel) => [...(/** @type {NodeListOf<HTMLElement>} */ (
 ))];
 
 /**
- * @param {HTMLElement|string} el
+ * @param {Element|HTMLElement|string} el
  * @param {string} descendentsSel
  * @returns {HTMLElement|null}
  */

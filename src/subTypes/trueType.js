@@ -25,7 +25,7 @@ const trueType = {
         'True',
         ['input', {
           type: 'radio', name: `${typeNamespace}-true${this.ct}`,
-          value: 'true', checked: true, disabled: true
+          value: 'true', checked: true
         }]
       ]],
       ['label', [

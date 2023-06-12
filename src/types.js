@@ -21,6 +21,7 @@ import objectReferenceType from './fundamentalTypes/objectReferenceType.js';
 import arrayType from './fundamentalTypes/arrayType.js';
 import objectType from './fundamentalTypes/objectType.js';
 import dateType from './fundamentalTypes/dateType.js';
+import setType from './fundamentalTypes/setType.js';
 import undefinedType from './fundamentalTypes/undefinedType.js';
 import regexpType from './fundamentalTypes/regexpType.js';
 import BooleanObjectType from './fundamentalTypes/BooleanObjectType.js';
@@ -196,8 +197,7 @@ export const getPropertyValueFromLegend = (legend) => {
 /**
  * @type {{
  *   availableTypes: {
- *     [key in AvailableType]: Partial<TypeObject>|string[]|
- *       {valid: true}|{sparse: true}
+ *     [key in AvailableType]: Partial<TypeObject>|string[]
  *   },
  *   getTypeForRoot: GetTypeForRoot,
  *   getValueForRoot: GetValueForRoot,
@@ -254,6 +254,12 @@ const Types = {};
  * ]} option Creates the option HTML. May set an option `title` or `value`
  * @property {boolean} [array] Private context variable. Whether or not
  *   it is an array. Do not use in other types.
+ * @property {boolean} [set] Private context variable. Whether or not
+ *   it is a set. Do not use in other types.
+ * @property {boolean} [sparse] Private context variable. Whether or not
+ *   it is a sparse array. Do not use in other types.
+ * @property {boolean} [valid] Private context variable. Whether or not
+ *   it is a valid date. Do not use in other types.
  * @property {string[]} [regexEndings] Used for string parsing.
  * @property {RegExp|((nonGrouping?: boolean) => RegExp)} [stringRegex] Used
  *   for string parsing. If not present, use `stringRegexBegin` and
@@ -358,9 +364,7 @@ Types.availableTypes = {
   map: {
     option: ['Map']
   },
-  set: {
-    option: ['Set']
-  },
+  set: setType,
 
   file: {
     option: ['File']

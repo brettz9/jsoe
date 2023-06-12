@@ -35,7 +35,7 @@ const arrayReferenceType = {
     structuredCloning: {
       // after: 'sparseArrays',
       after: 'arrayNonindexKeys',
-      contexts: ['arrayNonindexKeys', 'object']
+      contexts: ['arrayNonindexKeys', 'object', 'set']
       // contexts: ['sparseArrays', 'object']
     }
   },

@@ -22,8 +22,7 @@ const nullType = {
         ['input', {
           type: 'checkbox',
           name: `${typeNamespace}-null`,
-          checked: true,
-          disabled: true
+          checked: true
         }]
       ]]
     ]];

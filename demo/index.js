@@ -1,4 +1,4 @@
-import {jml, body} from '../src/vendor-imports.js';
+import {jml, body, $} from '../src/vendor-imports.js';
 
 import {
   typeChoices,
@@ -48,6 +48,24 @@ jml('section', {role: 'main'}, [
       }
     }
   }, ['Log value']],
+
+  ['button', {
+    $on: {
+      async click () {
+        const controls = await getControlsForFormatAndValue(
+          'structuredCloning',
+          keyPathNotExpectedTypeChoices.getValue(),
+          {
+            readonly: true
+          }
+        );
+        $('#viewUIResults').firstChild?.remove();
+        $('#viewUIResults').append(controls);
+      }
+    }
+  }, ['view UI']],
+
+  ['div', {id: 'viewUIResults'}],
 
   ['button', {
     $on: {

@@ -64,6 +64,9 @@ const encapsulateObserver = (stateObj) => {
     if (cyclic === 'readonly' && !Array.isArray(observerObj.value)) {
       return;
     }
+    if (cyclic === 'readonly' && type === 'set') {
+      return;
+    }
     if (endIterateIn || endIterateOwn) {
       return;
     }
@@ -119,7 +122,7 @@ const encapsulateObserver = (stateObj) => {
     const parentPath = li === -1 ? '' : keypath.slice(0, li);
 
     const hasChildren = [
-      'array', 'object',
+      'array', 'object', 'set',
       // 'sparseArrays',
       'arrayNonindexKeys'
     ].includes(newType);
@@ -381,9 +384,10 @@ const structuredCloning = {
       'BooleanObject',
       'NumberObject',
       'StringObject',
-      'blobHTML'
+      'blobHTML',
+      'set'
       // Ok, but will need some work
-      //     'map', 'set',
+      //     'map',
       //     'blob', 'file', 'filelist'
       //     'arraybuffer', 'arraybufferview'
       //     'dataview', 'imagedata', 'imagebitmap',

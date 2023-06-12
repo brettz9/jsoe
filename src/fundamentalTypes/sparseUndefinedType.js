@@ -38,8 +38,7 @@ const sparseUndefinedType = {
         ['input', {
           type: 'checkbox',
           name: `${typeNamespace}-sparseUndefined`,
-          checked: true,
-          disabled: true
+          checked: true
         }]
       ]]
     ]];

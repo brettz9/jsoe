@@ -16,7 +16,7 @@ const falseType = {
   ct: 0,
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input[value=false]'));
   },
   editUI ({typeNamespace}) {
     this.ct++;
@@ -32,7 +32,7 @@ const falseType = {
         'False',
         ['input', {
           type: 'radio', name: `${typeNamespace}-false${this.ct}`,
-          value: 'false', checked: true, disabled: true
+          value: 'false', checked: true
         }]
       ]]
     ]];
