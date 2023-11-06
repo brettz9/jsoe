@@ -22,6 +22,7 @@ import arrayType from './fundamentalTypes/arrayType.js';
 import objectType from './fundamentalTypes/objectType.js';
 import dateType from './fundamentalTypes/dateType.js';
 import setType from './fundamentalTypes/setType.js';
+import mapType from './fundamentalTypes/mapType.js';
 import undefinedType from './fundamentalTypes/undefinedType.js';
 import regexpType from './fundamentalTypes/regexpType.js';
 import BooleanObjectType from './fundamentalTypes/BooleanObjectType.js';
@@ -254,6 +255,8 @@ const Types = {};
  * ]} option Creates the option HTML. May set an option `title` or `value`
  * @property {boolean} [array] Private context variable. Whether or not
  *   it is an array. Do not use in other types.
+ * @property {boolean} [map] Private context variable. Whether or not
+ *   it is a Map. Do not use in other types.
  * @property {boolean} [set] Private context variable. Whether or not
  *   it is a set. Do not use in other types.
  * @property {boolean} [sparse] Private context variable. Whether or not
@@ -361,9 +364,7 @@ Types.availableTypes = {
   NumberObject: NumberObjectType,
   StringObject: StringObjectType,
 
-  map: {
-    option: ['Map']
-  },
+  map: mapType,
   set: setType,
 
   file: {

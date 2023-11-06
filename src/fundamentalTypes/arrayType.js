@@ -49,6 +49,26 @@ import {
  */
 
 /**
+ * @typedef {any} AnyValue
+ */
+
+/**
+ * Algorithm used for checking key identity in `Map`'s.
+ * @param {AnyValue} x
+ * @param {AnyValue} y
+ * @returns {boolean}
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value-zero_equality
+ */
+function sameValueZero (x, y) {
+  if (typeof x === 'number' && typeof y === 'number') {
+    // x and y are equal (may be -0 and 0) or they are both NaN
+    // eslint-disable-next-line no-self-compare -- Not pointless with -0
+    return x === y || (x !== x && y !== y);
+  }
+  return x === y;
+}
+
+/**
  * @type {import('../types.js').TypeObject & {sparse?: boolean|undefined}}
  */
 const arrayType = {
@@ -432,7 +452,9 @@ const arrayType = {
     const parentTypeObject = this;
     const itemAdjust = type === 'object' ? 1 : 0;
     let itemIndex = itemAdjust - 1;
-    const editableProperties = type !== 'array' && type !== 'set';
+    const editableProperties = type !== 'array' &&
+      type !== 'set' && type !== 'map';
+    const mapProperties = type === 'map';
 
     /**
      * @param {HTMLInputElement} input
@@ -666,6 +688,30 @@ const arrayType = {
         arrLengthInput.value = String(highest + 1);
         return this.$validateLength(true);
       };
+      if (mapProperties) {
+        const keyTypeSelection =
+          /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
+            buildTypeChoices
+          )({
+            format: 'structuredCloning',
+            typeNamespace: 'key-type-choices-only'
+          });
+        return ['legend', [
+          'Key ',
+          ['span', {className}, [String(itemIndex)]],
+          ':',
+          nbsp.repeat(2),
+
+          ...keyTypeSelection.domArray
+          // validateMapKey (onchange)
+          //    sameValueZero();
+          // dataset: {map: true},
+          // Types.validateAllReferences({
+          //   // eslint-disable-next-line object-shorthand -- TS
+          //   topRoot: /** @type {HTMLDivElement} */ (topRoot)
+          // }); // Needed
+        ]];
+      }
       if (editableProperties) {
         return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse

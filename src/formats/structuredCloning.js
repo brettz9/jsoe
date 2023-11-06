@@ -385,7 +385,8 @@ const structuredCloning = {
       'NumberObject',
       'StringObject',
       'blobHTML',
-      'set'
+      'set',
+      'map'
       // Ok, but will need some work
       //     'map',
       //     'blob', 'file', 'filelist'
