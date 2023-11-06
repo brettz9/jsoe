@@ -14,7 +14,7 @@ const sparseUndefinedType = {
       ]
     }
   },
-  toValue (_s) {
+  toValue (/* _s */) {
     return {value: undefined};
   },
   getValue () {

@@ -6,7 +6,7 @@ import {$e} from '../utils/templateUtils.js';
 const trueType = {
   option: ['Boolean (true)', {value: 'true'}],
   stringRegex: /^true$/u,
-  toValue: (_s) => ({value: true}),
+  toValue: (/* _s */) => ({value: true}),
   valueMatch: (v) => v === true,
   superType: 'boolean',
   getValue: () => true,

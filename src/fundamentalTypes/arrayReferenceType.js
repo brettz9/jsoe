@@ -47,7 +47,7 @@ const arrayReferenceType = {
   },
   getValue ({root, stateObj, currentPath}) {
     const referentPath = this.getInput({root}).value;
-    // eslint-disable-next-line max-len -- Long
+    // eslint-disable-next-line @stylistic/max-len -- Long
     /* istanbul ignore else -- ArrayRef will not be a root, so should have stateObj */
     if (stateObj) {
       if (!stateObj.paths) {

@@ -283,7 +283,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
   }
   console.log('ret', ret);
   allowableTypes.some((allowableType) => {
-    // eslint-disable-next-line max-len -- Long
+    // eslint-disable-next-line @stylistic/max-len -- Long
     const typeObj = /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
       Types.availableTypes[allowableType]
     );

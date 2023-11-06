@@ -21,7 +21,7 @@ import {$e, DOM} from './utils/templateUtils.js';
  */
 export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
   const hasSchema = typeof schema === 'string';
-  // eslint-disable-next-line max-len -- Long
+  // eslint-disable-next-line @stylistic/max-len -- Long
   return /** @type {[optText: string, opts: {value: string, selected?: boolean}][]} */ ([
     ['JSON only', {value: 'json'}],
     ...(hasKeyPath
@@ -228,7 +228,7 @@ export function formatAndTypeChoices ({
      * @returns {import('./formats.js').StructuredCloneValue}
      */
     getValue (stateObj, currentPath) {
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
         typesHolder
       ).$getTypeRoot();
@@ -245,7 +245,7 @@ export function formatAndTypeChoices ({
      * @returns {string|null|undefined}
      */
     getType () {
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
         typesHolder
       ).$getTypeRoot();
@@ -256,7 +256,7 @@ export function formatAndTypeChoices ({
      * @returns {boolean}
      */
     validValuesSet () {
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
         typesHolder
       ).$getTypeRoot();
@@ -278,11 +278,11 @@ export function formatAndTypeChoices ({
         )
       );
       const type = /** @type {string} */ (Types.getTypeForRoot(rootEditUI));
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       const sel = /** @type {HTMLDivElement & {$getTypeSelect: TypeSelectGetter}} */ (
         typesHolder
       ).$getTypeSelect();
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       /** @type {HTMLSelectElement & {$addTypeAndEditUI: import('./typeChoices.js').AddTypeAndEditUI}} */ (
         sel
       ).$addTypeAndEditUI({type, editUI: rootEditUI});

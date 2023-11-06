@@ -78,7 +78,6 @@ const dialogs = {
     jml('div', {class: submitClass}, [
       ['br'], ['br'],
       ['button', {class: cancelClass, $on: {
-        // @ts-ignore Erring out of IDE
         click (e) {
           e.preventDefault();
           if (cancel) {
@@ -133,7 +132,7 @@ const dialogs = {
     message = typeof message === 'string' ? {message} : message;
     const {submitClass = 'submit'} = message;
     const {message: outputMessage} = message;
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve /* , _reject */) => {
       const dialog = /** @type {HTMLDialogElement} */ (jml('dialog', [
         /** @type {string|import('jamilih').JamilihArray} */ (outputMessage),
         ['br'], ['br'],

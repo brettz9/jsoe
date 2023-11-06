@@ -13,7 +13,7 @@ const makeJSONPointer = (...args) => {
  * @returns {string}
  */
 const escapeJSONPointer = (path) => {
-  return path.replace(/~/gu, '~0').replace(/\//gu, '~1');
+  return path.replaceAll('~', '~0').replaceAll('/', '~1');
 };
 
 /**
@@ -21,7 +21,7 @@ const escapeJSONPointer = (path) => {
  * @returns {string}
  */
 const unescapeJSONPointerPart = (pathPart) => {
-  return pathPart.replace(/~([01])/gu, (_n0, n1) => {
+  return pathPart.replaceAll(/~([01])/gu, (_n0, n1) => {
     if (n1 === '0') {
       return '~';
     }
@@ -81,7 +81,7 @@ const typesonPathToJSONPointer = (path) => {
     // Keep `~0` (representing tilde) escaped as same sequence in
     //   JSONPointer (that's why we don't just use
     //   Typeson's `unescapeKeyPathComponent` + `escapeJSONPointer` here)
-    return keyPathComponent.replace(/~1/gu, '.').replace(/\//gu, '~1');
+    return keyPathComponent.replaceAll('~1', '.').replaceAll('/', '~1');
   }).join('/');
 };
 

@@ -730,8 +730,8 @@ Types.setValue = ({type, root, value}) => {
  * @returns {string}
  */
 function escapeRegex (str) {
-  return String(str)
-    .replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
+  return String(str).
+    replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
 }
 
 // Todo (low): Should really add real parser
@@ -775,7 +775,7 @@ Types.getValueForString = (s, {
    * @type {RegExpMatchArray|boolean|null}
    */
   let match = null;
-  let found = allowedTypeObjs.find(([_type, typObj]) => {
+  let found = allowedTypeObjs.find(([/* _type */, typObj]) => {
     const typeObj = /** @type {TypeObject} */ (typObj);
     let {stringRegex} = typeObj;
     if (typeof typeObj.stringRegex === 'function') {
@@ -798,7 +798,7 @@ Types.getValueForString = (s, {
 
   let beginOnly = false;
   if (found === undefined) {
-    found = allowedTypeObjs.find(([_type, typObj]) => {
+    found = allowedTypeObjs.find(([/* _type */, typObj]) => {
       const typeObj = /** @type {TypeObject} */ (typObj);
       const {stringRegexBegin} = typeObj;
       match = Boolean(stringRegexBegin && s) && s.match(
@@ -865,7 +865,7 @@ Types.getValueForString = (s, {
           // @ts-expect-error Reference method exists
           const val = typeObject.resolveReference(path, topRoot);
           const basicType = getJSONType(val);
-          // eslint-disable-next-line max-len -- Long
+          // eslint-disable-next-line @stylistic/max-len -- Long
           /* istanbul ignore else -- Successful reference always an object/array? */
           if (
             ['array', 'object'].includes(type) && basicType === type

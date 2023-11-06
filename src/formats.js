@@ -56,8 +56,8 @@ const Formats = {
  * @returns {Promise<Element>}
  */
 export async function getControlsForFormatAndValue (format, record, stateObj) {
-  return await Formats.availableFormats[format]
-    .iterate(record, {
+  return await Formats.availableFormats[format].
+    iterate(record, {
       ...stateObj,
       // This had been before `stateObj` but should apparently have precedence
       //   or just avoid passing `format` to this function

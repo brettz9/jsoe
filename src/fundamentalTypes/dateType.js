@@ -21,7 +21,7 @@ import Types from '../types.js';
 const dateType = {
   option: ['Date'],
   // ISO Date string
-  dateRegex: /^(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d{3}Z)?|(?:\+|-)\d{6}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)$/u, // eslint-disable-line unicorn/no-unsafe-regex
+  dateRegex: /^(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d{3}Z)?|(?:\+|-)\d{6}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)$/u,
   stringRegex () {
     const regex = this.dateRegex;
     if (!this.valid) {
@@ -47,7 +47,7 @@ const dateType = {
     const dateStr = new Date(Date.parse(value)).toISOString();
     this.getInput({root}).value = dateStr.length === 24
       ? dateStr.slice(0, 10)
-      // eslint-disable-next-line max-len -- Long
+      // eslint-disable-next-line @stylistic/max-len -- Long
       /* istanbul ignore next -- 6 digits year not reliable through `Date.parse` */
       : dateStr.slice(3, 13); // Will cut off ten/hundred thousand years
   },
@@ -113,7 +113,6 @@ const dateType = {
               $setValidity (legitimateInvalid) {
                 console.log('legitimateInvalid', legitimateInvalid);
                 if (legitimateInvalid === true) {
-                  // @ts-ignore Erring out of IDE
                   /** @type {HTMLInputElement} */ (this).checked = true;
                 }
                 const label = /** @type {HTMLLabelElement} */ (
@@ -129,8 +128,7 @@ const dateType = {
               }
             },
             $on: {
-              // @ts-ignore Erring out of IDE
-              click (e) {
+              click (/* e */) {
                 /** @type {HTMLElement & {$setValidity: SetValidity}} */ (
                   this
                 ).$setValidity();

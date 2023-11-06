@@ -186,7 +186,7 @@ const arrayType = {
       }
       // console.log('vvv', stringVal, beginOnly, v);
       if (assign) {
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         /** @type {{[key: string]: import('../formats.js').StructuredCloneValue}} */ (
           retObj
         )[pr] = v;
@@ -316,7 +316,7 @@ const arrayType = {
         }, [
           propName !== undefined
             ? propName
-            // eslint-disable-next-line max-len -- Long
+            // eslint-disable-next-line @stylistic/max-len -- Long
             /* istanbul ignore next -- Won't reach here as typeson will always give keypath? */
             : itemIndex
         ]]
@@ -424,7 +424,7 @@ const arrayType = {
   //    an array (or object if called by that method) and we handle the
   //    population of the array in the callback
   editUI ({
-    typeNamespace, buildTypeChoices, format, resultType,
+    typeNamespace, buildTypeChoices, format, // resultType,
     type, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -479,14 +479,14 @@ const arrayType = {
         swapCountElem.textContent = base;
         baseCountElem.textContent = swap;
       } else {
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         const swapCountElem = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */
           (/**
            * @type {HTMLFieldSetElement & {$getPropertyInput: GetPropertyInput}}
            */ (
               group
             ).$getPropertyInput());
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         const baseCountElem = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */
           (/**
            * @type {HTMLFieldSetElement & {$getPropertyInput: GetPropertyInput}}
@@ -760,7 +760,7 @@ const arrayType = {
                   el.closest('fieldset')
                 );
                 const thisFieldset = getFieldset(this);
-                // eslint-disable-next-line max-len -- Long
+                // eslint-disable-next-line @stylistic/max-len -- Long
                 const intVal = /** @type {HTMLInputElement & {$parseInt: ParseInt}} */ (
                   this
                 ).$parseInt();
@@ -887,7 +887,7 @@ const arrayType = {
      */
     const decrementItemIndex = (arrayItems) => {
       if (sparse) {
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         itemIndex = /** @type {(HTMLInputElement & {$parseInt: ParseInt})[]} */ (
           arrayItems.$getPropertyInputs()
         ).reduce(
@@ -931,9 +931,9 @@ const arrayType = {
         } else if (typeof splice === 'number') {
           itemIndex = splice + 1;
         } else if (typeof splice !== 'string') {
-          // eslint-disable-next-line max-len -- Long
+          // eslint-disable-next-line @stylistic/max-len -- Long
           itemIndex = /** @type {(HTMLInputElement & {$parseInt: ParseInt})[]} */ (
-            // eslint-disable-next-line max-len -- Long
+            // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */
             (arrayItems).$getPropertyInputs()
           ).reduce(
@@ -1034,7 +1034,7 @@ const arrayType = {
           // resultType,
           // eslint-disable-next-line object-shorthand -- TS
           topRoot: /** @type {HTMLDivElement} */ (topRoot),
-          // eslint-disable-next-line object-shorthand, max-len -- TS
+          // eslint-disable-next-line object-shorthand, @stylistic/max-len -- TS
           format: /** @type {import('../formats.js').AvailableFormat} */ (format),
           state: type,
           // itemIndex,
@@ -1096,7 +1096,6 @@ const arrayType = {
          */
         ([
           'button',
-          // @ts-ignore Can't seem to force optional Event
           {
             $on: {
               click (/** @type {Event} */ e) {
@@ -1330,11 +1329,10 @@ const arrayType = {
         addArrayElement,
         ['button', {$on: {click () {
           const arrayContents = /** @type {HTMLElement} */ (
-            // @ts-ignore Erring out of IDE
             this.closest('.arrayContents')
           );
           const arrayItems =
-            // eslint-disable-next-line max-len -- Long
+            // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs;}} */ (
               $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             );
@@ -1342,7 +1340,7 @@ const arrayType = {
           if (lastElement) {
             lastElement.remove();
             decrementItemIndex(arrayItems);
-            // eslint-disable-next-line max-len -- Long
+            // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {HTMLDivElement & {$redrawMoveArrows: RedrawMoveArrows}} */ (
               $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             ).$redrawMoveArrows();
@@ -1356,7 +1354,7 @@ const arrayType = {
         // We could only add this when there was more than one
         ['button', {$on: {click () {
           const arrayItems =
-            // eslint-disable-next-line max-len -- Long
+            // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */ ($e(
               /** @type {HTMLElement} */ (
                 /** @type {HTMLElement} */ (this).closest('.arrayContents')
@@ -1383,7 +1381,7 @@ const arrayType = {
         dataset: {type},
         // is: 'array-or-object-editor',
         $custom: {
-          // eslint-disable-next-line max-len -- Long
+          // eslint-disable-next-line @stylistic/max-len -- Long
           /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
           $addAndSetArrayElement ({
             propName, type, value, bringIntoFocus
@@ -1409,8 +1407,8 @@ const arrayType = {
 
           /** @type {GetAddArrayElement} */
           $getAddArrayElement () {
-            const el = this
-              .lastElementChild.firstElementChild.nextElementSibling;
+            const el = this.
+              lastElementChild.firstElementChild.nextElementSibling;
             return sparse ? el.nextElementSibling : el;
           },
           /**

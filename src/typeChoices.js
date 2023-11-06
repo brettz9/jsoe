@@ -150,7 +150,9 @@ export const buildTypeChoices = ({
       $addAndValidateEditUI ({baseValue, bringIntoFocus} = {}) {
         const {value: type} = this;
 
-        if (!type) { return; }
+        if (!type) {
+          return;
+        }
         let topRoot = this.$getTopRoot();
 
         // Todo (low): Try to avoid need for `baseValue`
@@ -255,7 +257,7 @@ export const buildTypeChoices = ({
             rootEditUI
           ))
         );
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
           sel
         ).$addTypeAndEditUI({type, editUI: rootEditUI});
