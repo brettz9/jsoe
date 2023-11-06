@@ -3,8 +3,20 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 // import babel from 'rollup-plugin-babel';
 // import {terser} from 'rollup-plugin-terser';
+import istanbul from 'rollup-plugin-istanbul';
 
-export default {
+export default [{
+  input: 'demo/index.js',
+  output: {
+    file: 'instrumented/demo/index.js',
+    format: 'es'
+  },
+  plugins: [
+    istanbul(),
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
   input: 'node_modules/fast-deep-equal/es6/index.js',
   output: {
     file: 'src/deepEqual.js',
@@ -26,4 +38,4 @@ export default {
       include: 'node_modules/**'
     })
   ]
-};
+}];

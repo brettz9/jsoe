@@ -13,6 +13,7 @@
   "description": "Editing of arbitrary JavaScript objects",
   "scripts": {
     "tsc": "tsc",
+    "tsc-cypress": "tsc -p cypress/tsconfig.json",
     "eslint": "eslint .",
     "lint": "npm run eslint --",
     "coverage": "open-cli http://localhost:8087/coverage/lcov-report/",
@@ -39,6 +40,7 @@
     "cover 100%"
   ],
   "nyc": {
+    "excludeAfterRemap": true,
     "exclude": [
       "node_modules/**"
     ]
@@ -61,6 +63,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@stylistic/eslint-plugin": "^1.0.0",
     "@types/jsdom": "^21.1.4",
+    "@types/node": "^20.8.10",
     "axe-core": "^4.8.2",
     "cypress": "^13.4.0",
     "cypress-axe": "^1.5.0",

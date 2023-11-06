@@ -14,12 +14,15 @@ const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
 });
 
 jml('section', {role: 'main'}, [
+  ['h1', [
+    'Jsoe testing'
+  ]],
   ['h2', [
     'Format and type choices: No key path expected (type can vary at root)'
   ]],
 
   // Put inside form so can validate
-  ['form', [
+  ['form', {id: 'formatAndTypeChoices'}, [
     ...keyPathNotExpectedTypeChoices.domArray
   ]],
 
@@ -87,7 +90,7 @@ jml('section', {role: 'main'}, [
     'Format choices without type selection ' +
       '(might use as retrieval return format)'
   ]],
-  ['select', [
+  ['select', {id: 'formatAndSchemaChoices'}, [
     getFormatAndSchemaChoices()
   ]],
 

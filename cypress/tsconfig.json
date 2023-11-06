@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
+    "allowJs": true,
+    "checkJs": true,
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "types": ["cypress", "cypress-axe", "node"],
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "**/*.js", "../typings/CypressPlugins.d.ts", "../typings/sceditor.d.ts"]
+}
