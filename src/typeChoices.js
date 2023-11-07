@@ -41,7 +41,7 @@ import dialogs from './utils/dialogs.js';
 
 /**
  * @callback GetType
- * @returns {string|null|undefined}
+ * @returns {string}
  */
 
 /**
@@ -103,6 +103,22 @@ export const buildTypeChoices = ({
     : Types.getTypeOptionsForFormatAndState(format, state);
 
   let editUI;
+
+  /** @type {GetValue} */
+  const $getValue = (stateObj, currentPath) => {
+    const root = /** @type {HTMLDivElement} */ (
+      $e(typeContainer, 'div[data-type]')
+    );
+    return Types.getValueForRoot(
+      root,
+      /** @type {import('./types.js').StateObject} */ ({
+        typeNamespace,
+        format,
+        ...stateObj
+      }),
+      currentPath
+    );
+  };
   const sel = /** @type {HTMLSelectElement} */ (jml('select', {
     hidden: requireObject,
     class: `typeChoices-${typeNamespace}${keySelectClass
@@ -111,6 +127,7 @@ export const buildTypeChoices = ({
     }`,
     // is: 'type-choices',
     $custom: {
+      $getValue,
       /** @type {SetType} */
       $setType ({type, baseValue, bringIntoFocus}) {
         this.value = type;
@@ -252,11 +269,10 @@ export const buildTypeChoices = ({
             schemaContent
           }
         );
-        const type = /** @type {string} */ (
+        const type =
           Types.getTypeForRoot(/** @type {HTMLDivElement} */ (
             rootEditUI
-          ))
-        );
+          ));
         // eslint-disable-next-line @stylistic/max-len -- Long
         /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
           sel
@@ -284,19 +300,7 @@ export const buildTypeChoices = ({
     ],
 
     /** @type {GetValue} */
-    getValue (stateObj, currentPath) {
-      const root = /** @type {HTMLDivElement} */ (
-        $e(typeContainer, 'div[data-type]')
-      );
-      return Types.getValueForRoot(
-        root,
-        /** @type {import('./types.js').StateObject} */ ({
-          typeNamespace,
-          format,
-          ...stateObj
-        }), currentPath
-      );
-    },
+    getValue: $getValue,
 
     /** @type {GetType} */
     getType () {
@@ -322,7 +326,7 @@ export const buildTypeChoices = ({
           format, value, stateObj
         )
       );
-      const type = /** @type {string} */ (Types.getTypeForRoot(rootEditUI));
+      const type = Types.getTypeForRoot(rootEditUI);
       /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
         sel
       ).$addTypeAndEditUI({type, editUI: rootEditUI});

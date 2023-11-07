@@ -41,7 +41,7 @@ const SpecialNumberSuperType = {
   setValue ({root, value}) {
     /** @type {Required<import('../types.js').TypeObject>} */ (
       this
-    ).getSelect({root}).value = String(value);
+    ).getSelect({root}).value = Object.is(value, -0) ? '-0' : String(value);
   },
   viewUI ({value}) {
     return ['i', {dataset: {type: 'SpecialNumber'}}, [

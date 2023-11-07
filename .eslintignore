@@ -9,5 +9,5 @@ vendor
 
 src/formats/schemaOnly.js
 src/formats/schemaAndArbitrary.js
-typings/sceditor.d.ts
+typings/**
 dist

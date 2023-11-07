@@ -57,7 +57,6 @@ const encapsulateObserver = (stateObj) => {
       endIterateUnsetNumeric,
       clone
     } = observerObj;
-    // console.log('observerObj', observerObj);
     if ('replaced' in observerObj) {
       return;
     }
@@ -73,6 +72,12 @@ const encapsulateObserver = (stateObj) => {
     if (endIterateUnsetNumeric || (
       clone === undefined && cyclicKeypath === undefined && Array.isArray(value)
     )) {
+      return;
+    }
+
+    // What other situations is this firing twice, and it
+    //   shouldn't reach here?
+    if (observerObj.replacing && type === 'negativeZero') {
       return;
     }
 
@@ -122,7 +127,7 @@ const encapsulateObserver = (stateObj) => {
     const parentPath = li === -1 ? '' : keypath.slice(0, li);
 
     const hasChildren = [
-      'array', 'object', 'set',
+      'array', 'object', 'set', 'map',
       // 'sparseArrays',
       'arrayNonindexKeys'
     ].includes(newType);
@@ -191,6 +196,7 @@ const encapsulateObserver = (stateObj) => {
           })
         */
       });
+
       if (!readonly) {
         Types.setValue({
           type: newType,
@@ -250,7 +256,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
    * @type {import('../types.js').AvailableType|undefined}
    */
   let ret;
-  console.log('format, state, valType, v', format, state, valType, v);
+  // console.log('format, state, valType, v', format, state, valType, v);
 
   /**
    * @param {string} newValType
@@ -318,7 +324,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
 /** @type {import('../formats.js').Format} */
 const structuredCloning = {
   iterate (records, stateObj) {
-    console.log('records', records);
+    // console.log('records', records);
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
     }
@@ -378,7 +384,7 @@ const structuredCloning = {
       ...jsonTypes,
       'undef', // Explicit undefined only
       'bigint',
-      'SpecialNumber', // '`NaN`, `Infinity`, `-Infinity`'},
+      'SpecialNumber', // '`NaN`, `Infinity`, `-Infinity`, `-0`
       'date',
       'regexp',
       'BooleanObject',
@@ -388,9 +394,9 @@ const structuredCloning = {
       'set',
       'map'
       // Ok, but will need some work
-      //     'map',
-      //     'blob', 'file', 'filelist'
-      //     'arraybuffer', 'arraybufferview'
+      //     'error', 'errors',
+      //     'blob', 'file', 'filelist',
+      //     'arraybuffer',
       //     'dataview', 'imagedata', 'imagebitmap',
       /*
               // Typed Arrays
@@ -403,11 +409,6 @@ const structuredCloning = {
               'uint32array',
               'float32array',
               'float64array',
-
-              // Intl (imperfect)
-              'IntlCollator',
-              'IntlDateTimeFormat',
-              'IntlNumberFormat'
               */
     ];
   }

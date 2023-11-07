@@ -6,9 +6,14 @@ import dialogs from '../utils/dialogs.js';
 import {isNullish} from '../utils/types.js';
 
 /**
- * @type {import('../types.js').TypeObject & {
- *   loadBlob: (blob: Blob) => Promise<string>,
+ * @typedef {HTMLTextAreaElement & {
  *   sceditorInstance: {val: (val?: string) => string|void}
+ * }} SCEditorTextarea
+ */
+
+/**
+ * @type {import('../types.js').TypeObject & {
+ *   loadBlob: (blob: Blob) => Promise<string>
  * }}
  */
 const blobHTMLType = {
@@ -17,9 +22,6 @@ const blobHTMLType = {
   stringRegex: /^data:text\/html(?:;base64)?,.*$/u,
   valueMatch: (v) => v.type === 'text/html',
   superType: 'blob',
-  sceditorInstance: {val () {
-    throw new Error('Not yet instantiated');
-  }},
   toValue (s) {
     // Todo (low): `Blob` untested; use https://stackoverflow.com/a/30407840/271577 ?
     /**
@@ -51,20 +53,26 @@ const blobHTMLType = {
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
+    return /** @type {HTMLTextAreaElement} */ (
+      $e(root, 'textarea[name$=-blobHTML]')
+    );
   },
-  getValue (/* {root} */) {
+  getValue ({root}) {
     return this.toValue(
-      'data:text/html,' + this.sceditorInstance.val()
+      'data:text/html,' + /** @type {SCEditorTextarea} */ (
+        this.getInput({root})
+      ).sceditorInstance.val()
       // this.getInput({root}).value
     ).value;
   },
   async loadBlob (blob) {
     return await blob.text();
   },
-  async setValue ({/* root, */ value}) {
+  async setValue ({root, value}) {
     const result = await this.loadBlob(value);
-    this.sceditorInstance.val(/** @type {string} */ (result));
+    /** @type {SCEditorTextarea} */ (
+      this.getInput({root})
+    ).sceditorInstance.val(/** @type {string} */ (result));
     // this.getInput({root}).value = result;
   },
   viewUI ({value}) {
@@ -104,9 +112,19 @@ const blobHTMLType = {
     // return ['i', [`data:text/html,${value}`]];
   },
   editUI ({typeNamespace, value}) {
-    const textarea = /** @type {HTMLTextAreaElement} */ (
-      jml('textarea', {name: `${typeNamespace}-blobHTML`})
-    );
+    const textarea =
+      /**
+       * @type {SCEditorTextarea}
+       */ (
+        jml('textarea', {name: `${typeNamespace}-blobHTML`})
+      );
+    textarea.sceditorInstance = {
+      /* istanbul ignore next */
+      val () {
+        throw new Error('Not yet instantiated');
+      }
+    };
+
     const root = /** @type {HTMLDivElement} */ (jml(
       'div',
       {dataset: {type: 'blobHTML'}},
@@ -152,7 +170,7 @@ const blobHTMLType = {
         emoticonsRoot: 'node_modules/sceditor/',
         style: 'node_modules/sceditor/minified/themes/content/default.min.css'
       });
-      this.sceditorInstance = sceditor.instance(textarea);
+      textarea.sceditorInstance = sceditor.instance(textarea);
       if (!isNullish(value)) {
         /** @type {Required<import('../types.js').TypeObject>} */ (
           this

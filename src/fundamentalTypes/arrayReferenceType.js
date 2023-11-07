@@ -97,7 +97,7 @@ const arrayReferenceType = {
         'arrayNonindexKeys'
         // 'sparseArrays'
       ].includes(
-        /** @type {string} */ (Types.getTypeForRoot(referent))
+        Types.getTypeForRoot(referent)
       );
     };
     let message;

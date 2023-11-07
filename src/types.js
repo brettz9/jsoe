@@ -30,8 +30,8 @@ import NumberObjectType from './fundamentalTypes/NumberObjectType.js';
 import StringObjectType from './fundamentalTypes/StringObjectType.js';
 import sparseUndefinedType from './fundamentalTypes/sparseUndefinedType.js';
 import SpecialRealNumberSuperType from
-  './superTypes/SpecialRealNumberSuperType.js';
-import SpecialNumberSuperType from './superTypes/SpecialNumberSuperType.js';
+  './superTypes/SpecialRealNumberType.js';
+import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -61,7 +61,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * Utility to retrieve the type out of a type root element.
  * @callback GetTypeForRoot
  * @param {?RootElement} root
- * @returns {string|undefined|null} Why would it not exist?
+ * @returns {string} Why would it not exist?
  */
 
 /**
@@ -277,7 +277,11 @@ const Types = {};
  *   the type belongs
  * @property {(
  *   s: string, info?: RootInfo
- * ) => StructuredCloneValue} toValue Converts from string to value. May use
+ * ) => {
+ *   value?: StructuredCloneValue,
+ *   remnant?: string,
+ *   assign?: false
+ * }} toValue Converts from string to value. May use
  *   `stringRegex` to find components.
  * @property {(info: {
  *   root: HTMLDivElement,
@@ -489,7 +493,7 @@ copyTypeObjs(
 );
 
 Types.getTypeForRoot = (root) => {
-  return root && root.dataset.type;
+  return String(root ? root.dataset.type : root);
 };
 
 /**
@@ -829,8 +833,11 @@ Types.getValueForString = (s, {
         parent,
         parentPath
       });
+    /* istanbul ignore next -- Good regexes should prevent */
     } catch (e) {
+      /* istanbul ignore next -- Good regexes should prevent */
       console.log('eee', e);
+      /* istanbul ignore next -- Good regexes should prevent */
       throw e;
     }
     if (valObj.assign === false) {

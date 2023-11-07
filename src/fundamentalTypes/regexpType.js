@@ -20,11 +20,11 @@ const regexpType = {
     if (typeof this.stringRegex !== 'function') {
       throw new TypeError('Guard for TS');
     }
-    const [, str, flags] = s.match(
+    const [, str, flags] = /** @type {RegExpMatchArray} */ (s.match(
       /** @type {Required<import('../types.js').TypeObject>} */ (
         this
       ).stringRegex()
-    ) || [];
+    ));
     return {value: new RegExp(str, flags)};
   },
   getInput ({root}) {

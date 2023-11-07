@@ -1,7 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @type {import('./SpecialNumberSuperType.js').SuperTypeObject}
+ * @type {import('./SpecialNumberType.js').SuperTypeObject}
  */
 const SpecialRealNumberSuperType = {
   option: ['Special Real Number', {title: '`Infinity`, `-Infinity`, `-0`'}],
@@ -29,13 +29,14 @@ const SpecialRealNumberSuperType = {
   setValue ({root, value}) {
     /** @type {Required<import('../types.js').TypeObject>} */ (
       this
-    ).getSelect({root}).value = String(value);
+    ).getSelect({root}).value = Object.is(value, -0) ? '-0' : String(value);
   },
   viewUI ({value}) {
     return ['i', {dataset: {type: 'SpecialRealNumber'}}, [
       Object.is(value, -0) ? '-0' : String(value)
     ]];
   },
+  /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
     return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },

@@ -96,6 +96,7 @@ const filterChildElements = (el, selectors) => {
   selectors = Array.isArray(selectors) ? selectors : [selectors];
   selectors.forEach((sel) => {
     filtered = filtered.reduce((els, childElement) => {
+      /* istanbul ignore if -- Guard */
       if (!childElement) {
         return els;
       }

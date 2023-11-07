@@ -19,6 +19,14 @@ import {
  * @typedef {() => HTMLInputElement[]} InputsExceedingLength
  */
 /**
+ * @typedef {() => (HTMLSelectElement & {
+ *   $getValue: import('../typeChoices.js').GetValue
+ * })[]} GetMapKeySelects
+ */
+/**
+ * @typedef {() => void} ValidateMapKey
+ */
+/**
  * @callback GetPropertyInputs
  * @returns {HTMLInputElement[]}
  */
@@ -31,7 +39,8 @@ import {
  * @typedef {() => HTMLDivElement & {
  *   $inputsExceedingLength: InputsExceedingLength,
  *   $getPropertyInputs: GetPropertyInputs,
- *   $redrawMoveArrows: RedrawMoveArrows
+ *   $redrawMoveArrows: RedrawMoveArrows,
+ *   $getMapKeySelects: GetMapKeySelects
  * }} GetArrayItems
  */
 /**
@@ -166,7 +175,8 @@ const arrayType = {
       return {
         value: this.set && Array.isArray(retObj)
           ? new Set(retObj)
-          : retObj, remnant: stringVal
+          : retObj,
+        remnant: stringVal
       };
     }
 
@@ -221,8 +231,13 @@ const arrayType = {
   },
   getValue ({root, stateObj = {}, currentPath = ''}) {
     const top = currentPath === '';
-    const arrayItems = /** @type {HTMLElement} */ ($e(root, '.arrayItems'));
-    const fieldsets = arrayItems.children;
+    const arrayItems =
+      /**
+       * @type {HTMLElement & {
+       *   $getMapKeySelects: GetMapKeySelects
+       * }}
+       */ ($e(root, '.arrayItems'));
+    const fieldsets = [...arrayItems.children];
 
     /**
      * @type {({[key: string]: any})|any[]}
@@ -257,26 +272,33 @@ const arrayType = {
       }
       return [true, value];
     };
-    [...fieldsets].forEach((fieldset) => {
+    fieldsets.forEach((fieldset) => {
       const legend = /** @type {HTMLLegendElement} */ (
         fieldset.firstElementChild
       );
       const propVal = getPropertyValueFromLegend(legend);
       const root = /** @type {HTMLDivElement} */ (
-        $e(fieldset, 'div[data-type]')
+        DOM.filterChildElements(
+          /** @type {HTMLFieldSetElement} */
+          (fieldset),
+          [
+            '.typeContainer',
+            'div[data-type]'
+          ]
+        )[0]
       );
       /* istanbul ignore if -- Should err first? */
       if (!root) {
         return;
       }
 
-      const objectProperty = $e(legend, 'input');
+      const objectProperty = DOM.filterChildElements(legend, ['input']);
       const [isVal, value] = getValOrRef(
         root,
         propVal
       );
       if (isVal) {
-        if (objectProperty) {
+        if (objectProperty.length) {
           /** @type {{[key: string]: any}} */ (ret)[propVal] = value;
         } else {
           ret.push(value);
@@ -292,11 +314,12 @@ const arrayType = {
               path: referentPath,
               obj: ret
             });
-
           const referencePathJsonPtr = getJSONPointerParts(referencePath);
           const referenceFinalPathPart = referencePathJsonPtr.pop();
           const referenceParentObj = referencePathJsonPtr.reduce(
-            (obj, pathPart) => reduceJSONPointerParts(obj, pathPart),
+            (obj, pathPart) => {
+              return reduceJSONPointerParts(obj, pathPart);
+            },
             ret
           );
           /** @type {{[key: string]: any}} */ (referenceParentObj)[
@@ -305,7 +328,14 @@ const arrayType = {
         }
       );
     }
-    return this.set && Array.isArray(ret) ? new Set(ret) : ret;
+    return this.set && Array.isArray(ret)
+      ? new Set(ret)
+      : this.map
+        ? new Map(arrayItems.$getMapKeySelects().map((select, idx) => {
+          const key = select.$getValue();
+          return [key, /** @type {any[]} */ (ret)[idx]];
+        }))
+        : ret;
   },
 
   // Try to keep in sync with basic structure of `editUI`
@@ -422,9 +452,15 @@ const arrayType = {
         ['div', {class: 'arrayContents'}, [
           this.array
             ? ['div', [
-              'Array length: ',
+              type === 'set'
+                ? 'Set size: '
+                : type === 'map'
+                  ? 'Map size: '
+                  : 'Array length: ',
               ['span', [
-                (value && value.length) || 0
+                (value && (type === 'set' || type === 'map')
+                  ? value.size
+                  : value.length) || 0
               ]]
             ]]
             : '',
@@ -632,6 +668,7 @@ const arrayType = {
      *   $inputsExceedingLength: InputsExceedingLength,
      *   $getPropertyInputs: GetPropertyInputs,
      *   $redrawMoveArrows: RedrawMoveArrows
+     *   $getMapKeySelects: GetMapKeySelects
      * }} ArrayItems
      */
 
@@ -698,18 +735,68 @@ const arrayType = {
           });
         return ['legend', [
           'Key ',
-          ['span', {className}, [String(itemIndex)]],
+          ['span', {
+            dataset: {prop: 'true'},
+            className
+          }, [String(itemIndex)]],
           ':',
           nbsp.repeat(2),
 
-          ...keyTypeSelection.domArray
-          // validateMapKey (onchange)
-          //    sameValueZero();
-          // dataset: {map: true},
-          // Types.validateAllReferences({
-          //   // eslint-disable-next-line object-shorthand -- TS
-          //   topRoot: /** @type {HTMLDivElement} */ (topRoot)
-          // }); // Needed
+          ['span', {
+            class: 'mapKey',
+            $on: {
+              change: [function () {
+                /**
+                 * @type {HTMLSpanElement & {
+                 *   $validateMapKey: ValidateMapKey
+                 * }}
+                 */
+                (this).$validateMapKey();
+
+                // Needed?
+                Types.validateAllReferences({
+                  // eslint-disable-next-line object-shorthand -- TS
+                  topRoot: /** @type {HTMLDivElement} */ (topRoot)
+                });
+              }, true]
+            },
+            $custom: {
+              /** @type {ValidateMapKey} */
+              $validateMapKey () {
+                const selects = arrayItems.$getMapKeySelects();
+
+                setTimeout(() => {
+                  const values = selects.map((select) => {
+                    return select.$getValue();
+                  });
+
+                  console.log('values1111', values);
+
+                  const dupeIndex = values.findLastIndex((value, idx) => {
+                    return values.some((val, index) => {
+                      return idx !== index && sameValueZero(value, val);
+                    });
+                  });
+
+                  console.log('dupeIndex', dupeIndex);
+
+                  if (dupeIndex === -1) {
+                    return;
+                  }
+                  const select = selects[dupeIndex];
+                  /* istanbul ignore if -- Should exist */
+                  if (!select) {
+                    return;
+                  }
+
+                  select.setCustomValidity(
+                    'Duplicate Map key value'
+                  );
+                  select.reportValidity();
+                });
+              }
+            }
+          }, keyTypeSelection.domArray]
         ]];
       }
       if (editableProperties) {
@@ -879,7 +966,7 @@ const arrayType = {
                   const method = latest ? 'after' : 'before';
                   // Ensure move *after* splice that will occur after this
                   setTimeout(() => {
-                    /* c8 ignore next 3 */
+                    /* istanbul ignore if */
                     if (!nearest) {
                       return;
                     }
@@ -962,7 +1049,8 @@ const arrayType = {
      * @type {AddArrayElement}
      * @this {HTMLButtonElement & {
      *   $getArrayItems: GetArrayItems,
-     *   $addArrayElement: AddArrayElement
+     *   $addArrayElement: AddArrayElement,
+     *   $getMapKeySelects?: GetMapKeySelects
      * }}
      */
     const $addArrayElement = function ({propName, splice, alwaysFocus}) {
@@ -1036,6 +1124,7 @@ const arrayType = {
                     });
 
                     const control = controls[dupeIndex];
+                    /* istanbul ignore if -- Should exist */
                     if (!control) {
                       return;
                     }
@@ -1252,7 +1341,8 @@ const arrayType = {
                * @type {HTMLDivElement & {
                *   $inputsExceedingLength: InputsExceedingLength,
                *   $getPropertyInputs: GetPropertyInputs,
-               *   $redrawMoveArrows: RedrawMoveArrows
+               *   $redrawMoveArrows: RedrawMoveArrows,
+               *   $getMapKeySelects: GetMapKeySelects
                * }}
                */
               (this.previousElementSibling)
@@ -1342,6 +1432,29 @@ const arrayType = {
       $custom: {
         $swapGroup, $redrawMoveArrows, $getArrayLength,
         $inputsExceedingLength,
+
+        /**
+         * Only relevant for maps.
+         * @type {GetMapKeySelects}
+         * @this {HTMLDivElement}
+         */
+        $getMapKeySelects () {
+          const selects =
+            /**
+             * @type {(HTMLSelectElement & {
+             *   $getValue: import('../typeChoices.js').GetValue}
+             * )[]}
+             */ (DOM.filterChildElements(
+              this,
+              [
+                'fieldset',
+                'legend:first-child',
+                'span.mapKey',
+                'select.typeChoices-key-type-choices-only'
+              ]
+            ));
+          return selects;
+        },
 
         /**
          * @type {GetPropertyInputs}

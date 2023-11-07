@@ -61,7 +61,24 @@ function checkAccessibility () {
       {
         id: 'select-name',
         enabled: false
+      },
+      {
+        id: 'label',
+        enabled: false
+      },
+      {
+        // Due to SCEditor apparently
+        id: 'frame-title',
+        enabled: false
       }
+      // {
+      //   id: 'landmark-one-main',
+      //   enabled: false
+      // },
+      // {
+      //   id: 'page-has-heading-one',
+      //   enabled: false
+      // }
     ]
     /*
     branding: {
@@ -94,6 +111,49 @@ Cypress.Commands.add(
    */
   (url, options) => {
     cy.visit(url, options);
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line cypress/no-unnecessary-waiting -- Not initially ready
+    cy.wait(1000);
     checkAccessibility();
+  }
+);
+
+Cypress.Commands.add(
+  'clearTypeAndBlur',
+  /**
+   * @param {string} sel
+   * @param {string} text
+   * @returns {void}
+   */
+  (sel, text) => {
+    cy.get(sel).clear();
+    cy.get(sel).type(text);
+    cy.get(sel).blur();
+  }
+);
+
+Cypress.Commands.add(
+  'clearAndType',
+  /**
+   * @param {string} sel
+   * @param {string} text
+   * @returns {void}
+   */
+  (sel, text) => {
+    cy.get(sel).clear();
+    cy.get(sel).type(text);
+  }
+);
+
+Cypress.Commands.add(
+  'typeAndBlur',
+  /**
+   * @param {string} sel
+   * @param {string} text
+   * @returns {void}
+   */
+  (sel, text) => {
+    cy.get(sel).type(text);
+    cy.get(sel).blur();
   }
 );

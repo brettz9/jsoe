@@ -36,8 +36,8 @@ const indexedDBKey = {
     if (!state || ['array'].includes(state)) {
       return this.types();
     }
-    /* istanbul ignore next -- Can't be object, so shouldn't reach here */
-    return undefined; // Todo: Should this throw?
+    // Can't be object, so shouldn't normally reach here
+    return undefined;
   }
 };
 

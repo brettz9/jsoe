@@ -13,172 +13,430 @@ const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
   typeNamespace: 'demo-keypath-not-expected'
 });
 
-jml('section', {role: 'main'}, [
-  ['h1', [
-    'Jsoe testing'
-  ]],
-  ['h2', [
-    'Format and type choices: No key path expected (type can vary at root)'
-  ]],
+setTimeout(async function () {
+  jml('section', {role: 'main'}, [
+    ['h1', [
+      'Jsoe testing'
+    ]],
+    ['h2', [
+      'Format and type choices: No key path expected (type can vary at root)'
+    ]],
 
-  // Put inside form so can validate
-  ['form', {id: 'formatAndTypeChoices'}, [
-    ...keyPathNotExpectedTypeChoices.domArray
-  ]],
+    // Put inside form so can validate
+    ['form', {id: 'formatAndTypeChoices'}, [
+      ...keyPathNotExpectedTypeChoices.domArray
+    ]],
 
-  ['button', {
-    $on: {
-      click () {
-        // eslint-disable-next-line no-alert -- Simple demo
-        alert(keyPathNotExpectedTypeChoices.getType());
-      }
-    }
-  }, ['Get type']],
-
-  ['button', {
-    $on: {
-      click () {
-        // eslint-disable-next-line no-alert -- Simple demo
-        alert(keyPathNotExpectedTypeChoices.validValuesSet());
-      }
-    }
-  }, ['Is valid']],
-
-  ['button', {
-    $on: {
-      click () {
-        console.log(keyPathNotExpectedTypeChoices.getValue());
-      }
-    }
-  }, ['Log value']],
-
-  ['button', {
-    $on: {
-      async click () {
-        const controls = await getControlsForFormatAndValue(
-          'structuredCloning',
-          keyPathNotExpectedTypeChoices.getValue(),
-          {
-            readonly: true
-          }
-        );
-        $('#viewUIResults').firstChild?.remove();
-        $('#viewUIResults').append(controls);
-      }
-    }
-  }, ['view UI']],
-
-  ['div', {id: 'viewUIResults'}],
-
-  ['button', {
-    $on: {
-      async click () {
-        await keyPathNotExpectedTypeChoices.setValue(42);
-      }
-    }
-  }, ['Initialize with a value']],
-
-  ['h2', [
-    'Format and type choices: Key path expected (object required at root)'
-  ]],
-  ...formatAndTypeChoices({
-    hasKeyPath: true,
-    typeNamespace: 'demo-keypath-expected'
-  }).domArray,
-
-  ['h2', [
-    'Format choices without type selection ' +
-      '(might use as retrieval return format)'
-  ]],
-  ['select', {id: 'formatAndSchemaChoices'}, [
-    getFormatAndSchemaChoices()
-  ]],
-
-  ['h2', [
-    'Type choices only'
-  ]],
-
-  (() => {
-    const typeSelection = typeChoices({
-      format: 'structuredCloning',
-      typeNamespace: 'demo-type-choices-only'
-    });
-
-    return ['form', {
+    ['button', {
+      id: 'getType',
       $on: {
-        submit (e) {
-          e.preventDefault();
+        click () {
+          // eslint-disable-next-line no-alert -- Simple demo
+          alert(keyPathNotExpectedTypeChoices.getType());
+        }
+      }
+    }, ['Get type']],
+
+    ['button', {
+      id: 'isValid',
+      $on: {
+        click () {
+          // eslint-disable-next-line no-alert -- Simple demo
+          alert(keyPathNotExpectedTypeChoices.validValuesSet());
+        }
+      }
+    }, ['Is valid']],
+
+    ['button', {
+      id: 'logValue',
+      $on: {
+        click () {
+          console.log(keyPathNotExpectedTypeChoices.getValue());
+        }
+      }
+    }, ['Log value']],
+
+    ['button', {
+      id: 'viewUI',
+      $on: {
+        async click () {
+          const controls = await getControlsForFormatAndValue(
+            $('#useIndexedDBKey').checked
+              ? 'indexedDBKey'
+              : 'structuredCloning',
+            keyPathNotExpectedTypeChoices.getValue(),
+            {
+              readonly: true
+            }
+          );
+          $('#viewUIResults').firstChild?.remove();
+          $('#viewUIResults').append(controls);
+        }
+      }
+    }, ['view UI']],
+
+    ['div', {id: 'viewUIResults'}],
+
+    ['button', {
+      id: 'initializeWithValue',
+      $on: {
+        async click () {
+          await keyPathNotExpectedTypeChoices.setValue(42);
+        }
+      }
+    }, ['Initialize with a value']],
+
+    ['button', {
+      id: 'initializeWithComplexValue',
+      $on: {
+        async click () {
+          const a = {
+            bbb: {},
+            xxx: {yyy: []}
+          };
+          a.bbb.ccc = a;
+          a.zzz = a.xxx.yyy;
+          await keyPathNotExpectedTypeChoices.setValue(a);
+        }
+      }
+    }, ['Initialize with a complex value']],
+
+    ['button', {
+      id: 'programmaticallySetFormatToJSON',
+      $on: {
+        click () {
+          keyPathNotExpectedTypeChoices.formatChoices.$setFormat('json');
         }
       }
     }, [
-      ...typeSelection.domArray,
-      ['button', {
-        $on: {
-          click () {
+      'Programmatically set format (to JSON)'
+    ]],
+
+    ['button', {
+      id: 'setCustomValidateAllReferences',
+      $on: {
+        click () {
+          Types.customValidateAllReferences = () => {
             // eslint-disable-next-line no-alert -- Simple demo
-            alert(typeSelection.getType());
-          }
+            alert('customValidateAllReferences set');
+          };
         }
-      }, ['Get type']],
-
-      ['button', {
-        $on: {
-          click () {
-            // eslint-disable-next-line no-alert -- Simple demo
-            alert(typeSelection.validValuesSet());
-          }
-        }
-      }, ['Is valid']],
-
-      ['button', {
-        $on: {
-          click () {
-            console.log(typeSelection.getValue());
-          }
-        }
-      }, ['Log value']],
-
-      ['button', {
-        $on: {
-          async click () {
-            await typeSelection.setValue(42);
-          }
-        }
-      }, ['Initialize with a value']]
-    ]];
-  })(),
-
-  ['h2', [
-    'Convert arbitrary value to an editable menu'
-  ]],
-
-  await getControlsForFormatAndValue(
-    'structuredCloning', new Date('1999-01-01')
-  ),
-
-  ['h2', [
-    'Convert arbitrary value to a readonly menu'
-  ]],
-
-  await getControlsForFormatAndValue(
-    'structuredCloning',
-    new Date('1999-01-01'), {
-      readonly: true
-    }
-  ),
-
-  ['h2', [
-    'Convert structured cloning string representation to value and log'
-  ]],
-  ['input', {
-    placeholder: 'e.g., ["abc", 17]',
-    $on: {
-      change () {
-        const value = Types.getValueForString(this.value, {
-          format: 'structuredCloning'
-        })[0];
-        console.log(value);
       }
-    }
-  }]
-], body);
+    }, [
+      'Set custom all reference validation'
+    ]],
+
+    ['button', {
+      id: 'showRootFormControl',
+      $on: {
+        click () {
+          const root = $(
+            '#formatAndTypeChoices > .typesHolder > ' +
+              '.typeContainer > div[data-type]'
+          );
+          const formControl = Types.getFormControlForRoot(root);
+          formControl.style.backgroundColor = 'red';
+          setTimeout(() => {
+            formControl.style.backgroundColor = 'initial';
+          }, 3000);
+        }
+      }
+    }, ['Show root form control']],
+
+    ['button', {
+      id: 'getValueFromRootAncestor',
+      $on: {
+        click () {
+          const val = Types.getValueFromRootAncestor(
+            '#formatAndTypeChoices > .typesHolder > ' +
+              '.typeContainer'
+          );
+          console.log(val);
+        }
+      }
+    }, [
+      'Get value from root ancestor'
+    ]],
+
+    ['button', {
+      id: 'showFormControlFromRootAncestor',
+      $on: {
+        click () {
+          const formControl = Types.getFormControlFromRootAncestor(
+            '#formatAndTypeChoices > .typesHolder > ' +
+              '.typeContainer'
+          );
+          formControl.style.backgroundColor = 'red';
+          setTimeout(() => {
+            formControl.style.backgroundColor = 'initial';
+          }, 3000);
+        }
+      }
+    }, [
+      'Show form control from root ancestor'
+    ]],
+
+    ['h2', [
+      'Format and type choices: Key path expected (object required at root)'
+    ]],
+    ...formatAndTypeChoices({
+      hasKeyPath: true,
+      typeNamespace: 'demo-keypath-expected'
+    }).domArray,
+
+    ['h2', [
+      'Format choices without type selection ' +
+        '(might use as retrieval return format)'
+    ]],
+    ['select', {id: 'formatAndSchemaChoices'}, [
+      getFormatAndSchemaChoices()
+    ]],
+
+    ['h2', [
+      'Type choices only'
+    ]],
+
+    (() => {
+      const typeSelection = typeChoices({
+        format: 'structuredCloning',
+        typeNamespace: 'demo-type-choices-only'
+      });
+
+      return ['form', {
+        id: 'typeChoicesOnly',
+        $on: {
+          submit (e) {
+            e.preventDefault();
+          }
+        }
+      }, [
+        ...typeSelection.domArray,
+        ['button', {
+          id: 'typeChoicesOnly-getType',
+          $on: {
+            click () {
+              // eslint-disable-next-line no-alert -- Simple demo
+              alert(typeSelection.getType());
+            }
+          }
+        }, ['Get type']],
+
+        ['button', {
+          id: 'typeChoicesOnly-isValid',
+          $on: {
+            click () {
+              // eslint-disable-next-line no-alert -- Simple demo
+              alert(typeSelection.validValuesSet());
+            }
+          }
+        }, ['Is valid']],
+
+        ['button', {
+          id: 'validateInitialType',
+          $on: {
+            click () {
+              // eslint-disable-next-line no-alert -- Simple demo
+              alert(typeSelection.domArray[0].$validate());
+            }
+          }
+        }, [
+          'Validate initial type'
+        ]],
+
+        ['button', {
+          id: 'typeChoicesOnly-logValue',
+          $on: {
+            click () {
+              console.log(typeSelection.getValue());
+            }
+          }
+        }, ['Log value']],
+
+        ['button', {
+          id: 'typeChoicesOnly-initializeWithValue',
+          $on: {
+            async click () {
+              await typeSelection.setValue(42);
+            }
+          }
+        }, ['Initialize with a value']]
+      ]];
+    })(),
+
+    ['h2', [
+      'Type choices with initial value set'
+    ]],
+
+    (() => {
+      const badDate = new Date('Bad date');
+      const typeSelection = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: [
+          42, 123n, 'test123', new Date('1999-01-01'), badDate,
+          // eslint-disable-next-line require-unicode-regexp -- Testing
+          /.*?/,
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing
+          new Boolean(false),
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing
+          new Boolean(true),
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing
+          new Number(42),
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing
+          new String('test123'),
+          Number.NaN,
+          -0,
+          new Blob(['<b>Testing</b>'], {type: 'text/html'}),
+          new Map([[null, 3], [true, 5]])
+        ],
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
+      const typeSelectionBlob = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: new Blob(['<b>Testing</b>'], {type: 'text/html'}),
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
+      const typeSelectionIndexedDBKey = typeChoices({
+        format: 'indexedDBKey',
+        setValue: true,
+        value: [-0, Number.NEGATIVE_INFINITY],
+        typeNamespace: 'demo-type-choices-only-initial-value',
+        keySelectClass: 'only-initial'
+      });
+
+      return ['form', [
+        ...typeSelection.domArray,
+        ...typeSelectionBlob.domArray,
+        ...typeSelectionIndexedDBKey.domArray
+      ]];
+    })(),
+
+    ['button', {
+      id: 'validValuesSet',
+      $on: {
+        click () {
+          // eslint-disable-next-line no-alert -- Simple demo
+          alert(Types.validValuesSet({
+            form: this.previousElementSibling,
+            typeNamespace: 'demo-type-choices-only-initial-value',
+            keySelectClass: 'only-initial'
+          }));
+        }
+      }
+    }, [
+      'Valid values set?'
+    ]],
+
+    ['h2', [
+      'Convert arbitrary value to an editable menu'
+    ]],
+
+    await getControlsForFormatAndValue(
+      'structuredCloning', new Date('1999-01-01')
+    ),
+
+    ['h2', [
+      'Convert arbitrary value to a readonly menu'
+    ]],
+
+    await getControlsForFormatAndValue(
+      'structuredCloning',
+      new Date('1999-01-01'), {
+        readonly: true
+      }
+    ),
+
+    ['h2', [
+      'Convert structured cloning string representation to value and log'
+    ]],
+    ['input', {
+      id: 'getValueForString',
+      placeholder: 'e.g., ["abc", 17]',
+      $on: {
+        change () {
+          const value = Types.getValueForString(this.value, {
+            format: $('#useIndexedDBKey').checked
+              ? 'indexedDBKey'
+              : 'structuredCloning'
+          })[0];
+          console.log(value);
+        }
+      }
+    }],
+
+    (() => {
+      return ['form', {
+        $on: {
+          submit (e) {
+            e.preventDefault();
+          }
+        }
+      }, [
+        ['button', {
+          id: 'attemptBadIndexedDBKey',
+          $on: {
+            click () {
+              const badDate = new Date('Bad date');
+              typeChoices({
+                format: 'indexedDBKey',
+                setValue: true,
+                value: [badDate],
+                typeNamespace: 'demo-type-choices-only-initial-value'
+              });
+            }
+          }
+        }, [
+          'Attempt bad indexedDBKey (invalid Date)'
+        ]],
+        ['button', {
+          id: 'attemptBadIndexedDBKeyStringObject',
+          $on: {
+            click () {
+              typeChoices({
+                format: 'indexedDBKey',
+                setValue: true,
+                // eslint-disable-next-line @stylistic/max-len -- Long
+                // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing
+                value: [new String('Bad value')],
+                typeNamespace: 'demo-type-choices-only-initial-value'
+              });
+            }
+          }
+        }, [
+          'Attempt bad indexedDBKey (String object)'
+        ]],
+        ['button', {
+          id: 'attemptBadJSON',
+          $on: {
+            click () {
+              typeChoices({
+                format: 'json',
+                setValue: true,
+                // eslint-disable-next-line no-sparse-arrays -- Testing
+                value: [,],
+                typeNamespace: 'demo-type-choices-only-initial-value'
+              });
+            }
+          }
+        }, [
+          'Attempt bad JSON (sparse array)'
+        ]]
+      ]];
+    })(),
+
+    ['label', [
+      'Use indexedDBKey (valid dates only)',
+      ['input', {
+        id: 'useIndexedDBKey',
+        type: 'checkbox'
+      }]
+    ]]
+  ], body);
+}, 500);

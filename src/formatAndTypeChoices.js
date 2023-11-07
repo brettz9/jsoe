@@ -96,7 +96,7 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   domArray: [formatChoices: FormatChoices, typesHolder: TypesHolder],
  *   getValue: (stateObj: import('./types.js').StateObject,
  *     currentPath: string) => import('./formats.js').StructuredCloneValue,
- *   getType: () => string|null|undefined,
+ *   getType: () => string,
  *   validValuesSet: () => boolean,
  *   setValue: SetValue
  * }} The selector for types and the container for them. Both should be
@@ -242,7 +242,7 @@ export function formatAndTypeChoices ({
     },
 
     /**
-     * @returns {string|null|undefined}
+     * @returns {string}
      */
     getType () {
       // eslint-disable-next-line @stylistic/max-len -- Long
@@ -277,7 +277,7 @@ export function formatAndTypeChoices ({
           stateObj
         )
       );
-      const type = /** @type {string} */ (Types.getTypeForRoot(rootEditUI));
+      const type = Types.getTypeForRoot(rootEditUI);
       // eslint-disable-next-line @stylistic/max-len -- Long
       const sel = /** @type {HTMLDivElement & {$getTypeSelect: TypeSelectGetter}} */ (
         typesHolder

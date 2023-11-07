@@ -46,8 +46,7 @@ const json = {
     if (!state || ['array', 'object'].includes(state)) {
       return this.types();
     }
-    // Todo: Should this throw?
-    /* istanbul ignore next -- No other states apparently */
+    // Shouldn't normally reach here
     return undefined;
   }
 };
