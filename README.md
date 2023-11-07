@@ -25,12 +25,14 @@ These are generally atomic types which correlate to JavaScript language structur
 - `BigInt`
 - `Boolean` object
 - `Date`
+- `Map`
 - `null`
 - `Number` object
 - number
 - Object reference (for cyclic objects)
 - Object
 - `RegExp`
+- `Set`
 - `String` object
 - string
 - `undefined`
@@ -51,6 +53,11 @@ separate enumeration.
 - Special Real Number (`Infinity`, `-Infinity`, `-0`) - Used with IndexedDB keys (even though -0 apparently [to be converted](https://github.com/w3c/IndexedDB/issues/375) to 0)
 - Special Number (`Infinity`, `-Infinity`, `-0`, `NaN`) - Used with Structured Cloning values
 
+## Known issues
+
+- Cannot provide maps with object keys pointing to the same objects as used as map values
+- Lacks support for certain Structured Cloning types. See to-dos below.
+
 ## To-dos
 
 1. Add tests of demo (lower priority as have tests in `idb-manager`)
@@ -58,28 +65,32 @@ separate enumeration.
 1. Expand fundamental types
     1. Not in typeson-registry
         1. Structured Cloning
-            1. arraybufferview
+            1. Web/API types (besides those listed below)
+                1. See <https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#webapi_types>
     1. Already in typeson-registry
         1. Structured Cloning
-            1. map, set,
-            1. blob, file, filelist
-            1. arraybuffer
-            1. dataview, imagedata, imagebitmap
-            1. error, errors
-            1. Typed Arrays
-                1. int8array
-                1. uint8array
-                1. uint8clampedarray
-                1. int16array
-                1. uint16array
-                1. int32array
-                1. uint32array
-                1. float32array
-                1. float64array
-            1. Intl (imperfect)
-                1. IntlCollator
-                1. IntlDateTimeFormat
-                1. IntlNumberFormat
+            1. JavaScript types
+                1. Error types
+                    1. error, errors
+                1. ArrayBuffer
+                    1. arraybuffer
+                1. DataView
+                    1. dataview
+                1. TypedArray
+                    1. int8array
+                    1. uint8array
+                    1. uint8clampedarray
+                    1. int16array
+                    1. uint16array
+                    1. int32array
+                    1. uint32array
+                    1. float32array
+                    1. float64array
+            1. Web/API types
+                1. blob (besides HTML), file, filelist
+                1. imagedata, imagebitmap
 1. Expand subtypes
     1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
-        subtype of `string`)
+        subtype of `string`, color as a subtype of string)
+1. Might put views and data into separate repos
+1. Implement as Custom Elements
