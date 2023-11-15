@@ -291,7 +291,11 @@ setTimeout(async function () {
           Number.NaN,
           -0,
           new Blob(['<b>Testing</b>'], {type: 'text/html'}),
-          new Map([[null, 3], [true, 5]])
+          new Map([
+            [null, 3],
+            [true, new Map([[false, 5]])],
+            [new Map([[6, 4]]), 7]
+          ])
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });

@@ -175,7 +175,9 @@ const arrayType = {
       return {
         value: this.set && Array.isArray(retObj)
           ? new Set(retObj)
-          : retObj,
+          : this.map
+            ? new Map(/** @type {Array<any>} */ (retObj))
+            : retObj,
         remnant: stringVal
       };
     }
@@ -343,11 +345,13 @@ const arrayType = {
     // const {sparse} = this;
     let itemIndex = -1;
 
+    const parentType = type;
+
     /**
      * @param {{
      *   itemIndex: number,
      *   typeNamespace?: string,
-     *   propName: string
+     *   propName?: string
      * }} cfg
      * @returns {import('jamilih').JamilihArray}
      */
@@ -379,7 +383,7 @@ const arrayType = {
         $custom: {
           /**
            * @param {{
-           *   propName: name,
+           *   propName: string,
            *   type: import('../types.js').AvailableType,
            *   value: import('../formats.js').StructuredCloneValue,
            *   bringIntoFocus: boolean,
@@ -393,6 +397,37 @@ const arrayType = {
             propName, type, value, bringIntoFocus,
             schemaContent, schemaState
           }) {
+            if (parentType === 'map') {
+              const root = Types.getUIForModeAndType({
+                resultType,
+                readonly: true,
+                typeNamespace, type, topRoot,
+                bringIntoFocus,
+                format, schemaContent, schemaState,
+                value,
+                hasValue: true // type === 'sparseArrays' && value
+              });
+              if (propName === '0') {
+                const fieldset = this.$addMapElement();
+                this._lastFieldset = fieldset;
+                const keyFieldset = /** @type {HTMLFieldSetElement} */ (jml(
+                  'fieldset', [
+                    ['legend', ['Key']]
+                  ], fieldset
+                ));
+                jml(root, keyFieldset);
+              } else { // propName === '1'
+                const valueFieldset = /** @type {HTMLFieldSetElement} */ (jml(
+                  'fieldset', [
+                    ['legend', ['Value']]
+                  ], this._lastFieldset
+                ));
+                this._lastFieldset = null;
+                jml(root, valueFieldset);
+              }
+              return root;
+            }
+
             const fieldset = this.$addArrayElement({propName});
             const root = Types.getUIForModeAndType({
               resultType,
@@ -405,6 +440,27 @@ const arrayType = {
             });
             jml(root, fieldset);
             return root;
+          },
+          /**
+           * @returns {HTMLFieldSetElement}
+           */
+          $addMapElement () {
+            itemIndex++;
+            const arrayItems = this.$getArrayItems();
+            // const className = `${type}Item`;
+            const fieldset = /** @type {HTMLFieldSetElement} */ (
+              jml('fieldset', [
+                buildLegend({
+                  // className,
+                  // type,
+                  // arrayItems,
+                  itemIndex,
+                  typeNamespace,
+                  propName: undefined
+                })
+              ], arrayItems)
+            );
+            return fieldset;
           },
           /**
            * @param {{propName: string}} cfg
@@ -1535,6 +1591,8 @@ const arrayType = {
       ]]
     );
 
+    const parentType = type;
+
     const div = /** @type {HTMLDivElement} */ (
       jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
         dataset: {type},
@@ -1546,7 +1604,30 @@ const arrayType = {
             propName, type, value, bringIntoFocus
             // , schemaContent, schemaState
           }) {
-            this.$addArrayElement({propName});
+            if (parentType === 'map') {
+              if (propName === '0') {
+                this.$addArrayElement({propName});
+                const arrayItems = this.$getArrayItems();
+                const keyTypeChoices = /**
+                 * @type {HTMLSelectElement & {
+                 *   $setType: import('../typeChoices.js').SetType,
+                 *   $getTypeRoot: import('../formatAndTypeChoices.js').
+                 *     TypeRootGetter
+                 * }}
+                */ (DOM.filterChildElements(
+                    arrayItems,
+                    ['fieldset:last-of-type', 'legend', '.mapKey', 'select']
+                  )[0]);
+                keyTypeChoices.$setType({
+                  type, baseValue: value, bringIntoFocus
+                });
+
+                // The key may itself be a map, etc.
+                return keyTypeChoices.$getTypeRoot();
+              }
+            } else {
+              this.$addArrayElement({propName});
+            }
             const typeChoices = this.$getTypeChoices();
             typeChoices.$setType({type, baseValue: value, bringIntoFocus});
             const root = typeChoices.$getTypeRoot();
@@ -1595,7 +1676,7 @@ const arrayType = {
             const arrayItems = this.$getArrayItems();
             return $e(
               arrayItems.lastElementChild,
-              `.typeChoices-${typeNamespace}`
+              `fieldset > .typeChoices-${typeNamespace}` // Avoid keys
             );
           }
         },

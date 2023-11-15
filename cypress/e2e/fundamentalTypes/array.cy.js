@@ -102,7 +102,9 @@ describe('Array spec', function () {
       sel + '.arrayItems select.typeChoices-demo-keypath-not-expected'
     ).select('arrayNonindexKeys');
 
-    cy.clearTypeAndBlur('.arrayItems .arrayContents input[type="number"]', '4');
+    cy.clearTypeAndBlur(
+      sel + '.arrayItems .arrayContents input[type="number"]', '4'
+    );
 
     cy.get(
       sel + 'div[data-type="arrayNonindexKeys"] ' +
@@ -233,6 +235,7 @@ describe('Array spec', function () {
       '.arrayItems select.typeChoices-demo-keypath-not-expected'
     ).select('arrayNonindexKeys');
     cy.clearTypeAndBlur(
+      sel +
       '.arrayContents .arrayContents input[type="number"]', '4'
     );
 

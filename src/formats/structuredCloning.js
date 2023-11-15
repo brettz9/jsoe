@@ -19,7 +19,7 @@ import json from './json.js';
  *   bringIntoFocus?: boolean,
  *   schemaContent?: object,
  *   schemaState?: import('../types.js').GetPossibleSchemasForPathAndType
- * }) => HTMLElement} AddAndSetArrayElement
+ * }) => HTMLElement|null} AddAndSetArrayElement
  */
 
 /**
@@ -44,6 +44,10 @@ const encapsulateObserver = (stateObj) => {
    * }}}
    */
   const parents = {};
+
+  /** @type {string[]} */
+  const mapPaths = [];
+
   return (observerObj) => {
     const {
       type,
@@ -132,6 +136,14 @@ const encapsulateObserver = (stateObj) => {
       'arrayNonindexKeys'
     ].includes(newType);
 
+    // Maps are followed up by arrays which we don't want as such;
+    //  we track the paths to avoid reporting these child arrays
+    const mapType = type === 'map' &&
+      Object.prototype.toString.call(value) === '[object Map]';
+    if (mapType) {
+      mapPaths.push(keypath);
+    }
+
     if (!stateObj.rootUI) {
       stateObj.rootUI = Types.getUIForModeAndType({
         readonly,
@@ -160,6 +172,18 @@ const encapsulateObserver = (stateObj) => {
       * @type {HTMLElement &
       *   {$addAndSetArrayElement: AddAndSetArrayElement}}
       */ (stateObj.rootUI);
+
+      // Since we're skipping the array elements, we need to add the
+      //   map element to the array index where the array children
+      //   will be found (which we do want)
+      if (mapType) {
+        /** @type {Map<any, any>} */ [...value].forEach((_, i) => {
+          parents[i] = /**
+          * @type {HTMLElement &
+          *   {$addAndSetArrayElement: AddAndSetArrayElement}}
+          */ (stateObj.rootUI);
+        });
+      }
       return;
     }
 
@@ -180,6 +204,20 @@ const encapsulateObserver = (stateObj) => {
         return;
       }
 
+      // Skip the array structures immediately following the Map,
+      //   as map needs to handle
+      if (!mapType && mapPaths.some((mapPath) => {
+        if (mapPath === keypath ||
+          (mapPath === '' && (/^\d+$/u).test(keypath))) {
+          return true;
+        }
+        const trailingIndex = keypath.match(/\.\d+$/u);
+        return (trailingIndex && mapPath !== '' &&
+          keypath.slice(0, -trailingIndex[0].length) === mapPath);
+      })) {
+        return;
+      }
+
       const root = ui.$addAndSetArrayElement({
         propName: arrayOrObjectPropertyName,
         type: newType,
@@ -197,7 +235,15 @@ const encapsulateObserver = (stateObj) => {
         */
       });
 
+      /* istanbul ignore if -- Guard for `null` return */
+      if (!root) {
+        return;
+      }
+
       if (!readonly) {
+        // Todo: Redundant with `typeObj.setValue`? Ensure `idb-manager`
+        //    does not need both; this write-only would seem preferable
+        //    to the block in `arrayType.js` if readonly indeed not needed
         Types.setValue({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
@@ -219,6 +265,18 @@ const encapsulateObserver = (stateObj) => {
           */ (
             root
           );
+
+        // Since we're skipping the array elements, we need to add the
+        //   map element to the array index where the array children
+        //   will be found (which we do want)
+        if (mapType) {
+          /** @type {Map<any, any>} */ [...value].forEach((_, i) => {
+            parents[`${keypath}.${i}`] = /**
+            * @type {HTMLElement &
+            *   {$addAndSetArrayElement: AddAndSetArrayElement}}
+            */ (root);
+          });
+        }
       }
     });
   };

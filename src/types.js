@@ -28,7 +28,7 @@ import regexpType from './fundamentalTypes/regexpType.js';
 import BooleanObjectType from './fundamentalTypes/BooleanObjectType.js';
 import NumberObjectType from './fundamentalTypes/NumberObjectType.js';
 import StringObjectType from './fundamentalTypes/StringObjectType.js';
-import sparseUndefinedType from './fundamentalTypes/sparseUndefinedType.js';
+// import sparseUndefinedType from './fundamentalTypes/sparseUndefinedType.js';
 import SpecialRealNumberSuperType from
   './superTypes/SpecialRealNumberType.js';
 import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
@@ -435,7 +435,7 @@ Types.availableTypes = {
   },
 
   // We're catching this instead of using this
-  sparseUndefined: sparseUndefinedType,
+  // sparseUndefined: sparseUndefinedType,
 
   ValidDate: {
     valid: true
@@ -458,7 +458,7 @@ Types.availableTypes = {
 *   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
-*   "IntlDateTimeFormat"|"IntlNumberFormat"|"sparseUndefined"|"ValidDate"|
+*   "IntlDateTimeFormat"|"IntlNumberFormat"|"ValidDate"|
 *   "arrayNonindexKeys"} AvailableType
 */
 

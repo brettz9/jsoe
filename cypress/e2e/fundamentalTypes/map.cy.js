@@ -10,5 +10,301 @@ describe('Map spec', () => {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
     cy.get(sel + '.addArrayElement').click();
+
+    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('null');
+
+    cy.get(
+      sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('true');
+
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('false');
+
+    cy.get(
+      sel + '.arrayItems fieldset:nth-of-type(2) ' +
+      '.typeChoices-demo-keypath-not-expected'
+    ).select('string');
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults > div[data-type="map"] > div').should('exist');
+    cy.get(
+      '#viewUIResults > div[data-type="map"] > div'
+    ).should('contain', 'Map size');
+    cy.get('#viewUIResults i[data-type="null"]').should('exist');
+    cy.get('#viewUIResults i[data-type="null"]').should('contain', 'null');
+  });
+
+  it('creates form control (nested map value)', () => {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(
+      sel + 'select.typeChoices-demo-keypath-not-expected'
+    ).select('object');
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(sel + '.propertyName-demo-keypath-not-expected').type(
+      'aaa'
+    );
+
+    cy.get(
+      sel + '.arrayItems select.typeChoices-demo-keypath-not-expected'
+    ).select('map');
+    cy.get(
+      sel + '.arrayItems .addArrayElement'
+    ).click();
+
+    cy.get(
+      sel + '.mapKey > .typeChoices-key-type-choices-only'
+    ).select('true');
+
+    cy.get(
+      sel + '.arrayItems .arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('BooleanObject');
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults > div[data-type="object"]').should('exist');
+    cy.get(
+      '#viewUIResults > div[data-type="object"]'
+    ).should('contain', 'Object');
+    const innerArrayHolder = '#viewUIResults > .arrayHolder > ' +
+      '.arrayContents > .arrayItems > ' +
+      'fieldset > .arrayHolder';
+    cy.get(
+      innerArrayHolder
+    ).should('contain', 'Map');
+
+    cy.get(
+      innerArrayHolder + ' .arrayContents > .arrayItems > ' +
+      'fieldset > fieldset:nth-of-type(1) > legend'
+    ).should('contain', 'Key');
+
+    cy.get(
+      innerArrayHolder + ' .arrayContents > .arrayItems > ' +
+      'fieldset > fieldset:nth-of-type(1) > i'
+    ).should('contain', 'true');
+
+    cy.get(
+      innerArrayHolder + ' .arrayContents > .arrayItems > ' +
+      'fieldset > fieldset:nth-of-type(2) > legend'
+    ).should('contain', 'Value');
+
+    cy.get(
+      innerArrayHolder + ' .arrayContents > .arrayItems > ' +
+      'fieldset > fieldset:nth-of-type(2) > i'
+    ).should('contain', 'Boolean(true)');
+  });
+
+  it('creates form control (nested map key)', () => {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('map');
+
+    cy.get(sel + '.mapKey .addArrayElement').click();
+
+    cy.get(
+      sel + '.arrayItems .arrayItems .mapKey > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('false');
+
+    cy.get(
+      sel + '.arrayItems .arrayItems fieldset > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('BooleanObject');
+
+    cy.get(
+      sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('null');
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults > div[data-type="map"]').should('exist');
+    cy.get(
+      '#viewUIResults > div[data-type="map"]'
+    ).should('contain', 'Map');
+
+    cy.get(
+      '#viewUIResults .arrayItems .arrayItems fieldset ' +
+      'fieldset:nth-of-type(1) i'
+    ).should('contain', 'false');
+
+    cy.get(
+      '#viewUIResults .arrayItems .arrayItems fieldset ' +
+      'fieldset:nth-of-type(2) i'
+    ).should('contain', 'Boolean(true)');
+
+    cy.get(
+      '#viewUIResults > .arrayHolder > .arrayContents > .arrayItems ' +
+      'fieldset > ' +
+      'fieldset:nth-of-type(2) i'
+    ).should('contain', 'null');
+  });
+
+  it('gets warning for duplicate keys (null and null)', (done) => {
+    cy.on('window:alert', (t) => {
+      expect(t).to.eq(false);
+      done();
+    });
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('null');
+
+    cy.get(
+      sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('true');
+
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('null');
+
+    // Why isn't this working?
+    // // eslint-disable-next-line promise/catch-or-return -- Cypress
+    // cy.get(
+    //   sel +
+    //   'fieldset:nth-of-type(2) select.typeChoices-key-type-choices-only'
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
+    // ).then(($select) => {
+    //   expect(/** @type {HTMLSelectElement} */ (
+    //     $select[0]
+    //   ).validationMessage).to.eq(
+    //     'Duplicate Map key value'
+    //   );
+    // });
+
+    cy.get('#isValid').click();
+  });
+
+  it('gets warning for duplicate keys (-0 and 0)', (done) => {
+    cy.on('window:alert', (t) => {
+      expect(t).to.eq(false);
+      done();
+    });
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + '.mapKey > .typeChoices-key-type-choices-only'
+    ).select('number');
+
+    cy.clearAndType(
+      sel + 'input[name="key-type-choices-only-number"]',
+      '0'
+    );
+
+    cy.get(
+      sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('true');
+
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('SpecialNumber');
+
+    cy.get(
+      sel + 'select[name="key-type-choices-only-SpecialNumber"]'
+    ).select('-0');
+
+    // Why isn't this working?
+    // // eslint-disable-next-line promise/catch-or-return -- Cypress
+    // cy.get(
+    //   sel +
+    //   'fieldset:nth-of-type(2) select.typeChoices-key-type-choices-only'
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
+    // ).then(($select) => {
+    //   expect(/** @type {HTMLSelectElement} */ (
+    //     $select[0]
+    //   ).validationMessage).to.eq(
+    //     'Duplicate Map key value'
+    //   );
+    // });
+
+    cy.get('#isValid').click();
+  });
+
+  it('gets warning for duplicate keys (NaN and NaN)', (done) => {
+    cy.on('window:alert', (t) => {
+      expect(t).to.eq(false);
+      done();
+    });
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + '.mapKey > .typeChoices-key-type-choices-only'
+    ).select('SpecialNumber');
+
+    cy.get(
+      sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
+    ).select('true');
+
+    cy.get(sel + '.addArrayElement').click();
+
+    cy.get(
+      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      '.typeChoices-key-type-choices-only'
+    ).select('SpecialNumber');
+
+    // Why isn't this working?
+    // // eslint-disable-next-line promise/catch-or-return -- Cypress
+    // cy.get(
+    //   sel +
+    //   'fieldset:nth-of-type(2) select.typeChoices-key-type-choices-only'
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
+    // ).then(($select) => {
+    //   expect(/** @type {HTMLSelectElement} */ (
+    //     $select[0]
+    //   ).validationMessage).to.eq(
+    //     'Duplicate Map key value'
+    //   );
+    // });
+
+    cy.get('#isValid').click();
+  });
+
+  it('shows form control from root ancestor (for a map)', function () {
+    const sel = '#formatAndTypeChoices ';
+
+    cy.get(
+      sel + 'select.typeChoices-demo-keypath-not-expected'
+    ).select('map');
+
+    cy.get('#showFormControlFromRootAncestor').click();
+
+    cy.get(
+      '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+      'div[data-type="map"] > button'
+    ).should(($button) => {
+      expect($button[0].style.backgroundColor).to.equal('red');
+    });
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needed
+    cy.wait(3000);
+
+    cy.get(
+      '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+      'div[data-type="map"] > button'
+    ).should(($button) => {
+      expect($button[0].style.backgroundColor).to.not.equal('red');
+    });
+  });
+
+  it('converts a string to a Map', function () {
+    cy.typeAndBlur('#getValueForString', 'Map([3, "abc"])');
+    cy.get('@consoleLog').should('be.calledWith', new Map([[3, 'abc']]));
   });
 });

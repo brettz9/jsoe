@@ -16,11 +16,16 @@ describe('Set spec', () => {
       '.typeChoices-demo-keypath-not-expected').select('true');
     cy.get('#viewUI').click();
 
-    cy.get(
-      sel + 'input[name="demo-keypath-not-expected-null"]'
-    ).should('be.checked');
-    cy.get(sel + 'input[name="demo-keypath-not-expected-true1"]').should(
-      'be.checked'
+    cy.get('#viewUIResults div[data-type="set"]').should(
+      'contain', 'Set'
+    );
+
+    cy.get('#viewUIResults i[data-type="null"]').should(
+      'contain', 'null'
+    );
+
+    cy.get('#viewUIResults i[data-type="true"]').should(
+      'contain', 'true'
     );
   });
 
@@ -39,13 +44,13 @@ describe('Set spec', () => {
       '.typeChoices-demo-keypath-not-expected').select('true');
 
     cy.get(
-      sel + 'input[name="demo-keypath-not-expected-true1"][value=true]'
+      sel + 'input[name="demo-keypath-not-expected-true2"][value=true]'
     ).should(
       'be.checked'
     );
 
     cy.get(
-      sel + 'input[name="demo-keypath-not-expected-true2"][value=true]'
+      sel + 'input[name="demo-keypath-not-expected-true3"][value=true]'
     ).should(
       'be.checked'
     );

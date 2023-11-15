@@ -11,7 +11,7 @@ describe('false spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'false'
     );
-    cy.get('input[name="demo-keypath-not-expected-false1"]').should(
+    cy.get(sel + 'input[name="demo-keypath-not-expected-false2"]').should(
       'be.checked'
     );
   });
