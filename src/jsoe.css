@@ -52,6 +52,9 @@ input:invalid {
 [data-type="blobHTML"] {
   background-color: sandybrown;
 }
+[data-type="error"] {
+  background-color: red;
+}
 
 [class^="propertyName-"] {
   background-color: yellow;

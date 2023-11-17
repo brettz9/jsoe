@@ -1,4 +1,4 @@
-function ownKeys(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),r.push.apply(r,n);}return r}function _objectSpread2(e){for(var t=1;t<arguments.length;t++){var r=null!=arguments[t]?arguments[t]:{};t%2?ownKeys(Object(r),!0).forEach((function(t){_defineProperty(e,t,r[t]);})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(r)):ownKeys(Object(r)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(r,t));}));}return e}function _typeof(e){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},_typeof(e)}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,_toPropertyKey(n.key),n);}}function _createClass(e,t,r){return t&&_defineProperties(e.prototype,t),r&&_defineProperties(e,r),Object.defineProperty(e,"prototype",{writable:!1}),e}function _defineProperty(e,t,r){return (t=_toPropertyKey(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function _slicedToArray(e,t){return function _arrayWithHoles(e){if(Array.isArray(e))return e}(e)||function _iterableToArrayLimit(e,t){var r=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=r){var n,o,i,a,c=[],s=!0,u=!1;try{if(i=(r=r.call(e)).next,0===t){if(Object(r)!==r)return;s=!1;}else for(;!(s=(n=i.call(r)).done)&&(c.push(n.value),c.length!==t);s=!0);}catch(e){u=!0,o=e;}finally{try{if(!s&&null!=r.return&&(a=r.return(),Object(a)!==a))return}finally{if(u)throw o}}return c}}(e,t)||_unsupportedIterableToArray(e,t)||function _nonIterableRest(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _toConsumableArray(e){return function _arrayWithoutHoles(e){if(Array.isArray(e))return _arrayLikeToArray(e)}(e)||function _iterableToArray(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||_unsupportedIterableToArray(e)||function _nonIterableSpread(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _unsupportedIterableToArray(e,t){if(e){if("string"==typeof e)return _arrayLikeToArray(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?_arrayLikeToArray(e,t):void 0}}function _arrayLikeToArray(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function _toPropertyKey(e){var t=function _toPrimitive(e,t){if("object"!=typeof e||null===e)return e;var r=e[Symbol.toPrimitive];if(void 0!==r){var n=r.call(e,t||"default");if("object"!=typeof n)return n;throw new TypeError("@@toPrimitive must return a primitive value.")}return ("string"===t?String:Number)(e)}(e,"string");return "symbol"==typeof t?t:String(t)}var e=_createClass((function TypesonPromise(e){_classCallCheck(this,TypesonPromise),this.p=new Promise(e);}));e.__typeson__type__="TypesonPromise","undefined"!=typeof Symbol&&Object.defineProperty(e.prototype,Symbol.toStringTag,{get:function get(){return "TypesonPromise"}}),e.prototype.then=function(t,r){var n=this;return new e((function(e,o){n.p.then((function(r){e(t?t(r):r);})).catch((function(e){return r?r(e):Promise.reject(e)})).then(e,o);}))},e.prototype.catch=function(e){return this.then((function(){}),e)},e.resolve=function(t){return new e((function(e){e(t);}))},e.reject=function(t){return new e((function(e,r){r(t);}))},e.all=function(t){return new e((function(e,r){Promise.all(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.race=function(t){return new e((function(e,r){Promise.race(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.allSettled=function(t){return new e((function(e,r){Promise.allSettled(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))};var t=Object.hasOwn,r=Object.getPrototypeOf;function isThenable(e,t){return isObject(e)&&"function"==typeof e.then&&(!t||"function"==typeof e.catch)}function toStringTag(e){return Object.prototype.toString.call(e).slice(8,-1)}function hasConstructorOf(e,n){if(!e||"object"!==_typeof(e))return !1;var o=r(e);if(!o)return null===n;var i=t(o,"constructor")&&o.constructor;return "function"!=typeof i?null===n:n===i||(null!==n&&Function.prototype.toString.call(i)===Function.prototype.toString.call(n)||"function"==typeof n&&"string"==typeof i.__typeson__type__&&i.__typeson__type__===n.__typeson__type__)}function isPlainObject(e){return !(!e||"Object"!==toStringTag(e))&&(!r(e)||hasConstructorOf(e,Object))}function isUserObject(e){if(!e||"Object"!==toStringTag(e))return !1;var t=r(e);return !t||(hasConstructorOf(e,Object)||isUserObject(t))}function isObject(e){return null!==e&&"object"===_typeof(e)}function escapeKeyPathComponent(e){return e.replace(/''/g,"''''").replace(/^$/,"''").replace(/~/g,"~0").replace(/\./g,"~1")}function unescapeKeyPathComponent(e){return e.replace(/~1/g,".").replace(/~0/g,"~").replace(/^''$/,"").replace(/''''/g,"''")}function getByKeyPath(e,t){if(""===t)return e;if(null===e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var r=t.indexOf(".");if(r>-1){var n=e[unescapeKeyPathComponent(t.slice(0,r))];return void 0===n?void 0:getByKeyPath(n,t.slice(r+1))}return e[unescapeKeyPathComponent(t)]}function setAtKeyPath(e,t,r){if(""===t)return r;if(!e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var n=t.indexOf(".");return n>-1?setAtKeyPath(e[unescapeKeyPathComponent(t.slice(0,n))],t.slice(n+1),r):(e[unescapeKeyPathComponent(t)]=r,e)}function getJSONType(e){return null===e?"null":Array.isArray(e)?"array":_typeof(e)}function _await(e,t,r){return r?t?t(e):e:(e&&e.then||(e=Promise.resolve(e)),t?e.then(t):e)}var n=Object.keys,o=Object.hasOwn,i$1=Array.isArray,a=["type","replaced","iterateIn","iterateUnsetNumeric","addLength"];function _async(e){return function(){for(var t=[],r=0;r<arguments.length;r++)t[r]=arguments[r];try{return Promise.resolve(e.apply(this,t))}catch(e){return Promise.reject(e)}}}function nestedPathsFirst(e,t){var r,n;if(""===e.keypath)return -1;var o=null!==(r=e.keypath.match(/\./g))&&void 0!==r?r:0,i=null!==(n=t.keypath.match(/\./g))&&void 0!==n?n:0;return o&&(o=o.length),i&&(i=i.length),o>i?-1:o<i?1:e.keypath<t.keypath?-1:e.keypath>t.keypath?1:0}var c=function(){function Typeson(e){_classCallCheck(this,Typeson),this.options=e,this.plainObjectReplacers=[],this.nonplainObjectReplacers=[],this.revivers={},this.types={};}return _createClass(Typeson,[{key:"stringify",value:function stringify(e,t,r,n){n=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),n),{},{stringification:!0});var o=this.encapsulate(e,null,n);return i$1(o)?JSON.stringify(o[0],t,r):o.then((function(e){return JSON.stringify(e,t,r)}))}},{key:"stringifySync",value:function stringifySync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!0}))}},{key:"stringifyAsync",value:function stringifyAsync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!1}))}},{key:"parse",value:function parse(e,t,r){return r=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),r),{},{parse:!0}),this.revive(JSON.parse(e,t),r)}},{key:"parseSync",value:function parseSync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"parseAsync",value:function parseAsync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"specialTypeNames",value:function specialTypeNames(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.returnTypeNames=!0,this.encapsulate(e,t,r)}},{key:"rootTypeName",value:function rootTypeName(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.iterateNone=!0,this.encapsulate(e,t,r)}},{key:"encapsulate",value:function encapsulate(t,r,c){var s=this,u=_objectSpread2(_objectSpread2({sync:!0},this.options),c),y=u.sync,p={},l=[],f=[],v=[],h=!("cyclic"in u)||u.cyclic,d=u.encapsulateObserver,b=function finish(e){var t=Object.values(p);if(u.iterateNone)return t.length?t[0]:getJSONType(e);if(t.length){if(u.returnTypeNames)return _toConsumableArray(new Set(t));e&&isPlainObject(e)&&!o(e,"$types")?e.$types=p:e={$:e,$types:{$:p}};}else isObject(e)&&o(e,"$types")&&(e={$:e,$types:!0});return !u.returnTypeNames&&e},_=_async((function(t,r){return _await(Promise.all(r.map((function(e){return e[1].p}))),(function(n){return _await(Promise.all(n.map(_async((function(n){var o=!1,i=[],a=_slicedToArray(r.splice(0,1),1),c=_slicedToArray(a[0],7),s=c[0],u=c[2],y=c[3],p=c[4],l=c[5],f=c[6],v=m(s,n,u,y,i,!0,f),h=hasConstructorOf(v,e);return function _invoke(e,t){var r=e();return r&&r.then?r.then(t):t(r)}((function(){if(s&&h)return _await(v.p,(function(e){p[l]=e;var r=_(t,i);return o=!0,r}))}),(function(e){return o?e:(s?p[l]=v:t=h?v.p:v,_(t,i))}))})))),(function(){return t}))}))})),O=function _adaptBuiltinStateObjectProperties(e,t,r){Object.assign(e,t);var n=a.map((function(t){var r=e[t];return delete e[t],r}));r(),a.forEach((function(t,r){e[t]=n[r];}));},m=function _encapsulate(t,r,a,c,y,v,h){var b,_={},m=_typeof(r),g=d?function(n){var o,i=null!==(o=null!=h?h:c.type)&&void 0!==o?o:getJSONType(r);d(Object.assign(null!=n?n:_,{keypath:t,value:r,cyclic:a,stateObj:c,promisesData:y,resolvingTypesonPromise:v,awaitingTypesonPromise:hasConstructorOf(r,e)},{type:i}));}:null;if(["string","boolean","number","undefined"].includes(m))return void 0===r||Number.isNaN(r)||r===Number.NEGATIVE_INFINITY||r===Number.POSITIVE_INFINITY||0===r?(b=c.replaced?r:j(t,r,c,y,!1,v,g))!==r&&(_={replaced:b}):b=r,g&&g(),b;if(null===r)return g&&g(),r;if(a&&!c.iterateIn&&!c.iterateUnsetNumeric&&r&&"object"===_typeof(r)){var S=l.indexOf(r);if(!(S<0))return p[t]="#",g&&g({cyclicKeypath:f[S]}),"#"+f[S];!0===a&&(l.push(r),f.push(t));}var P,T,w=isPlainObject(r),A=i$1(r),C=(w||A)&&(!s.plainObjectReplacers.length||c.replaced)||c.iterateIn?r:j(t,r,c,y,w||A,null,g);if(C!==r?(b=C,_={replaced:C}):""===t&&hasConstructorOf(r,e)?(y.push([t,r,a,c,void 0,void 0,c.type]),b=r):A&&"object"!==c.iterateIn||"array"===c.iterateIn?(P=new Array(r.length),_={clone:P}):(["function","symbol"].includes(_typeof(r))||"toJSON"in r||hasConstructorOf(r,e)||hasConstructorOf(r,Promise)||hasConstructorOf(r,ArrayBuffer))&&!w&&"object"!==c.iterateIn?b=r:(P={},c.addLength&&(P.length=r.length),_={clone:P}),g&&g(),u.iterateNone)return null!==(T=P)&&void 0!==T?T:b;if(!P)return b;if(c.iterateIn){var k=function _loop(n){var i={ownKeys:o(r,n)};O(c,i,(function(){var o=t+(t?".":"")+escapeKeyPathComponent(n),i=_encapsulate(o,r[n],Boolean(a),c,y,v);hasConstructorOf(i,e)?y.push([o,i,Boolean(a),c,P,n,c.type]):void 0!==i&&(P[n]=i);}));};for(var N in r)k(N);g&&g({endIterateIn:!0,end:!0});}else n(r).forEach((function(n){var o=t+(t?".":"")+escapeKeyPathComponent(n);O(c,{ownKeys:!0},(function(){var t=_encapsulate(o,r[n],Boolean(a),c,y,v);hasConstructorOf(t,e)?y.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));})),g&&g({endIterateOwn:!0,end:!0});if(c.iterateUnsetNumeric){for(var I=r.length,E=function _loop2(n){if(!(n in r)){var o="".concat(t).concat(t?".":"").concat(n);O(c,{ownKeys:!1},(function(){var t=_encapsulate(o,void 0,Boolean(a),c,y,v);hasConstructorOf(t,e)?y.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));}},K=0;K<I;K++)E(K);g&&g({endIterateUnsetNumeric:!0,end:!0});}return P},j=function replace(e,t,r,n,o,i,a){for(var c=o?s.plainObjectReplacers:s.nonplainObjectReplacers,u=c.length;u--;){var l=c[u];if(l.test(t,r)){var f=l.type;if(s.revivers[f]){var v=p[e];p[e]=v?[f].concat(v):f;}if(Object.assign(r,{type:f,replaced:!0}),(y||!l.replaceAsync)&&!l.replace)return a&&a({typeDetected:!0}),m(e,t,h&&"readonly",r,n,i,f);a&&a({replacing:!0});var d=void 0;if(y||!l.replaceAsync){if(void 0===l.replace)throw new TypeError("Missing replacer");d=l.replace(t,r);}else d=l.replaceAsync(t,r);return m(e,d,h&&"readonly",r,n,i,f)}}return t},g=m("",t,h,null!=r?r:{},v);if(v.length)return y&&u.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():Promise.resolve(_(g,v)).then(b);if(!y&&u.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return u.stringification&&y?[b(g)]:y?b(g):Promise.resolve(b(g))}},{key:"encapsulateSync",value:function encapsulateSync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"encapsulateAsync",value:function encapsulateAsync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"revive",value:function revive(t,r){var o=this,a=_objectSpread2(_objectSpread2({sync:!0},this.options),r),c=a.sync;function finishRevival(e){if(c)return e;if(a.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return Promise.resolve(e)}if(!t||"object"!==_typeof(t)||Array.isArray(t))return finishRevival(t);var u=t.$types;if(!0===u)return finishRevival(t.$);if(!u||"object"!==_typeof(u)||Array.isArray(u))return finishRevival(t);var y=[],p={},l=!0;u.$&&isPlainObject(u.$)&&(t=t.$,u=u.$,l=!1);var f=function executeReviver(e,t){var r,n=_slicedToArray(null!==(r=o.revivers[e])&&void 0!==r?r:[],1)[0];if(!n)throw new Error("Unregistered type: "+e);if(c&&!("revive"in n))return t;if(!c&&n.reviveAsync)return n.reviveAsync(t,p);if(n.revive)return n.revive(t,p);throw new Error("Missing reviver")},v=[];function checkUndefined(e){return hasConstructorOf(e,s)?void 0:e}var h,d=function revivePlainObjects(){var r=[];if(!u)throw new Error("Found bad `types`");if(Object.entries(u).forEach((function(e){var t=_slicedToArray(e,2),n=t[0],i=t[1];"#"!==i&&[].concat(i).forEach((function(e){var t;_slicedToArray(null!==(t=o.revivers[e])&&void 0!==t?t:[null,{}],2)[1].plain&&(r.push({keypath:n,type:e}),delete u[n]);}));})),r.length)return r.sort(nestedPathsFirst).reduce((function reducer(r,n){var o=n.keypath,i=n.type;if(isThenable(r))return r.then((function(e){return reducer(e,{keypath:o,type:i})}));var a=getByKeyPath(t,o);if(hasConstructorOf(a=f(i,a),e))return a.then((function(e){var r=setAtKeyPath(t,o,e);r===e&&(t=r);}));var c=setAtKeyPath(t,o,a);c===a&&(t=c);}),void 0)}();return hasConstructorOf(d,e)?h=d.then((function(){return t})):(h=function _revive(t,r,o,a,c){if(!l||"$types"!==t){var p=u[t],h=i$1(r);if(h||isPlainObject(r)){var d=h?new Array(r.length):{};for(n(r).forEach((function(n){var i=_revive(t+(t?".":"")+escapeKeyPathComponent(n),r[n],null!=o?o:d,d,n),a=function set(e){return hasConstructorOf(e,s)?d[n]=void 0:void 0!==e&&(d[n]=e),e};hasConstructorOf(i,e)?v.push(i.then((function(e){return a(e)}))):a(i);})),r=d;y.length;){var b=_slicedToArray(y[0],4),_=b[0],O=b[1],m=b[2],j=b[3],g=getByKeyPath(_,O);if(void 0===g)break;m[j]=g,y.splice(0,1);}}if(!p)return r;if("#"===p){var S=getByKeyPath(o,r.slice(1));return void 0===S&&y.push([o,r.slice(1),a,c]),S}return [].concat(p).reduce((function reducer(t,r){if(hasConstructorOf(t,e))return t.then((function(e){return reducer(e,r)}));if("string"!=typeof r)throw new TypeError("Bad type JSON");return f(r,t)}),r)}}("",t,null),v.length&&(h=e.resolve(h).then((function(t){return e.all([t].concat(v))})).then((function(e){return _slicedToArray(e,1)[0]})))),isThenable(h)?c&&a.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():hasConstructorOf(h,e)?h.p.then(checkUndefined):h:!c&&a.throwOnBadSyncType?function(){throw new TypeError("Async method requested but sync result obtained")}():c?checkUndefined(h):Promise.resolve(checkUndefined(h))}},{key:"reviveSync",value:function reviveSync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!0}))}},{key:"reviveAsync",value:function reviveAsync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!1}))}},{key:"register",value:function register(e,t){var r=this,o=null!=t?t:{},a=function R(e){i$1(e)?e.forEach((function(e){return R(e)})):n(e).forEach((function(t){var n;if("#"===t)throw new TypeError("# cannot be used as a type name as it is reserved for cyclic objects");if(u.includes(t))throw new TypeError("Plain JSON object types are reserved as type names");var a=e[t],c=a&&"function"!=typeof a&&!Array.isArray(a)&&a.testPlainObjects?r.plainObjectReplacers:r.nonplainObjectReplacers,s=c.filter((function(e){return e.type===t}));if(s.length&&(c.splice(c.indexOf(s[0]),1),delete r.revivers[t],delete r.types[t]),"function"==typeof a){var y=a;a={test:function test(e){return e&&e.constructor===y},replace:function replace(e){return _objectSpread2({},e)},revive:function revive(e){return Object.assign(Object.create(y.prototype),e)}};}else if(i$1(a)){var p=_slicedToArray(a,3);a={test:p[0],replace:p[1],revive:p[2]};}if(null!==(n=a)&&void 0!==n&&n.test){var l={type:t,test:a.test.bind(a)};a.replace&&(l.replace=a.replace.bind(a)),a.replaceAsync&&(l.replaceAsync=a.replaceAsync.bind(a));var f="number"==typeof o.fallback?o.fallback:o.fallback?0:Number.POSITIVE_INFINITY;if(a.testPlainObjects?r.plainObjectReplacers.splice(f,0,l):r.nonplainObjectReplacers.splice(f,0,l),a.revive||a.reviveAsync){var v={};a.revive&&(v.revive=a.revive.bind(a)),a.reviveAsync&&(v.reviveAsync=a.reviveAsync.bind(a)),r.revivers[t]=[v,{plain:a.testPlainObjects}];}r.types[t]=a;}}));};return [].concat(e).forEach((function(e){return a(e)})),this}}]),Typeson}(),s=_createClass((function Undefined(){_classCallCheck(this,Undefined);}));s.__typeson__type__="TypesonUndefined";var u=["null","boolean","number","string","array","object"];
+function ownKeys(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),r.push.apply(r,n);}return r}function _objectSpread2(e){for(var t=1;t<arguments.length;t++){var r=null!=arguments[t]?arguments[t]:{};t%2?ownKeys(Object(r),!0).forEach((function(t){_defineProperty(e,t,r[t]);})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(r)):ownKeys(Object(r)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(r,t));}));}return e}function _typeof(e){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},_typeof(e)}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,_toPropertyKey(n.key),n);}}function _createClass(e,t,r){return t&&_defineProperties(e.prototype,t),r&&_defineProperties(e,r),Object.defineProperty(e,"prototype",{writable:!1}),e}function _defineProperty(e,t,r){return (t=_toPropertyKey(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function _slicedToArray(e,t){return function _arrayWithHoles(e){if(Array.isArray(e))return e}(e)||function _iterableToArrayLimit(e,t){var r=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=r){var n,o,i,a,c=[],s=!0,u=!1;try{if(i=(r=r.call(e)).next,0===t){if(Object(r)!==r)return;s=!1;}else for(;!(s=(n=i.call(r)).done)&&(c.push(n.value),c.length!==t);s=!0);}catch(e){u=!0,o=e;}finally{try{if(!s&&null!=r.return&&(a=r.return(),Object(a)!==a))return}finally{if(u)throw o}}return c}}(e,t)||_unsupportedIterableToArray(e,t)||function _nonIterableRest(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _toConsumableArray(e){return function _arrayWithoutHoles(e){if(Array.isArray(e))return _arrayLikeToArray(e)}(e)||function _iterableToArray(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||_unsupportedIterableToArray(e)||function _nonIterableSpread(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _unsupportedIterableToArray(e,t){if(e){if("string"==typeof e)return _arrayLikeToArray(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?_arrayLikeToArray(e,t):void 0}}function _arrayLikeToArray(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function _toPropertyKey(e){var t=function _toPrimitive(e,t){if("object"!=typeof e||null===e)return e;var r=e[Symbol.toPrimitive];if(void 0!==r){var n=r.call(e,t||"default");if("object"!=typeof n)return n;throw new TypeError("@@toPrimitive must return a primitive value.")}return ("string"===t?String:Number)(e)}(e,"string");return "symbol"==typeof t?t:String(t)}var e=_createClass((function TypesonPromise(e){_classCallCheck(this,TypesonPromise),this.p=new Promise(e);}));e.__typeson__type__="TypesonPromise","undefined"!=typeof Symbol&&Object.defineProperty(e.prototype,Symbol.toStringTag,{get:function get(){return "TypesonPromise"}}),e.prototype.then=function(t,r){var n=this;return new e((function(e,o){n.p.then((function(r){e(t?t(r):r);})).catch((function(e){return r?r(e):Promise.reject(e)})).then(e,o);}))},e.prototype.catch=function(e){return this.then((function(){}),e)},e.resolve=function(t){return new e((function(e){e(t);}))},e.reject=function(t){return new e((function(e,r){r(t);}))},e.all=function(t){return new e((function(e,r){Promise.all(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.race=function(t){return new e((function(e,r){Promise.race(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))},e.allSettled=function(t){return new e((function(e,r){Promise.allSettled(t.map((function(e){return null!=e&&e.constructor&&"__typeson__type__"in e.constructor&&"TypesonPromise"===e.constructor.__typeson__type__?e.p:e}))).then(e,r);}))};var t=Object.hasOwn,r=Object.getPrototypeOf;function isThenable(e,t){return isObject(e)&&"function"==typeof e.then&&(!t||"function"==typeof e.catch)}function toStringTag(e){return Object.prototype.toString.call(e).slice(8,-1)}function hasConstructorOf(e,n){if(!e||"object"!==_typeof(e))return !1;var o=r(e);if(!o)return null===n;var i=t(o,"constructor")&&o.constructor;return "function"!=typeof i?null===n:n===i||(null!==n&&Function.prototype.toString.call(i)===Function.prototype.toString.call(n)||"function"==typeof n&&"string"==typeof i.__typeson__type__&&i.__typeson__type__===n.__typeson__type__)}function isPlainObject(e){return !(!e||"Object"!==toStringTag(e))&&(!r(e)||hasConstructorOf(e,Object))}function isUserObject(e){if(!e||"Object"!==toStringTag(e))return !1;var t=r(e);return !t||(hasConstructorOf(e,Object)||isUserObject(t))}function isObject(e){return null!==e&&"object"===_typeof(e)}function escapeKeyPathComponent(e){return e.replaceAll("''","''''").replace(/^$/,"''").replaceAll("~","~0").replaceAll(".","~1")}function unescapeKeyPathComponent(e){return e.replaceAll("~1",".").replaceAll("~0","~").replace(/^''$/,"").replaceAll("''''","''")}function getByKeyPath(e,t){if(""===t)return e;if(null===e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var r=t.indexOf(".");if(r>-1){var n=e[unescapeKeyPathComponent(t.slice(0,r))];return void 0===n?void 0:getByKeyPath(n,t.slice(r+1))}return e[unescapeKeyPathComponent(t)]}function setAtKeyPath(e,t,r){if(""===t)return r;if(!e||"object"!==_typeof(e))throw new TypeError("Unexpected non-object type");var n=t.indexOf(".");return n>-1?setAtKeyPath(e[unescapeKeyPathComponent(t.slice(0,n))],t.slice(n+1),r):(e[unescapeKeyPathComponent(t)]=r,e)}function getJSONType(e){return null===e?"null":Array.isArray(e)?"array":_typeof(e)}function _await(e,t,r){return r?t?t(e):e:(e&&e.then||(e=Promise.resolve(e)),t?e.then(t):e)}var n=Object.keys,o=Object.hasOwn,i$1=Array.isArray,a=["type","replaced","iterateIn","iterateUnsetNumeric","addLength"];function _async(e){return function(){for(var t=[],r=0;r<arguments.length;r++)t[r]=arguments[r];try{return Promise.resolve(e.apply(this,t))}catch(e){return Promise.reject(e)}}}function nestedPathsFirst(e,t){var r,n;if(""===e.keypath)return -1;var o=null!==(r=e.keypath.match(/\./g))&&void 0!==r?r:0,i=null!==(n=t.keypath.match(/\./g))&&void 0!==n?n:0;return o&&(o=o.length),i&&(i=i.length),o>i?-1:o<i?1:e.keypath<t.keypath?-1:e.keypath>t.keypath?1:0}var c=function(){function Typeson(e){_classCallCheck(this,Typeson),this.options=e,this.plainObjectReplacers=[],this.nonplainObjectReplacers=[],this.revivers={},this.types={};}return _createClass(Typeson,[{key:"stringify",value:function stringify(e,t,r,n){n=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),n),{},{stringification:!0});var o=this.encapsulate(e,null,n);return i$1(o)?JSON.stringify(o[0],t,r):o.then((function(e){return JSON.stringify(e,t,r)}))}},{key:"stringifySync",value:function stringifySync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!0}))}},{key:"stringifyAsync",value:function stringifyAsync(e,t,r,n){return this.stringify(e,t,r,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},n),{},{sync:!1}))}},{key:"parse",value:function parse(e,t,r){return r=_objectSpread2(_objectSpread2(_objectSpread2({},this.options),r),{},{parse:!0}),this.revive(JSON.parse(e,t),r)}},{key:"parseSync",value:function parseSync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"parseAsync",value:function parseAsync(e,t,r){return this.parse(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"specialTypeNames",value:function specialTypeNames(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.returnTypeNames=!0,this.encapsulate(e,t,r)}},{key:"rootTypeName",value:function rootTypeName(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{};return r.iterateNone=!0,this.encapsulate(e,t,r)}},{key:"encapsulate",value:function encapsulate(t,r,c){var s=this,u=_objectSpread2(_objectSpread2({sync:!0},this.options),c),l=u.sync,y={},p=[],f=[],v=[],h=!("cyclic"in u)||u.cyclic,d=u.encapsulateObserver,b=function finish(e){var t=Object.values(y);if(u.iterateNone)return t.length?t[0]:getJSONType(e);if(t.length){if(u.returnTypeNames)return _toConsumableArray(new Set(t));e&&isPlainObject(e)&&!o(e,"$types")?e.$types=y:e={$:e,$types:{$:y}};}else isObject(e)&&o(e,"$types")&&(e={$:e,$types:!0});return !u.returnTypeNames&&e},_=_async((function(t,r){return _await(Promise.all(r.map((function(e){return e[1].p}))),(function(n){return _await(Promise.all(n.map(_async((function(n){var o=!1,i=[],a=_slicedToArray(r.splice(0,1),1),c=_slicedToArray(a[0],7),s=c[0],u=c[2],l=c[3],y=c[4],p=c[5],f=c[6],v=m(s,n,u,l,i,!0,f),h=hasConstructorOf(v,e);return function _invoke(e,t){var r=e();return r&&r.then?r.then(t):t(r)}((function(){if(s&&h)return _await(v.p,(function(e){y[p]=e;var r=_(t,i);return o=!0,r}))}),(function(e){return o?e:(s?y[p]=v:t=h?v.p:v,_(t,i))}))})))),(function(){return t}))}))})),O=function _adaptBuiltinStateObjectProperties(e,t,r){Object.assign(e,t);var n=a.map((function(t){var r=e[t];return delete e[t],r}));r(),a.forEach((function(t,r){e[t]=n[r];}));},m=function _encapsulate(t,r,a,c,l,v,h){var b,_={},m=_typeof(r),g=d?function(n){var o,i=null!==(o=null!=h?h:c.type)&&void 0!==o?o:getJSONType(r);d(Object.assign(null!=n?n:_,{keypath:t,value:r,cyclic:a,stateObj:c,promisesData:l,resolvingTypesonPromise:v,awaitingTypesonPromise:hasConstructorOf(r,e)},{type:i}));}:null;if(["string","boolean","number","undefined"].includes(m))return void 0===r||Number.isNaN(r)||r===Number.NEGATIVE_INFINITY||r===Number.POSITIVE_INFINITY||0===r?(b=c.replaced?r:j(t,r,c,l,!1,v,g))!==r&&(_={replaced:b}):b=r,g&&g(),b;if(null===r)return g&&g(),r;if(a&&!c.iterateIn&&!c.iterateUnsetNumeric&&r&&"object"===_typeof(r)){var S=p.indexOf(r);if(!(S<0))return y[t]="#",g&&g({cyclicKeypath:f[S]}),"#"+f[S];!0===a&&(p.push(r),f.push(t));}var P,T,w=isPlainObject(r),A=i$1(r),C=(w||A)&&(!s.plainObjectReplacers.length||c.replaced)||c.iterateIn?r:j(t,r,c,l,w||A,null,g);if(C!==r?(b=C,_={replaced:C}):""===t&&hasConstructorOf(r,e)?(l.push([t,r,a,c,void 0,void 0,c.type]),b=r):A&&"object"!==c.iterateIn||"array"===c.iterateIn?(P=new Array(r.length),_={clone:P}):(["function","symbol"].includes(_typeof(r))||"toJSON"in r||hasConstructorOf(r,e)||hasConstructorOf(r,Promise)||hasConstructorOf(r,ArrayBuffer))&&!w&&"object"!==c.iterateIn?b=r:(P={},c.addLength&&(P.length=r.length),_={clone:P}),g&&g(),u.iterateNone)return null!==(T=P)&&void 0!==T?T:b;if(!P)return b;if(c.iterateIn){var k=function _loop(n){var i={ownKeys:o(r,n)};O(c,i,(function(){var o=t+(t?".":"")+escapeKeyPathComponent(n),i=_encapsulate(o,r[n],Boolean(a),c,l,v);hasConstructorOf(i,e)?l.push([o,i,Boolean(a),c,P,n,c.type]):void 0!==i&&(P[n]=i);}));};for(var N in r)k(N);g&&g({endIterateIn:!0,end:!0});}else n(r).forEach((function(n){var o=t+(t?".":"")+escapeKeyPathComponent(n);O(c,{ownKeys:!0},(function(){var t=_encapsulate(o,r[n],Boolean(a),c,l,v);hasConstructorOf(t,e)?l.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));})),g&&g({endIterateOwn:!0,end:!0});if(c.iterateUnsetNumeric){for(var I=r.length,E=function _loop2(n){if(!(n in r)){var o="".concat(t).concat(t?".":"").concat(n);O(c,{ownKeys:!1},(function(){var t=_encapsulate(o,void 0,Boolean(a),c,l,v);hasConstructorOf(t,e)?l.push([o,t,Boolean(a),c,P,n,c.type]):void 0!==t&&(P[n]=t);}));}},K=0;K<I;K++)E(K);g&&g({endIterateUnsetNumeric:!0,end:!0});}return P},j=function replace(e,t,r,n,o,i,a){for(var c=o?s.plainObjectReplacers:s.nonplainObjectReplacers,u=c.length;u--;){var p=c[u];if(p.test(t,r)){var f=p.type;if(s.revivers[f]){var v=y[e];y[e]=v?[f].concat(v):f;}if(Object.assign(r,{type:f,replaced:!0}),(l||!p.replaceAsync)&&!p.replace)return a&&a({typeDetected:!0}),m(e,t,h&&"readonly",r,n,i,f);a&&a({replacing:!0});var d=void 0;if(l||!p.replaceAsync){if(void 0===p.replace)throw new TypeError("Missing replacer");d=p.replace(t,r);}else d=p.replaceAsync(t,r);return m(e,d,h&&"readonly",r,n,i,f)}}return t},g=m("",t,h,null!=r?r:{},v);if(v.length)return l&&u.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():Promise.resolve(_(g,v)).then(b);if(!l&&u.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return u.stringification&&l?[b(g)]:l?b(g):Promise.resolve(b(g))}},{key:"encapsulateSync",value:function encapsulateSync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!0}))}},{key:"encapsulateAsync",value:function encapsulateAsync(e,t,r){return this.encapsulate(e,t,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},r),{},{sync:!1}))}},{key:"revive",value:function revive(t,r){var o=this,a=_objectSpread2(_objectSpread2({sync:!0},this.options),r),c=a.sync;function finishRevival(e){if(c)return e;if(a.throwOnBadSyncType)throw new TypeError("Async method requested but sync result obtained");return Promise.resolve(e)}if(!t||"object"!==_typeof(t)||Array.isArray(t))return finishRevival(t);var u=t.$types;if(!0===u)return finishRevival(t.$);if(!u||"object"!==_typeof(u)||Array.isArray(u))return finishRevival(t);var l=[],y={},p=!0;u.$&&isPlainObject(u.$)&&(t=t.$,u=u.$,p=!1);var f=function executeReviver(e,t){var r,n=_slicedToArray(null!==(r=o.revivers[e])&&void 0!==r?r:[],1)[0];if(!n)throw new Error("Unregistered type: "+e);if(c&&!("revive"in n))return t;if(!c&&n.reviveAsync)return n.reviveAsync(t,y);if(n.revive)return n.revive(t,y);throw new Error("Missing reviver")},v=[];function checkUndefined(e){return hasConstructorOf(e,s)?void 0:e}var h,d=function revivePlainObjects(){var r=[];if(!u)throw new Error("Found bad `types`");if(Object.entries(u).forEach((function(e){var t=_slicedToArray(e,2),n=t[0],i=t[1];"#"!==i&&[].concat(i).forEach((function(e){var t;_slicedToArray(null!==(t=o.revivers[e])&&void 0!==t?t:[null,{}],2)[1].plain&&(r.push({keypath:n,type:e}),delete u[n]);}));})),r.length)return r.sort(nestedPathsFirst).reduce((function reducer(r,n){var o=n.keypath,i=n.type;if(isThenable(r))return r.then((function(e){return reducer(e,{keypath:o,type:i})}));var a=getByKeyPath(t,o);if(hasConstructorOf(a=f(i,a),e))return a.then((function(e){var r=setAtKeyPath(t,o,e);r===e&&(t=r);}));var c=setAtKeyPath(t,o,a);c===a&&(t=c);}),void 0)}();return hasConstructorOf(d,e)?h=d.then((function(){return t})):(h=function _revive(t,r,o,a,c){if(!p||"$types"!==t){var y=u[t],h=i$1(r);if(h||isPlainObject(r)){var d=h?new Array(r.length):{};for(n(r).forEach((function(n){var i=_revive(t+(t?".":"")+escapeKeyPathComponent(n),r[n],null!=o?o:d,d,n),a=function set(e){return hasConstructorOf(e,s)?d[n]=void 0:void 0!==e&&(d[n]=e),e};hasConstructorOf(i,e)?v.push(i.then((function(e){return a(e)}))):a(i);})),r=d;l.length;){var b=_slicedToArray(l[0],4),_=b[0],O=b[1],m=b[2],j=b[3],g=getByKeyPath(_,O);if(void 0===g)break;m[j]=g,l.splice(0,1);}}if(!y)return r;if("#"===y){var S=getByKeyPath(o,r.slice(1));return void 0===S&&l.push([o,r.slice(1),a,c]),S}return [].concat(y).reduce((function reducer(t,r){if(hasConstructorOf(t,e))return t.then((function(e){return reducer(e,r)}));if("string"!=typeof r)throw new TypeError("Bad type JSON");return f(r,t)}),r)}}("",t,null),v.length&&(h=e.resolve(h).then((function(t){return e.all([t].concat(v))})).then((function(e){return _slicedToArray(e,1)[0]})))),isThenable(h)?c&&a.throwOnBadSyncType?function(){throw new TypeError("Sync method requested but async result obtained")}():hasConstructorOf(h,e)?h.p.then(checkUndefined):h:!c&&a.throwOnBadSyncType?function(){throw new TypeError("Async method requested but sync result obtained")}():c?checkUndefined(h):Promise.resolve(checkUndefined(h))}},{key:"reviveSync",value:function reviveSync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!0}))}},{key:"reviveAsync",value:function reviveAsync(e,t){return this.revive(e,_objectSpread2(_objectSpread2({throwOnBadSyncType:!0},t),{},{sync:!1}))}},{key:"register",value:function register(e,t){var r=this,o=null!=t?t:{},a=function R(e){i$1(e)?e.forEach((function(e){return R(e)})):n(e).forEach((function(t){var n;if("#"===t)throw new TypeError("# cannot be used as a type name as it is reserved for cyclic objects");if(u.includes(t))throw new TypeError("Plain JSON object types are reserved as type names");var a=e[t],c=a&&"function"!=typeof a&&!Array.isArray(a)&&a.testPlainObjects?r.plainObjectReplacers:r.nonplainObjectReplacers,s=c.filter((function(e){return e.type===t}));if(s.length&&(c.splice(c.indexOf(s[0]),1),delete r.revivers[t],delete r.types[t]),"function"==typeof a){var l=a;a={test:function test(e){return e&&e.constructor===l},replace:function replace(e){return _objectSpread2({},e)},revive:function revive(e){return Object.assign(Object.create(l.prototype),e)}};}else if(i$1(a)){var y=_slicedToArray(a,3);a={test:y[0],replace:y[1],revive:y[2]};}if(null!==(n=a)&&void 0!==n&&n.test){var p={type:t,test:a.test.bind(a)};a.replace&&(p.replace=a.replace.bind(a)),a.replaceAsync&&(p.replaceAsync=a.replaceAsync.bind(a));var f="number"==typeof o.fallback?o.fallback:o.fallback?0:Number.POSITIVE_INFINITY;if(a.testPlainObjects?r.plainObjectReplacers.splice(f,0,p):r.nonplainObjectReplacers.splice(f,0,p),a.revive||a.reviveAsync){var v={};a.revive&&(v.revive=a.revive.bind(a)),a.reviveAsync&&(v.reviveAsync=a.reviveAsync.bind(a)),r.revivers[t]=[v,{plain:a.testPlainObjects}];}r.types[t]=a;}}));};return [].concat(e).forEach((function(e){return a(e)})),this}}]),Typeson}(),s=_createClass((function Undefined(){_classCallCheck(this,Undefined);}));s.__typeson__type__="TypesonUndefined";var u=["null","boolean","number","string","array","object"];
 
 /*
  * base64-arraybuffer
@@ -136,8 +136,6 @@ const arraybuffer = {
 
 // See also typed-arrays!
 
-/* globals BigInt */
-
 /**
  * @type {import('typeson').TypeSpecSet}
  */
@@ -154,8 +152,6 @@ const bigintObject = {
         }
     }
 };
-
-/* globals BigInt */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -233,7 +229,7 @@ function string2arraybuffer (str) {
 
     const array = new Uint8Array(str.length);
     for (let i = 0; i < str.length; i++) {
-        // eslint-disable-next-line max-len -- Long
+        // eslint-disable-next-line @stylistic/max-len -- Long
         // eslint-disable-next-line unicorn/prefer-code-point -- Iterating char. codes
         array[i] = str.charCodeAt(i); // & 0xff;
     }
@@ -296,8 +292,6 @@ const blob = {
     }
 };
 
-/* globals performance */
-
 // The `performance` global is optional
 
 /**
@@ -317,11 +311,13 @@ function generateUUID () { //  Adapted from original: public domain/MIT: http://
             ? performance.now()
             : 0);
 
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/gu, function (c) {
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line no-use-extend-native/no-use-extend-native -- Need to update plugin
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAll(/[xy]/gu, function (c) {
         /* eslint-disable no-bitwise */
-        const r = Math.trunc((d + Math.random() * 16) % 16);
+        const r = Math.trunc((d + (Math.random() * 16)) % 16);
         d = Math.floor(d / 16);
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16);
         /* eslint-enable no-bitwise */
     });
 }
@@ -487,6 +483,122 @@ const date = {
 /**
  * @type {import('typeson').TypeSpecSet}
  */
+const domexception = {
+    domexception: {
+        test (x) { return toStringTag(x) === 'DOMException'; },
+        replace (de) {
+            // `code` is based on `name` and readonly, so no
+            //   need to keep here
+            return {
+                name: de.name,
+                message: de.message
+            };
+        },
+        revive ({message, name}) {
+            return new DOMException(message, name);
+        }
+    }
+};
+
+/* globals DOMMatrix */
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const dommatrix = {
+    dommatrix: {
+        test (x) { return toStringTag(x) === 'DOMMatrix'; },
+        replace (dm) {
+            if (dm.is2D) {
+                return {
+                    a: dm.a,
+                    b: dm.b,
+                    c: dm.c,
+                    d: dm.d,
+                    e: dm.e,
+                    f: dm.f
+                };
+            }
+            return {
+                m11: dm.m11,
+                m12: dm.m12,
+                m13: dm.m13,
+                m14: dm.m14,
+                m21: dm.m21,
+                m22: dm.m22,
+                m23: dm.m23,
+                m24: dm.m24,
+                m31: dm.m31,
+                m32: dm.m32,
+                m33: dm.m33,
+                m34: dm.m34,
+                m41: dm.m41,
+                m42: dm.m42,
+                m43: dm.m43,
+                m44: dm.m44
+            };
+        },
+        revive (o) {
+            if (Object.hasOwn(o, 'a')) {
+                return new DOMMatrix([o.a, o.b, o.c, o.d, o.e, o.f]);
+            }
+            return new DOMMatrix([
+                o.m11, o.m12, o.m13, o.m14,
+                o.m21, o.m22, o.m23, o.m24,
+                o.m31, o.m32, o.m33, o.m34,
+                o.m41, o.m42, o.m43, o.m44
+            ]);
+        }
+    }
+};
+
+/* globals DOMPoint */
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const dompoint = {
+    dompoint: {
+        test (x) { return toStringTag(x) === 'DOMPoint'; },
+        replace (dp) {
+            return {
+                x: dp.x,
+                y: dp.y,
+                z: dp.z,
+                w: dp.w
+            };
+        },
+        revive ({x, y, z, w}) {
+            return new DOMPoint(x, y, z, w);
+        }
+    }
+};
+
+/* globals DOMRect */
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const domrect = {
+    domrect: {
+        test (x) { return toStringTag(x) === 'DOMRect'; },
+        replace (dr) {
+            return {
+                x: dr.x,
+                y: dr.y,
+                width: dr.width,
+                height: dr.height
+            };
+        },
+        revive ({x, y, width, height}) {
+            return new DOMRect(x, y, width, height);
+        }
+    }
+};
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
 const error = {
     error: {
         test (x) { return toStringTag(x) === 'Error'; },
@@ -521,6 +633,7 @@ const error = {
 };
 
 /* globals InternalError */
+/* eslint-env browser, node */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -538,9 +651,12 @@ if (typeof AggregateError !== 'undefined') {
     create$2(AggregateError);
 }
 
-/* c8 ignore next 2 */
-// @ts-ignore Non-standard
-typeof InternalError === 'function' && create$2(InternalError);
+/* c8 ignore next 5 */
+// @ts-expect-error Non-standard
+if (typeof InternalError === 'function') {
+    // @ts-expect-error Non-standard
+    create$2(InternalError);
+}
 
 /* eslint-disable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/131 */
 /**
@@ -722,7 +838,10 @@ const filelist = {
     }
 };
 
-/* globals createImageBitmap */
+/* globals document, createImageBitmap */
+// `ImageBitmap` is browser / DOM specific. It also can only work
+//  same-domain (or CORS)
+
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -799,6 +918,9 @@ const imagebitmap = {
 };
 
 /* globals ImageData */
+// `ImageData` is browser / DOM specific (though `node-canvas` has it
+//   available on `Canvas`).
+
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -828,8 +950,8 @@ const imagedata = {
 const infinity = {
     infinity: {
         test (x) { return x === Number.POSITIVE_INFINITY; },
-        replace (n) { return 'Infinity'; },
-        revive (s) { return Number.POSITIVE_INFINITY; }
+        replace (/* n */) { return 'Infinity'; },
+        revive (/* s */) { return Number.POSITIVE_INFINITY; }
     }
 };
 
@@ -885,8 +1007,8 @@ const map = {
 const nan = {
     nan: {
         test (x) { return Number.isNaN(x); },
-        replace (n) { return 'NaN'; },
-        revive (s) { return Number.NaN; }
+        replace (/* n */) { return 'NaN'; },
+        revive (/* s */) { return Number.NaN; }
     }
 };
 
@@ -896,8 +1018,8 @@ const nan = {
 const negativeInfinity = {
     negativeInfinity: {
         test (x) { return x === Number.NEGATIVE_INFINITY; },
-        replace (n) { return '-Infinity'; },
-        revive (s) { return Number.NEGATIVE_INFINITY; }
+        replace (/* n */) { return '-Infinity'; },
+        revive (/* s */) { return Number.NEGATIVE_INFINITY; }
     }
 };
 
@@ -909,11 +1031,11 @@ const negativeZero = {
         test (x) {
             return Object.is(x, -0);
         },
-        replace (n) {
+        replace (/* n */) {
             // Just adding 0 here for minimized space; will still revive as -0
             return 0;
         },
-        revive (s) {
+        revive (/* s */) {
             return -0;
         }
     }
@@ -945,13 +1067,15 @@ const nonbuiltinIgnore = {
                 'Atomics', 'Module'
             ].includes(toStringTag(x));
         },
-        replace (rexp) {
+        replace (/* rexp */) {
             // Not in use
         }
     }
 };
 
 // This module is for objectified primitives (such as `new Number(3)` or
+//      `new String("foo")`)
+/* eslint-disable no-new-wrappers, unicorn/new-for-builtins */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -1008,6 +1132,10 @@ const regexp = {
 };
 
 // Here we allow the exact same non-plain object, function, and symbol
+//  instances to be resurrected (assuming the same session/environment);
+//  plain objects are ignored by Typeson so not presently available and
+//  we consciously exclude arrays
+
 
 /**
  * @type {{[key: string]: any}}
@@ -1064,7 +1192,8 @@ const typedArraysSocketIO = {};
  *   Uint8ClampedArrayConstructor|Int16ArrayConstructor|
  *   Uint16ArrayConstructor|Int32ArrayConstructor|
  *   Uint32ArrayConstructor|Float32ArrayConstructor|
- *   Float64ArrayConstructor
+ *   Float64ArrayConstructor|
+ *   BigInt64ArrayConstructor|BigUint64ArrayConstructor
  * } TypedArray
  * @returns {void}
  */
@@ -1109,7 +1238,11 @@ if (typeof Int8Array === 'function') {
         Int32Array,
         Uint32Array,
         Float32Array,
-        Float64Array
+        Float64Array,
+        ...(typeof BigInt64Array === 'function'
+            ? [BigInt64Array, BigUint64Array]
+            /* c8 ignore next */
+            : [])
     ].forEach((TypedArray) => create$1(TypedArray));
 }
 
@@ -1126,7 +1259,8 @@ const typedArrays = {};
  *   Int16ArrayConstructor|Uint16ArrayConstructor|
  *   Int32ArrayConstructor|Uint32ArrayConstructor|
  *   Float32ArrayConstructor|
- *   Float64ArrayConstructor} TypedArrayConstructor
+ *   Float64ArrayConstructor|
+ *   BigInt64ArrayConstructor|BigUint64ArrayConstructor} TypedArrayConstructor
  */
 
 /**
@@ -1202,11 +1336,16 @@ if (typeof Int8Array === 'function') {
         Int32Array,
         Uint32Array,
         Float32Array,
-        Float64Array
+        Float64Array,
+        ...(typeof BigInt64Array === 'function'
+            ? [BigInt64Array, BigUint64Array]
+            /* c8 ignore next */
+            : [])
     ].forEach((TypedArray) => create(TypedArray));
 }
 
 // This does not preserve `undefined` in sparse arrays; see the `undef`
+//  or `sparse-undefined` preset
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -1217,8 +1356,8 @@ const undef$1 = {
             return typeof x === 'undefined' &&
                 (stateObj.ownKeys || !('ownKeys' in stateObj));
         },
-        replace (n) { return 0; },
-        revive (s$1) {
+        replace (/* n */) { return 0; },
+        revive (/* s */) {
             // Will add `undefined` (returning `undefined` would instead
             //   avoid explicitly setting)
             return new s();
@@ -1231,7 +1370,7 @@ const undef$1 = {
  */
 const userObject = {
     userObject: {
-        test (x, stateObj) { return isUserObject(x); },
+        test (x /* , stateObj */) { return isUserObject(x); },
         replace (n) { return {...n}; },
         revive (s) { return s; }
     }
@@ -1297,8 +1436,8 @@ const arrayNonindexKeys = [
             test (x, stateObj) {
                 return typeof x === 'undefined' && stateObj.ownKeys === false;
             },
-            replace (n) { return 0; },
-            revive (s) { return undefined; } // Will avoid adding anything
+            replace (/* n */) { return 0; },
+            revive (/* s */) { return undefined; } // Will avoid adding anything
         }
     }
 ];
@@ -1328,6 +1467,7 @@ const specialNumbers = [
 
   Symbols are similarly not included.
 */
+
 
 /**
  * @type {import('typeson').Preset}
@@ -1372,6 +1512,7 @@ This preset will only include the Error types and you can register your
 custom types after having registered these.
 */
 
+
 /**
  * @type {import('typeson').Preset}
  */
@@ -1410,13 +1551,14 @@ const sparseUndefined = [
             test (x, stateObj) {
                 return typeof x === 'undefined' && stateObj.ownKeys === false;
             },
-            replace (n) { return 0; },
-            revive (s) { return undefined; } // Will avoid adding anything
+            replace (/* n */) { return 0; },
+            revive (/* s */) { return undefined; } // Will avoid adding anything
         }
     }
 ];
 
 /* This preset includes types for the Structured Cloning Algorithm. */
+
 
 /**
  * @type {import('typeson').Preset}
@@ -1452,14 +1594,18 @@ const expObj = [
     /* c8 ignore next */
     typeof DataView === 'function' ? dataview : [],
     /* c8 ignore next */
-    typeof Intl !== 'undefined' ? intlTypes : [],
-    /* c8 ignore next */
     typeof crypto !== 'undefined' ? cryptokey : [],
     /* c8 ignore next */
-    typeof BigInt !== 'undefined' ? [bigint, bigintObject] : []
+    typeof BigInt !== 'undefined' ? [bigint, bigintObject] : [],
+    /* c8 ignore next */
+    typeof DOMException !== 'undefined' ? domexception : [],
+    /* c8 ignore next */
+    typeof DOMRect !== 'undefined' ? domrect : [],
+    /* c8 ignore next */
+    typeof DOMPoint !== 'undefined' ? dompoint : [],
+    /* c8 ignore next */
+    typeof DOMMatrix !== 'undefined' ? dommatrix : []
 );
-
-/* globals DOMException */
 
 /**
  * @type {import('typeson').Preset}
@@ -1501,9 +1647,6 @@ const structuredCloningThrowing = expObj.concat({
                     'Arguments',
                     // A non-array exotic object
                     'Module',
-                    // `Error` and other errors have the [[ErrorData]] internal
-                    //    slot and give "Error"
-                    'Error',
                     // Promise instances have an extra slot ([[PromiseState]])
                     //    but not throwing in Chrome `postMessage`
                     'Promise',
@@ -1530,6 +1673,7 @@ const structuredCloningThrowing = expObj.concat({
                     typeof val.nodeType === 'number' &&
                     typeof val.insertBefore === 'function')
             ) {
+              alert(stringTag);
                 throw new DOMException(
                     'The object cannot be cloned.', 'DataCloneError'
                 );
@@ -1556,5 +1700,5 @@ const universal = [
     //   built-in into ecmasript standard.
 ];
 
-export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
+export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, domexception, dommatrix, dompoint, domrect, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
 //# sourceMappingURL=index.js.map

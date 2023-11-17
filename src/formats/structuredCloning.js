@@ -145,6 +145,7 @@ const encapsulateObserver = (stateObj) => {
     }
 
     if (!stateObj.rootUI) {
+      // console.log('vvvv0', newType, newValue);
       stateObj.rootUI = Types.getUIForModeAndType({
         readonly,
         typeNamespace,
@@ -217,6 +218,8 @@ const encapsulateObserver = (stateObj) => {
       })) {
         return;
       }
+
+      // console.log('vvvv', newType, '::', newValue, '::', newValue?.cause);
 
       const root = ui.$addAndSetArrayElement({
         propName: arrayOrObjectPropertyName,
@@ -345,7 +348,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
   })) {
     return /** @type {import('../types.js').AvailableType} */ (ret);
   }
-  console.log('ret', ret);
+  // console.log('ret', ret);
   allowableTypes.some((allowableType) => {
     // eslint-disable-next-line @stylistic/max-len -- Long
     const typeObj = /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
@@ -365,7 +368,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
     }
     return false;
   });
-  console.log('ret2', ret);
+  // console.log('ret2', ret);
   if (ret === undefined) {
     return isInvalid(valType);
   }
@@ -448,6 +451,7 @@ const structuredCloning = {
       'BooleanObject',
       'NumberObject',
       'StringObject',
+      'error',
       'blobHTML',
       'set',
       'map'

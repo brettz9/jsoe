@@ -43,7 +43,7 @@ Other Todos:
 
 /**
  * @typedef {{
- *   element: Document|Element|DocumentFragment,
+ *   element: Document|HTMLElement|DocumentFragment,
  *   attribute: {name: string|null, value: JamilihAttValue},
  *   opts: JamilihOptions
  * }} PluginSettings
@@ -52,7 +52,7 @@ Other Todos:
 /**
  * @typedef {object} JamilihPlugin
  * @property {string} name
- * @property {(opts: PluginSettings) => string} set
+ * @property {(opts: PluginSettings) => string|Promise<void>} set
  */
 
 /**
@@ -60,7 +60,7 @@ Other Todos:
  */
 let win;
 
-/* c8 ignore next */
+/* c8 ignore next 3 */
 if (typeof window !== 'undefined' && window) {
   win = window;
 }
@@ -120,7 +120,7 @@ const NULLABLES = ['autocomplete', 'dir',
 
 /**
  * @param {string} sel
- * @returns {Element|null}
+ * @returns {HTMLElement|null}
  */
 const $ = sel => {
   if (!doc) {
@@ -131,13 +131,13 @@ const $ = sel => {
 
 /**
  * @param {string} sel
- * @returns {Element[]}
+ * @returns {HTMLElement[]}
  */
 const $$ = sel => {
   if (!doc) {
-    return [];
+    throw new Error('No document object');
   }
-  return [...doc.querySelectorAll(sel)];
+  return [... /** @type {NodeListOf<HTMLElement>} */doc.querySelectorAll(sel)];
 };
 
 /**
@@ -153,7 +153,7 @@ function _getHTMLNodeName(node) {
 /**
  * @private
  * @static
- * @param {Document|DocumentFragment|Element} parent The parent to which to append the element
+ * @param {Document|DocumentFragment|HTMLElement} parent The parent to which to append the element
  * @param {Node|string} child The element or other node to append to the parent
  * @throws {Error} Rethrow if problem with `append` and unhandled
  * @returns {void}
@@ -170,14 +170,15 @@ function _appendNode(parent, child) {
 /**
  * Attach event in a cross-browser fashion.
  * @static
- * @param {Element} el DOM element to which to attach the event
+ * @param {HTMLElement} el DOM element to which to attach the event
  * @param {string} type The DOM event (without 'on') to attach to the element
- * @param {EventListener} handler The event handler to attach to the element
+ * @param {(evt: Event & {target: HTMLElement}) => void} handler The event handler to attach to the element
  * @param {boolean} [capturing] Whether or not the event should be
  *   capturing (W3C-browsers only); default is false; NOT IN USE
  * @returns {void}
  */
 function _addEvent(el, type, handler, capturing) {
+  // @ts-expect-error It's ok
   el.addEventListener(type, handler, Boolean(capturing));
 }
 
@@ -190,6 +191,7 @@ function _addEvent(el, type, handler, capturing) {
 * @returns {Text} The text node of the resolved reference
 */
 function _createSafeReference(type, prefix, arg) {
+  /* c8 ignore next 3 */
   if (!doc) {
     throw new Error('No document defined');
   }
@@ -229,7 +231,7 @@ function _isNullish(o) {
 * @static
 * @param {string|JamilihAttributes|JamilihArray|JamilihChildren|
 *   JamilihDocumentFragment|JamilihAttributeNode|
-*   JamilihOptions|Element|Document|DocumentFragment|null|undefined} item
+*   JamilihOptions|HTMLElement|Document|DocumentFragment|null|undefined} item
 * @returns {"string"|"null"|"array"|"element"|"fragment"|"object"|
 *   "symbol"|"bigint"|"function"|"number"|"boolean"|"undefined"|
 *   "document"|"non-container node"}
@@ -326,14 +328,14 @@ function _childrenToJML(node) {
 /**
  * Keep this in sync with `JamilihArray`'s first argument (minus `Document`).
  * @typedef {JamilihDoc|JamilihDoctype|JamilihTextNode|
-*   JamilihAttributeNode|JamilihOptions|ElementName|Element|
+*   JamilihAttributeNode|JamilihOptions|ElementName|HTMLElement|
 *   JamilihDocumentFragment
 * } JamilihFirstArg
 */
 
 /**
 * @callback JamilihAppender
-* @param {JamilihArray|JamilihFirstArg|Node} childJML
+* @param {JamilihArray|JamilihFirstArg|Node|TextNodeString} childJML
 * @returns {void}
 */
 
@@ -345,6 +347,9 @@ function _childrenToJML(node) {
 */
 function _appendJML(node) {
   return function (childJML) {
+    if (typeof childJML === 'string' || typeof childJML === 'number') {
+      throw new TypeError('Unexpected text string/number in the head');
+    }
     if (Array.isArray(childJML)) {
       node.append(jml(...childJML));
     } else if (typeof childJML === 'object' && 'nodeType' in childJML) {
@@ -357,7 +362,7 @@ function _appendJML(node) {
 
 /**
 * @callback appender
-* @param {JamilihArray|JamilihFirstArg|Node} childJML
+* @param {JamilihArray|JamilihFirstArg|Node|TextNodeString} childJML
 * @returns {void}
 */
 
@@ -369,8 +374,8 @@ function _appendJML(node) {
 */
 function _appendJMLOrText(node) {
   return function (childJML) {
-    if (typeof childJML === 'string') {
-      node.append(childJML);
+    if (typeof childJML === 'string' || typeof childJML === 'number') {
+      node.append(String(childJML));
     } else if (Array.isArray(childJML)) {
       node.append(jml(...childJML));
     } else if (typeof childJML === 'object' && 'nodeType' in childJML) {
@@ -395,7 +400,7 @@ function _DOMfromJMLOrString (childNodeJML) {
 */
 
 /**
-* @typedef {Element|DocumentFragment|Comment|Attr|
+* @typedef {HTMLElement|DocumentFragment|Comment|Attr|
 *    Text|Document|DocumentType|ProcessingInstruction|CDATASection} JamilihReturn
 */
 // 'string|JamilihOptions|JamilihDocumentFragment|JamilihAttributes|(string|JamilihArray)[]
@@ -405,11 +410,11 @@ function _DOMfromJMLOrString (childNodeJML) {
  * 1. JamilihAttributes followed by an array of JamilihArrays or Elements.
  *     (Cannot be multiple single JamilihArrays despite TS type).
  * 2. Any number of JamilihArrays.
- * @typedef {[(JamilihAttributes|JamilihArray|JamilihArray[]|Element), ...(JamilihArray|JamilihArray[]|Element)[]]} TemplateJamilihArray
+ * @typedef {[(JamilihAttributes|JamilihArray|JamilihArray[]|HTMLElement), ...(JamilihArray|JamilihArray[]|HTMLElement)[]]} TemplateJamilihArray
  */
 
 /**
- * @typedef {(JamilihArray|Element)[]} ShadowRootJamilihArrayContainer
+ * @typedef {(JamilihArray|HTMLElement)[]} ShadowRootJamilihArrayContainer
  */
 
 /**
@@ -431,7 +436,7 @@ function _DOMfromJMLOrString (childNodeJML) {
 
 /**
  * @typedef {{
- *   [key: string]: string|number|null|DatasetAttributeObject
+ *   [key: string]: string|number|null|undefined|DatasetAttributeObject
  * }} DatasetAttributeObject
  */
 
@@ -440,7 +445,7 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
- * @typedef {(this: Element, event?: Event) => void} EventHandler
+ * @typedef {(this: HTMLElement, event: Event & {target: HTMLElement}) => void} EventHandler
  */
 
 /**
@@ -460,7 +465,7 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
- * @typedef {((this: Element, event?: Event) => void)} HandlerAttributeValue
+ * @typedef {((this: HTMLElement, event?: Event) => void)} HandlerAttributeValue
  */
 
 /* eslint-disable jsdoc/valid-types -- jsdoc-type-pratt-parser Bug */
@@ -511,11 +516,11 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
- * @typedef {{elem?: Element, [key: string]: any}} SymbolObject
+ * @typedef {{elem?: HTMLElement, [key: string]: any}} SymbolObject
  */
 
 /**
- * @typedef {[symbol|string, ((this: Element, ...args: any[]) => any)|SymbolObject]} SymbolArray
+ * @typedef {[symbol|string, ((this: HTMLElement, ...args: any[]) => any)|SymbolObject]} SymbolArray
  */
 
 /**
@@ -523,17 +528,22 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
+ * @typedef {[string, object]|string|{[key: string]: any}} PluginValue
+ */
+
+/**
  * @typedef {(string|NullableAttributeValue|BooleanAttribute|
  *   JamilihArray|JamilihShadowRootObject|StringifiableNumber|
  *   JamilihDocumentType|JamilihDocument|XmlnsAttributeValue|
  *   OnAttributeObject|
- *   HandlerAttributeValue|DefineObject|SymbolArray|PluginReference
+ *   HandlerAttributeValue|DefineObject|SymbolArray|PluginReference|
+ *   PluginValue
  * )} JamilihAttValue
  */
 
 /**
  * @typedef {{
-*   [key: string]: string|number|((this: Element, ...args: any[]) => any)
+*   [key: string]: string|number|((this: HTMLElement, ...args: any[]) => any)
 * }} DataAttributeObject
 */
 
@@ -622,7 +632,11 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
- * @typedef {{'#': (JamilihArray|TextNodeString|Element)[]}} JamilihDocumentFragment
+ * @typedef {JamilihArray|TextNodeString|HTMLElement} JamilihDocumentFragmentContent
+ */
+
+/**
+ * @typedef {{'#': JamilihDocumentFragmentContent[]}} JamilihDocumentFragment
  */
 
 /**
@@ -630,7 +644,7 @@ function _DOMfromJMLOrString (childNodeJML) {
  */
 
 /**
- * @typedef {string} TextNodeString
+ * @typedef {string|number} TextNodeString
  */
 
 /**
@@ -639,14 +653,16 @@ function _DOMfromJMLOrString (childNodeJML) {
 
 /**
  * @typedef {(
- *   JamilihArray|TextNodeString|Element|Comment|ProcessingInstruction|
+ *   JamilihArray|TextNodeString|HTMLElement|Comment|ProcessingInstruction|
  *   Text|DocumentFragment|JamilihProcessingInstruction|JamilihDocumentFragment|
  *   PluginReference
  * )[]} JamilihChildren
  */
 
+// Todo: DocumentType, Comment, ProcessingInstruction, Text
+// Todo: JamilihCDATANode, JamilihComment, JamilihProcessingInstruction
 /**
- * @typedef {Document|ElementName|Element|DocumentFragment|
+ * @typedef {Document|ElementName|HTMLElement|DocumentFragment|
  *   JamilihDocumentFragment|JamilihDoc|JamilihDoctype|JamilihTextNode|
  *   JamilihAttributeNode} JamilihFirstArgument
  */
@@ -675,29 +691,29 @@ function _DOMfromJMLOrString (childNodeJML) {
  *   (JamilihFirstArgument|
  *     JamilihAttributes|
  *     JamilihChildren|
- *     Element|ShadowRoot|
+ *     HTMLElement|ShadowRoot|
  *     null)?,
  *   (JamilihAttributes|
  *     JamilihChildren|
- *     Element|ShadowRoot|
+ *     HTMLElement|ShadowRoot|
  *     ElementName|null)?,
  *   ...(JamilihAttributes|
  *     JamilihChildren|
- *     Element|ShadowRoot|
+ *     HTMLElement|ShadowRoot|
  *     ElementName|null)[]
  * ]} JamilihArray
  */
 
 /**
  * @typedef {[
- *   (string|Element|ShadowRoot), (JamilihArray[]|JamilihAttributes|Element|ShadowRoot|null)?, ...(JamilihArray[]|Element|JamilihAttributes|ShadowRoot|null)[]
+ *   (string|HTMLElement|ShadowRoot), (JamilihArray[]|JamilihAttributes|HTMLElement|ShadowRoot|null)?, ...(JamilihArray[]|HTMLElement|JamilihAttributes|ShadowRoot|null)[]
  * ]} JamilihArrayPostOptions
  */
 
 /**
  * @typedef {{
- *   root: [Map<Element,any>|WeakMap<Element,any>, any],
- *   [key: string]: [Map<Element,any>|WeakMap<Element,any>, any]
+ *   root: [Map<HTMLElement,any>|WeakMap<HTMLElement,any>, any],
+ *   [key: string]: [Map<HTMLElement,any>|WeakMap<HTMLElement,any>, any]
  * }} MapWithRoot
  */
 
@@ -709,16 +725,16 @@ function _DOMfromJMLOrString (childNodeJML) {
  * @typedef {object} JamilihOptions
  * @property {TraversalState} [$state]
  * @property {JamilihPlugin[]} [$plugins]
- * @property {MapWithRoot|[Map<Element,any>|WeakMap<Element,any>, any]} [$map]
+ * @property {MapWithRoot|[Map<HTMLElement,any>|WeakMap<HTMLElement,any>, any]} [$map]
  */
 
 /**
- * @param {Document|Element|DocumentFragment} elem
+ * @param {Document|HTMLElement|DocumentFragment} elem
  * @param {string|null} att
  * @param {JamilihAttValue} attVal
  * @param {JamilihOptions} opts
  * @param {TraversalState} [state]
- * @returns {string|null}
+ * @returns {Promise<void>|string|null}
  */
 function checkPluginValue(elem, att, attVal, opts, state) {
   opts.$state = state !== null && state !== void 0 ? state : 'attributeValue';
@@ -766,7 +782,7 @@ const jml = function jml(...args) {
     throw new Error('No document object');
   }
 
-  /** @type {(Document|DocumentFragment|Element) & {[key: string]: any}} */
+  /** @type {(Document|DocumentFragment|HTMLElement) & {[key: string]: any}} */
   let elem = doc.createDocumentFragment();
   /**
    *
@@ -775,6 +791,7 @@ const jml = function jml(...args) {
    * @returns {void}
    */
   function _checkAtts(atts) {
+    /* c8 ignore next 3 */
     if (!doc) {
       throw new Error('No document object');
     }
@@ -826,7 +843,7 @@ const jml = function jml(...args) {
               content,
               template
             } = /** @type {JamilihShadowRootObject} */attVal;
-            const shadowRoot = /** @type {Element} */elem.attachShadow({
+            const shadowRoot = /** @type {HTMLElement} */elem.attachShadow({
               mode: closed || open === false ? 'closed' : 'open'
             });
             if (template) {
@@ -835,12 +852,12 @@ const jml = function jml(...args) {
                 _getType(template[0]) === 'object' ? jml('template', ...
                 /**
                  * @type {[
-                 *   JamilihAttributes, ...(JamilihArray[]|Element)[]
+                 *   JamilihAttributes, ...(JamilihArray[]|HTMLElement)[]
                  * ]}
                  */
                 template, doc.body) : jml('template',
                 /**
-                 * @type {JamilihArray[]|Element}
+                 * @type {JamilihArray[]|HTMLElement}
                  */
                 template, doc.body);
               } else if (typeof template === 'string') {
@@ -900,7 +917,7 @@ const jml = function jml(...args) {
                 if (!Object.hasOwn(atts, 'is')) {
                   throw new TypeError(`Expected \`is\` with \`$define\` on built-in; args: ${JSON.stringify(args)}`);
                 }
-                atts.is = checkPluginValue(elem, 'is', atts.is, opts);
+                atts.is = /** @type {string} */checkPluginValue(elem, 'is', atts.is, opts);
                 elem.setAttribute('is', atts.is);
                 ({
                   is
@@ -917,6 +934,7 @@ const jml = function jml(...args) {
              * @returns {DefineConstructor}
              */
             const getConstructor = cnstrct => {
+              /* c8 ignore next 3 */
               if (!doc) {
                 throw new Error('No document object');
               }
@@ -998,7 +1016,7 @@ const jml = function jml(...args) {
           {
             const [symbol, func] = /** @type {SymbolArray} */attVal;
             if (typeof func === 'function') {
-              const funcBound = func.bind( /** @type {Element} */elem);
+              const funcBound = func.bind( /** @type {HTMLElement} */elem);
               if (typeof symbol === 'string') {
                 // @ts-expect-error
                 elem[Symbol.for(symbol)] = funcBound;
@@ -1008,7 +1026,7 @@ const jml = function jml(...args) {
               }
             } else {
               const obj = func;
-              obj.elem = /** @type {Element} */elem;
+              obj.elem = /** @type {HTMLElement} */elem;
               if (typeof symbol === 'string') {
                 // @ts-expect-error
                 elem[Symbol.for(symbol)] = obj;
@@ -1082,11 +1100,11 @@ const jml = function jml(...args) {
 
                 if (jamlihDoc.head && head) {
                   // each child of `head` is:
-                  //  (JamilihArray|TextNodeString|Element|Comment|ProcessingInstruction|
+                  //  (JamilihArray|TextNodeString|HTMLElement|Comment|ProcessingInstruction|
                   //  Text|DocumentFragment|JamilihProcessingInstruction|JamilihDocumentFragment)
 
                   //   * @typedef {JamilihDoc|JamilihDoctype|JamilihTextNode|
-                  //  *   JamilihAttributeNode|JamilihOptions|ElementName|Element|
+                  //  *   JamilihAttributeNode|JamilihOptions|ElementName|HTMLElement|
                   //  *   JamilihDocumentFragment
                   //  * } JamilihFirstArg
                   // appender childJML param is: JamilihArray|JamilihFirstArg
@@ -1119,7 +1137,7 @@ const jml = function jml(...args) {
               if (typeof val[0] !== 'function') {
                 throw new TypeError(`Expect a function for \`$on\`; args: ${JSON.stringify(args)}`);
               }
-              _addEvent( /** @type {Element} */elem, p2, val[0], val[1]); // element, event name, handler, capturing
+              _addEvent( /** @type {HTMLElement} */elem, p2, val[0], val[1]); // element, event name, handler, capturing
             }
 
             break;
@@ -1229,7 +1247,7 @@ const jml = function jml(...args) {
             if (matchingPlugin) {
               matchingPlugin.set({
                 opts,
-                element: elem,
+                element: /** @type {HTMLElement} */nodes[0],
                 attribute: {
                   name: pluginName,
                   value: /** @type {PluginReference} */attVal
@@ -1299,7 +1317,7 @@ const jml = function jml(...args) {
    */
   const setMap = dataVal => {
     let map, obj;
-    const defMap = /** @type {[Map<Element, any> | WeakMap<Element, any>, any]} */defaultMap;
+    const defMap = /** @type {[Map<HTMLElement, any> | WeakMap<HTMLElement, any>, any]} */defaultMap;
     // Boolean indicating use of default map and object
     if (dataVal === true) {
       [map, obj] = defMap;
@@ -1324,8 +1342,8 @@ const jml = function jml(...args) {
       map = defMap[0];
       obj = dataVal;
     }
-    /** @type {Map<Element, any> | WeakMap<Element, any>} */
-    map.set( /** @type {Element} */
+    /** @type {Map<HTMLElement, any> | WeakMap<HTMLElement, any>} */
+    map.set( /** @type {HTMLElement} */
     elem, obj);
   };
   for (let i = argStart; i < argc; i++) {
@@ -1415,16 +1433,19 @@ const jml = function jml(...args) {
                 const {
                   is
                 } = /** @type {JamilihAttributes} */atts;
-                /* c8 ignore next */
+                /* c8 ignore next 4 */
                 elem = doc.createElementNS
-                /* eslint-disable object-shorthand -- Casting */ ? doc.createElementNS(NS_HTML, elStr, {
+                // Should create separate file for this
+                /* eslint-disable object-shorthand -- Casting */ ? /** @type {HTMLElement} */doc.createElementNS(NS_HTML, elStr, {
                   is: /** @type {string} */is
-                }) : doc.createElement(elStr, {
+                })
+                /* c8 ignore next 1 */ : doc.createElement(elStr, {
                   is: /** @type {string} */is
                 });
                 /* eslint-enable object-shorthand -- Casting */
               } else /* c8 ignore next */if (doc.createElementNS) {
                   elem = doc.createElementNS(NS_HTML, elStr);
+                  /* c8 ignore next 3 */
                 } else {
                   elem = doc.createElement(elStr);
                 }
@@ -1438,6 +1459,7 @@ const jml = function jml(...args) {
       case 'object':
         {
           // Non-DOM-element objects indicate attribute-value pairs
+          /* c8 ignore next 3 */
           if (!arg || typeof arg !== 'object') {
             throw new Error('Null should not reach here');
           }
@@ -1476,7 +1498,7 @@ const jml = function jml(...args) {
         */
         if (i === 0) {
           // Allow wrapping of element, fragment, or document
-          elem = /** @type {Document|DocumentFragment|Element} */arg;
+          elem = /** @type {Document|DocumentFragment|HTMLElement} */arg;
           // Todo: Report to plugins and change for document/fragment
           opts.$state = 'element';
         }
@@ -1484,10 +1506,10 @@ const jml = function jml(...args) {
           // parent
           const elsl = nodes.length;
           for (let k = 0; k < elsl; k++) {
-            _appendNode( /** @type {Document|DocumentFragment|Element} */arg, nodes[k]);
+            _appendNode( /** @type {Document|DocumentFragment|HTMLElement} */arg, nodes[k]);
           }
         } else {
-          nodes[nodes.length] = /** @type {Document|DocumentFragment|Element} */arg;
+          nodes[nodes.length] = /** @type {Document|DocumentFragment|HTMLElement} */arg;
         }
         break;
       case 'array':
@@ -1499,7 +1521,7 @@ const jml = function jml(...args) {
             // Go through children array container to handle elements
             const childContent = child[j];
             const childContentType = typeof childContent;
-            if (_isNullish(childContent)) {
+            if (childContent === null || _isNullish(childContent)) {
               throw new TypeError(`Bad children (parent array: ${JSON.stringify(args)}; index ${j} of child: ${JSON.stringify(child)})`);
             }
             switch (childContentType) {
@@ -1510,13 +1532,13 @@ const jml = function jml(...args) {
                 _appendNode(elem, doc.createTextNode(String(childContent)));
                 break;
               default:
-                if (!childContent || typeof childContent !== 'object') {
-                  throw new Error('Unexpected type');
+                // bigint, symbol, function
+                if (typeof childContent !== 'object') {
+                  throw new TypeError(`Bad children (parent array: ${JSON.stringify(args)}; index ${j} of child: ${JSON.stringify(child)})`);
                 }
                 if (Array.isArray(childContent)) {
                   // Arrays representing child elements
                   opts.$state = 'children';
-                  // @ts-expect-error Should be ok
                   _appendNode(elem, jml(opts, ...childContent));
                 } else if ('#' in childContent) {
                   // Fragment
@@ -1529,7 +1551,7 @@ const jml = function jml(...args) {
                     newChildContent = /** @type {string} */
                     checkPluginValue(elem, null, childContent, opts, 'children');
                   }
-                  _appendNode(elem, /** @type {string | Element | DocumentFragment | Comment} */
+                  _appendNode(elem, /** @type {string|HTMLElement|DocumentFragment|Comment} */
                   newChildContent || childContent);
                 }
                 break;
@@ -1789,7 +1811,7 @@ jml.toJML = function (nde, {
       case 1:
         {
           // ELEMENT
-          const node = /** @type {Element} */nodeOrEntity;
+          const node = /** @type {HTMLElement} */nodeOrEntity;
           setTemp();
           const nodeName = node.nodeName.toLowerCase(); // Todo: for XML, should not lower-case
 
@@ -1832,7 +1854,6 @@ jml.toJML = function (nde, {
           resetTemp();
           break;
         }
-      case undefined: // Treat as attribute node until this is fixed: https://github.com/jsdom/jsdom/issues/1641 / https://github.com/jsdom/jsdom/pull/1822
       case 2:
         {
           // ATTRIBUTE (should only get here if passing in an attribute node)
@@ -2026,7 +2047,7 @@ jml.toHTML = function (...args) {
         // Todo: deal with serialization of properties like 'selected',
         //  'checked', 'value', 'defaultValue', 'for', 'dataset', 'on*',
         //  'style'! (i.e., need to build a string ourselves)
-        return (/** @type {Element} */ret.outerHTML
+        return (/** @type {HTMLElement} */ret.outerHTML
         );
       }
     case 2:
@@ -2037,42 +2058,40 @@ jml.toHTML = function (...args) {
         /** @type {Attr} */ret.value.replace(/"/gu, '&quot;')}"`;
       }
     case 3:
-    case 4:
       {
-        // CDATA
+        // TEXT
+        // Fallthrough
+        // } case 4: { // CDATA
+        /* c8 ignore next 3 */
         if (!ret.nodeValue) {
           throw new TypeError('Unexpected null Text node');
         }
         return (/** @type {Text|CDATASection} */ret.nodeValue
         );
-        // case 5: // Entity
-      }
-    case 7:
-      {
-        // PROCESSING INSTRUCTION
-        const node = /** @type {ProcessingInstruction} */ret;
-        return `<?${node.target} ${node.data}?>`;
-      }
-    case 8:
-      {
-        // Comment
-        return `<!--${ret.nodeValue}-->`;
+        // case 5: // Entity Reference Node
+        //  No 6: Entity Node
+        //  No 12: Notation Node
+        // } case 7: { // PROCESSING INSTRUCTION
+        //   const node = /** @type {ProcessingInstruction} */ (ret);
+        //   return `<?${node.target} ${node.data}?>`;
+        // } case 8: { // Comment
+        //   return `<!--${ret.nodeValue}-->`;
       }
     case 9:
+    case 11:
       {
-        // Document
-        throw new Error('Document serialization not yet implemented');
+        // DOCUMENT FRAGMENT
+        const node = /** @type {DocumentFragment} */ret;
+        return [...node.childNodes].map(childNode => {
+          return jml.toHTML( /** @type {JamilihFirstArgument} */childNode);
+        }).join('');
       }
     case 10:
       {
         // DOCUMENT TYPE
         const node = /** @type {DocumentType} */ret;
-        return `<!DOCTYPE ${node.name}${node.publicId ? `PUBLIC "${node.publicId}" "${node.systemId}"` : node.systemId ? `SYSTEM "${node.systemId}"` : ``}>`;
-      }
-    case 11:
-      {
-        // DOCUMENT FRAGMENT
-        throw new Error('Document fragment serialization not yet implemented');
+        return `<!DOCTYPE ${node.name}${node.publicId ? ` PUBLIC "${node.publicId}" "${node.systemId}"` : node.systemId ? ` SYSTEM "${node.systemId}"` : ``}>`;
+        /* c8 ignore next 3 */
       }
     default:
       throw new Error('Unexpected node type');
@@ -2117,7 +2136,7 @@ jml.toXMLDOMString = function (...args) {
  */
 class JamilihMap extends Map {
   /**
-   * @param {?(string|Element)} element
+   * @param {?(string|HTMLElement)} element
    * @returns {ArbitraryValue}
    */
   get(element) {
@@ -2125,7 +2144,7 @@ class JamilihMap extends Map {
     return super.get.call(this, elem);
   }
   /**
-   * @param {string|Element} element
+   * @param {string|HTMLElement} element
    * @param {ArbitraryValue} value
    * @returns {ArbitraryValue}
    */
@@ -2134,7 +2153,7 @@ class JamilihMap extends Map {
     return super.set.call(this, elem, value);
   }
   /**
-   * @param {string|Element} element
+   * @param {string|HTMLElement} element
    * @param {string} methodName
    * @param {...ArbitraryValue} args
    * @returns {ArbitraryValue}
@@ -2151,7 +2170,7 @@ class JamilihMap extends Map {
  */
 class JamilihWeakMap extends WeakMap {
   /**
-   * @param {Element} element
+   * @param {HTMLElement} element
    * @returns {ArbitraryValue}
    */
   get(element) {
@@ -2162,7 +2181,7 @@ class JamilihWeakMap extends WeakMap {
     return super.get.call(this, elem);
   }
   /**
-   * @param {Element} element
+   * @param {HTMLElement} element
    * @param {ArbitraryValue} value
    * @returns {ArbitraryValue}
    */
@@ -2174,7 +2193,7 @@ class JamilihWeakMap extends WeakMap {
     return super.set.call(this, elem, value);
   }
   /**
-   * @param {string|Element} element
+   * @param {string|HTMLElement} element
    * @param {string} methodName
    * @param {...ArbitraryValue} args
    * @returns {ArbitraryValue}
@@ -2191,7 +2210,7 @@ jml.Map = JamilihMap;
 jml.WeakMap = JamilihWeakMap;
 
 /**
- * @typedef {[JamilihWeakMap|JamilihMap, Element]} MapAndElementArray
+ * @typedef {[JamilihWeakMap|JamilihMap, HTMLElement]} MapAndElementArray
  */
 
 /**
@@ -2204,7 +2223,7 @@ jml.weak = function (obj, ...args) {
   const elem = jml({
     $map: [map, obj]
   }, ...args);
-  return [map, /** @type {Element} */elem];
+  return [map, /** @type {HTMLElement} */elem];
 };
 
 /**
@@ -2217,11 +2236,11 @@ jml.strong = function (obj, ...args) {
   const elem = jml({
     $map: [map, obj]
   }, ...args);
-  return [map, /** @type {Element} */elem];
+  return [map, /** @type {HTMLElement} */elem];
 };
 
 /**
- * @param {string|Element} element If a string, will be interpreted as a selector
+ * @param {string|HTMLElement} element If a string, will be interpreted as a selector
  * @param {symbol|string} sym If a string, will be used with `Symbol.for`
  * @returns {ArbitraryValue} The value associated with the symbol
  */
@@ -2233,12 +2252,12 @@ jml.symbol = jml.sym = jml.for = function (element, sym) {
 };
 
 /**
- * @typedef {((elem: Element, ...args: any[]) => void)|{[key: string]: (elem: Element, ...args: any[]) => void}} MapCommand
+ * @typedef {((elem: HTMLElement, ...args: any[]) => void)|{[key: string]: (elem: HTMLElement, ...args: any[]) => void}} MapCommand
  */
 
 /**
- * @param {?(string|Element)} elem If a string, will be interpreted as a selector
- * @param {symbol|string|Map<Element, MapCommand>|WeakMap<Element, MapCommand>} symOrMap If a string, will be used with `Symbol.for`
+ * @param {?(string|HTMLElement)} elem If a string, will be interpreted as a selector
+ * @param {symbol|string|Map<HTMLElement, MapCommand>|WeakMap<HTMLElement, MapCommand>} symOrMap If a string, will be used with `Symbol.for`
  * @param {string|any} methodName Can be `any` if the symbol or map directly
  *   points to a function (it is then used as the first argument).
  * @param {ArbitraryValue[]} args
@@ -2258,7 +2277,7 @@ jml.command = function (elem, symOrMap, methodName, ...args) {
 
     return func[methodName](...args);
   }
-  func = /** @type {Map<Element, MapCommand>|WeakMap<Element, MapCommand>} */symOrMap.get(elem);
+  func = /** @type {Map<HTMLElement, MapCommand>|WeakMap<HTMLElement, MapCommand>} */symOrMap.get(elem);
   if (!func) {
     throw new Error('No map found');
   }
@@ -2272,12 +2291,13 @@ jml.command = function (elem, symOrMap, methodName, ...args) {
 /**
  * Expects properties `document`, `XMLSerializer`, and `DOMParser`.
  * Also updates `body` with `document.body`.
- * @param {import('jsdom').DOMWindow|HTMLWindow} wind
+ * @param {import('jsdom').DOMWindow|HTMLWindow|undefined} wind
  * @returns {void}
  */
 jml.setWindow = wind => {
+  var _win2;
   win = wind;
-  doc = win.document;
+  doc = (_win2 = win) === null || _win2 === void 0 ? void 0 : _win2.document;
   if (doc && doc.body) {
     // eslint-disable-next-line prefer-destructuring -- Needed for typing
     body = /** @type {HTMLBodyElement} */doc.body;
@@ -2312,7 +2332,7 @@ function glue(array, glu) {
  */
 let body; // eslint-disable-line import/no-mutable-exports
 
-/* c8 ignore next 3 */
+/* c8 ignore next 4 */
 if (doc && doc.body) {
   // eslint-disable-next-line prefer-destructuring -- Needed for type
   body = /** @type {HTMLBodyElement} */doc.body;

@@ -1631,12 +1631,15 @@ const arrayType = {
             const typeChoices = this.$getTypeChoices();
             typeChoices.$setType({type, baseValue: value, bringIntoFocus});
             const root = typeChoices.$getTypeRoot();
-            const typeObj = /** @type {import('../types.js').TypeObject} */ (
-              Types.availableTypes[type]
-            );
-            if (typeObj.setValue) {
-              typeObj.setValue({root, value});
-            }
+            // Reenable this repeated setting of value if setting within the
+            //   array is not enough for `idb-manager`! But causes problems
+            //   with running `Error.cause` type twice and is inefficient
+            // const typeObj = /** @type {import('../types.js').TypeObject} */ (
+            //   Types.availableTypes[type]
+            // );
+            // if (typeObj.setValue) {
+            //   typeObj.setValue({root, value});
+            // }
             Types.validate({type, root, topRoot});
             return root;
           },

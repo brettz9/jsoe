@@ -32,6 +32,7 @@ import StringObjectType from './fundamentalTypes/StringObjectType.js';
 import SpecialRealNumberSuperType from
   './superTypes/SpecialRealNumberType.js';
 import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
+import errorType from './fundamentalTypes/errorType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -249,6 +250,15 @@ const Types = {};
  */
 
 /**
+ * @typedef {(
+ *   info: {
+*     root: HTMLDivElement,
+*     value: StructuredCloneValue
+*   }
+* ) => void} TypeObjectSetValue
+ */
+
+/**
  * @typedef {object} TypeObject
  * @property {[
  *   string, {value?: AvailableType, title?: string}?
@@ -290,12 +300,8 @@ const Types = {};
  * }) =>
  *  StructuredCloneValue
  * } getValue Gets the value for the type
- * @property {(
- *   info: {
- *     root: HTMLDivElement,
- *     value: StructuredCloneValue
- *   }
- * ) => void} [setValue] Should set the value of the form's `getInput` element
+ * @property {TypeObjectSetValue} [setValue] Should set the value of the
+ *   form's `getInput` element
  * @property {(info: {
  *   value?: StructuredCloneValue,
  *   typeNamespace?: string,
@@ -362,6 +368,8 @@ Types.availableTypes = {
   undef: undefinedType,
   SpecialRealNumber: SpecialRealNumberSuperType,
   SpecialNumber: SpecialNumberSuperType,
+
+  error: errorType,
 
   regexp: regexpType,
   BooleanObject: BooleanObjectType,
@@ -459,7 +467,7 @@ Types.availableTypes = {
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
 *   "IntlDateTimeFormat"|"IntlNumberFormat"|"ValidDate"|
-*   "arrayNonindexKeys"} AvailableType
+*   "arrayNonindexKeys"|"error"} AvailableType
 */
 
 /**

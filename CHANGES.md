@@ -1,5 +1,11 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## ?
+
+- feat: add `set`, `map`, and `error` types
+- fix: ensure `Types.getTypeForRoot` always returns a string
+- fix: ensure Blob textarea is independent per instance
+
 ## 0.5.1
 
 - fix: TS types

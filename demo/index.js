@@ -137,7 +137,7 @@ setTimeout(async function () {
           const formControl = Types.getFormControlForRoot(root);
           formControl.style.backgroundColor = 'red';
           setTimeout(() => {
-            formControl.style.backgroundColor = 'initial';
+            formControl.style.backgroundColor = 'white';
           }, 3000);
         }
       }
@@ -269,6 +269,19 @@ setTimeout(async function () {
 
     (() => {
       const badDate = new Date('Bad date');
+      const cause = new Error('some cause');
+      const error = new Error('msg');
+      error.cause = cause;
+
+      // eslint-disable-next-line unicorn/error-message -- Testing empty
+      const error2 = new Error();
+      error2.message = undefined; // Needed to force (at least in Chrome)
+      error2.fileName = 'abc';
+      error2.name = undefined;
+      error2.stack = undefined;
+      error2.lineNumber = 10;
+      error2.columnNumber = 20;
+
       const typeSelection = typeChoices({
         format: 'structuredCloning',
         setValue: true,
@@ -295,7 +308,9 @@ setTimeout(async function () {
             [null, 3],
             [true, new Map([[false, 5]])],
             [new Map([[6, 4]]), 7]
-          ])
+          ]),
+          error,
+          error2
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
@@ -305,6 +320,16 @@ setTimeout(async function () {
         setValue: true,
         value: new Blob(['<b>Testing</b>'], {type: 'text/html'}),
         typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
+      const error3 = new Error('msg2');
+      const cause3 = new Error('some cause2');
+      error3.cause = cause3;
+      const typeSelectionErrorWithCause = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: error3,
+        typeNamespace: 'demo-type-choices-only-initial-value-ErrorCause'
       });
 
       const typeSelectionIndexedDBKey = typeChoices({
@@ -318,6 +343,7 @@ setTimeout(async function () {
       return ['form', [
         ...typeSelection.domArray,
         ...typeSelectionBlob.domArray,
+        ...typeSelectionErrorWithCause.domArray,
         ...typeSelectionIndexedDBKey.domArray
       ]];
     })(),

@@ -111,7 +111,7 @@ const dateType = {
                * @type {SetValidity}
                */
               $setValidity (legitimateInvalid) {
-                console.log('legitimateInvalid', legitimateInvalid);
+                // console.log('legitimateInvalid', legitimateInvalid);
                 if (legitimateInvalid === true) {
                   /** @type {HTMLInputElement} */ (this).checked = true;
                 }
