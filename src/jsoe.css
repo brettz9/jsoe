@@ -52,7 +52,7 @@ input:invalid {
 [data-type="blobHTML"] {
   background-color: sandybrown;
 }
-[data-type="error"] {
+[data-type="error"], [data-type="errors"] {
   background-color: red;
 }
 

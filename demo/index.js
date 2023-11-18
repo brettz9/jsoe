@@ -282,6 +282,25 @@ setTimeout(async function () {
       error2.lineNumber = 10;
       error2.columnNumber = 20;
 
+      const typeError = new TypeError('msg');
+      const typeCause = new RangeError('some cause');
+      typeError.cause = typeCause;
+
+      // eslint-disable-next-line unicorn/error-message -- Testing empty
+      const error3 = new TypeError();
+      error3.message = undefined; // Needed to force (at least in Chrome)
+      error3.fileName = 'abc';
+      error3.name = undefined;
+      error3.stack = undefined;
+      error3.lineNumber = 10;
+      error3.columnNumber = 20;
+
+      const aggregate1 = new RangeError('agg err1');
+      const aggregate2 = new TypeError('agg err2');
+      const errAggregate = new AggregateError(
+        [aggregate1, aggregate2], 'agg msg'
+      );
+
       const typeSelection = typeChoices({
         format: 'structuredCloning',
         setValue: true,
@@ -310,7 +329,10 @@ setTimeout(async function () {
             [new Map([[6, 4]]), 7]
           ]),
           error,
-          error2
+          error2,
+          error3,
+          typeError,
+          errAggregate
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
@@ -322,14 +344,24 @@ setTimeout(async function () {
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 
-      const error3 = new Error('msg2');
-      const cause3 = new Error('some cause2');
-      error3.cause = cause3;
+      const error4 = new Error('msg2');
+      const cause4 = new Error('some cause2');
+      error4.cause = cause4;
       const typeSelectionErrorWithCause = typeChoices({
         format: 'structuredCloning',
         setValue: true,
-        value: error3,
+        value: error4,
         typeNamespace: 'demo-type-choices-only-initial-value-ErrorCause'
+      });
+
+      const error5 = new TypeError('msg2');
+      const cause5 = new RangeError('some cause2');
+      error5.cause = cause5;
+      const typeSelectionTypeErrorWithCause = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: error5,
+        typeNamespace: 'demo-type-choices-only-initial-value-ErrorsCause'
       });
 
       const typeSelectionIndexedDBKey = typeChoices({
@@ -340,11 +372,23 @@ setTimeout(async function () {
         keySelectClass: 'only-initial'
       });
 
+      const agg1 = new RangeError('some err1');
+      const agg2 = new TypeError('some err2');
+      const errorAggregate = new AggregateError([agg1, agg2], 'msg2');
+      const typeSelectionTypeErrorWithAggregate = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: errorAggregate,
+        typeNamespace: 'demo-type-choices-only-initial-value-ErrorsAggregate'
+      });
+
       return ['form', [
         ...typeSelection.domArray,
         ...typeSelectionBlob.domArray,
         ...typeSelectionErrorWithCause.domArray,
-        ...typeSelectionIndexedDBKey.domArray
+        ...typeSelectionIndexedDBKey.domArray,
+        ...typeSelectionTypeErrorWithCause.domArray,
+        ...typeSelectionTypeErrorWithAggregate.domArray
       ]];
     })(),
 

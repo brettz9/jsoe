@@ -10,6 +10,7 @@ module.exports = {
       mode: 'typescript'
     },
     polyfills: [
+      'AggregateError',
       'Array.isArray',
       'Array.filter',
       'Array.forEach',

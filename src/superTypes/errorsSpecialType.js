@@ -1,17 +1,70 @@
-import {error as errorTypesonRegistry} from 'typeson-registry';
+/* globals InternalError */
+import {errors as errorsTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
 import {jml} from '../vendor-imports.js';
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @typedef {number} Integer
  */
-const errorType = {
-  option: ['Error'],
-  stringRegex: /^Error\((.*)\)$/u,
-  toValue (s) {
+
+/**
+ * @param {object} obj
+ * @returns {string}
+ */
+function getConstructor (obj) {
+  const str = Function.prototype.toString.call(obj.constructor);
+  return str.slice(9, str.indexOf('('));
+}
+
+/**
+ * @typedef {ErrorConstructor|AggregateErrorConstructor} SpecialErrorType
+ */
+
+/** @type {Map<string, SpecialErrorType>} */
+const specialErrorsMap = new Map([
+  ['TypeError', TypeError],
+  ['RangeError', RangeError],
+  ['SyntaxError', SyntaxError],
+  ['ReferenceError', ReferenceError],
+  ['EvalError', EvalError],
+  ['URIError', URIError]
+]);
+if (typeof AggregateError !== 'undefined') {
+  specialErrorsMap.set('AggregateError', AggregateError);
+}
+
+/* istanbul ignore next 5 */
+// @ts-expect-error Only use if available
+if (typeof InternalError !== 'undefined') {
+  // @ts-expect-error Only use if available
+  specialErrorsMap.set('InternalError', InternalError);
+}
+
+const specialErrors = [...specialErrorsMap.keys()];
+
+/**
+ * @type {import('./SpecialNumberType.js').SuperTypeObject}
+ */
+const errorsSpecialType = {
+  option: ['Special errors'],
+  childTypes: specialErrors.map((err) => {
+    return err.toLowerCase();
+  }),
+  stringRegex: new RegExp(
+    '^(?<errorClass>' + specialErrors.join('|') +
+      ')\\((?<innerContent>.*)\\)$', 'u'
+  ),
+  toValue (s, rootInfo) {
+    const {groups: {
+      errorClass
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
+
     const obj = JSON.parse(s);
     const errObj = /** @type {{revive: import('typeson-registry').Reviver}} */ (
-      errorTypesonRegistry.error
+      errorsTypesonRegistry[errorClass.toLowerCase()]
     ).revive(obj, {});
     return {value: errObj};
   },
@@ -19,6 +72,10 @@ const errorType = {
     return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
   },
   setValue ({root, value}) {
+    /** @type {HTMLSelectElement} */ (
+      $e(root, '.errorType')
+    ).value = getConstructor(value);
+
     if (typeof value.message === 'string') {
       /** @type {HTMLInputElement} */ (
         $e(root, 'input.message:not([type])')
@@ -87,18 +144,51 @@ const errorType = {
           value: value.cause
         });
       }
+
+      if (Array.isArray(value.errors)) {
+        /** @type {HTMLElement} */ ($e(root, '.aggregateErrors')).click();
+
+        const aggregateErrorsContents = /** @type {HTMLDivElement} */ ($e(
+          root, '.aggregateErrorsContents'
+        ));
+
+        value.errors.forEach((
+          /** @type {unknown} */
+          error,
+          /** @type {Integer} */
+          idx
+        ) => {
+          /** @type {import('../types.js').TypeObjectSetValue} */ (
+            this.setValue
+          )({
+            root: /** @type {HTMLDivElement} */ (
+              aggregateErrorsContents.children[idx]
+            ),
+            value: error
+          });
+        });
+      }
     });
   },
   getValue ({root}) {
+    const UserErrorType = specialErrorsMap.get(
+      /** @type {HTMLSelectElement} */ (
+        $e(root, '.errorType')
+      ).value
+    );
+    if (!UserErrorType) {
+      throw new Error('Bad error type');
+    }
+
     /**
      * @type {{
-     *   name: string|undefined,
-     *   stack?: string|undefined,
-     *   cause?: unknown,
      *   message?: string|undefined
-     *   fileName?: string,
-     *   lineNumber?: number|undefined,
+     *   name?: string|undefined
+     *   fileName?: string|undefined
+     *   stack?: string|undefined,
+     *   lineNumber?: number|undefined
      *   columnNumber?: number|undefined
+     *   cause?: unknown|undefined
      * }}
      */
     let errObj;
@@ -108,10 +198,41 @@ const errorType = {
       const message = /** @type {HTMLInputElement} */ (
         $e(root, 'input.message:not([type])')
       ).value;
-      errObj = new Error(message);
+      if (Object.prototype.toString.call(UserErrorType) ===
+        '[object AggregateError]') {
+        const UET = /** @type {AggregateErrorConstructor} */ (UserErrorType);
+        const errors = [...(
+          /** @type {HTMLElement} */ ($e(
+            root, '.aggregateErrorsContents'
+          )).children
+        )].map((errorRoot) => {
+          return this.getValue({
+            root: /** @type {HTMLDivElement} */ (errorRoot)
+          });
+        });
+        errObj = new UET(errors, message);
+      } else {
+        const UET = /** @type {TypeErrorConstructor} */ (UserErrorType);
+        errObj = new UET(message);
+      }
     } else {
-      // eslint-disable-next-line unicorn/error-message -- User requested
-      errObj = new Error();
+      if (Object.prototype.toString.call(UserErrorType) ===
+        '[object AggregateError]') {
+        const UET = /** @type {AggregateErrorConstructor} */ (UserErrorType);
+        const errors = [...(
+          /** @type {HTMLElement} */ (
+            $e(root, '.aggregateErrorsContents')
+          ).children
+        )].map((errorRoot) => {
+          return this.getValue({
+            root: /** @type {HTMLDivElement} */ (errorRoot)
+          });
+        });
+        errObj = new UET(errors);
+      } else {
+        const UET = /** @type {TypeErrorConstructor} */ (UserErrorType);
+        errObj = new UET();
+      }
       errObj.message = undefined; // Force (at least needed for Chrome)
     }
     if (/** @type {HTMLInputElement} */ (
@@ -171,8 +292,12 @@ const errorType = {
   viewUI (
     {value: o, format}
   ) {
+    const constructor = getConstructor(o);
     return /** @type {import('jamilih').JamilihArray} */ ([
-      'div', {dataset: {type: 'error'}}, [
+      'div', {dataset: {type: 'errors'}}, [
+        ['div', [['b', ['Error type: ']], ['span', [
+          constructor
+        ]]]],
         typeof o.message === 'string'
           ? ['div', [['b', ['Message: ']], ['span', [o.message]]]]
           : [],
@@ -191,7 +316,7 @@ const errorType = {
         typeof o.stack === 'string'
           ? ['div', [['b', ['Stack: ']], ['span', [o.stack]]]]
           : [],
-        ['b', ['Cause: ']], ['div', [
+        ['b', ['Cause: ']], ['div', {class: 'causeHolder'}, [
           ['button', {$on: {click (/** @type {Event} */ e) {
             e.preventDefault();
             const {target} = e;
@@ -211,7 +336,41 @@ const errorType = {
               })
               : ''
           ]]
-        ]]
+        ]],
+        constructor === 'AggregateError'
+          ? ['div', [
+            ['b', ['Errors ']],
+            ['div', {class: 'aggregateErrorsHolder'}, [
+              ['button', {$on: {click (/** @type {Event} */ e) {
+                e.preventDefault();
+                const {target} = e;
+                const aggregateErrorsContents = /** @type {HTMLDivElement} */ (
+                  /** @type {HTMLElement} */ (target).nextElementSibling
+                );
+                aggregateErrorsContents.hidden =
+                  !aggregateErrorsContents.hidden;
+                /** @type {HTMLElement} */ (
+                  target
+                ).textContent = aggregateErrorsContents.hidden ? '+' : '-';
+              }}}, ['-']],
+              ['div', {class: 'aggregateErrorsContents'}, [
+                ...(o.errors
+                  ? o.errors.map(
+                    (
+                      /** @type {unknown} */
+                      error
+                    ) => {
+                      return this.viewUI({
+                        format,
+                        value: error
+                      });
+                    }
+                  )
+                  : [])
+              ]]
+            ]]
+          ]]
+          : ''
       ]
     ]);
   },
@@ -222,7 +381,8 @@ const errorType = {
     lineNumber: '',
     columnNumber: '',
     stack: '',
-    cause: undefined
+    cause: undefined,
+    errors: undefined
   }}) {
     /**
      * @param {Event} e
@@ -250,11 +410,51 @@ const errorType = {
       });
     }
 
+    if (Array.isArray(value.errors)) {
+      setTimeout(() => {
+        /** @type {HTMLElement} */ ($e(
+          div, '.aggregateErrors'
+        )).click();
+      });
+    }
+
     const div = /** @type {HTMLDivElement} */ (jml(
       'div',
-      {dataset: {type: 'error'}},
+      {dataset: {type: 'errors'}},
       /** @type {import('jamilih').JamilihChildren} */ ([
         ['div', [
+          ['label', [
+            'Special error type ',
+            ['select', {
+              class: 'errorType',
+              $on: {
+                change () {
+                  const aggregateErrorsLabel =
+                    /** @type {HTMLLabelElement} */ ($e(
+                      /** @type {Element} */
+                      (this.parentElement?.closest('div[data-type=errors]')),
+                      'label.aggregateErrors'
+                    ));
+                  aggregateErrorsLabel.hidden =
+                    /** @type {HTMLSelectElement} */ (
+                      this
+                    ).value !== 'AggregateError';
+                }
+              }
+            }, [
+              ['option', {value: ''}, ['Select an error type']],
+              ...specialErrors.map((errorType) => {
+                return ['option', {
+                  selected: errorType === getConstructor(value)
+                    ? 'selected'
+                    : undefined
+                }, [
+                  errorType
+                ]];
+              })
+            ]]
+          ]],
+          ['br'],
           ['label', [
             'Message? ',
             ['input', {
@@ -272,7 +472,7 @@ const errorType = {
             'Message ',
             ['input', {
               class: 'message',
-              name: `${typeNamespace}-error-message`,
+              name: `${typeNamespace}-errors-message`,
               value: value.message
             }]
           ]]
@@ -295,7 +495,7 @@ const errorType = {
             'Name ',
             ['input', {
               class: 'name',
-              name: `${typeNamespace}-error-name`,
+              name: `${typeNamespace}-errors-name`,
               value: value.name
             }]
           ]]
@@ -319,7 +519,7 @@ const errorType = {
             'File name ',
             ['input', {
               class: 'fileName',
-              name: `${typeNamespace}-error-fileName`,
+              name: `${typeNamespace}-errors-fileName`,
               value: value.fileName
             }]
           ]]
@@ -328,7 +528,7 @@ const errorType = {
           'Line number ',
           ['input', {
             class: 'lineNumber',
-            name: `${typeNamespace}-error-lineNumber`,
+            name: `${typeNamespace}-errors-lineNumber`,
             type: 'number', step: 'any', value: value.lineNumber
           }]
         ]],
@@ -337,7 +537,7 @@ const errorType = {
           'Column number ',
           ['input', {
             class: 'columnNumber',
-            name: `${typeNamespace}-error-columnNumber`,
+            name: `${typeNamespace}-errors-columnNumber`,
             type: 'number', step: 'any', value: value.columnNumber
           }]
         ]],
@@ -358,7 +558,7 @@ const errorType = {
             'Stack ',
             ['textarea', {
               class: 'stack',
-              name: `${typeNamespace}-error-stack`
+              name: `${typeNamespace}-errors-stack`
             }, [
               value.stack
             ]]
@@ -405,6 +605,63 @@ const errorType = {
             ).textContent = causeContents.hidden ? '+' : '-';
           }}}, ['-']],
           ['div', {class: 'causeContents'}]
+        ]],
+        ['br'],
+        ['label', {class: 'aggregateErrors'}, {
+          hidden: Boolean(value.errors)
+        }, [
+          'Aggregate errors? ',
+          ['input', {
+            class: 'aggregateErrors',
+            type: 'checkbox',
+            $on: {
+              click (e) {
+                click.call(/** @type {HTMLInputElement} */ (this), e);
+                const aggregateErrorsHolder = /** @type {Element} */ (
+                  /** @type {Element} */ (
+                    this.parentElement
+                  ).nextElementSibling
+                );
+                const aggregateErrorsContents = $e(
+                  aggregateErrorsHolder, '.aggregateErrorsContents'
+                );
+                if (!aggregateErrorsContents?.children.length) {
+                  // @ts-expect-error Ok
+                  jml(...(value.errors.map(
+                    (
+                      /** @type {unknown} */
+                      error
+                    ) => {
+                      const editui = component.editUI({
+                        typeNamespace,
+                        value: error
+                      });
+                      return editui[0];
+                    }
+                  )), aggregateErrorsContents);
+                }
+              }
+            }
+          }]
+        ]],
+        ['div', {class: 'aggregateErrorsHolder', hidden: true}, [
+          ['label', ['Aggregate errors ']],
+          ['button', {$on: {click (/** @type {Event} */ e) {
+            e.preventDefault();
+            const {target} = e;
+            const aggregateErrorsContents = /** @type {HTMLDivElement} */ ($e(
+              /** @type {HTMLElement} */
+              (/** @type {HTMLElement} */ (
+                target
+              ).closest('.aggregateErrorsHolder')),
+              '.aggregateErrorsContents'
+            ));
+            aggregateErrorsContents.hidden = !aggregateErrorsContents.hidden;
+            /** @type {HTMLElement} */ (
+              target
+            ).textContent = aggregateErrorsContents.hidden ? '+' : '-';
+          }}}, ['-']],
+          ['div', {class: 'aggregateErrorsContents'}]
         ]]
       ])
     ));
@@ -413,4 +670,4 @@ const errorType = {
   }
 };
 
-export default errorType;
+export default errorsSpecialType;

@@ -452,26 +452,26 @@ const structuredCloning = {
       'NumberObject',
       'StringObject',
       'error',
+      'errors',
       'blobHTML',
       'set',
       'map'
       // Ok, but will need some work
-      //     'error', 'errors',
       //     'blob', 'file', 'filelist',
       //     'arraybuffer',
       //     'dataview', 'imagedata', 'imagebitmap',
       /*
-              // Typed Arrays
-              'int8array',
-              'uint8array',
-              'uint8clampedarray',
-              'int16array',
-              'uint16array',
-              'int32array',
-              'uint32array',
-              'float32array',
-              'float64array',
-              */
+      // Typed Arrays
+        'int8array',
+        'uint8array',
+        'uint8clampedarray',
+        'int16array',
+        'uint16array',
+        'int32array',
+        'uint32array',
+        'float32array',
+        'float64array',
+      */
     ];
   }
 };

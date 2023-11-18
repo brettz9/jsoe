@@ -30,7 +30,10 @@ import 'cypress-axe';
 
 Cypress.on('uncaught:exception', (err /* , runnable */) => {
   // We can't catch application errors within our tests, so let this go.
-  if (err?.message.includes('Not yet instantiated')) {
+  if (
+    err?.message.includes('Not yet instantiated') ||
+    err?.message.includes('Bad error type')
+  ) {
     // returning false here prevents Cypress from
     // failing the test
     return false;

@@ -33,6 +33,7 @@ import SpecialRealNumberSuperType from
   './superTypes/SpecialRealNumberType.js';
 import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
 import errorType from './fundamentalTypes/errorType.js';
+import errorsSpecialType from './superTypes/errorsSpecialType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -236,6 +237,7 @@ const Types = {};
 /**
  * @typedef {{
  *   format: import('./formats.js').AvailableFormat,
+ *   match: boolean|RegExpMatchArray|null
  *   endMatchTypeObjs: TypeObject[],
  *   remnant: string,
  *   rootHolder: [
@@ -370,6 +372,7 @@ Types.availableTypes = {
   SpecialNumber: SpecialNumberSuperType,
 
   error: errorType,
+  errors: errorsSpecialType,
 
   regexp: regexpType,
   BooleanObject: BooleanObjectType,
@@ -467,7 +470,7 @@ Types.availableTypes = {
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
 *   "IntlDateTimeFormat"|"IntlNumberFormat"|"ValidDate"|
-*   "arrayNonindexKeys"|"error"} AvailableType
+*   "arrayNonindexKeys"|"error"|"errors"} AvailableType
 */
 
 /**
@@ -826,21 +829,27 @@ Types.getValueForString = (s, {
   }
   let assign = true;
   if (found !== undefined) {
-    // @ts-ignore The `found` is evaluated again, so sets `match` to non-null
-    const [content, innerContent] = /** @type {RegExpMatchArray} */ (match);
+    // The `found` is evaluated again, so sets `match` to non-null
+    const mtch = /** @type {RegExpMatchArray} */ (
+      /** @type {unknown} */ (match)
+    );
+    const [content, innerContent] = mtch;
     let remnant = s.slice(content.length);
     s = s.slice(0, content.length);
     // console.log('s0', s, '::', remnant, match);
     let valObj;
     try {
-      valObj = /** @type {TypeObject} */ (found[1]).toValue(innerContent || s, {
-        format,
-        endMatchTypeObjs,
-        remnant,
-        rootHolder,
-        parent,
-        parentPath
-      });
+      valObj = /** @type {TypeObject} */ (found[1]).toValue(
+        mtch.groups?.innerContent || innerContent || s, {
+          format,
+          match,
+          endMatchTypeObjs,
+          remnant,
+          rootHolder,
+          parent,
+          parentPath
+        }
+      );
     /* istanbul ignore next -- Good regexes should prevent */
     } catch (e) {
       /* istanbul ignore next -- Good regexes should prevent */

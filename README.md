@@ -12,6 +12,8 @@ app using this tool.
 
 Formats are a collection of allowed types.
 
+Supported formats include:
+
 - Structured Cloning (using [typeson](https://github.com/dfahlander/typeson)) (e.g., IndexedDB)
 - JSON
 - IndexedDB keys
@@ -20,11 +22,16 @@ Formats are a collection of allowed types.
 
 These are generally atomic types which correlate to JavaScript language structures.
 
+Supported types include:
+
 - Array reference (for cyclic arrays)
 - Array
 - `BigInt`
 - `Boolean` object
 - `Date`
+- `Error`
+- `TypeError`, `RangeError`, `SyntaxError`, `ReferenceError`, `EvalError`,
+    `URIError`, `AggregateError`, `InternalError`
 - `Map`
 - `null`
 - `Number` object
@@ -41,6 +48,8 @@ These are generally atomic types which correlate to JavaScript language structur
 
 These map to a subset of JavaScript language structures. Note that false and true were common and limited enough in number to justify their own subtype for the sake of having a quick pull-down entry.
 
+Supported subtypes include:
+
 - Blob (text/html)
 - `false`
 - `true`
@@ -50,12 +59,18 @@ These map to a subset of JavaScript language structures. Note that false and tru
 These are collections of individual types, justified by the subitems not being so frequent as to necessitate their own
 separate enumeration.
 
+Supported supertypes include:
+
 - Special Real Number (`Infinity`, `-Infinity`, `-0`) - Used with IndexedDB keys (even though -0 apparently [to be converted](https://github.com/w3c/IndexedDB/issues/375) to 0)
 - Special Number (`Infinity`, `-Infinity`, `-0`, `NaN`) - Used with Structured Cloning values
 
 ## Known issues
 
-- Cannot provide maps with object keys pointing to the same objects as used as map values
+- Cannot provide maps with object keys pointing to the same objects as used
+    as map values; likewise with Sets?
+- Certain cyclical structures may have issues
+- `typeson-registry`'s structured cloning should throw on more objects, so
+   bad data doesn't end up stored
 - Lacks support for certain Structured Cloning types. See to-dos below.
 
 ## To-dos
@@ -70,8 +85,6 @@ separate enumeration.
     1. Already in typeson-registry
         1. Structured Cloning
             1. JavaScript types
-                1. Error types
-                    1. error, errors
                 1. ArrayBuffer
                     1. arraybuffer
                 1. DataView
@@ -93,4 +106,4 @@ separate enumeration.
     1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
         subtype of `string`, color as a subtype of string)
 1. Might put views and data into separate repos
-1. Implement as Custom Elements
+1. Implement as Custom Elements?
