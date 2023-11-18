@@ -1,4 +1,6 @@
 import {DOM, $$e, $e, $$} from '../../../instrumented/utils/templateUtils.js';
+// eslint-disable-next-line @stylistic/max-len -- Long
+// import {DOM, $$e, $e, $$} from '../../../src/utils/templateUtils.js'; // Test Cypress TS
 
 describe('templateUtils (DOM)', function () {
   beforeEach(() => {
@@ -56,13 +58,13 @@ describe('templateUtils (DOM)', function () {
 
   describe('$$e', function () {
     it('returns empty array if element not present', function () {
-      expect($$e('abc')).to.deep.equal([]);
+      expect($$e('abc', 'missingElement')).to.deep.equal([]);
     });
   });
 
   describe('$e', function () {
     it('returns null if parent element not present', function () {
-      expect($e('abc')).to.equal(null);
+      expect($e('abc', 'irrelevantSelector')).to.equal(null);
     });
   });
 

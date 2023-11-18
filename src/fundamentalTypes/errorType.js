@@ -191,7 +191,7 @@ const errorType = {
         typeof o.stack === 'string'
           ? ['div', [['b', ['Stack: ']], ['span', [o.stack]]]]
           : [],
-        ['b', ['Cause: ']], ['div', [
+        ['b', ['Cause: ']], ['div', {class: 'causeHolder'}, [
           ['button', {$on: {click (/** @type {Event} */ e) {
             e.preventDefault();
             const {target} = e;

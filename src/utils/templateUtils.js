@@ -46,7 +46,7 @@ const $$e = (el, descendentsSel) => {
 };
 
 /**
- * @param {Node} node
+ * @param {Node|string} node
  * @returns {void}
  */
 const removeChildren = (node) => {
@@ -71,7 +71,7 @@ const removeIfExists = (sel) => {
 };
 
 /**
- * @param {HTMLElement} el
+ * @param {HTMLElement|string} el
  * @param {string|string[]} selectors
  * @returns {HTMLElement[]}
  */

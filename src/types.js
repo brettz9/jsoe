@@ -319,6 +319,7 @@ const Types = {};
  *   format?: import('./formats.js').AvailableFormat,
  *   resultType?: "keys"|"values"|"both",
  *   type?: AvailableType,
+ *   arrayState?: string,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
  *   topRoot?: HTMLDivElement
  * }) => JamilihArray} editUI

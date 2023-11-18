@@ -297,8 +297,9 @@ setTimeout(async function () {
 
       const aggregate1 = new RangeError('agg err1');
       const aggregate2 = new TypeError('agg err2');
+      const aggregate3 = new Error('agg err3');
       const errAggregate = new AggregateError(
-        [aggregate1, aggregate2], 'agg msg'
+        [aggregate1, aggregate2, aggregate3], 'agg msg'
       );
 
       const typeSelection = typeChoices({
@@ -374,7 +375,9 @@ setTimeout(async function () {
 
       const agg1 = new RangeError('some err1');
       const agg2 = new TypeError('some err2');
-      const errorAggregate = new AggregateError([agg1, agg2], 'msg2');
+      const agg3 = new Error('some err3');
+      const errorAggregate = new AggregateError([agg1, agg2, agg3], 'msg2');
+      errorAggregate.stack = undefined; // For coverage
       const typeSelectionTypeErrorWithAggregate = typeChoices({
         format: 'structuredCloning',
         setValue: true,

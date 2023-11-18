@@ -1,5 +1,5 @@
 import dialogs from '../../../instrumented/utils/dialogs.js';
-// import dialogs from '../../../src/utils/dialogs.js'; // Test Cypress
+// import dialogs from '../../../src/utils/dialogs.js'; // Test Cypress TS
 
 describe('dialogs', function () {
   describe('makeDialog', function () {
@@ -47,6 +47,7 @@ describe('dialogs', function () {
             expect(dialog.open).to.equal(false);
             done();
           });
+          return true;
         }
       });
       /** @type {HTMLElement} */ (dialog.querySelector('.cancel')).click();
@@ -98,7 +99,9 @@ describe('dialogs', function () {
           done();
         }
       });
-      dialog.querySelector('button.submit').click();
+      /** @type {HTMLButtonElement} */ (
+        dialog.querySelector('button.submit')
+      ).click();
     });
   });
 

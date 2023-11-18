@@ -39,6 +39,33 @@ describe('Special Errors spec', () => {
     ).should('not.be.hidden');
   });
 
+  it('Exposes aggregate `errors`', () => {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'errors'
+    );
+    cy.get(sel + 'select.errorType').select(
+      'AggregateError'
+    );
+    cy.get(sel + 'input.aggregateErrors[type=checkbox]').click();
+
+    cy.get(
+      sel + '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+        '.aggregateErrorsHolder > button'
+    ).click();
+    cy.get(
+      sel + '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+        '.aggregateErrorsHolder > .aggregateErrorsContents'
+    ).should('be.hidden');
+    cy.get(
+      sel + '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+        '.aggregateErrorsHolder > button'
+    ).click();
+    cy.get(
+      sel + '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+        '.aggregateErrorsHolder > .aggregateErrorsContents'
+    ).should('not.be.hidden');
+  });
 
   it('gets type', function (done) {
     cy.on('window:alert', (t) => {
@@ -92,6 +119,96 @@ describe('Special Errors spec', () => {
     *   fileName: string
     * }}
     */ (new TypeError('message1'));
+    err.columnNumber = undefined;
+    err.lineNumber = undefined;
+    err.fileName = ''; // Why defaulting to string?
+    err.name = ''; // Why defaulting to string?
+    err.stack = ''; // Why defaulting to string?
+    cy.get('@consoleLog').should('be.calledWith', err);
+  });
+
+  it('logs value (AggregateError)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'errors'
+    );
+    cy.get(sel + '.errorType').select('AggregateError');
+    cy.get(sel + 'input.aggregateErrors[type=checkbox]').click();
+
+    cy.get(
+      sel + '[data-type=errors] [data-type=errors] .errorType'
+    ).select('TypeError');
+
+    cy.clearTypeAndBlur(
+      sel +
+      '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+      'div:nth-of-type(1) ' +
+      'input[name="demo-keypath-not-expected-errors-message"]',
+      'agg msg1'
+    );
+
+    cy.clearTypeAndBlur(
+      sel +
+      '[data-type=errors] [data-type=errors] ' +
+      'input[name="demo-keypath-not-expected-errors-message"]',
+      'message1'
+    );
+
+    cy.get('button#logValue').click();
+    const aggErr = new TypeError('message1');
+    const err = /**
+    * @type {AggregateError & {
+    *   columnNumber: undefined,
+    *   lineNumber: undefined,
+    *   fileName: string
+    * }}
+    */ (new AggregateError([aggErr], 'agg msg1'));
+    err.columnNumber = undefined;
+    err.lineNumber = undefined;
+    err.fileName = ''; // Why defaulting to string?
+    err.name = ''; // Why defaulting to string?
+    err.stack = ''; // Why defaulting to string?
+    cy.get('@consoleLog').should('be.calledWith', err);
+  });
+
+  it('logs value (no message AggregateError)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'errors'
+    );
+    cy.get(sel + '.errorType').select('AggregateError');
+    cy.get(sel + 'input.aggregateErrors[type=checkbox]').click();
+
+    cy.get(
+      sel +
+        '> .typesHolder > .typeContainer > [data-type=errors] > ' +
+        'div:nth-of-type(1) ' +
+        'input[type=checkbox].message'
+    ).click();
+
+    cy.get(
+      sel + '[data-type=errors] [data-type=errors] .errorType'
+    ).select('TypeError');
+
+    cy.clearTypeAndBlur(
+      sel +
+      '[data-type=errors] [data-type=errors] ' +
+      'input[name="demo-keypath-not-expected-errors-message"]',
+      'message1'
+    );
+
+    cy.get('button#logValue').click();
+    const aggErr = new TypeError('message1');
+    /* eslint-disable unicorn/error-message -- Testing */
+    const err = /**
+    * @type {AggregateError & {
+    *   columnNumber: undefined,
+    *   lineNumber: undefined,
+    *   fileName: string
+    * }}
+    */ (new AggregateError([aggErr]));
+    /* eslint-enable unicorn/error-message -- Testing */
+    err.message = undefined; // Have to force at least in Chrome
     err.columnNumber = undefined;
     err.lineNumber = undefined;
     err.fileName = ''; // Why defaulting to string?
@@ -232,6 +349,53 @@ describe('Special Errors spec', () => {
     ).should('not.be.hidden');
   });
 
+  it('views UI (with aggregate errors)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'errors'
+    );
+    cy.get(sel + '.errorType').select('AggregateError');
+    cy.get(sel + 'input.aggregateErrors[type=checkbox]').click();
+
+    cy.clearTypeAndBlur(
+      sel + 'div[data-type="errors"] div[data-type="errors"] ' +
+        'input[name=demo-keypath-not-expected-errors-message]',
+      'Aggregate errors message'
+    );
+    cy.get(
+      sel + 'div[data-type="errors"] div[data-type="errors"] .errorType'
+    ).select('RangeError');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting -- Wait to load
+    cy.wait(500);
+    cy.get('button#viewUI').click();
+
+    cy.get(
+      '#viewUIResults > [data-type="errors"] > div >' +
+        '.aggregateErrorsHolder > button'
+    ).click();
+    cy.get(
+      '#viewUIResults > [data-type=errors] > div > .aggregateErrorsHolder ' +
+        '> .aggregateErrorsContents'
+    ).should('be.hidden');
+
+    cy.get(
+      '#viewUIResults > [data-type="errors"] > div > ' +
+        '.aggregateErrorsHolder > button'
+    ).click();
+    cy.get(
+      '#viewUIResults > [data-type=errors] > div > .aggregateErrorsHolder ' +
+        '> .aggregateErrorsContents'
+    ).should('not.be.hidden');
+
+    cy.get(
+      sel + 'fieldset[data-type=errors] > ' +
+        'select.typeChoices-demo-keypath-not-expected'
+    ).select('error');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting -- Wait to load
+    cy.wait(500);
+    cy.get('button#viewUI').click();
+  });
+
   it('gets value', function () {
     cy.clearTypeAndBlur(
       '#getValueForString', 'TypeError({{}"message": "abc1"})'
@@ -254,8 +418,39 @@ describe('Special Errors spec', () => {
     cy.get('@consoleLog').should('be.calledWith', err);
   });
 
-  // For the "Type choices with initial value set" control
+  // For the "Type choices with initial value set" controls
   it('gets a value set onload', function () {
+    cy.get(
+      'fieldset:nth-of-type(19) ' +
+        'input[name="demo-type-choices-only-initial-value-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('agg msg');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(19) ' +
+      'fieldset[data-type=errors]:nth-of-type(1) [data-type=errors] ' +
+      'input[name="demo-type-choices-only-initial-value-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('agg err1');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(19) ' +
+      'fieldset[data-type=errors]:nth-of-type(2) [data-type=errors] ' +
+      'input[name="demo-type-choices-only-initial-value-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('agg err2');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(19) ' +
+      'fieldset[data-type=error]:nth-of-type(3) [data-type=error] ' +
+      'input[name="demo-type-choices-only-initial-value-error-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('agg err3');
+    });
+
     cy.get(
       'fieldset:nth-of-type(18) ' +
         'input[name="demo-type-choices-only-initial-value-errors-message"]'
@@ -277,6 +472,38 @@ describe('Special Errors spec', () => {
         'ErrorsCause-errors-message"]'
     ).should(($input) => {
       expect($input.val()).to.equal('some cause2');
+    });
+
+    cy.get(
+      '[data-type=errors] ' +
+      'input[name="demo-type-choices-only-initial-value-' +
+        'ErrorsAggregate-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('msg2');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(1) [data-type=errors] ' +
+      'input[name="demo-type-choices-only-initial-value-' +
+        'ErrorsAggregate-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('some err1');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(2) [data-type=errors] ' +
+      'input[name="demo-type-choices-only-initial-value-' +
+        'ErrorsAggregate-errors-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('some err2');
+    });
+
+    cy.get(
+      'fieldset:nth-of-type(3) [data-type=error] ' +
+      'input[name="demo-type-choices-only-initial-value-' +
+        'ErrorsAggregate-error-message"]'
+    ).should(($input) => {
+      expect($input.val()).to.equal('some err3');
     });
   });
 

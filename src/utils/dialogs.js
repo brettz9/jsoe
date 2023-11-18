@@ -29,7 +29,7 @@ const dialogs = {
    * @typedef {object} MakeDialogArgs
    * @property {import('jamilih').JamilihAttributes} [atts={}]
    * @property {import('jamilih').JamilihChildren} [children=[]]
-   * @property {import('jamilih').EventHandler} [close]
+   * @property {import('jamilih').EventHandler|boolean} [close]
    * @property {boolean} [remove=true]
    */
   /**
@@ -42,7 +42,7 @@ const dialogs = {
         atts.$on = {};
       }
       if (!('close' in atts.$on)) {
-        atts.$on.close = close;
+        atts.$on.close = /** @type {import('jamilih').EventHandler} */ (close);
       }
     }
     const dialog = /** @type {HTMLDialogElement} */ (
@@ -60,10 +60,10 @@ const dialogs = {
    * @typedef {object} MakeCancelArgs
    * @property {(
    *   info: {e: Event, dialog: HTMLDialogElement}
-   * ) => boolean} cancel
-   * @property {string} cancelClass
-   * @property {string} submitClass
-   * @property {...MakeDialogArgs} args
+   * ) => boolean} [cancel]
+   * @property {string} [cancelClass]
+   * @property {string} [submitClass]
+   * @property {...MakeDialogArgs} [args]
    */
   /**
    * @param {MakeCancelArgs} cfg

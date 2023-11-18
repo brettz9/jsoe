@@ -99,6 +99,8 @@ Supported supertypes include:
                     1. uint32array
                     1. float32array
                     1. float64array
+                    1. bigint64arrayconstructor
+                    1. biguint64arrayconstructor
             1. Web/API types
                 1. blob (besides HTML), file, filelist
                 1. imagedata, imagebitmap

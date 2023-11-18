@@ -17,6 +17,7 @@ import json from './json.js';
  *   type: import('../types.js').AvailableType,
  *   value: import('../formats.js').StructuredCloneValue,
  *   bringIntoFocus?: boolean,
+ *   setAValue?: boolean,
  *   schemaContent?: object,
  *   schemaState?: import('../types.js').GetPossibleSchemasForPathAndType
  * }) => HTMLElement|null} AddAndSetArrayElement
@@ -417,6 +418,12 @@ const structuredCloning = {
         typesForFormat.splice(precedingIdx + 1, 0, type);
       });
       return typesForFormat;
+    }
+    // Todo: Could we implement schemas here by introducing new keys to
+    //         `Types.contexts` which could be used rather than manual
+    //         handling to determine a delimited group of children
+    if (state === 'errorsArray') {
+      return ['error', 'errors'];
     }
     return this.types();
     /*

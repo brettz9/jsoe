@@ -537,7 +537,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
-    type, topRoot, value, bringIntoFocus = true
+    type, arrayState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
     // eslint-disable-next-line consistent-this
@@ -826,15 +826,11 @@ const arrayType = {
                     return select.$getValue();
                   });
 
-                  console.log('values1111', values);
-
                   const dupeIndex = values.findLastIndex((value, idx) => {
                     return values.some((val, index) => {
                       return idx !== index && sameValueZero(value, val);
                     });
                   });
-
-                  console.log('dupeIndex', dupeIndex);
 
                   if (dupeIndex === -1) {
                     return;
@@ -1227,7 +1223,7 @@ const arrayType = {
           topRoot: /** @type {HTMLDivElement} */ (topRoot),
           // eslint-disable-next-line object-shorthand, @stylistic/max-len -- TS
           format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-          state: type,
+          state: arrayState ?? type,
           // itemIndex,
           typeNamespace
         }).domArray),
@@ -1601,7 +1597,7 @@ const arrayType = {
           // eslint-disable-next-line @stylistic/max-len -- Long
           /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
           $addAndSetArrayElement ({
-            propName, type, value, bringIntoFocus
+            propName, type, value, bringIntoFocus, setAValue
             // , schemaContent, schemaState
           }) {
             if (parentType === 'map') {
@@ -1631,15 +1627,19 @@ const arrayType = {
             const typeChoices = this.$getTypeChoices();
             typeChoices.$setType({type, baseValue: value, bringIntoFocus});
             const root = typeChoices.$getTypeRoot();
-            // Reenable this repeated setting of value if setting within the
+            // Reapply this repeated setting of value if setting within the
             //   array is not enough for `idb-manager`! But causes problems
-            //   with running `Error.cause` type twice and is inefficient
-            // const typeObj = /** @type {import('../types.js').TypeObject} */ (
-            //   Types.availableTypes[type]
-            // );
-            // if (typeObj.setValue) {
-            //   typeObj.setValue({root, value});
-            // }
+            //   with running `Error.cause` type twice and is inefficient;
+            //   currently put behind `setAValue` as we need to set a value
+            //   from `errorsSpecialType`
+            if (setAValue) {
+              const typeObj = /** @type {import('../types.js').TypeObject} */ (
+                Types.availableTypes[type]
+              );
+              if (typeObj.setValue) {
+                typeObj.setValue({root, value});
+              }
+            }
             Types.validate({type, root, topRoot});
             return root;
           },

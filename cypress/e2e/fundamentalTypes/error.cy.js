@@ -189,6 +189,24 @@ describe('error spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Wait to load
     cy.wait(500);
     cy.get('button#viewUI').click();
+
+    cy.get(
+      '#viewUIResults > [data-type="error"] > ' +
+        '.causeHolder > button'
+    ).click();
+    cy.get(
+      '#viewUIResults > [data-type=error] > .causeHolder ' +
+        '> .causeContents'
+    ).should('be.hidden');
+
+    cy.get(
+      '#viewUIResults > [data-type="error"] > ' +
+        '.causeHolder > button'
+    ).click();
+    cy.get(
+      '#viewUIResults > [data-type=error] > .causeHolder ' +
+        '> .causeContents'
+    ).should('not.be.hidden');
   });
 
   it('gets value', function () {

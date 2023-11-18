@@ -2,6 +2,7 @@
 import {errors as errorsTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
 import {jml} from '../vendor-imports.js';
+import arrayType from '../fundamentalTypes/arrayType.js';
 
 /**
  * @typedef {number} Integer
@@ -12,7 +13,7 @@ import {jml} from '../vendor-imports.js';
  * @returns {string}
  */
 function getConstructor (obj) {
-  const str = Function.prototype.toString.call(obj.constructor);
+  const str = Function.prototype.toString.call(obj);
   return str.slice(9, str.indexOf('('));
 }
 
@@ -72,9 +73,16 @@ const errorsSpecialType = {
     return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
   },
   setValue ({root, value}) {
-    /** @type {HTMLSelectElement} */ (
-      $e(root, '.errorType')
-    ).value = getConstructor(value);
+    const errorType =
+      /**
+       * @type {HTMLSelectElement & {
+       *   $hideAggregateErrorsLabel: () => void
+       * }}
+       */ (
+        $e(root, '.errorType')
+      );
+    errorType.value = getConstructor(value.constructor);
+    errorType.$hideAggregateErrorsLabel();
 
     if (typeof value.message === 'string') {
       /** @type {HTMLInputElement} */ (
@@ -146,27 +154,18 @@ const errorsSpecialType = {
       }
 
       if (Array.isArray(value.errors)) {
-        /** @type {HTMLElement} */ ($e(root, '.aggregateErrors')).click();
-
-        const aggregateErrorsContents = /** @type {HTMLDivElement} */ ($e(
-          root, '.aggregateErrorsContents'
-        ));
-
-        value.errors.forEach((
-          /** @type {unknown} */
-          error,
-          /** @type {Integer} */
-          idx
-        ) => {
-          /** @type {import('../types.js').TypeObjectSetValue} */ (
-            this.setValue
-          )({
-            root: /** @type {HTMLDivElement} */ (
-              aggregateErrorsContents.children[idx]
-            ),
-            value: error
-          });
-        });
+        const aggregateErrors =
+          /**
+           * @type {HTMLElement & {
+           *   $emptyAggregateErrorsContents: () => void,
+           *   $populateContents: (errs: unknown[]) => void
+           * }}
+           */ (
+            $e(root, 'input.aggregateErrors')
+          );
+        aggregateErrors.click();
+        aggregateErrors.$emptyAggregateErrorsContents();
+        aggregateErrors.$populateContents(value.errors);
       }
     });
   },
@@ -198,17 +197,16 @@ const errorsSpecialType = {
       const message = /** @type {HTMLInputElement} */ (
         $e(root, 'input.message:not([type])')
       ).value;
-      if (Object.prototype.toString.call(UserErrorType) ===
-        '[object AggregateError]') {
+
+      if (getConstructor(UserErrorType) === 'AggregateError') {
         const UET = /** @type {AggregateErrorConstructor} */ (UserErrorType);
-        const errors = [...(
+        const errorRoot =
           /** @type {HTMLElement} */ ($e(
             root, '.aggregateErrorsContents'
-          )).children
-        )].map((errorRoot) => {
-          return this.getValue({
-            root: /** @type {HTMLDivElement} */ (errorRoot)
-          });
+          )).firstElementChild;
+
+        const errors = arrayType.getValue({
+          root: /** @type {HTMLDivElement} */ (errorRoot)
         });
         errObj = new UET(errors, message);
       } else {
@@ -216,17 +214,14 @@ const errorsSpecialType = {
         errObj = new UET(message);
       }
     } else {
-      if (Object.prototype.toString.call(UserErrorType) ===
-        '[object AggregateError]') {
+      if (getConstructor(UserErrorType) === 'AggregateError') {
         const UET = /** @type {AggregateErrorConstructor} */ (UserErrorType);
-        const errors = [...(
-          /** @type {HTMLElement} */ (
-            $e(root, '.aggregateErrorsContents')
-          ).children
-        )].map((errorRoot) => {
-          return this.getValue({
-            root: /** @type {HTMLDivElement} */ (errorRoot)
-          });
+        const errorRoot =
+          /** @type {HTMLElement} */ ($e(
+            root, '.aggregateErrorsContents'
+          )).firstElementChild;
+        const errors = arrayType.getValue({
+          root: /** @type {HTMLDivElement} */ (errorRoot)
         });
         errObj = new UET(errors);
       } else {
@@ -290,9 +285,9 @@ const errorsSpecialType = {
     return errObj;
   },
   viewUI (
-    {value: o, format}
+    {value: o, format, typeNamespace, resultType}
   ) {
-    const constructor = getConstructor(o);
+    const constructor = getConstructor(o.constructor);
     return /** @type {import('jamilih').JamilihArray} */ ([
       'div', {dataset: {type: 'errors'}}, [
         ['div', [['b', ['Error type: ']], ['span', [
@@ -354,19 +349,37 @@ const errorsSpecialType = {
                 ).textContent = aggregateErrorsContents.hidden ? '+' : '-';
               }}}, ['-']],
               ['div', {class: 'aggregateErrorsContents'}, [
-                ...(o.errors
-                  ? o.errors.map(
-                    (
-                      /** @type {unknown} */
-                      error
-                    ) => {
-                      return this.viewUI({
-                        format,
-                        value: error
+                (o.errors
+                  ? (() => {
+                    const [div] = arrayType.viewUI({
+                      typeNamespace, resultType, format,
+                      type: 'arrayNonindexKeys',
+                      value: []
+                    });
+
+                    /** @type {Error[]} */
+                    (o.errors).forEach((error, idx) => {
+                      /**
+                       * @type {HTMLDivElement & {
+                       *   $addAndSetArrayElement:
+                       *     import('../formats/structuredCloning.js').
+                       *   AddAndSetArrayElement
+                       * }}
+                       */
+                      (div).$addAndSetArrayElement({
+                        propName: String(idx),
+                        type: getConstructor(error.constructor) === 'Error'
+                          ? 'error'
+                          : 'errors',
+                        value: error,
+                        bringIntoFocus: false
+                        // schemaContent, schemaState
                       });
-                    }
-                  )
-                  : [])
+                    });
+                    return div;
+                  })()
+                  /* istanbul ignore next -- Just a guard */
+                  : '')
               ]]
             ]]
           ]]
@@ -374,16 +387,26 @@ const errorsSpecialType = {
       ]
     ]);
   },
-  editUI ({typeNamespace, value = {
-    message: '',
-    name: '',
-    fileName: '',
-    lineNumber: '',
-    columnNumber: '',
-    stack: '',
-    cause: undefined,
-    errors: undefined
-  }}) {
+  editUI ({
+    typeNamespace,
+
+    // Pass these to `errors` array
+    buildTypeChoices,
+    format,
+    topRoot,
+    bringIntoFocus,
+
+    value = {
+      message: '',
+      name: '',
+      fileName: '',
+      lineNumber: '',
+      columnNumber: '',
+      stack: '',
+      cause: undefined,
+      errors: undefined
+    }
+  }) {
     /**
      * @param {Event} e
      * @this {HTMLInputElement}
@@ -413,7 +436,7 @@ const errorsSpecialType = {
     if (Array.isArray(value.errors)) {
       setTimeout(() => {
         /** @type {HTMLElement} */ ($e(
-          div, '.aggregateErrors'
+          div, 'input.aggregateErrors'
         )).click();
       });
     }
@@ -427,8 +450,11 @@ const errorsSpecialType = {
             'Special error type ',
             ['select', {
               class: 'errorType',
-              $on: {
-                change () {
+              $custom: {
+                /**
+                 * @this {HTMLSelectElement}
+                 */
+                $hideAggregateErrorsLabel () {
                   const aggregateErrorsLabel =
                     /** @type {HTMLLabelElement} */ ($e(
                       /** @type {Element} */
@@ -440,12 +466,22 @@ const errorsSpecialType = {
                       this
                     ).value !== 'AggregateError';
                 }
+              },
+              $on: {
+                /**
+                 * @this {HTMLSelectElement & {
+                 *   $hideAggregateErrorsLabel: () => void
+                 * }}
+                 */
+                change () {
+                  this.$hideAggregateErrorsLabel();
+                }
               }
             }, [
               ['option', {value: ''}, ['Select an error type']],
               ...specialErrors.map((errorType) => {
                 return ['option', {
-                  selected: errorType === getConstructor(value)
+                  selected: errorType === getConstructor(value.constructor)
                     ? 'selected'
                     : undefined
                 }, [
@@ -560,7 +596,7 @@ const errorsSpecialType = {
               class: 'stack',
               name: `${typeNamespace}-errors-stack`
             }, [
-              value.stack
+              value.stack ?? ''
             ]]
           ]]
         ]],
@@ -608,15 +644,35 @@ const errorsSpecialType = {
         ]],
         ['br'],
         ['label', {class: 'aggregateErrors'}, {
-          hidden: Boolean(value.errors)
+          hidden: !value.errors
         }, [
           'Aggregate errors? ',
           ['input', {
             class: 'aggregateErrors',
             type: 'checkbox',
-            $on: {
-              click (e) {
-                click.call(/** @type {HTMLInputElement} */ (this), e);
+            $custom: {
+              /**
+               * @this {HTMLInputElement}
+               */
+              $emptyAggregateErrorsContents () {
+                const aggregateErrorsHolder = /** @type {Element} */ (
+                  /** @type {Element} */ (
+                    this.parentElement
+                  ).nextElementSibling
+                );
+                const aggregateErrorsContents = $e(
+                  aggregateErrorsHolder, '.aggregateErrorsContents'
+                );
+                while (aggregateErrorsContents?.firstChild) {
+                  aggregateErrorsContents?.firstChild.remove();
+                }
+              },
+
+              /**
+               * @param {Error[]} errors
+               * @this {HTMLInputElement}
+               */
+              $populateContents (errors) {
                 const aggregateErrorsHolder = /** @type {Element} */ (
                   /** @type {Element} */ (
                     this.parentElement
@@ -626,19 +682,58 @@ const errorsSpecialType = {
                   aggregateErrorsHolder, '.aggregateErrorsContents'
                 );
                 if (!aggregateErrorsContents?.children.length) {
-                  // @ts-expect-error Ok
-                  jml(...(value.errors.map(
-                    (
-                      /** @type {unknown} */
-                      error
-                    ) => {
-                      const editui = component.editUI({
-                        typeNamespace,
-                        value: error
-                      });
-                      return editui[0];
+                  const [editui] = arrayType.editUI({
+                    typeNamespace, buildTypeChoices, format,
+                    type: 'array',
+                    topRoot, bringIntoFocus,
+                    arrayState: 'errorsArray',
+                    value: []
+                  });
+
+                  errors.forEach((error, idx) => {
+                    /**
+                     * @type {HTMLDivElement & {
+                     *   $addAndSetArrayElement:
+                     *     import('../formats/structuredCloning.js').
+                     *   AddAndSetArrayElement
+                     * }}
+                     */
+                    (editui).$addAndSetArrayElement({
+                      propName: String(idx),
+                      type: getConstructor(error.constructor) === 'Error'
+                        ? 'error'
+                        : 'errors',
+                      value: error,
+                      bringIntoFocus: false,
+                      setAValue: true
+                      // schemaContent, schemaState
+                    });
+                  });
+
+                  jml(editui, aggregateErrorsContents);
+                }
+              }
+            },
+            $on: {
+              click (e) {
+                click.call(/** @type {HTMLInputElement} */ (this), e);
+                const that =
+                  /**
+                  * @type {HTMLInputElement & {
+                  *   $populateContents: (errs: unknown[]) => void
+                  * }}
+                  */
+                  (this);
+                if (value.errors) {
+                  (that).$populateContents(value.errors);
+                } else {
+                  (that).$populateContents([
+                    {
+                      message: '',
+                      name: '',
+                      stack: ''
                     }
-                  )), aggregateErrorsContents);
+                  ]);
                 }
               }
             }

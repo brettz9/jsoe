@@ -1,7 +1,9 @@
 import Types, {
   getPropertyValueFromLegend
 } from '../../../instrumented/types.js';
-// import dialogs from '../../../src/types.js'; // Test Cypress
+// import Types, {
+//   getPropertyValueFromLegend
+// } from '../../../src/types.js'; // Test Cypress TS
 
 describe('`getPropertyValueFromLegend`', function () {
   beforeEach(() => {
