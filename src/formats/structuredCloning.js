@@ -245,9 +245,6 @@ const encapsulateObserver = (stateObj) => {
       }
 
       if (!readonly) {
-        // Todo: Redundant with `typeObj.setValue`? Ensure `idb-manager`
-        //    does not need both; this write-only would seem preferable
-        //    to the block in `arrayType.js` if readonly indeed not needed
         Types.setValue({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS

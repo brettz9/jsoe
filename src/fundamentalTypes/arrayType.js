@@ -1627,9 +1627,8 @@ const arrayType = {
             const typeChoices = this.$getTypeChoices();
             typeChoices.$setType({type, baseValue: value, bringIntoFocus});
             const root = typeChoices.$getTypeRoot();
-            // Reapply this repeated setting of value if setting within the
-            //   array is not enough for `idb-manager`! But causes problems
-            //   with running `Error.cause` type twice and is inefficient;
+            // If run for all, causes problems with running `Error.cause`
+            //   type twice and is inefficient;
             //   currently put behind `setAValue` as we need to set a value
             //   from `errorsSpecialType`
             if (setAValue) {
