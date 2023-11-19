@@ -1,8 +1,8 @@
 # CHANGES TO `@es-joy/jsoe`
 
-## ?
+## 0.6.0
 
-- feat: add `set`, `map`, and `error` types
+- feat: add `set`, `map`, `error`, and special error types
 - fix: ensure `Types.getTypeForRoot` always returns a string
 - fix: ensure Blob textarea is independent per instance
 
