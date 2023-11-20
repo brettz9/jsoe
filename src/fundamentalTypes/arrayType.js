@@ -1389,16 +1389,15 @@ const arrayType = {
            * @this {HTMLDivElement}
            */
           $getArrayItems () {
-            return (/**
-               * @type {HTMLDivElement & {
-               *   $inputsExceedingLength: InputsExceedingLength,
-               *   $getPropertyInputs: GetPropertyInputs,
-               *   $redrawMoveArrows: RedrawMoveArrows,
-               *   $getMapKeySelects: GetMapKeySelects
-               * }}
-               */
-              (this.previousElementSibling)
-            );
+            const prevSibling = /**
+             * @type {HTMLDivElement & {
+             *   $inputsExceedingLength: InputsExceedingLength,
+             *   $getPropertyInputs: GetPropertyInputs,
+             *   $redrawMoveArrows: RedrawMoveArrows,
+             *   $getMapKeySelects: GetMapKeySelects
+             * }}
+             */ (this.previousElementSibling);
+            return prevSibling;
           }
         },
         $on: {click () {

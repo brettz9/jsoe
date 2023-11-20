@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.6.1
+
+- refactor: avoid problems for instrumenter
+
 ## 0.6.0
 
 - feat: add `set`, `map`, `error`, and special error types
