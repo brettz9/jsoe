@@ -34,6 +34,7 @@ import SpecialRealNumberSuperType from
 import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
 import errorType from './fundamentalTypes/errorType.js';
 import errorsSpecialType from './superTypes/errorsSpecialType.js';
+import fileType from './fundamentalTypes/fileType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -383,9 +384,7 @@ Types.availableTypes = {
   map: mapType,
   set: setType,
 
-  file: {
-    option: ['File']
-  },
+  file: fileType,
   filelist: {
     option: ['FileList']
   },

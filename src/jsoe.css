@@ -2,6 +2,43 @@ input:invalid {
   background-color: pink;
 }
 
+b.emphasis {
+  text-decoration: underline;
+}
+
+iframe.PDF {
+  width: 800px;
+  height: 500px;
+}
+
+img.imageView, video.video, audio.audio {
+  max-width: 700px;
+  max-height: 500px;
+}
+
+video.previewMedia {
+  float: left;
+  width: 500px;
+}
+
+div.recordedMedia {
+  float: left;
+  width: 500px;
+}
+
+video.recordedMedia {
+  max-width: 500px;
+}
+
+.view-binary, .view-text {
+  width: 300px;
+  height: 300px;
+}
+
+.visualizer {
+  height: 60px;
+}
+
 [data-type="undef"] {
   background-color: green;
 }
@@ -54,6 +91,10 @@ input:invalid {
 }
 [data-type="error"], [data-type="errors"] {
   background-color: red;
+}
+
+[data-type="file"] {
+  background-color: beige;
 }
 
 [class^="propertyName-"] {

@@ -1,6 +1,6 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./src/index.js",
@@ -95,7 +95,8 @@
     "rollup": "4.5.0",
     "rollup-plugin-istanbul": "^5.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "webappfind-demos-samples": "^0.7.0"
   },
   "repository": {
     "type": "git",

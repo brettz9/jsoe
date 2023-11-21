@@ -333,7 +333,11 @@ setTimeout(async function () {
           error2,
           error3,
           typeError,
-          errAggregate
+          errAggregate,
+          new File(['abc'], 'someName', {
+            lastModified: 1231231230,
+            type: 'text/plain'
+          })
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
@@ -385,13 +389,24 @@ setTimeout(async function () {
         typeNamespace: 'demo-type-choices-only-initial-value-ErrorsAggregate'
       });
 
+      const typeSelectionFile = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: new File(['abc'], 'anotherName', {
+          lastModified: 1231231230,
+          type: 'text/plain'
+        }),
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
       return ['form', [
         ...typeSelection.domArray,
         ...typeSelectionBlob.domArray,
         ...typeSelectionErrorWithCause.domArray,
         ...typeSelectionIndexedDBKey.domArray,
         ...typeSelectionTypeErrorWithCause.domArray,
-        ...typeSelectionTypeErrorWithAggregate.domArray
+        ...typeSelectionTypeErrorWithAggregate.domArray,
+        ...typeSelectionFile.domArray
       ]];
     })(),
 

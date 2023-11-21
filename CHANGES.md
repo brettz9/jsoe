@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.7.0
+
+- feat: add `file` type including video, audio, photo, and
+   screen sharing recording
+
 ## 0.6.1
 
 - refactor: avoid problems for instrumenter

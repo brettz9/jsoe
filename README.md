@@ -32,6 +32,7 @@ Supported types include:
 - `Error`
 - `TypeError`, `RangeError`, `SyntaxError`, `ReferenceError`, `EvalError`,
     `URIError`, `AggregateError`, `InternalError`
+- `File`
 - `Map`
 - `null`
 - `Number` object
@@ -102,10 +103,21 @@ Supported supertypes include:
                     1. bigint64arrayconstructor
                     1. biguint64arrayconstructor
             1. Web/API types
-                1. blob (besides HTML), file, filelist
+                1. blob (besides HTML, including SVG), filelist
                 1. imagedata, imagebitmap
+            1. Our own custom derivative types (e.g., MIDI using TypedArray)
 1. Expand subtypes
-    1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
-        subtype of `string`, color as a subtype of string)
+    1. String
+        1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
+            subtype of `string`, color as a subtype of string)
+    1. `File`
+        1. Drawing image for `image/png`, etc. `File`'s
+        1. Drawing SVG program for `application/svg` `File`
+        1. JS/CSS/HTML/XML/Markdown/JSON/CSV/text text editor (including
+            syntax highlighting in view mode); with text-to-speech
+        1. OCR (`TextDetector` API if implemented) added as image pop-up
+            utility
 1. Might put views and data into separate repos
 1. Implement as Custom Elements?
+1. Add drag-and-drop support for `File` type
+1. Import CSV as array

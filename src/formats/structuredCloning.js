@@ -458,10 +458,11 @@ const structuredCloning = {
       'error',
       'errors',
       'blobHTML',
+      'file',
       'set',
       'map'
       // Ok, but will need some work
-      //     'blob', 'file', 'filelist',
+      //     'blob', 'filelist',
       //     'arraybuffer',
       //     'dataview', 'imagedata', 'imagebitmap',
       /*

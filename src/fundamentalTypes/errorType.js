@@ -173,6 +173,7 @@ const errorType = {
   ) {
     return /** @type {import('jamilih').JamilihArray} */ ([
       'div', {dataset: {type: 'error'}}, [
+        ['b', {class: 'emphasis'}, ['Error']],
         typeof o.message === 'string'
           ? ['div', [['b', ['Message: ']], ['span', [o.message]]]]
           : [],
