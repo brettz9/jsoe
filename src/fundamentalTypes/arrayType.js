@@ -1691,7 +1691,7 @@ const arrayType = {
             //    invalid date checkbox; is this sufficient to prevent
             //    other stray clicks apparently meant for the array
             //    and object reference checking?
-            if (target.type !== 'checkbox' && target.type !== 'radio') {
+            if (!['checkbox', 'radio', 'file'].includes(target.type)) {
               e.preventDefault();
             }
           }

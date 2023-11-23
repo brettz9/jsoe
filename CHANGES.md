@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.7.1
+
+- feat: fix bug with `file` in array/object context not triggering file
+    picker
+
 ## 0.7.0
 
 - feat: add `file` type including video, audio, photo, and
