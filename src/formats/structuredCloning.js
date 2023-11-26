@@ -459,8 +459,14 @@ const structuredCloning = {
       'file',
       'set',
       'map'
-      // Ok, but will need some work
-      //     'filelist',
+      // 'filelist'
+      // Ok:
+      // 'cryptokey',
+      // 'domexception',
+      // 'domrect',
+      // 'dompoint',
+      // 'dommatrix',
+      // Ok, but will need some work/decisions on how to present:
       //     'arraybuffer',
       //     'dataview', 'imagedata', 'imagebitmap',
       /*

@@ -106,7 +106,12 @@ Supported supertypes include:
             1. Web/API types
                 1. filelist
                 1. imagedata, imagebitmap
-            1. Our own custom derivative types (e.g., MIDI using TypedArray)
+                1. cryptokey
+                1. domexception
+                1. domrect
+                1. dompoint
+                1. dommatrix
+            1. Our own custom derivative types? (e.g., MIDI using TypedArray)
 1. Expand subtypes
     1. String
         1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
