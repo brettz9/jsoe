@@ -129,10 +129,59 @@ function getDateString (timestamp) {
 }
 
 /**
+ * @param {HTMLButtonElement & {$value: File}} viewBinary
+ * @param {{
+ *   stringContents?: string,
+ *   name?: string,
+ *   type?: string,
+ *   lastModified?: number
+ * }} value
+ * @returns {void}
+ */
+function newFileForBinary (viewBinary, value) {
+  const oldFile = /** @type {File|undefined} */ (
+    viewBinary.$value
+  );
+  // We actually want to allow creating `File`'s from scratch
+  // if (
+  //   !oldFile ||
+  //   Object.prototype.toString.call(
+  //     oldFile
+  //   ).slice(8, -1) !== 'File'
+  // ) {
+  //   return false;
+  // }
+  const file = new File(
+    [
+      value.stringContents === undefined
+        ? oldFile && Object.prototype.toString.call(
+          oldFile
+        ).slice(8, -1) === 'File'
+          ? oldFile
+          : ''
+        : value.stringContents
+    ],
+    value.name === undefined
+      ? oldFile?.name ?? ''
+      : value.name,
+    {
+      type: value.type === undefined
+        ? oldFile?.type ?? ''
+        : value.type,
+      lastModified: value.lastModified === undefined
+        ? oldFile?.lastModified ?? 0
+        : value.lastModified
+    }
+  );
+  viewBinary.$value = file;
+}
+
+/**
  * @param {File} value
+ * @param {boolean} [editable]
  * @returns {import('jamilih').JamilihArray}
  */
-function binaryButton (value) {
+function binaryButton (value, editable) {
   // @ts-expect-error It's ok
   return ['button', /** @type {import('jamilih').JamilihAttributes} */ ({
     class: 'viewBinary',
@@ -145,27 +194,49 @@ function binaryButton (value) {
        * @param {Event} e
        */
       click (e) {
+        // eslint-disable-next-line consistent-this -- Clarity
+        const viewBinary = this;
         e.preventDefault();
         if (
           !this.$value ||
           Object.prototype.toString.call(this.$value).slice(8, -1) !== 'File'
         ) {
-          dialogs.alert(
-            'There is no file chosen with binary data'
-          );
-          return;
+          // Non-editable shouldn't be empty
+          // if (!editable) {
+          //   dialogs.alert(
+          //     'There is no file chosen with binary data'
+          //   );
+          //   return;
+          // }
+
+          newFileForBinary(viewBinary, {});
         }
         const reader = new FileReader();
         reader.addEventListener('load', async function () {
-          await dialogs.alert({
-            message: ['div', [
-              'Binary source',
-              ['br'],
-              ['textarea', {class: 'view-binary'}, [
-                /* c8 ignore next */
-                /** @type {string|null} */ (reader.result) ?? ''
-              ]]
-            ]]
+          const dialog = await dialogs.makeSubmitDialog({
+            submitText: 'Save',
+            submit () {
+              const textarea = /** @type {HTMLTextAreaElement} */ (
+                $e(dialog, '.view-binary')
+              );
+              newFileForBinary(viewBinary, {
+                stringContents: textarea.value
+              });
+              dialog.close();
+            },
+            // @ts-expect-error TS bug
+            children: [
+              ['div', /** @type {import('jamilih').JamilihChildren} */ ([
+                'Binary source',
+                ['br'],
+                ['textarea', {
+                  class: 'view-binary'
+                }, [
+                  /* c8 ignore next */
+                  /** @type {string|null} */ (reader.result) ?? ''
+                ]]
+              ])]
+            ]
           });
         });
         // Seems not feasible to accurately simulate
@@ -183,7 +254,11 @@ function binaryButton (value) {
         reader.readAsBinaryString(this.$value);
       }
     }
-  }), ['View binary data']];
+  }), [
+    editable
+      ? 'Edit binary data'
+      : 'View binary data'
+  ]];
 }
 
 /**
@@ -443,7 +518,7 @@ const fileType = {
 
             /** @type {HTMLButtonElement & {$value: File|undefined}} */ ($e(
               metadataFieldset,
-              '.viewBinary'
+              'button.viewBinary'
             )).$value = typeof file.lastModified === 'number'
               ? /** @type {File} */ (file)
               : undefined;
@@ -465,30 +540,12 @@ const fileType = {
                     $e(
                       /** @type {HTMLElement} */
                       (this.parentElement?.parentElement),
-                      '.viewBinary'
+                      'button.viewBinary'
                     )
                   );
-                const oldFile = /** @type {File|undefined} */ (
-                  viewBinary.$value
-                );
-                if (
-                  !oldFile ||
-                  Object.prototype.toString.call(
-                    oldFile
-                  ).slice(8, -1) !== 'File'
-                ) {
-                  return;
-                }
-                const newName = /** @type {HTMLInputElement} */ (this).value;
-                const file = new File(
-                  [oldFile],
-                  newName,
-                  {
-                    type: oldFile.type,
-                    lastModified: oldFile.lastModified
-                  }
-                );
-                viewBinary.$value = file;
+                newFileForBinary(viewBinary, {
+                  name: /** @type {HTMLInputElement} */ (this).value
+                });
               }
             }
           }]
@@ -515,31 +572,15 @@ const fileType = {
                     $e(
                       /** @type {HTMLElement} */
                       (this.parentElement?.parentElement),
-                      '.viewBinary'
+                      'button.viewBinary'
                     )
                   );
-                const oldFile = /** @type {File|undefined} */ (
-                  viewBinary.$value
-                );
-                if (
-                  !oldFile ||
-                  Object.prototype.toString.call(
-                    oldFile
-                  ).slice(8, -1) !== 'File'
-                ) {
-                  return;
-                }
+
                 const newContentType =
                   /** @type {HTMLInputElement} */ (this).value;
-                const file = new File(
-                  [oldFile],
-                  oldFile.name,
-                  {
-                    type: newContentType,
-                    lastModified: oldFile.lastModified
-                  }
-                );
-                viewBinary.$value = file;
+                newFileForBinary(viewBinary, {
+                  type: newContentType
+                });
               }
             }
           }]
@@ -548,14 +589,35 @@ const fileType = {
         ['label', [
           'Last modified date ',
           ['input', {
-            type: 'datetime-local', disabled: true, class: 'lastModified',
+            type: 'datetime-local', class: 'lastModified',
+            step: 0.001,
             value: value.lastModified
               ? getDateString(value.lastModified)
-              : undefined
+              : undefined,
+            $on: {
+              change () {
+                const viewBinary =
+                  /**
+                   * @type {HTMLButtonElement & {$value: File}}
+                   */ (
+                    $e(
+                      /** @type {HTMLElement} */
+                      (this.parentElement?.parentElement),
+                      'button.viewBinary'
+                    )
+                  );
+
+                const newLastModified =
+                  /** @type {HTMLInputElement} */ (this).value;
+                newFileForBinary(viewBinary, {
+                  lastModified: new Date(newLastModified).getTime()
+                });
+              }
+            }
           }]
         ]],
         ['br'],
-        binaryButton(value),
+        binaryButton(value, true),
         ['button', {
           class: 'clearData',
           $on: {

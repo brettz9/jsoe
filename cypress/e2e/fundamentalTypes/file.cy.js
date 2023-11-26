@@ -62,9 +62,9 @@ describe('file spec', () => {
 
     cy.get(sel + '.viewBinary').click();
 
-    cy.get('dialog[open]').should(
-      'contain', 'There is no file chosen with binary data'
-    );
+    cy.get('dialog[open] .view-binary').should(($textarea) => {
+      expect($textarea.val()).to.equal('');
+    });
   });
 
   it('allows selection of local file and changing of file name', function () {
@@ -103,6 +103,51 @@ describe('file spec', () => {
   );
 
   it(
+    'allows selection of local file and changing of modified date',
+    function () {
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'file'
+      );
+
+      cy.get(sel + 'input[name="demo-keypath-not-expected-file"]').selectFile(
+        'package.json'
+      );
+
+      cy.clearTypeAndBlur(
+        sel + '.lastModified',
+        '1999-01-01T01:01:01.001'
+      );
+
+      cy.get('button#viewUI').click();
+      cy.get('#viewUIResults').should('contain', '1999-01-01T01:01:01.001');
+    }
+  );
+
+  it(
+    'allows selection of local file and changing of contents',
+    function () {
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'file'
+      );
+
+      cy.get(sel + 'input[name="demo-keypath-not-expected-file"]').selectFile(
+        'package.json'
+      );
+
+      cy.get(sel + '.viewBinary').click();
+
+      cy.clearTypeAndBlur('dialog[open] .view-binary', 'some text');
+
+      cy.get('dialog[open] button.submit').click();
+
+      cy.get('button#viewUI').click();
+      cy.get('#viewUIResults').should('contain', 'some text');
+    }
+  );
+
+  it(
     'allows selection of local file and content type', function () {
       const sel = '#formatAndTypeChoices ';
       cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -113,9 +158,9 @@ describe('file spec', () => {
       cy.clearTypeAndBlur(sel + '.contentType', 'text/json');
 
       cy.get(sel + '.viewBinary').click();
-      cy.get('dialog[open]').should(
-        'contain', 'There is no file chosen with binary data'
-      );
+      cy.get('dialog[open] .view-binary').should(($textarea) => {
+        expect($textarea.val()).to.equal('');
+      });
     }
   );
 

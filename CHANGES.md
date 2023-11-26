@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.8.0
+
+- feat: make `File` fully editable (also by modified date or
+    string contents or if by scratch)
+
 ## 0.7.1
 
 - feat: fix bug with `file` in array/object context not triggering file

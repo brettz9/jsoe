@@ -99,11 +99,12 @@ const dialogs = {
   /**
    * @param {object} cfg
    * @param {(info: {e: Event, dialog: HTMLDialogElement}) => void} cfg.submit
+   * @param {string} [cfg.submitText]
    * @param {string} [cfg.submitClass]
    * @param {MakeCancelArgs} [cfg.args]
    * @returns {HTMLDialogElement}
    */
-  makeSubmitDialog ({submit, submitClass = 'submit', ...args}) {
+  makeSubmitDialog ({submit, submitText, submitClass = 'submit', ...args}) {
     const dialog = this.makeCancelDialog(/** @type {MakeCancelArgs} */ (args));
     $e(dialog, `button.${/** @type {MakeCancelArgs} */ (
       args
@@ -116,7 +117,7 @@ const dialogs = {
             submit.call(this, {e: /** @type {Event} */ (e), dialog});
           }
         }
-      }, [this.localeStrings.submit]),
+      }, [submitText ?? this.localeStrings.submit]),
       nbsp.repeat(2)
     );
     return dialog;
