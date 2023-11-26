@@ -97,6 +97,10 @@ video.recordedMedia {
   background-color: beige;
 }
 
+[data-type="blob"] {
+  background-color: lightgray;
+}
+
 [class^="propertyName-"] {
   background-color: yellow;
 }

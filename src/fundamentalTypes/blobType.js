@@ -4,80 +4,58 @@ import {visualize, getUserMedia, startScreenCapture} from '../utils/media.js';
 import dialogs from '../utils/dialogs.js';
 
 /**
- * @typedef {File|{
- *   name: string, size: string, type: string,
- *   lastModified: string
- * }} FileInfo
+ * @typedef {Blob|{
+ *   size: string, type: string
+ * }} BlobInfo
  */
 
 /**
- * @typedef {(file: FileInfo) => void} SetValue
+ * @typedef {(blob: BlobInfo) => void} SetValue
  */
 
 /**
- * @param {number} timestamp
- * @returns {string}
- */
-function getDateString (timestamp) {
-  const d = new Date(timestamp);
-  const dateTimeLocalValue = (
-    new Date(
-      d.getTime() - (d.getTimezoneOffset() * 60000)
-    ).toISOString()
-  ).slice(0, -1);
-  return dateTimeLocalValue;
-}
-
-/**
- * @param {HTMLButtonElement & {$value: File}} viewBinary
+ * @param {HTMLButtonElement & {$value: Blob}} viewBinary
  * @param {{
  *   stringContents?: string,
  *   name?: string,
- *   type?: string,
- *   lastModified?: number
+ *   type?: string
  * }} value
  * @returns {void}
  */
-function newFileForBinary (viewBinary, value) {
-  const oldFile = /** @type {File|undefined} */ (
+function newBlobForBinary (viewBinary, value) {
+  const oldBlob = /** @type {Blob|undefined} */ (
     viewBinary.$value
   );
-  // We actually want to allow creating `File`'s from scratch
+  // We actually want to allow creating `Blob`'s from scratch
   // if (
-  //   !oldFile ||
+  //   !oldBlob ||
   //   Object.prototype.toString.call(
-  //     oldFile
-  //   ).slice(8, -1) !== 'File'
+  //     oldBlob
+  //   ).slice(8, -1) !== 'Blob'
   // ) {
   //   return false;
   // }
-  const file = new File(
+  const blob = new Blob(
     [
       value.stringContents === undefined
-        ? oldFile && Object.prototype.toString.call(
-          oldFile
-        ).slice(8, -1) === 'File'
-          ? oldFile
+        ? oldBlob && Object.prototype.toString.call(
+          oldBlob
+        ).slice(8, -1) === 'Blob'
+          ? oldBlob
           : ''
         : value.stringContents
     ],
-    value.name === undefined
-      ? oldFile?.name ?? ''
-      : value.name,
     {
       type: value.type === undefined
-        ? oldFile?.type ?? ''
-        : value.type,
-      lastModified: value.lastModified === undefined
-        ? oldFile?.lastModified ?? 0
-        : value.lastModified
+        ? oldBlob?.type ?? ''
+        : value.type
     }
   );
-  viewBinary.$value = file;
+  viewBinary.$value = blob;
 }
 
 /**
- * @param {File} value
+ * @param {Blob} value
  * @param {boolean} [editable]
  * @returns {import('jamilih').JamilihArray}
  */
@@ -90,7 +68,7 @@ function binaryButton (value, editable) {
     },
     $on: {
       /**
-       * @this {HTMLButtonElement & {$value: File}}
+       * @this {HTMLButtonElement & {$value: Blob}}
        * @param {Event} e
        */
       click (e) {
@@ -99,17 +77,17 @@ function binaryButton (value, editable) {
         e.preventDefault();
         if (
           !this.$value ||
-          Object.prototype.toString.call(this.$value).slice(8, -1) !== 'File'
+          Object.prototype.toString.call(this.$value).slice(8, -1) !== 'Blob'
         ) {
           // Non-editable shouldn't be empty
           // if (!editable) {
           //   dialogs.alert(
-          //     'There is no file chosen with binary data'
+          //     'There is no blob chosen with binary data'
           //   );
           //   return;
           // }
 
-          newFileForBinary(viewBinary, {});
+          newBlobForBinary(viewBinary, {});
         }
         const reader = new FileReader();
         reader.addEventListener('load', async function () {
@@ -119,7 +97,7 @@ function binaryButton (value, editable) {
               const textarea = /** @type {HTMLTextAreaElement} */ (
                 $e(dialog, '.view-binary')
               );
-              newFileForBinary(viewBinary, {
+              newBlobForBinary(viewBinary, {
                 stringContents: textarea.value
               });
               dialog.close();
@@ -164,14 +142,13 @@ function binaryButton (value, editable) {
 /**
  * @type {import('../types.js').TypeObject}
  */
-const fileType = {
-  option: ['File'],
-  stringRegex: /^File\((.*)\)$/u,
+const blobType = {
+  option: ['Blob'],
+  stringRegex: /^Blob\((.*)\)$/u,
   toValue (s) {
     const obj = JSON.parse(s);
-    return {value: new File([obj.stringContents], obj.name, {
-      type: obj.type,
-      lastModified: obj.lastModified
+    return {value: new Blob([obj.stringContents], {
+      type: obj.type
     })};
   },
   getInput ({root}) {
@@ -179,26 +156,21 @@ const fileType = {
   },
   setValue ({root, value}) {
     /** @type {HTMLFieldSetElement & {$setValue: SetValue}} */
-    ($e(root, 'fieldset.fileMetaData')).$setValue(value);
+    ($e(root, 'fieldset.blobMetaData')).$setValue(value);
   },
   getValue ({root}) {
     // Get value attached to DOM element rather than input,
-    //    so can be from preexisting file too
-    return /** @type {HTMLButtonElement & {$value: File}} */ (
+    //    so can be from preexisting blob too
+    return /** @type {HTMLButtonElement & {$value: Blob}} */ (
       this.getInput({root})
     ).$value;
   },
   viewUI ({value}) {
-    return ['div', {dataset: {type: 'file'}}, [
+    return ['div', {dataset: {type: 'blob'}}, [
       ['b', {class: 'emphasis'}, [
-        'File'
+        'Blob'
       ]],
       ['br'],
-      ['br'],
-      ['b', [
-        'Name '
-      ]],
-      value.name,
       ['br'],
       ['b', [
         'Size (in bytes) '
@@ -209,11 +181,6 @@ const fileType = {
         'Content type '
       ]],
       value.type,
-      ['br'],
-      ['b', [
-        'Last modified date '
-      ]],
-      getDateString(value.lastModified),
       ['br'],
       value.type.startsWith('text/') || value.type === 'application/json'
         ? (() => {
@@ -381,76 +348,43 @@ const fileType = {
     ]];
   },
   editUI ({typeNamespace, value = {}}) {
-    // Todo: Could add way to preview file in edit mode (whether
+    // Todo: Could add way to preview blob in edit mode (whether
     //         recorded or uploaded)
-    return ['div', {dataset: {type: 'file'}}, [
+    return ['div', {dataset: {type: 'blob'}}, [
       ['fieldset', {
-        class: 'fileMetaData',
+        class: 'blobMetaData',
         $custom: {
           /**
            * @this {HTMLFieldSetElement}
-           * @param {FileInfo} file
+           * @param {BlobInfo} blob
            */
-          $setValue (file) {
+          $setValue (blob) {
             // eslint-disable-next-line consistent-this -- Clarity
             const metadataFieldset = this;
-            /** @type {HTMLInputElement} */ ($e(
-              metadataFieldset,
-              '.fileName'
-            )).value = file.name;
 
             /** @type {HTMLInputElement} */ ($e(
               metadataFieldset,
               '.size'
-            )).value = String(file.size);
+            )).value = String(blob.size);
 
             /** @type {HTMLInputElement} */ ($e(
               metadataFieldset,
               '.contentType'
-            )).value = file.type;
+            )).value = blob.type;
 
-            /** @type {HTMLInputElement} */ ($e(
-              metadataFieldset,
-              '.lastModified'
-            )).value = typeof file.lastModified === 'number'
-              ? getDateString(file.lastModified)
-              : '';
-
-            /** @type {HTMLButtonElement & {$value: File|undefined}} */ ($e(
+            /** @type {HTMLButtonElement & {$value: Blob|undefined}} */ ($e(
               metadataFieldset,
               'button.viewBinary'
-            )).$value = typeof file.lastModified === 'number'
-              ? /** @type {File} */ (file)
+            )).$value = Object.prototype.toString.call(
+              blob
+            ).slice(8, -1) === 'Blob'
+              ? /** @type {Blob} */ (blob)
+              /* c8 ignore next */
               : undefined;
           }
         }
       }, [
-        ['legend', ['Current file data']],
-        ['label', [
-          'Name ',
-          ['input', {
-            size: 50,
-            class: 'fileName', value: value.name ?? '',
-            $on: {
-              change () {
-                const viewBinary =
-                  /**
-                   * @type {HTMLButtonElement & {$value: File}}
-                   */ (
-                    $e(
-                      /** @type {HTMLElement} */
-                      (this.parentElement?.parentElement),
-                      'button.viewBinary'
-                    )
-                  );
-                newFileForBinary(viewBinary, {
-                  name: /** @type {HTMLInputElement} */ (this).value
-                });
-              }
-            }
-          }]
-        ]],
-        ['br'],
+        ['legend', ['Current blob data']],
         ['label', [
           'Size (in bytes) ',
           ['input', {
@@ -467,7 +401,7 @@ const fileType = {
               change () {
                 const viewBinary =
                   /**
-                   * @type {HTMLButtonElement & {$value: File}}
+                   * @type {HTMLButtonElement & {$value: Blob}}
                    */ (
                     $e(
                       /** @type {HTMLElement} */
@@ -478,39 +412,8 @@ const fileType = {
 
                 const newContentType =
                   /** @type {HTMLInputElement} */ (this).value;
-                newFileForBinary(viewBinary, {
+                newBlobForBinary(viewBinary, {
                   type: newContentType
-                });
-              }
-            }
-          }]
-        ]],
-        ['br'],
-        ['label', [
-          'Last modified date ',
-          ['input', {
-            type: 'datetime-local', class: 'lastModified',
-            step: 0.001,
-            value: value.lastModified
-              ? getDateString(value.lastModified)
-              : undefined,
-            $on: {
-              change () {
-                const viewBinary =
-                  /**
-                   * @type {HTMLButtonElement & {$value: File}}
-                   */ (
-                    $e(
-                      /** @type {HTMLElement} */
-                      (this.parentElement?.parentElement),
-                      'button.viewBinary'
-                    )
-                  );
-
-                const newLastModified =
-                  /** @type {HTMLInputElement} */ (this).value;
-                newFileForBinary(viewBinary, {
-                  lastModified: new Date(newLastModified).getTime()
                 });
               }
             }
@@ -526,10 +429,8 @@ const fileType = {
               /**
                * @type {HTMLFieldSetElement & {$setValue: SetValue}}
                */ (this.parentElement).$setValue({
-                name: '',
                 size: '',
-                type: '',
-                lastModified: ''
+                type: ''
               });
             }
           }
@@ -538,9 +439,9 @@ const fileType = {
         ]]
       ]],
       ['fieldset', [
-        ['legend', ['Supply file through upload']],
+        ['legend', ['Supply blob through upload']],
         ['label', [
-          'File ',
+          'Blob ',
           // @ts-expect-error It's ok
           ['input', /** @type {import('jamilih').JamilihAttributes} */ ({
             $on: {
@@ -554,6 +455,10 @@ const fileType = {
                 }
                 const file = this.files[0];
 
+                const blob = new Blob([file], {
+                  type: file.type
+                });
+
                 const metadataFieldset =
                   /**
                    * @type {HTMLFieldSetElement & {
@@ -562,16 +467,16 @@ const fileType = {
                    */ (/** @type {HTMLElement} */ (
                     this.parentElement?.parentElement
                   )?.previousElementSibling);
-                metadataFieldset.$setValue(file);
+                metadataFieldset.$setValue(blob);
               }
             },
-            name: `${typeNamespace}-file`, type: 'file'
+            name: `${typeNamespace}-blob`, type: 'file'
           })]
         ]]
       ]],
       ['fieldset', [
         ['legend', [
-          'Supply file through recording'
+          'Supply blob through recording'
         ]],
         (() => {
           const select = /** @type {HTMLSelectElement} */ (
@@ -890,22 +795,15 @@ const fileType = {
                     URL.revokeObjectURL(url);
                   });
 
-                  const file = new File(
-                    [blob],
-                    'placeholder.webm',
-                    {type: mimeType}
-                  );
-                  console.log('file', file);
-
                   const root = /** @type {HTMLDivElement} */
-                    (this.closest('[data-type="file"]'));
+                    (this.closest('[data-type="blob"]'));
                   /**
                    * @type {HTMLFieldSetElement & {
                    *   $setValue: SetValue
                    * }}
                    */ ($e(
-                    root, 'fieldset.fileMetaData'
-                  )).$setValue(file);
+                    root, 'fieldset.blobMetaData'
+                  )).$setValue(blob);
 
                   chunks = [];
                 });
@@ -1017,22 +915,15 @@ const fileType = {
                     URL.revokeObjectURL(url);
                   });
 
-                  const file = new File(
-                    [blob],
-                    'placeholder.png',
-                    {type: blob.type}
-                  );
-                  console.log('file', file);
-
                   const root = /** @type {HTMLDivElement} */
-                    (this.closest('[data-type="file"]'));
+                    (this.closest('[data-type="blob"]'));
                   /**
                    * @type {HTMLFieldSetElement & {
                    *   $setValue: SetValue
                    * }}
                    */ ($e(
-                    root, 'fieldset.fileMetaData'
-                  )).$setValue(file);
+                    root, 'fieldset.blobMetaData'
+                  )).$setValue(blob);
 
                   newPhoto.src = url;
                   photo.replaceWith(newPhoto);
@@ -1040,7 +931,7 @@ const fileType = {
               }
             }
           }, [
-            'Take and use snapshot as file'
+            'Take and use snapshot as blob'
           ]]
         ]],
         ['div', {class: 'videoContainer', hidden: true}, [
@@ -1107,4 +998,4 @@ const fileType = {
   }
 };
 
-export default fileType;
+export default blobType;

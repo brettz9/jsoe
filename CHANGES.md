@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.9.0
+
+- feat: add `blob` type
+
 ## 0.8.1
 
 - feat: fix bug with `file` in array/object context not triggering file

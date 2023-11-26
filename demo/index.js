@@ -337,12 +337,15 @@ setTimeout(async function () {
           new File(['abc'], 'someName', {
             lastModified: 1231231230,
             type: 'text/plain'
+          }),
+          new Blob(['abc'], {
+            type: 'text/plain'
           })
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 
-      const typeSelectionBlob = typeChoices({
+      const typeSelectionBlobHTML = typeChoices({
         format: 'structuredCloning',
         setValue: true,
         value: new Blob(['<b>Testing</b>'], {type: 'text/html'}),
@@ -399,14 +402,24 @@ setTimeout(async function () {
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 
+      const typeSelectionBlob = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: new Blob(['abc'], {
+          type: 'text/plain'
+        }),
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
       return ['form', [
         ...typeSelection.domArray,
-        ...typeSelectionBlob.domArray,
+        ...typeSelectionBlobHTML.domArray,
         ...typeSelectionErrorWithCause.domArray,
         ...typeSelectionIndexedDBKey.domArray,
         ...typeSelectionTypeErrorWithCause.domArray,
         ...typeSelectionTypeErrorWithAggregate.domArray,
-        ...typeSelectionFile.domArray
+        ...typeSelectionFile.domArray,
+        ...typeSelectionBlob.domArray
       ]];
     })(),
 

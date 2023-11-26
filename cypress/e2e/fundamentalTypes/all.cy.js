@@ -11,6 +11,7 @@ import './array.cy.js';
 import './arrayReference.cy.js';
 import './error.cy.js';
 import './file.cy.js';
+import './blob.cy.js';
 
 import './BooleanObject.cy.js';
 import './NumberObject.cy.js';

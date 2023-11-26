@@ -35,6 +35,7 @@ import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
 import errorType from './fundamentalTypes/errorType.js';
 import errorsSpecialType from './superTypes/errorsSpecialType.js';
 import fileType from './fundamentalTypes/fileType.js';
+import blobType from './fundamentalTypes/blobType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -388,6 +389,7 @@ Types.availableTypes = {
   filelist: {
     option: ['FileList']
   },
+  blob: blobType,
   blobHTML: blobHTMLType,
   arraybuffer: {
     option: ['ArrayBuffer']
@@ -470,7 +472,7 @@ Types.availableTypes = {
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
 *   "IntlDateTimeFormat"|"IntlNumberFormat"|"ValidDate"|
-*   "arrayNonindexKeys"|"error"|"errors"} AvailableType
+*   "arrayNonindexKeys"|"error"|"errors"|"blob"} AvailableType
 */
 
 /**

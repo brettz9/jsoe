@@ -337,15 +337,7 @@ const canonicalToAvailableType = (format, state, valType, v) => {
       valType = newValType;
     }
   }
-  if (allowableTypes.some((allowableType) => {
-    if (allowableType === valType) {
-      ret = allowableType;
-      return true;
-    }
-    return false;
-  })) {
-    return /** @type {import('../types.js').AvailableType} */ (ret);
-  }
+
   // console.log('ret', ret);
   allowableTypes.some((allowableType) => {
     // eslint-disable-next-line @stylistic/max-len -- Long
@@ -364,6 +356,11 @@ const canonicalToAvailableType = (format, state, valType, v) => {
       ret = allowableType;
       return true;
     }
+    if (allowableType === valType) {
+      ret = allowableType;
+      return true;
+    }
+
     return false;
   });
   // console.log('ret2', ret);
@@ -457,12 +454,13 @@ const structuredCloning = {
       'StringObject',
       'error',
       'errors',
-      'blobHTML',
+      'blobHTML', // Must come before `blob`
+      'blob',
       'file',
       'set',
       'map'
       // Ok, but will need some work
-      //     'blob', 'filelist',
+      //     'filelist',
       //     'arraybuffer',
       //     'dataview', 'imagedata', 'imagebitmap',
       /*

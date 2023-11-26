@@ -27,6 +27,7 @@ Supported types include:
 - Array reference (for cyclic arrays)
 - Array
 - `BigInt`
+- `Blob`
 - `Boolean` object
 - `Date`
 - `Error`
@@ -103,7 +104,7 @@ Supported supertypes include:
                     1. bigint64arrayconstructor
                     1. biguint64arrayconstructor
             1. Web/API types
-                1. blob (besides HTML), filelist
+                1. filelist
                 1. imagedata, imagebitmap
             1. Our own custom derivative types (e.g., MIDI using TypedArray)
 1. Expand subtypes
