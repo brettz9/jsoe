@@ -103,14 +103,14 @@ Supported supertypes include:
                     1. bigint64arrayconstructor
                     1. biguint64arrayconstructor
             1. Web/API types
-                1. blob (besides HTML, including SVG), filelist
+                1. blob (besides HTML), filelist
                 1. imagedata, imagebitmap
             1. Our own custom derivative types (e.g., MIDI using TypedArray)
 1. Expand subtypes
     1. String
         1. As supported by Zod, JSON Schema, etc. (e.g., email addresses as
             subtype of `string`, color as a subtype of string)
-    1. `File`
+    1. `File`/`Blob`
         1. Drawing image for `image/png`, etc. `File`'s
         1. Drawing SVG program for `application/svg` `File`
         1. JS/CSS/HTML/XML/Markdown/JSON/CSV/text text editor (including
