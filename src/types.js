@@ -35,6 +35,7 @@ import SpecialNumberSuperType from './superTypes/SpecialNumberType.js';
 import errorType from './fundamentalTypes/errorType.js';
 import errorsSpecialType from './superTypes/errorsSpecialType.js';
 import fileType from './fundamentalTypes/fileType.js';
+import filelistType from './fundamentalTypes/filelistType.js';
 import blobType from './fundamentalTypes/blobType.js';
 
 /**
@@ -270,9 +271,11 @@ const Types = {};
  * @property {boolean} [array] Private context variable. Whether or not
  *   it is an array. Do not use in other types.
  * @property {boolean} [map] Private context variable. Whether or not
- *   it is a Map. Do not use in other types.
+ *   it is a `Map`. Do not use in other types.
  * @property {boolean} [set] Private context variable. Whether or not
- *   it is a set. Do not use in other types.
+ *   it is a `Set`. Do not use in other types.
+ * @property {boolean} [filelist] Private context variable. Whether or not
+ *   it is a `FileList` type. Do not use in other types.
  * @property {boolean} [sparse] Private context variable. Whether or not
  *   it is a sparse array. Do not use in other types.
  * @property {boolean} [valid] Private context variable. Whether or not
@@ -386,9 +389,7 @@ Types.availableTypes = {
   set: setType,
 
   file: fileType,
-  filelist: {
-    option: ['FileList']
-  },
+  filelist: filelistType,
   blob: blobType,
   blobHTML: blobHTMLType,
   arraybuffer: {

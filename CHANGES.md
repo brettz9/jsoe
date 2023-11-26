@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.10.0
+
+- feat: add `filelist` type
+
 ## 0.9.0
 
 - feat: add `blob` type

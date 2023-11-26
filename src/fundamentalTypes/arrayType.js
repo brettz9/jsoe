@@ -6,6 +6,7 @@ import dialogs from '../utils/dialogs.js';
 import {
   resolveJSONPointer, getJSONPointerParts, reduceJSONPointerParts
 } from '../utils/jsonPointer.js';
+import FileList from '../utils/FileList.js';
 
 /**
  * @typedef {number} Integer
@@ -177,7 +178,9 @@ const arrayType = {
           ? new Set(retObj)
           : this.map
             ? new Map(/** @type {Array<any>} */ (retObj))
-            : retObj,
+            : this.filelist
+              ? new FileList(retObj)
+              : retObj,
         remnant: stringVal
       };
     }
@@ -330,14 +333,16 @@ const arrayType = {
         }
       );
     }
-    return this.set && Array.isArray(ret)
-      ? new Set(ret)
-      : this.map
-        ? new Map(arrayItems.$getMapKeySelects().map((select, idx) => {
-          const key = select.$getValue();
-          return [key, /** @type {any[]} */ (ret)[idx]];
-        }))
-        : ret;
+    return this.filelist
+      ? new FileList(ret)
+      : this.set && Array.isArray(ret)
+        ? new Set(ret)
+        : this.map
+          ? new Map(arrayItems.$getMapKeySelects().map((select, idx) => {
+            const key = select.$getValue();
+            return [key, /** @type {any[]} */ (ret)[idx]];
+          }))
+          : ret;
   },
 
   // Try to keep in sync with basic structure of `editUI`
@@ -508,11 +513,13 @@ const arrayType = {
         ['div', {class: 'arrayContents'}, [
           this.array
             ? ['div', [
-              type === 'set'
-                ? 'Set size: '
-                : type === 'map'
-                  ? 'Map size: '
-                  : 'Array length: ',
+              type === 'filelist'
+                ? 'FileList length: '
+                : type === 'set'
+                  ? 'Set size: '
+                  : type === 'map'
+                    ? 'Map size: '
+                    : 'Array length: ',
               ['span', [
                 (value && (type === 'set' || type === 'map')
                   ? value.size
@@ -545,7 +552,7 @@ const arrayType = {
     const itemAdjust = type === 'object' ? 1 : 0;
     let itemIndex = itemAdjust - 1;
     const editableProperties = type !== 'array' &&
-      type !== 'set' && type !== 'map';
+      type !== 'set' && type !== 'map' && type !== 'filelist';
     const mapProperties = type === 'map';
 
     /**
@@ -1223,7 +1230,9 @@ const arrayType = {
           topRoot: /** @type {HTMLDivElement} */ (topRoot),
           // eslint-disable-next-line object-shorthand, @stylistic/max-len -- TS
           format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-          state: arrayState ?? type,
+          state: parentTypeObject.filelist
+            ? 'filelistArray'
+            : arrayState ?? type,
           // itemIndex,
           typeNamespace
         }).domArray),
@@ -1588,7 +1597,8 @@ const arrayType = {
 
     const parentType = type;
 
-    const div = /** @type {HTMLDivElement} */ (
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    const div = /** @type {HTMLDivElement & {$addAndSetArrayElement: import('../formats/structuredCloning.js').AddAndSetArrayElement}} */ (
       jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
         dataset: {type},
         // is: 'array-or-object-editor',
@@ -1629,7 +1639,7 @@ const arrayType = {
             // If run for all, causes problems with running `Error.cause`
             //   type twice and is inefficient;
             //   currently put behind `setAValue` as we need to set a value
-            //   from `errorsSpecialType`
+            //   from `errorsSpecialType` (and `filelistType`)
             if (setAValue) {
               const typeObj = /** @type {import('../types.js').TypeObject} */ (
                 Types.availableTypes[type]
@@ -1704,6 +1714,35 @@ const arrayType = {
           /** @type {import('../types.js').AvailableType} */
           (type)
         ).replace(/s$/u, ''), nbsp.repeat(2),
+        type === 'filelist'
+          ? ['input', {
+            name: typeNamespace + '-filelist',
+            multiple: true,
+            type: 'file',
+            $on: {
+              /**
+               * @this {HTMLInputElement}
+               */
+              change () {
+                /* c8 ignore next 3 */
+                if (!this.files) {
+                  return;
+                }
+                for (let i = 0; i < this.files.length; i++) {
+                  const file = this.files.item(i);
+
+                  div.$addAndSetArrayElement({
+                    propName: String(i),
+                    type: 'file',
+                    value: file,
+                    bringIntoFocus: false,
+                    setAValue: true
+                  });
+                }
+              }
+            }
+          }]
+          : '',
         minusButton,
         arrayContents
       ]))

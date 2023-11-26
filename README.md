@@ -34,6 +34,7 @@ Supported types include:
 - `TypeError`, `RangeError`, `SyntaxError`, `ReferenceError`, `EvalError`,
     `URIError`, `AggregateError`, `InternalError`
 - `File`
+- `FileList`
 - `Map`
 - `null`
 - `Number` object
@@ -104,7 +105,6 @@ Supported supertypes include:
                     1. bigint64arrayconstructor
                     1. biguint64arrayconstructor
             1. Web/API types
-                1. filelist
                 1. imagedata, imagebitmap
                 1. cryptokey
                 1. domexception

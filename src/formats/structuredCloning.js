@@ -68,7 +68,7 @@ const encapsulateObserver = (stateObj) => {
     if (cyclic === 'readonly' && !Array.isArray(observerObj.value)) {
       return;
     }
-    if (cyclic === 'readonly' && type === 'set') {
+    if (cyclic === 'readonly' && (type === 'set' || type === 'filelist')) {
       return;
     }
     if (endIterateIn || endIterateOwn) {
@@ -419,6 +419,9 @@ const structuredCloning = {
     if (state === 'errorsArray') {
       return ['error', 'errors'];
     }
+    if (state === 'filelistArray') {
+      return ['file'];
+    }
     return this.types();
     /*
     // Todo (low): These need to specify their own inner contexts
@@ -458,17 +461,19 @@ const structuredCloning = {
       'blob',
       'file',
       'set',
-      'map'
-      // 'filelist'
+      'map',
+      'filelist'
       // Ok:
-      // 'cryptokey',
       // 'domexception',
       // 'domrect',
       // 'dompoint',
       // 'dommatrix',
-      // Ok, but will need some work/decisions on how to present:
-      //     'arraybuffer',
-      //     'dataview', 'imagedata', 'imagebitmap',
+
+      // Ok, but will need some work and/or decisions on how to present:
+      // 'cryptokey',
+
+      // 'arraybuffer',
+      // 'dataview', 'imagedata', 'imagebitmap',
       /*
       // Typed Arrays
         'int8array',
