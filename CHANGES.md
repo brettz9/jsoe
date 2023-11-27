@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.11.1
+
+- fix: add missing type title to svg dom types
+
 ## 0.11.0
 
 - feat: support `DOMException`, `DOMPoint`, `DOMMatrix`, `DOMRect` types

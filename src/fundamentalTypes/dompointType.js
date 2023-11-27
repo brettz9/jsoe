@@ -44,6 +44,8 @@ const dompointType = {
   },
   viewUI ({value}) {
     return ['div', {dataset: {type: 'dompoint'}}, [
+      ['b', {class: 'emphasis'}, ['DOMPoint']],
+      ['br'],
       ['b', ['x ']],
       value.x,
       ['br'],

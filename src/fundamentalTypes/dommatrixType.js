@@ -196,6 +196,7 @@ const dommatrixType = {
   },
   viewUI ({value}) {
     return ['div', {dataset: {type: 'dommatrix'}}, [
+      ['b', {class: 'emphasis'}, ['DOMMatrix']],
       value.is2D
         ? ['div', [
           ['b', ['a ']],

@@ -44,6 +44,8 @@ const domrectType = {
   },
   viewUI ({value}) {
     return ['div', {dataset: {type: 'domrect'}}, [
+      ['b', {class: 'emphasis'}, ['DOMRect']],
+      ['br'],
       ['b', ['x ']],
       value.x,
       ['br'],
