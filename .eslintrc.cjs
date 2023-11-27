@@ -28,6 +28,7 @@ module.exports = {
       'document.createDocumentFragment',
       'document.querySelector',
       'document.querySelectorAll',
+      'DOMException',
       'Error',
       'fetch',
       'File',

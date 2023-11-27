@@ -341,7 +341,8 @@ setTimeout(async function () {
           }),
           new Blob(['abc'], {
             type: 'text/plain'
-          })
+          }),
+          new DOMException('some message', 'someName')
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });

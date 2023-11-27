@@ -13,6 +13,7 @@ import './error.cy.js';
 import './file.cy.js';
 import './filelist.cy.js';
 import './blob.cy.js';
+import './domexception.cy.js';
 
 import './BooleanObject.cy.js';
 import './NumberObject.cy.js';

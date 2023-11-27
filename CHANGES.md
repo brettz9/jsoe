@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.11.0 (unreleased)
+
+- feat: support `DOMException` type
+
 ## 0.10.0
 
 - feat: add `filelist` type

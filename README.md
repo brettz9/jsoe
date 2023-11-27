@@ -30,6 +30,7 @@ Supported types include:
 - `Blob`
 - `Boolean` object
 - `Date`
+- `DOMException`,
 - `Error`
 - `TypeError`, `RangeError`, `SyntaxError`, `ReferenceError`, `EvalError`,
     `URIError`, `AggregateError`, `InternalError`
@@ -107,7 +108,6 @@ Supported supertypes include:
             1. Web/API types
                 1. imagedata, imagebitmap
                 1. cryptokey
-                1. domexception
                 1. domrect
                 1. dompoint
                 1. dommatrix

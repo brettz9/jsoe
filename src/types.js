@@ -37,6 +37,7 @@ import errorsSpecialType from './superTypes/errorsSpecialType.js';
 import fileType from './fundamentalTypes/fileType.js';
 import filelistType from './fundamentalTypes/filelistType.js';
 import blobType from './fundamentalTypes/blobType.js';
+import domexceptionType from './fundamentalTypes/domexceptionType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -392,6 +393,9 @@ Types.availableTypes = {
   filelist: filelistType,
   blob: blobType,
   blobHTML: blobHTMLType,
+
+  domexception: domexceptionType,
+
   arraybuffer: {
     option: ['ArrayBuffer']
   },
@@ -437,17 +441,6 @@ Types.availableTypes = {
     option: ['Float64Array']
   },
 
-  // Intl (imperfect)
-  IntlCollator: {
-    option: ['Intl.Collator']
-  },
-  IntlDateTimeFormat: {
-    option: ['Intl.DateTimeFormat']
-  },
-  IntlNumberFormat: {
-    option: ['Intl.NumberFormat']
-  },
-
   // We're catching this instead of using this
   // sparseUndefined: sparseUndefinedType,
 
@@ -471,9 +464,8 @@ Types.availableTypes = {
 *   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
 *   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
-*   "int32array"|"uint32array"|"float32array"|"float64array"|"IntlCollator"|
-*   "IntlDateTimeFormat"|"IntlNumberFormat"|"ValidDate"|
-*   "arrayNonindexKeys"|"error"|"errors"|"blob"} AvailableType
+*   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
+*   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"} AvailableType
 */
 
 /**

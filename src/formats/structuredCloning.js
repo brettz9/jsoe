@@ -462,9 +462,9 @@ const structuredCloning = {
       'file',
       'set',
       'map',
-      'filelist'
+      'filelist',
+      'domexception'
       // Ok:
-      // 'domexception',
       // 'domrect',
       // 'dompoint',
       // 'dommatrix',
