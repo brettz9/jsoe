@@ -38,6 +38,9 @@ import fileType from './fundamentalTypes/fileType.js';
 import filelistType from './fundamentalTypes/filelistType.js';
 import blobType from './fundamentalTypes/blobType.js';
 import domexceptionType from './fundamentalTypes/domexceptionType.js';
+import domrectType from './fundamentalTypes/domrectType.js';
+import dompointType from './fundamentalTypes/dompointType.js';
+import dommatrixType from './fundamentalTypes/dommatrixType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -395,6 +398,9 @@ Types.availableTypes = {
   blobHTML: blobHTMLType,
 
   domexception: domexceptionType,
+  domrect: domrectType,
+  dompoint: dompointType,
+  dommatrix: dommatrixType,
 
   arraybuffer: {
     option: ['ArrayBuffer']
@@ -465,7 +471,8 @@ Types.availableTypes = {
 *   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
-*   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"} AvailableType
+*   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
+*   "dompoint"|"dommatrix"} AvailableType
 */
 
 /**

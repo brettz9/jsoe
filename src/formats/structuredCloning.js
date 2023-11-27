@@ -463,11 +463,10 @@ const structuredCloning = {
       'set',
       'map',
       'filelist',
-      'domexception'
-      // Ok:
-      // 'domrect',
-      // 'dompoint',
-      // 'dommatrix',
+      'domexception',
+      'domrect',
+      'dompoint',
+      'dommatrix'
 
       // Ok, but will need some work and/or decisions on how to present:
       // 'cryptokey',

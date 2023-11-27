@@ -1,8 +1,8 @@
 # CHANGES TO `@es-joy/jsoe`
 
-## 0.11.0 (unreleased)
+## 0.11.0
 
-- feat: support `DOMException` type
+- feat: support `DOMException`, `DOMPoint`, `DOMMatrix`, `DOMRect` types
 
 ## 0.10.0
 

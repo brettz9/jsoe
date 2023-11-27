@@ -342,7 +342,16 @@ setTimeout(async function () {
           new Blob(['abc'], {
             type: 'text/plain'
           }),
-          new DOMException('some message', 'someName')
+          new DOMException('some message', 'someName'),
+          new DOMRect(1, 2, 3, 4),
+          new DOMPoint(1, 2, 3, 4),
+          new DOMMatrix([1, 2, 3, 4, 5, 6]),
+          new DOMMatrix([
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 10, 11, 12,
+            13, 14, 15, 16
+          ])
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
