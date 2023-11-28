@@ -37,7 +37,7 @@ describe('FileList spec', () => {
     ).selectFile('README.md');
   });
 
-  it.only('gets type', function (done) {
+  it('gets type', function (done) {
     cy.on('window:alert', (t) => {
       expect(t).to.eq('filelist');
       done();
