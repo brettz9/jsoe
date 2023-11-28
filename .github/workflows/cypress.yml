@@ -11,6 +11,9 @@ jobs:
       matrix:
         containers: [1, 2] # Uses 2 parallel instances
     steps:
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - name: Checkout
         uses: actions/checkout@v3
       - name: Cypress run
