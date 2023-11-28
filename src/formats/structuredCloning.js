@@ -356,16 +356,23 @@ const canonicalToAvailableType = (format, state, valType, v) => {
       ret = allowableType;
       return true;
     }
-    if (allowableType === valType) {
-      ret = allowableType;
-      return true;
-    }
 
     return false;
   });
   // console.log('ret2', ret);
   if (ret === undefined) {
-    return isInvalid(valType);
+    // We run this separately from the `childTypes` check above
+    //    to ensure `childTypes` have priority regardless of position
+    allowableTypes.some((allowableType) => {
+      if (allowableType === valType) {
+        ret = allowableType;
+        return true;
+      }
+      return false;
+    });
+    if (ret === undefined) {
+      return isInvalid(valType);
+    }
   }
   return ret;
 };
@@ -457,8 +464,8 @@ const structuredCloning = {
       'StringObject',
       'error',
       'errors',
-      'blobHTML', // Must come before `blob`
       'blob',
+      'blobHTML',
       'file',
       'set',
       'map',
