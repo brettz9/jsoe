@@ -41,6 +41,7 @@ import domexceptionType from './fundamentalTypes/domexceptionType.js';
 import domrectType from './fundamentalTypes/domrectType.js';
 import dompointType from './fundamentalTypes/dompointType.js';
 import dommatrixType from './fundamentalTypes/dommatrixType.js';
+import cryptokeyType from './fundamentalTypes/cryptokeyType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -401,6 +402,7 @@ Types.availableTypes = {
   domrect: domrectType,
   dompoint: dompointType,
   dommatrix: dommatrixType,
+  cryptokey: cryptokeyType,
 
   arraybuffer: {
     option: ['ArrayBuffer']
@@ -472,7 +474,7 @@ Types.availableTypes = {
 *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
 *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
 *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
-*   "dompoint"|"dommatrix"} AvailableType
+*   "dompoint"|"dommatrix"|"cryptokey"} AvailableType
 */
 
 /**

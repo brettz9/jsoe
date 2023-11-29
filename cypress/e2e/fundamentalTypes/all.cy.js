@@ -4,6 +4,7 @@ import './null.cy.js';
 import './undefined.cy.js';
 import './number.cy.js';
 import './bigint.cy.js';
+import './cryptokey.cy.js';
 import './date.cy.js';
 import './string.cy.js';
 import './regexp.cy.js';

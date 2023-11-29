@@ -473,10 +473,10 @@ const structuredCloning = {
       'domexception',
       'domrect',
       'dompoint',
-      'dommatrix'
+      'dommatrix',
+      'cryptokey'
 
       // Ok, but will need some work and/or decisions on how to present:
-      // 'cryptokey',
 
       // 'arraybuffer',
       // 'dataview', 'imagedata', 'imagebitmap',

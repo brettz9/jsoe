@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.12.0
+
+- feat: add `CryptoKey` type
+
 ## 0.11.1
 
 - fix: add missing type title to svg dom types

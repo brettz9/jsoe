@@ -24,6 +24,7 @@ module.exports = {
       'Blob',
       'btoa',
       'console',
+      'crypto',
       'Date.toISOString',
       'document.body',
       'document.createDocumentFragment',
