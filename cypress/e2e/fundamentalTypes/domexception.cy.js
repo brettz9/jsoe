@@ -1,4 +1,4 @@
-describe('bigint spec', () => {
+describe('DOMException spec', () => {
   beforeEach(() => {
     cy.visit('http://127.0.0.1:8087/demo/index-instrumented.html', {
       onBeforeLoad (win) {
