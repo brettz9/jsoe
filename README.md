@@ -111,6 +111,7 @@ Supported supertypes include:
             1. Web/API types
                 1. imagedata, imagebitmap
                 1. cryptokey
+                1. domquad
             1. Our own custom derivative types? (e.g., MIDI using TypedArray)
 1. Expand subtypes
     1. String
