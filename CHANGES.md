@@ -1,5 +1,11 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.12.0
+
+- feat: allow order to be changed in menu
+- feat: help TS find files (when imported from file system)
+- chore: update devDeps.
+
 ## 0.11.1
 
 - fix: add missing type title to svg dom types
