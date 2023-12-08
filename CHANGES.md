@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.12.1
+
+- refactor: TS work
+
 ## 0.12.0
 
 - feat: allow order to be changed in menu
