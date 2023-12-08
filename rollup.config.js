@@ -6,6 +6,16 @@ import commonjs from '@rollup/plugin-commonjs';
 import istanbul from 'rollup-plugin-istanbul';
 
 export default [{
+  input: 'src/index.js',
+  output: {
+    file: 'dist/index.js',
+    format: 'es'
+  },
+  plugins: [
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
   input: 'demo/index.js',
   output: {
     file: 'instrumented/demo/index.js',

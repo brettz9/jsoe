@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.12.4
+
+- refactor: Rollup dist.
+
 ## 0.12.3
 
 - refactor: TS work
