@@ -148,6 +148,9 @@ devDependencies:
   typescript:
     specifier: ^5.3.2
     version: 5.3.2
+  typeson:
+    specifier: ^9.0.3
+    version: 9.0.3
   webappfind-demos-samples:
     specifier: ^0.7.0
     version: 0.7.0
@@ -8052,7 +8055,6 @@ packages:
   /typeson@9.0.3:
     resolution: {integrity: sha512-vsOn+VPbIYI3jgj96vwIhAO0BNmlBxEgBKVmuzl1dwXzQe+3XjRi/gK2zYgAansWYlrtvluy4lvWcL8LF01P3Q==}
     engines: {node: '>=16.0.0'}
-    dev: false
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}

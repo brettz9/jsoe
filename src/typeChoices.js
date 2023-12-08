@@ -5,8 +5,14 @@ import Types from './types.js';
 import {$e, DOM} from './utils/templateUtils.js';
 import dialogs from './utils/dialogs.js';
 
+// This is technically just `import('./index.js').SetType`, but our
+//   redirect file causes problems, so we redefine here
 /**
- * @typedef {import('./index.js').SetType} SetType
+ * @typedef {(cfg: {
+ *   type: string,
+ *   baseValue?: import('./formats.js').StructuredCloneValue,
+ *   bringIntoFocus?: boolean
+ * }) => void} SetType
  */
 
 /**
