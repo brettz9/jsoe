@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.12.3
+
+- refactor: TS work
+
 ## 0.12.2
 
 - refactor: TS work
