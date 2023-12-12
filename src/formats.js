@@ -7,6 +7,13 @@ import structuredCloning from './formats/structuredCloning.js';
  * @typedef {any} StructuredCloneValue
  */
 
+/**
+ * @callback GetTypesForFormatAndState
+ * @param {AvailableFormat} format
+ * @param {string} [state]
+ * @returns {import('./types.js').AvailableType[]|undefined}
+ */
+
 /* schema:
 export const getTypeForFormatStateAndValue = ({format, state, value}) => {
   const valType = new Typeson().register(
@@ -35,34 +42,81 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  * }} Format
  */
 
-// Using methods ensure we have fresh copies
-const Formats = {
-  availableFormats: /** @type {{[key: string]: Format}} */ ({
-    indexedDBKey,
-    json,
-    // Todo (readme): these too? getTypesForState(state)
-    /* schema:
-    schemaAndArbitrary,
-    schemaOnly,
-    */
-    structuredCloning
-  })
-};
-
 /**
- * @param {AvailableFormat} format
- * @param {StructuredCloneValue} record
- * @param {import('./types.js').StateObject} stateObj
- * @returns {Promise<Element>}
+ * Class for processing multiple formats.
  */
-export async function getControlsForFormatAndValue (format, record, stateObj) {
-  return await Formats.availableFormats[format].
-    iterate(record, {
-      ...stateObj,
-      // This had been before `stateObj` but should apparently have precedence
-      //   or just avoid passing `format` to this function
-      format
+class Formats {
+  /**
+   *
+   */
+  constructor () {
+    // Can enable later (and add tests)
+    // if (formats) {
+    //   this.availableFormats = {};
+    //   formats.forEach((format) => {
+    //     let formatValue;
+    //     switch (format) {
+    //     case 'indexedDBKey':
+    //       formatValue = indexedDBKey;
+    //       break;
+    //     case 'json':
+    //       formatValue = json;
+    //       break;
+    //     case 'structuredCloning':
+    //       formatValue = structuredCloning;
+    //       break;
+    //     default:
+    //       throw new Error('Unknown format');
+    //     }
+    //     this.availableFormats[format] = formatValue;
+    //   });
+    //   return;
+    // }
+    // Using methods ensure we have fresh copies
+    this.availableFormats = /** @type {{[key: string]: Format}} */ ({
+      indexedDBKey,
+      json,
+      // Todo (readme): these too? getTypesForState(state)
+      /* schema:
+      schemaAndArbitrary,
+      schemaOnly,
+      */
+      structuredCloning
     });
+  }
+
+  /**
+   * @param {AvailableFormat} format
+   * @param {StructuredCloneValue} record
+   * @param {import('./types.js').StateObject} stateObj
+   * @returns {Promise<Element>}
+   */
+  async getControlsForFormatAndValue (format, record, stateObj) {
+    return await this.availableFormats[format].
+      iterate(record, {
+        ...stateObj,
+        // This had been before `stateObj` but should apparently have precedence
+        //   or just avoid passing `format` to this function
+        format
+      });
+  }
+
+  /**
+   * @type {GetTypesForFormatAndState}
+   */
+  getTypesForFormatAndState (
+    format, state
+  ) {
+    return this.availableFormats[format].getTypesForState(state);
+  }
+
+  /**
+   * @param {AvailableFormat} format
+   * @returns {Format}
+   */
+  getAvailableFormat (format) {
+    return this.availableFormats[format];
+  }
 }
 
 export default Formats;

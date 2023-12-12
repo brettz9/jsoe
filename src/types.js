@@ -1,11 +1,11 @@
+import Formats from './formats.js';
+
 import {
   // jamilih
   jml,
   // typeson-registry
   Typeson, getJSONType, structuredCloningThrowing
 } from './vendor-imports.js';
-
-import Formats from './formats.js';
 
 import {$e, $$e} from './utils/templateUtils.js';
 
@@ -107,13 +107,6 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
- * @callback GetTypesForFormatAndState
- * @param {string} format
- * @param {string} [state]
- * @returns {AvailableType[]|undefined}
- */
-
-/**
  * @callback GetOptionForType
  * @param {AvailableType} type
  * @returns {[string, {value: AvailableType, title?: string}]}
@@ -121,7 +114,7 @@ export const getPropertyValueFromLegend = (legend) => {
 
 /**
  * @callback GetTypeOptionsForFormatAndState
- * @param {string} format
+ * @param {import('./formats.js').AvailableFormat} format
  * @param {string} [parserState]
  * @returns {[string, {value: AvailableType, title?: string}][]}
  */
@@ -214,7 +207,6 @@ export const getPropertyValueFromLegend = (legend) => {
  *   getFormControlForRoot: GetFormControlForRoot,
  *   getValueFromRootAncestor: GetValueFromRootAncestor,
  *   getFormControlFromRootAncestor: GetFormControlFromRootAncestor,
- *   getTypesForFormatAndState: GetTypesForFormatAndState,
  *   getOptionForType: GetOptionForType,
  *   getTypeOptionsForFormatAndState: GetTypeOptionsForFormatAndState,
  *   getUIForModeAndType: GetUIForModeAndType,
@@ -355,6 +347,8 @@ const Types = {};
  * }} [stateDependent] The type after which it should be placed and its
  *   context types
  */
+
+const formats = new Formats();
 
 Types.availableTypes = {
   null: nullType,
@@ -523,6 +517,7 @@ Types.getTypeForRoot = (root) => {
  *   typeNamespace?: string,
  *   "readonly"?: boolean,
  *   format?: import('./formats.js').AvailableFormat,
+ *   formats: import('./formats.js').default,
  *   error?: Error,
  *   rootUI?: Element,
  *   schema?: string,
@@ -576,10 +571,6 @@ Types.getFormControlFromRootAncestor = (selOrEl) => {
   return Types.getFormControlForRoot(root);
 };
 
-Types.getTypesForFormatAndState = (
-  format, state
-) => Formats.availableFormats[format].getTypesForState(state);
-
 Types.getOptionForType = (type) => {
   /** @type {[string, {value?: AvailableType, title?: string}?]} */
   const optInfo = [
@@ -594,7 +585,7 @@ Types.getOptionForType = (type) => {
 };
 
 Types.getTypeOptionsForFormatAndState = (format, parserState) => {
-  const typesForFormatAndState = Types.getTypesForFormatAndState(
+  const typesForFormatAndState = formats.getTypesForFormatAndState(
     format, parserState
   );
   if (!typesForFormatAndState) {
@@ -765,7 +756,7 @@ Types.getValueForString = (s, {
   format, state, endMatchTypeObjs = [], firstRun = true,
   rootHolder = [], parent, parentPath
 }) => {
-  const allowedTypes = Types.getTypesForFormatAndState(format, state);
+  const allowedTypes = formats.getTypesForFormatAndState(format, state);
   if (!allowedTypes) {
     throw new Error('Could not get types for format and state');
   }

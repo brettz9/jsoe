@@ -1,5 +1,6 @@
 import {jml, nbsp} from '../vendor-imports.js';
 
+import Formats from '../formats.js';
 import Types, {getPropertyValueFromLegend} from '../types.js';
 import {$e, U, DOM} from '../utils/templateUtils.js';
 import dialogs from '../utils/dialogs.js';
@@ -234,7 +235,9 @@ const arrayType = {
     parse();
     return {value: retObj, remnant: stringVal};
   },
-  getValue ({root, stateObj = {}, currentPath = ''}) {
+  getValue ({root, stateObj = {
+    formats: new Formats()
+  }, currentPath = ''}) {
     const top = currentPath === '';
     const arrayItems =
       /**
@@ -270,7 +273,7 @@ const arrayType = {
       const value = Types.getValueForRoot(
         root, stateObj, currentPath + '/' + currentPathPart
       );
-      if (stateObj.handlingReference) {
+      if ('handlingReference' in stateObj && stateObj.handlingReference) {
         // We deal with references later once object is fully constructed
         stateObj.handlingReference = false;
         return [false];

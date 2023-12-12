@@ -5,12 +5,15 @@ import {
   typeChoices,
   getFormatAndSchemaChoices,
   formatAndTypeChoices,
-  getControlsForFormatAndValue,
-  Types // , Formats
+  Types,
+  Formats
 } from '../src/index.js';
+
+const formats = new Formats();
 
 const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
   hasKeyPath: false,
+  formats,
   typeNamespace: 'demo-keypath-not-expected'
 });
 
@@ -61,7 +64,7 @@ setTimeout(async function () {
       id: 'viewUI',
       $on: {
         async click () {
-          const controls = await getControlsForFormatAndValue(
+          const controls = await formats.getControlsForFormatAndValue(
             $('#useIndexedDBKey').checked
               ? 'indexedDBKey'
               : 'structuredCloning',
@@ -181,6 +184,7 @@ setTimeout(async function () {
       'Format and type choices: Key path expected (object required at root)'
     ]],
     ...formatAndTypeChoices({
+      formats,
       hasKeyPath: true,
       typeNamespace: 'demo-keypath-expected'
     }).domArray,
@@ -454,7 +458,7 @@ setTimeout(async function () {
       'Convert arbitrary value to an editable menu'
     ]],
 
-    await getControlsForFormatAndValue(
+    await formats.getControlsForFormatAndValue(
       'structuredCloning', new Date('1999-01-01')
     ),
 
@@ -462,7 +466,7 @@ setTimeout(async function () {
       'Convert arbitrary value to a readonly menu'
     ]],
 
-    await getControlsForFormatAndValue(
+    await formats.getControlsForFormatAndValue(
       'structuredCloning',
       new Date('1999-01-01'), {
         readonly: true

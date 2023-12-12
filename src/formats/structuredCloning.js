@@ -3,6 +3,7 @@ import {
 } from '../vendor-imports.js';
 
 import Formats from '../formats.js';
+
 import Types from '../types.js';
 import {buildTypeChoices} from '../typeChoices.js';
 import {
@@ -106,11 +107,12 @@ const encapsulateObserver = (stateObj) => {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
       newType = canonicalToAvailableType(
-        format, state, newType, value
+        stateObj.formats, format, state, newType, value
       ); // Todo (low): Add accurate state for second argument
     } else {
       try {
         newType = canonicalToAvailableType(
+          stateObj.formats,
           format,
           state,
           /**
@@ -295,6 +297,7 @@ const replaceTypes = (originTypes, replacements) => {
 };
 
 /**
+ * @param {import('../formats.js').default} formats
  * @param {import('../formats.js').AvailableFormat} format
  * @param {string} state
  * @param {import('../types.js').AvailableType} valType
@@ -302,8 +305,8 @@ const replaceTypes = (originTypes, replacements) => {
  * @throws {Error}
  * @returns {import('../types.js').AvailableType}
  */
-const canonicalToAvailableType = (format, state, valType, v) => {
-  const frmt = Formats.availableFormats[format];
+const canonicalToAvailableType = (formats, format, state, valType, v) => {
+  const frmt = formats.getAvailableFormat(format);
   const {getTypesForState, convertFromTypeson, testInvalid} = frmt;
   const allowableTypes = getTypesForState.call(frmt, state);
   /* istanbul ignore if -- Guard */
@@ -390,6 +393,9 @@ const structuredCloning = {
     // console.log('records', records);
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
+    }
+    if (!stateObj.formats) {
+      stateObj.formats = new Formats();
     }
     // Todo: Replace this with async typeson?
     // eslint-disable-next-line promise/avoid-new

@@ -1,5 +1,5 @@
 import {jml} from './vendor-imports.js';
-import Formats, {getControlsForFormatAndValue} from './formats.js';
+import Formats from './formats.js';
 import Types from './types.js';
 
 import {$e, DOM} from './utils/templateUtils.js';
@@ -75,6 +75,7 @@ import dialogs from './utils/dialogs.js';
  *   requireObject?: boolean,
  *   objectHasValue?: boolean,
  *   topRoot?: import('./types.js').RootElement,
+ *   formats?: import('./formats.js').default
  *   schema?: string,
  *   schemaContent?: object,
  * }} cfg
@@ -101,6 +102,7 @@ export const buildTypeChoices = ({
   requireObject,
   objectHasValue,
   topRoot,
+  formats = new Formats(),
   schema,
   schemaContent
 }) => {
@@ -267,13 +269,15 @@ export const buildTypeChoices = ({
         value = {};
       }
       try {
-        const rootEditUI = await Formats.availableFormats[format].iterate(
+        const rootEditUI = await formats.getControlsForFormatAndValue(
+          format,
           value,
           {
             readonly: false,
             typeNamespace,
             schema,
-            schemaContent
+            schemaContent,
+            formats
           }
         );
         const type =
@@ -329,7 +333,7 @@ export const buildTypeChoices = ({
     /** @type {SetValue} */
     async setValue (value, stateObj) {
       const rootEditUI = /** @type {HTMLDivElement} */ (
-        await getControlsForFormatAndValue(
+        await formats.getControlsForFormatAndValue(
           format, value, stateObj
         )
       );
