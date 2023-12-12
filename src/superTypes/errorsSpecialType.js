@@ -169,7 +169,7 @@ const errorsSpecialType = {
       }
     });
   },
-  getValue ({root}) {
+  getValue ({root, stateObj}) {
     const UserErrorType = specialErrorsMap.get(
       /** @type {HTMLSelectElement} */ (
         $e(root, '.errorType')
@@ -206,6 +206,7 @@ const errorsSpecialType = {
           )).firstElementChild;
 
         const errors = arrayType.getValue({
+          stateObj,
           root: /** @type {HTMLDivElement} */ (errorRoot)
         });
         errObj = new UET(errors, message);
@@ -221,6 +222,7 @@ const errorsSpecialType = {
             root, '.aggregateErrorsContents'
           )).firstElementChild;
         const errors = arrayType.getValue({
+          stateObj,
           root: /** @type {HTMLDivElement} */ (errorRoot)
         });
         errObj = new UET(errors);
@@ -278,6 +280,7 @@ const errorsSpecialType = {
     );
     if (causeContents.children.length) {
       errObj.cause = this.getValue({
+        stateObj,
         root: causeContents
       });
     }
@@ -285,7 +288,7 @@ const errorsSpecialType = {
     return errObj;
   },
   viewUI (
-    {value: o, format, typeNamespace, resultType}
+    {value: o, types, format, typeNamespace, resultType}
   ) {
     const constructor = getConstructor(o.constructor);
     return /** @type {import('jamilih').JamilihArray} */ ([
@@ -327,7 +330,8 @@ const errorsSpecialType = {
             o.cause
               ? this.viewUI({
                 format,
-                value: o.cause
+                value: o.cause,
+                types
               })
               : ''
           ]]
@@ -354,7 +358,8 @@ const errorsSpecialType = {
                     const [div] = arrayType.viewUI({
                       typeNamespace, resultType, format,
                       type: 'arrayNonindexKeys',
-                      value: []
+                      value: [],
+                      types
                     });
 
                     /** @type {Error[]} */
@@ -389,6 +394,7 @@ const errorsSpecialType = {
   },
   editUI ({
     typeNamespace,
+    types,
 
     // Pass these to `errors` array
     buildTypeChoices,
@@ -617,6 +623,7 @@ const errorsSpecialType = {
                 if (!causeContents?.children.length) {
                   const editui = component.editUI({
                     typeNamespace,
+                    types,
                     value: value.cause
                   });
                   jml(...editui, causeContents);
@@ -683,7 +690,7 @@ const errorsSpecialType = {
                 );
                 if (!aggregateErrorsContents?.children.length) {
                   const [editui] = arrayType.editUI({
-                    typeNamespace, buildTypeChoices, format,
+                    typeNamespace, types, buildTypeChoices, format,
                     type: 'array',
                     topRoot, bringIntoFocus,
                     arrayState: 'errorsArray',

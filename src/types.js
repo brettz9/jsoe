@@ -67,6 +67,11 @@ export const getPropertyValueFromLegend = (legend) => {
 };
 
 /**
+ * Any other possibilities than `div`?
+ * @typedef {HTMLDivElement} RootElement
+ */
+
+/**
  * Utility to retrieve the type out of a type root element.
  * @callback GetTypeForRoot
  * @param {?RootElement} root
@@ -78,7 +83,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   state and path.
  * @callback GetValueForRoot
  * @param {RootElement} root
- * @param {StateObject} [stateObj]
+ * @param {StateObject} stateObj
  * @param {string} [currentPath]
  * @returns {StructuredCloneValue}
  */
@@ -95,7 +100,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * Utility to get the value for a root using its ancestor and state.
  * @callback GetValueFromRootAncestor
  * @param {string|HTMLElement} selOrEl
- * @param {StateObject} [stateObj]
+ * @param {StateObject} stateObj
  * @returns {StructuredCloneValue}
  */
 
@@ -118,6 +123,35 @@ export const getPropertyValueFromLegend = (legend) => {
  * @param {string} [parserState]
  * @returns {[string, {value: AvailableType, title?: string}][]}
  */
+
+/**
+ * @typedef {(
+*   keypath: string,
+*   parentPath: string,
+*   arrayOrObjectPropertyName: string,
+*   valueType: string
+* ) => StateObject} GetPossibleSchemasForPathAndType
+*/
+
+/**
+* @typedef {{
+*   typeNamespace?: string,
+*   "readonly"?: boolean,
+*   format?: import('./formats.js').AvailableFormat,
+*   formats: import('./formats.js').default,
+*   types: Types,
+*   error?: Error,
+*   rootUI?: Element,
+*   schema?: string,
+*   schemaContent?: object,
+*   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
+*   paths?: {[currentPath: string]: {
+*     referentPath: string,
+*     expectArrayReferent: boolean
+*   }},
+*   handlingReference?: boolean
+* }} StateObject
+*/
 
 /* eslint-disable jsdoc/valid-types -- readonly reserved */
 /**
@@ -198,34 +232,6 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
- * @type {{
- *   availableTypes: {
- *     [key in AvailableType]: Partial<TypeObject>|string[]
- *   },
- *   getTypeForRoot: GetTypeForRoot,
- *   getValueForRoot: GetValueForRoot,
- *   getFormControlForRoot: GetFormControlForRoot,
- *   getValueFromRootAncestor: GetValueFromRootAncestor,
- *   getFormControlFromRootAncestor: GetFormControlFromRootAncestor,
- *   getOptionForType: GetOptionForType,
- *   getTypeOptionsForFormatAndState: GetTypeOptionsForFormatAndState,
- *   getUIForModeAndType: GetUIForModeAndType,
- *   contexts: {
- *     [key: string]: {
- *       [key: string]: {type: AvailableType, after: AvailableType}[]
- *     }
- *   },
- *   validValuesSet: ValidValuesSet,
- *   validateAllReferences: ValidateAllReferences,
- *   validate: Validate,
- *   setValue: SetValue,
- *   getValueForString: GetValueForString,
- *   customValidateAllReferences?: CustomValidateAllReferences
- * }}
- */
-const Types = {};
-
-/**
  * @typedef {import('./formats.js').StructuredCloneValue} StructuredCloneValue
  */
 
@@ -246,7 +252,8 @@ const Types = {};
  *     path: string
  *   ][],
  *   parent?: object,
- *   parentPath?: string|number
+ *   parentPath?: string|number,
+ *   types?: Types
  * }} RootInfo
  */
 
@@ -311,13 +318,16 @@ const Types = {};
  *   type?: AvailableType,
  *   topRoot?: HTMLDivElement,
  *   resultType?: "keys"|"values"|"both",
- *   format: import('./formats.js').AvailableFormat
+ *   format: import('./formats.js').AvailableFormat,
+ *   types: Types
  * }) => JamilihArray} viewUI
  * @property {(info: {
  *   value?: StructuredCloneValue,
  *   typeNamespace?: string,
  *   bringIntoFocus?: boolean,
  *   format?: import('./formats.js').AvailableFormat,
+ *   formats?: import('./formats.js').default,
+ *   types: Types,
  *   resultType?: "keys"|"values"|"both",
  *   type?: AvailableType,
  *   arrayState?: string,
@@ -337,7 +347,10 @@ const Types = {};
  *   message?: string,
  *   valid: boolean
  * }} [validate] Message will be used if validity is false.
- * @property {(info: {topRoot: HTMLDivElement}) => void} [validateAll] For
+ * @property {(info: {
+ *   topRoot: HTMLDivElement,
+ *   types: Types
+ * }) => void} [validateAll] For
  *   validation of array and object references only.
  * @property {{
  *   structuredCloning: {
@@ -348,307 +361,566 @@ const Types = {};
  *   context types
  */
 
-const formats = new Formats();
-
-Types.availableTypes = {
-  null: nullType,
-  true: trueType,
-  false: falseType,
-  number: numberType,
-  bigint: bigintType,
-  string: stringType,
-  arrayReference: arrayReferenceType,
-  objectReference: objectReferenceType,
-  array: arrayType,
-  // Note: We don't do for BooleanObject/NumberObject/StringObject, date,
-  //   regexp, as added properties on them are not being cloned (in Chrome
-  //   at least)
-  object: objectType,
-  date: dateType,
-
-  // This type is only for throwing upon cloning errors:
-  // 'checkDataCloneException'
-  // This type might be supported by evaluable JS or config
-  //   passed in:
-  userObject: ['User objects'],
-  undef: undefinedType,
-  SpecialRealNumber: SpecialRealNumberSuperType,
-  SpecialNumber: SpecialNumberSuperType,
-
-  error: errorType,
-  errors: errorsSpecialType,
-
-  regexp: regexpType,
-  BooleanObject: BooleanObjectType,
-  NumberObject: NumberObjectType,
-  StringObject: StringObjectType,
-
-  map: mapType,
-  set: setType,
-
-  file: fileType,
-  filelist: filelistType,
-  blob: blobType,
-  blobHTML: blobHTMLType,
-
-  domexception: domexceptionType,
-  domrect: domrectType,
-  dompoint: dompointType,
-  dommatrix: dommatrixType,
-
-  arraybuffer: {
-    option: ['ArrayBuffer']
-  },
-  arraybufferview: {
-    option: ['ArrayBufferView']
-  },
-  dataview: {
-    option: ['DataView']
-  },
-  imagedata: {
-    option: ['ImageData']
-  },
-  imagebitmap: {
-    option: ['ImageBitmap']
-  },
-
-  // Typed Arrays
-  int8array: {
-    option: ['Int8Array']
-  },
-  uint8array: {
-    option: ['Uint8Array']
-  },
-  uint8clampedarray: {
-    option: ['Uint8ClampedArray']
-  },
-  int16array: {
-    option: ['Int16Array']
-  },
-  uint16array: {
-    option: ['Uint16Array']
-  },
-  int32array: {
-    option: ['Int32Array']
-  },
-  uint32array: {
-    option: ['Uint32Array']
-  },
-  float32array: {
-    option: ['Float32Array']
-  },
-  float64array: {
-    option: ['Float64Array']
-  },
-
-  // We're catching this instead of using this
-  // sparseUndefined: sparseUndefinedType,
-
-  ValidDate: {
-    valid: true
-  },
-  /*
-  sparseArrays: {
-      sparse: true
-  },
-  */
-  arrayNonindexKeys: {
-    sparse: true
-  }
-};
-
 /**
  * @typedef {"null"|"true"|"false"|"number"|"bigint"|"string"|"arrayReference"|
-*   "objectReference"|"array"|"object"|"date"|"userObject"|"undef"|
-*   "SpecialRealNumber"|"SpecialNumber"|"regexp"|"BooleanObject"|
-*   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
-*   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
-*   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
-*   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
-*   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
-*   "dompoint"|"dommatrix"} AvailableType
-*/
+ *   "objectReference"|"array"|"object"|"date"|"userObject"|"undef"|
+ *   "SpecialRealNumber"|"SpecialNumber"|"regexp"|"BooleanObject"|
+ *   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
+ *   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
+ *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
+ *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
+ *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
+ *   "dompoint"|"dommatrix"} AvailableType
+ */
 
 /**
- * @param {[
- *   copyFrom: AvailableType, copyTo: AvailableType
- * ][]} replacements
- * @returns {void}
+ *
  */
-const copyTypeObjs = (replacements) => {
-  replacements.forEach(([copyFrom, copyTo]) => {
-    Object.assign(Types.availableTypes[
+class Types {
+  /**
+   *
+   */
+  constructor () {
+    this.formats = new Formats(); // Todo: Make customizable and test
+
+    /** @type {CustomValidateAllReferences|undefined} */
+    this.customValidateAllReferences = undefined;
+    /**
+     * @type {{
+     *   [key in AvailableType]: Partial<TypeObject>|string[]
+     * }}
+     */
+    this.availableTypes = {
+      null: nullType,
+      true: trueType,
+      false: falseType,
+      number: numberType,
+      bigint: bigintType,
+      string: stringType,
+      arrayReference: arrayReferenceType,
+      objectReference: objectReferenceType,
+      array: arrayType,
+      // Note: We don't do for BooleanObject/NumberObject/StringObject, date,
+      //   regexp, as added properties on them are not being cloned (in Chrome
+      //   at least)
+      object: objectType,
+      date: dateType,
+
+      // This type is only for throwing upon cloning errors:
+      // 'checkDataCloneException'
+      // This type might be supported by evaluable JS or config
+      //   passed in:
+      userObject: ['User objects'],
+      undef: undefinedType,
+      SpecialRealNumber: SpecialRealNumberSuperType,
+      SpecialNumber: SpecialNumberSuperType,
+
+      error: errorType,
+      errors: errorsSpecialType,
+
+      regexp: regexpType,
+      BooleanObject: BooleanObjectType,
+      NumberObject: NumberObjectType,
+      StringObject: StringObjectType,
+
+      map: mapType,
+      set: setType,
+
+      file: fileType,
+      filelist: filelistType,
+      blob: blobType,
+      blobHTML: blobHTMLType,
+
+      domexception: domexceptionType,
+      domrect: domrectType,
+      dompoint: dompointType,
+      dommatrix: dommatrixType,
+
+      arraybuffer: {
+        option: ['ArrayBuffer']
+      },
+      arraybufferview: {
+        option: ['ArrayBufferView']
+      },
+      dataview: {
+        option: ['DataView']
+      },
+      imagedata: {
+        option: ['ImageData']
+      },
+      imagebitmap: {
+        option: ['ImageBitmap']
+      },
+
+      // Typed Arrays
+      int8array: {
+        option: ['Int8Array']
+      },
+      uint8array: {
+        option: ['Uint8Array']
+      },
+      uint8clampedarray: {
+        option: ['Uint8ClampedArray']
+      },
+      int16array: {
+        option: ['Int16Array']
+      },
+      uint16array: {
+        option: ['Uint16Array']
+      },
+      int32array: {
+        option: ['Int32Array']
+      },
+      uint32array: {
+        option: ['Uint32Array']
+      },
+      float32array: {
+        option: ['Float32Array']
+      },
+      float64array: {
+        option: ['Float64Array']
+      },
+
+      // We're catching this instead of using this
+      // sparseUndefined: sparseUndefinedType,
+
+      ValidDate: {
+        valid: true
+      },
+      /*
+      sparseArrays: {
+          sparse: true
+      },
+      */
+      arrayNonindexKeys: {
+        sparse: true
+      }
+    };
+
+    /**
+     * @param {[
+     *   copyFrom: AvailableType, copyTo: AvailableType
+     * ][]} replacements
+     * @returns {void}
+     */
+    const copyTypeObjs = (replacements) => {
+      replacements.forEach(([copyFrom, copyTo]) => {
+        Object.assign(this.availableTypes[
+          /** @type {AvailableType} */
+          (copyTo)
+        ], this.availableTypes[
+          /** @type {AvailableType} */
+          (copyFrom)
+        ]);
+      });
+    };
+
+    copyTypeObjs(
+      [
+        /** @type {[AvailableType, AvailableType]} */ (
+          ['date', 'ValidDate']
+        ),
+        // 'sparseArrays'
+        /** @type {[AvailableType, AvailableType]} */ (
+          ['array', 'arrayNonindexKeys']
+        )
+      ]
+    );
+
+    /**
+     * @type {{
+     *   [key: string]: {
+     *     [key: string]: {type: AvailableType, after: AvailableType}[]
+     *   }
+     * }}
+     */
+    this.contexts = {};
+    Object.entries(this.availableTypes).forEach(([typ, typeObj]) => {
+      const type = /** @type {AvailableType} */ (typ);
+      const {stateDependent} = /** @type {TypeObject} */ (typeObj);
+      if (stateDependent) {
+        Object.entries(stateDependent).forEach(([
+          format, formatStateDependent
+        ]) => {
+          if (!this.contexts[format]) {
+            this.contexts[format] = {};
+          }
+          const {contexts, after} = formatStateDependent;
+          contexts.forEach((context) => {
+            if (!this.contexts[format][context]) {
+              this.contexts[format][context] = [];
+            }
+            this.contexts[format][context].push({type, after});
+          });
+        });
+      }
+    });
+  }
+
+  /**
+   * @param {import('./formats.js').AvailableFormat} format
+   * @param {StructuredCloneValue} record
+   * @param {StateObject} stateObj
+   * @returns {Promise<Element>}
+   */
+  async getControlsForFormatAndValue (
+    format, record, stateObj
+  ) {
+    return await this.formats.getControlsForFormatAndValue(
+      this, format, record, stateObj
+    );
+  }
+
+  /**
+   * @param {import('./formats.js').AvailableFormat} format
+   * @param {string} context
+   * @returns {{
+   *   type: AvailableType
+   *   after: AvailableType
+   * }[]}
+   */
+  getContextInfo (format, context) {
+    return this.contexts[format][context];
+  }
+
+  /** @type {GetValueForRoot} */
+  getValueForRoot (root, stateObj, currentPath) {
+    const typeObject = /** @type {TypeObject} */ (
+      this.availableTypes[
+        /** @type {AvailableType} */
+        (Types.getTypeForRoot(root))
+      ]
+    );
+    return typeObject.getValue({
+      root, stateObj, currentPath
+    });
+  }
+
+  /** @type {GetFormControlForRoot} */
+  getFormControlForRoot (root) {
+    const typeObj = /** @type {TypeObject} */ (this.availableTypes[
       /** @type {AvailableType} */
-      (copyTo)
-    ], Types.availableTypes[
-      /** @type {AvailableType} */
-      (copyFrom)
+      (Types.getTypeForRoot(root))
     ]);
-  });
-};
+    /* istanbul ignore if -- All have except aliases */
+    if (!typeObj.getInput) {
+      return null;
+    }
+    return typeObj.getInput({root});
+  }
 
-copyTypeObjs(
-  [
-    /** @type {[AvailableType, AvailableType]} */ (
-      ['date', 'ValidDate']
-    ),
-    // 'sparseArrays'
-    /** @type {[AvailableType, AvailableType]} */ (
-      ['array', 'arrayNonindexKeys']
-    )
-  ]
-);
+  /** @type {GetValueFromRootAncestor} */
+  getValueFromRootAncestor (selOrEl, stateObj) {
+    return this.getValueForRoot(
+      /** @type {RootElement} */
+      ($e(selOrEl, 'div[data-type]')),
+      {
+        ...stateObj,
+        formats: this.formats
+      }
+    );
+  }
 
+  /** @type {GetFormControlFromRootAncestor} */
+  getFormControlFromRootAncestor (selOrEl) {
+    const root = /** @type {RootElement} */ ($e(selOrEl, 'div[data-type]'));
+    if (!root) {
+      return null;
+    }
+    return this.getFormControlForRoot(root);
+  }
+
+  /** @type {GetOptionForType} */
+  getOptionForType (type) {
+    /** @type {[string, {value?: AvailableType, title?: string}?]} */
+    const optInfo = [
+      ...(/** @type {TypeObject} */ (
+        this.availableTypes[type]
+      )).option
+    ];
+    optInfo[1] = {value: type, ...(optInfo[1])};
+    return /** @type {[string, {value: AvailableType, title?: string}]} */ (
+      optInfo
+    );
+  }
+
+  /** @type {GetTypeOptionsForFormatAndState} */
+  getTypeOptionsForFormatAndState (format, parserState) {
+    const typesForFormatAndState = this.formats.getTypesForFormatAndState(
+      this, format, parserState
+    );
+    if (!typesForFormatAndState) {
+      throw new Error('Unexpected type for format and state');
+    }
+    return typesForFormatAndState.map((type) => {
+      return this.getOptionForType(type);
+    });
+  }
+
+  /** @type {GetUIForModeAndType} */
+  getUIForModeAndType ({
+    readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
+    buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
+    replaced
+  }) {
+    const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
+    const arg = hasValue
+      ? {
+        typeNamespace, type, buildTypeChoices,
+        format, schemaContent, schemaState,
+        resultType, topRoot, bringIntoFocus, value,
+        replaced,
+        types: this
+      }
+      : {
+        typeNamespace, type, buildTypeChoices,
+        format, schemaContent, schemaState,
+        resultType, topRoot, bringIntoFocus,
+        replaced,
+        types: this
+      };
+    const root = /** @type {HTMLDivElement} */ (jml(
+      ...(readonly
+        ? typeObj.viewUI(arg)
+        : typeObj.editUI(arg))
+    ));
+    if (!readonly && typeObj.validate) {
+      const formControl = typeObj.getInput({root});
+      formControl.addEventListener('input', () => {
+        this.validate({type, root, topRoot});
+      });
+    }
+    return root;
+  }
+
+  /** @type {ValidateAllReferences} */
+  validateAllReferences ({topRoot}) {
+    /* istanbul ignore if -- Unreachable? */
+    if (!topRoot) {
+      console.log('No references present');
+      return;
+    }
+
+    // Could just hard-code arrayReference and objectReference,
+    //  but we'll try to avoid depending on specific types
+    Object.values(this.availableTypes).forEach((typeObj) => {
+      const typeObject = /** @type {TypeObject} */ (typeObj);
+      if (typeObject.validateAll) {
+        typeObject.validateAll({topRoot, types: this});
+      }
+    });
+
+    if (this.customValidateAllReferences) {
+      this.customValidateAllReferences({topRoot});
+    }
+  }
+
+  /** @type {Validate} */
+  validate ({type, root, topRoot}) {
+    const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
+    // Todo (low): We limit for now to input boxes which have `validate`
+    if (typeObj.validate) {
+      const {valid, message} = typeObj.validate({root, topRoot});
+      const formControl = typeObj.getInput({root});
+      formControl.setCustomValidity(
+        valid
+          ? ''
+          /* istanbul ignore next -- Should always have a message */
+          : message || 'Invalid'
+      );
+      formControl.reportValidity();
+      return valid;
+    }
+    return true;
+  }
+
+  /** @type {SetValue} */
+  setValue ({type, root, value}) {
+    const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
+    if (typeObj.setValue) {
+      typeObj.setValue({root, value});
+    }
+  }
+
+  // Todo (low): Should really add real parser
+  // Todo (low): Implement `getStringForValue` (e.g., to expose feature for
+  //          bookmarking object value currently in view); would not be
+  //          enough to iterate DOM to get string URL as we'd also like
+  //          the ability to have arbitrary JSON/structuredCloning sent to this
+  //          URL from other sites/programs (can currently pass in JSON
+  //          format to the URL, but that is still expecting our Router
+  //          string syntax)
+
+  /** @type {GetValueForString} */
+  getValueForString (s, {
+    format, state, endMatchTypeObjs = [], firstRun = true,
+    rootHolder = [], parent, parentPath
+  }) {
+    const allowedTypes = this.formats.getTypesForFormatAndState(
+      this, format, state
+    );
+    if (!allowedTypes) {
+      throw new Error('Could not get types for format and state');
+    }
+    const allowedTypeObjs = Object.entries(
+      this.availableTypes
+    ).filter(([type]) => {
+      return allowedTypes.includes(/** @type {AvailableType} */ (type));
+    });
+    const allowedTypeObjsVals = allowedTypeObjs.map(([, arr]) => arr);
+
+    const reduced = allowedTypeObjsVals.reduce((array, typObj) => {
+      const typeObj = /** @type {TypeObject} */ (typObj);
+      let arr = /** @type {string[]} */ (array);
+      if (typeObj.regexEndings) {
+        arr.push(...typeObj.regexEndings);
+        arr = [...new Set(arr)];
+      }
+      return arr;
+    }, []);
+    const endings = '|' + /** @type {string[]} */ (
+      reduced
+    ).map((str) => escapeRegex(str)).join('|');
+
+    /**
+     * @type {RegExpMatchArray|boolean|null}
+     */
+    let match = null;
+    let found = allowedTypeObjs.find(([/* _type */, typObj]) => {
+      const typeObj = /** @type {TypeObject} */ (typObj);
+      let {stringRegex} = typeObj;
+      if (typeof typeObj.stringRegex === 'function') {
+        stringRegex = typeObj.stringRegex(true);
+      }
+      stringRegex = stringRegex
+        // Strip off terminal (dollar sign) when matching substrings
+        ? new RegExp(
+          /** @type {RegExp} */ (
+            stringRegex
+          ).source.slice(0, -1) + '(?=$' + endings + ')',
+          'u'
+        )
+        : stringRegex;
+      match = Boolean(stringRegex && s) && s.match(
+        /** @type {RegExp} */ (stringRegex)
+      );
+      return match;
+    });
+
+    let beginOnly = false;
+    if (found === undefined) {
+      found = allowedTypeObjs.find(([/* _type */, typObj]) => {
+        const typeObj = /** @type {TypeObject} */ (typObj);
+        const {stringRegexBegin} = typeObj;
+        match = Boolean(stringRegexBegin && s) && s.match(
+          /** @type {RegExp} */ (stringRegexBegin)
+        );
+        if (match) {
+          beginOnly = true;
+          endMatchTypeObjs.push(typeObj);
+        }
+        return match;
+      });
+    }
+    let assign = true;
+    if (found !== undefined) {
+      // The `found` is evaluated again, so sets `match` to non-null
+      const mtch = /** @type {RegExpMatchArray} */ (
+        /** @type {unknown} */ (match)
+      );
+      const [content, innerContent] = mtch;
+      let remnant = s.slice(content.length);
+      s = s.slice(0, content.length);
+      // console.log('s0', s, '::', remnant, match);
+      let valObj;
+      try {
+        valObj = /** @type {TypeObject} */ (found[1]).toValue(
+          mtch.groups?.innerContent || innerContent || s, {
+            types: this,
+            format,
+            match,
+            endMatchTypeObjs,
+            remnant,
+            rootHolder,
+            parent,
+            parentPath
+          }
+        );
+      /* istanbul ignore next -- Good regexes should prevent */
+      } catch (e) {
+        /* istanbul ignore next -- Good regexes should prevent */
+        console.log('eee', e);
+        /* istanbul ignore next -- Good regexes should prevent */
+        throw e;
+      }
+      if (valObj.assign === false) {
+        assign = false;
+      }
+      const {value} = valObj;
+      if (valObj.remnant !== undefined) {
+        ({remnant} = valObj);
+      }
+
+      if (beginOnly && endMatchTypeObjs.length) {
+        const endMatch = remnant.match(
+          /** @type {RegExp} */ (/** @type {TypeObject} */ (
+            endMatchTypeObjs.at(-1)
+          ).stringRegexEnd)
+        );
+        if (endMatch) {
+          endMatchTypeObjs.pop(); // Safe now to extract
+          remnant = remnant.slice(endMatch[0].length);
+        }
+      }
+      if (firstRun) {
+        const typeson = new Typeson().register(
+          structuredCloningThrowing
+        );
+        try {
+          const topRoot = typeson.revive(value);
+          rootHolder.forEach(([type, parent, parentPath, path]) => {
+            const typeObject = this.availableTypes[
+              /** @type {AvailableType} */ (type + 'Reference')
+            ];
+
+            // @ts-expect-error Reference method exists
+            const val = typeObject.resolveReference(path, topRoot);
+            const basicType = getJSONType(val);
+            // eslint-disable-next-line @stylistic/max-len -- Long
+            /* istanbul ignore else -- Successful reference always an object/array? */
+            if (
+              ['array', 'object'].includes(type) && basicType === type
+            ) {
+              /** @type {{[key: string]: any}} */ (
+                parent
+              )[/** @type {string|number} */ (parentPath)] = val;
+            }
+          });
+          return [topRoot, remnant, beginOnly, assign];
+        } catch (err) {
+          console.log('failed Typeson revival', err);
+        }
+      }
+      return [value, remnant, beginOnly, assign];
+    }
+    throw new Error('Bad parsing data');
+  }
+
+  /**
+   * @param {AvailableType} type
+   * @returns {Partial<TypeObject>|string[]}
+   */
+  getTypeObject (type) {
+    return this.availableTypes[type];
+  }
+}
+
+/** @type {GetTypeForRoot} */
 Types.getTypeForRoot = (root) => {
   return String(root ? root.dataset.type : root);
 };
 
-/**
- * @typedef {(
- *   keypath: string,
- *   parentPath: string,
- *   arrayOrObjectPropertyName: string,
- *   valueType: string
- * ) => StateObject} GetPossibleSchemasForPathAndType
- */
-
-/**
- * @typedef {{
- *   typeNamespace?: string,
- *   "readonly"?: boolean,
- *   format?: import('./formats.js').AvailableFormat,
- *   formats: import('./formats.js').default,
- *   error?: Error,
- *   rootUI?: Element,
- *   schema?: string,
- *   schemaContent?: object,
- *   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
- *   paths?: {[currentPath: string]: {
- *     referentPath: string,
- *     expectArrayReferent: boolean
- *   }},
- *   handlingReference?: boolean
- * }} StateObject
- */
-
-Types.getValueForRoot = (root, stateObj, currentPath) => {
-  const typeObject = /** @type {TypeObject} */ (
-    Types.availableTypes[
-      /** @type {AvailableType} */
-      (Types.getTypeForRoot(root))
-    ]
-  );
-  return typeObject.getValue({
-    root, stateObj, currentPath
-  });
-};
-
-Types.getFormControlForRoot = (root) => {
-  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[
-    /** @type {AvailableType} */
-    (Types.getTypeForRoot(root))
-  ]);
-  /* istanbul ignore if -- All have except aliases */
-  if (!typeObj.getInput) {
-    return null;
-  }
-  return typeObj.getInput({root});
-};
-
-Types.getValueFromRootAncestor = (selOrEl, stateObj) => {
-  return Types.getValueForRoot(
-    /** @type {RootElement} */
-    ($e(selOrEl, 'div[data-type]')),
-    stateObj
-  );
-};
-
-Types.getFormControlFromRootAncestor = (selOrEl) => {
-  const root = /** @type {RootElement} */ ($e(selOrEl, 'div[data-type]'));
-  if (!root) {
-    return null;
-  }
-  return Types.getFormControlForRoot(root);
-};
-
-Types.getOptionForType = (type) => {
-  /** @type {[string, {value?: AvailableType, title?: string}?]} */
-  const optInfo = [
-    ...(/** @type {TypeObject} */ (
-      Types.availableTypes[type]
-    )).option
-  ];
-  optInfo[1] = {value: type, ...(optInfo[1])};
-  return /** @type {[string, {value: AvailableType, title?: string}]} */ (
-    optInfo
-  );
-};
-
-Types.getTypeOptionsForFormatAndState = (format, parserState) => {
-  const typesForFormatAndState = formats.getTypesForFormatAndState(
-    format, parserState
-  );
-  if (!typesForFormatAndState) {
-    throw new Error('Unexpected type for format and state');
-  }
-  return typesForFormatAndState.map((type) => {
-    return Types.getOptionForType(type);
-  });
-};
-
-Types.getUIForModeAndType = ({
-  readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
-  buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
-  replaced
-}) => {
-  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
-  const arg = hasValue
-    ? {
-      typeNamespace, type, buildTypeChoices,
-      format, schemaContent, schemaState,
-      resultType, topRoot, bringIntoFocus, value,
-      replaced
-    }
-    : {
-      typeNamespace, type, buildTypeChoices,
-      format, schemaContent, schemaState,
-      resultType, topRoot, bringIntoFocus,
-      replaced
-    };
-  const root = /** @type {HTMLDivElement} */ (jml(
-    ...(readonly
-      ? typeObj.viewUI(arg)
-      : typeObj.editUI(arg))
-  ));
-  if (!readonly && typeObj.validate) {
-    const formControl = typeObj.getInput({root});
-    formControl.addEventListener('input', () => {
-      Types.validate({type, root, topRoot});
-    });
-  }
-  return root;
-};
-
-Types.contexts = {};
-Object.entries(Types.availableTypes).forEach(([typ, typeObj]) => {
-  const type = /** @type {AvailableType} */ (typ);
-  const {stateDependent} = /** @type {TypeObject} */ (typeObj);
-  if (stateDependent) {
-    Object.entries(stateDependent).forEach(([format, formatStateDependent]) => {
-      if (!Types.contexts[format]) {
-        Types.contexts[format] = {};
-      }
-      const {contexts, after} = formatStateDependent;
-      contexts.forEach((context) => {
-        if (!Types.contexts[format][context]) {
-          Types.contexts[format][context] = [];
-        }
-        Types.contexts[format][context].push({type, after});
-      });
-    });
-  }
-});
-
+/** @type {ValidValuesSet} */
 Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
   // If form is hidden, don't list errors by default
   if (!form.offsetParent ||
@@ -683,57 +955,6 @@ Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
 };
 
 /**
- * Any other possibilities than `div`?
- * @typedef {HTMLDivElement} RootElement
- */
-
-Types.validateAllReferences = ({topRoot}) => {
-  /* istanbul ignore if -- Unreachable? */
-  if (!topRoot) {
-    console.log('No references present');
-    return;
-  }
-
-  // Could just hard-code arrayReference and objectReference,
-  //  but we'll try to avoid depending on specific types
-  Object.values(Types.availableTypes).forEach((typeObj) => {
-    const typeObject = /** @type {TypeObject} */ (typeObj);
-    if (typeObject.validateAll) {
-      typeObject.validateAll({topRoot});
-    }
-  });
-
-  if (Types.customValidateAllReferences) {
-    Types.customValidateAllReferences({topRoot});
-  }
-};
-
-Types.validate = ({type, root, topRoot}) => {
-  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
-  // Todo (low): We limit for now to input boxes which have `validate`
-  if (typeObj.validate) {
-    const {valid, message} = typeObj.validate({root, topRoot});
-    const formControl = typeObj.getInput({root});
-    formControl.setCustomValidity(
-      valid
-        ? ''
-        /* istanbul ignore next -- Should always have a message */
-        : message || 'Invalid'
-    );
-    formControl.reportValidity();
-    return valid;
-  }
-  return true;
-};
-
-Types.setValue = ({type, root, value}) => {
-  const typeObj = /** @type {TypeObject} */ (Types.availableTypes[type]);
-  if (typeObj.setValue) {
-    typeObj.setValue({root, value});
-  }
-};
-
-/**
  *
  * @param {string} str
  * @returns {string}
@@ -742,165 +963,5 @@ function escapeRegex (str) {
   return String(str).
     replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
 }
-
-// Todo (low): Should really add real parser
-// Todo (low): Implement `getStringForValue` (e.g., to expose feature for
-//          bookmarking object value currently in view); would not be
-//          enough to iterate DOM to get string URL as we'd also like
-//          the ability to have arbitrary JSON/structuredCloning sent to this
-//          URL from other sites/programs (can currently pass in JSON
-//          format to the URL, but that is still expecting our Router
-//          string syntax)
-
-Types.getValueForString = (s, {
-  format, state, endMatchTypeObjs = [], firstRun = true,
-  rootHolder = [], parent, parentPath
-}) => {
-  const allowedTypes = formats.getTypesForFormatAndState(format, state);
-  if (!allowedTypes) {
-    throw new Error('Could not get types for format and state');
-  }
-  const allowedTypeObjs = Object.entries(
-    Types.availableTypes
-  ).filter(([type]) => {
-    return allowedTypes.includes(/** @type {AvailableType} */ (type));
-  });
-  const allowedTypeObjsVals = allowedTypeObjs.map(([, arr]) => arr);
-
-  const reduced = allowedTypeObjsVals.reduce((array, typObj) => {
-    const typeObj = /** @type {TypeObject} */ (typObj);
-    let arr = /** @type {string[]} */ (array);
-    if (typeObj.regexEndings) {
-      arr.push(...typeObj.regexEndings);
-      arr = [...new Set(arr)];
-    }
-    return arr;
-  }, []);
-  const endings = '|' + /** @type {string[]} */ (
-    reduced
-  ).map((str) => escapeRegex(str)).join('|');
-
-  /**
-   * @type {RegExpMatchArray|boolean|null}
-   */
-  let match = null;
-  let found = allowedTypeObjs.find(([/* _type */, typObj]) => {
-    const typeObj = /** @type {TypeObject} */ (typObj);
-    let {stringRegex} = typeObj;
-    if (typeof typeObj.stringRegex === 'function') {
-      stringRegex = typeObj.stringRegex(true);
-    }
-    stringRegex = stringRegex
-      // Strip off terminal (dollar sign) when matching substrings
-      ? new RegExp(
-        /** @type {RegExp} */ (
-          stringRegex
-        ).source.slice(0, -1) + '(?=$' + endings + ')',
-        'u'
-      )
-      : stringRegex;
-    match = Boolean(stringRegex && s) && s.match(
-      /** @type {RegExp} */ (stringRegex)
-    );
-    return match;
-  });
-
-  let beginOnly = false;
-  if (found === undefined) {
-    found = allowedTypeObjs.find(([/* _type */, typObj]) => {
-      const typeObj = /** @type {TypeObject} */ (typObj);
-      const {stringRegexBegin} = typeObj;
-      match = Boolean(stringRegexBegin && s) && s.match(
-        /** @type {RegExp} */ (stringRegexBegin)
-      );
-      if (match) {
-        beginOnly = true;
-        endMatchTypeObjs.push(typeObj);
-      }
-      return match;
-    });
-  }
-  let assign = true;
-  if (found !== undefined) {
-    // The `found` is evaluated again, so sets `match` to non-null
-    const mtch = /** @type {RegExpMatchArray} */ (
-      /** @type {unknown} */ (match)
-    );
-    const [content, innerContent] = mtch;
-    let remnant = s.slice(content.length);
-    s = s.slice(0, content.length);
-    // console.log('s0', s, '::', remnant, match);
-    let valObj;
-    try {
-      valObj = /** @type {TypeObject} */ (found[1]).toValue(
-        mtch.groups?.innerContent || innerContent || s, {
-          format,
-          match,
-          endMatchTypeObjs,
-          remnant,
-          rootHolder,
-          parent,
-          parentPath
-        }
-      );
-    /* istanbul ignore next -- Good regexes should prevent */
-    } catch (e) {
-      /* istanbul ignore next -- Good regexes should prevent */
-      console.log('eee', e);
-      /* istanbul ignore next -- Good regexes should prevent */
-      throw e;
-    }
-    if (valObj.assign === false) {
-      assign = false;
-    }
-    const {value} = valObj;
-    if (valObj.remnant !== undefined) {
-      ({remnant} = valObj);
-    }
-
-    if (beginOnly && endMatchTypeObjs.length) {
-      const endMatch = remnant.match(
-        /** @type {RegExp} */ (/** @type {TypeObject} */ (
-          endMatchTypeObjs.at(-1)
-        ).stringRegexEnd)
-      );
-      if (endMatch) {
-        endMatchTypeObjs.pop(); // Safe now to extract
-        remnant = remnant.slice(endMatch[0].length);
-      }
-    }
-    if (firstRun) {
-      const typeson = new Typeson().register(
-        structuredCloningThrowing
-      );
-      try {
-        const topRoot = typeson.revive(value);
-        rootHolder.forEach(([type, parent, parentPath, path]) => {
-          const typeObject = Types.availableTypes[
-            /** @type {AvailableType} */ (type + 'Reference')
-          ];
-
-          // @ts-expect-error Reference method exists
-          const val = typeObject.resolveReference(path, topRoot);
-          const basicType = getJSONType(val);
-          // eslint-disable-next-line @stylistic/max-len -- Long
-          /* istanbul ignore else -- Successful reference always an object/array? */
-          if (
-            ['array', 'object'].includes(type) && basicType === type
-          ) {
-            /** @type {{[key: string]: any}} */ (
-              parent
-            )[/** @type {string|number} */ (parentPath)] = val;
-          }
-        });
-        return [topRoot, remnant, beginOnly, assign];
-      } catch (err) {
-        console.log('failed Typeson revival', err);
-      }
-    }
-    return [value, remnant, beginOnly, assign];
-  }
-  throw new Error('Bad parsing data');
-};
 
 export default Types;

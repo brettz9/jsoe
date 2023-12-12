@@ -1,6 +1,7 @@
 import {jml} from './vendor-imports.js';
 import {buildTypeChoices} from './typeChoices.js';
 import Types from './types.js';
+import Formats from './formats.js';
 import {$e, DOM} from './utils/templateUtils.js';
 
 /**
@@ -90,6 +91,7 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
  *   instances of typeChoices on the page
  * @param {import('./formats.js').default} cfg.formats
+ * @param {import('./types.js').default} [cfg.types]
  * @returns {{
  *   formatChoices: FormatChoices,
  *   typesHolder: TypesHolder,
@@ -99,6 +101,8 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   getType: () => string,
  *   validValuesSet: () => boolean,
  *   setValue: SetValue,
+ *   formats: import('./formats.js').default,
+ *   types: import('./types.js').default
  * }} The selector for types and the container for them. Both should be
  *   added to the page.
  */
@@ -109,7 +113,8 @@ export function formatAndTypeChoices ({
   singleValue,
   hasKeyPath,
   typeNamespace,
-  formats
+  formats = new Formats(),
+  types = new Types()
 }) {
   const format = 'structuredCloning';
   const formatChoices = /** @type {FormatChoices} */ (jml('select', {
@@ -157,6 +162,7 @@ export function formatAndTypeChoices ({
           // resultType: 'both',
           format: this.value,
           formats,
+          types,
           typeNamespace,
           requireObject: hasKeyPath,
           objectHasValue: hasValue,
@@ -209,6 +215,7 @@ export function formatAndTypeChoices ({
     topRoot: /** @type {HTMLDivElement} */ ($e(typesHolder, 'div[data-type]')),
     format,
     formats,
+    types,
     typeNamespace,
     requireObject: hasKeyPath,
     objectHasValue: hasValue,
@@ -217,6 +224,8 @@ export function formatAndTypeChoices ({
   }).domArray}, typesHolder);
 
   return {
+    formats,
+    types,
     formatChoices,
     typesHolder,
     // Easier for Jamilih
@@ -235,12 +244,13 @@ export function formatAndTypeChoices ({
       const root = /** @type {HTMLDivElement & {$getTypeRoot: TypeRootGetter}} */ (
         typesHolder
       ).$getTypeRoot();
-      return Types.getValueForRoot(/** @type {HTMLDivElement} */ (root), {
+      return types.getValueForRoot(/** @type {HTMLDivElement} */ (root), {
         typeNamespace,
         format: /** @type {import('./formats.js').AvailableFormat} */ (
           formatChoices.value
         ),
         formats,
+        types,
         ...stateObj
       }, currentPath);
     },
@@ -274,6 +284,7 @@ export function formatAndTypeChoices ({
     async setValue (value, stateObj) {
       const rootEditUI = /** @type {HTMLDivElement} */ (
         await formats.getControlsForFormatAndValue(
+          types,
           /** @type {import('./formats.js').AvailableFormat} */ (
             formatChoices.value
           ),

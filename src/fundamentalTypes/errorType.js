@@ -169,7 +169,7 @@ const errorType = {
     return errObj;
   },
   viewUI (
-    {value: o, format}
+    {value: o, types, format}
   ) {
     return /** @type {import('jamilih').JamilihArray} */ ([
       'div', {dataset: {type: 'error'}}, [
@@ -208,7 +208,8 @@ const errorType = {
             o.cause
               ? this.viewUI({
                 format,
-                value: o.cause
+                value: o.cause,
+                types
               })
               : ''
           ]]
@@ -216,7 +217,7 @@ const errorType = {
       ]
     ]);
   },
-  editUI ({typeNamespace, value = {
+  editUI ({typeNamespace, types, value = {
     message: '',
     name: '',
     fileName: '',
@@ -382,6 +383,7 @@ const errorType = {
                 if (!causeContents?.children.length) {
                   const editui = component.editUI({
                     typeNamespace,
+                    types,
                     value: value.cause
                   });
                   jml(...editui, causeContents);

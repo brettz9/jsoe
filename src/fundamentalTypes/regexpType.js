@@ -1,6 +1,5 @@
 import {jml} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
-import Types from '../types.js';
 
 /**
  * @type {import('../types.js').TypeObject & {allowedFlags: string[]}}
@@ -65,7 +64,7 @@ const regexpType = {
   viewUI ({value}) {
     return ['i', {dataset: {type: 'regexp'}}, [String(value)]];
   },
-  editUI ({typeNamespace, value = {source: '', flags: ''}}) {
+  editUI ({typeNamespace, types, value = {source: '', flags: ''}}) {
     // Todo (low): Add RegExp syntax highlighter
     const select = /** @type {HTMLSelectElement} */ (jml(
       'select',
@@ -107,7 +106,7 @@ const regexpType = {
     // Could be disallowed flags; we might instead try in
     //   advance which will work
     select.addEventListener('change', () => {
-      Types.validate({type: 'regexp', root});
+      types.validate({type: 'regexp', root});
     });
     return [root];
   }

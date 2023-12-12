@@ -1,7 +1,6 @@
 import {jml, nbsp} from '../vendor-imports.js';
 
-import Formats from '../formats.js';
-import Types, {getPropertyValueFromLegend} from '../types.js';
+import {getPropertyValueFromLegend} from '../types.js';
 import {$e, U, DOM} from '../utils/templateUtils.js';
 import dialogs from '../utils/dialogs.js';
 import {
@@ -98,7 +97,10 @@ const arrayType = {
     } = /** @type {import('../types.js').RootInfo} */ (info);
     // eslint-disable-next-line prefer-destructuring -- TS
     const format = /** @type {import('../types.js').RootInfo} */ (info).format;
-
+    // eslint-disable-next-line prefer-destructuring -- TS
+    const types = /** @type {import('../types.js').default} */ (
+      /** @type {import('../types.js').RootInfo} */ (info).types
+    );
     const {sparse} = this;
     const state = sparse
       ? 'arrayNonindexKeys'
@@ -149,7 +151,7 @@ const arrayType = {
         }
         let v, beginOnly, assign;
         try {
-          [v, stringVal, beginOnly, assign] = Types.getValueForString(
+          [v, stringVal, beginOnly, assign] = types.getValueForString(
             stringVal,
             {
               firstRun: false,
@@ -206,7 +208,7 @@ const arrayType = {
       stringVal = stringVal.slice(propAndColon[0].length);
       let v, beginOnly, assign;
       try {
-        [v, stringVal, beginOnly, assign] = Types.getValueForString(
+        [v, stringVal, beginOnly, assign] = types.getValueForString(
           stringVal,
           {
             firstRun: false, format, state,
@@ -235,9 +237,13 @@ const arrayType = {
     parse();
     return {value: retObj, remnant: stringVal};
   },
-  getValue ({root, stateObj = {
-    formats: new Formats()
-  }, currentPath = ''}) {
+  getValue ({root, stateObj, currentPath = ''}) {
+    /* istanbul ignore if */
+    if (!stateObj) {
+      throw new Error('TS guard'); // TS guard
+    }
+    // eslint-disable-next-line prefer-destructuring -- TS
+    const types = /** @type {import('../types.js').default} */ (stateObj.types);
     const top = currentPath === '';
     const arrayItems =
       /**
@@ -270,7 +276,7 @@ const arrayType = {
      * @returns {[boolean, any?]}
      */
     const getValOrRef = (root, currentPathPart) => {
-      const value = Types.getValueForRoot(
+      const value = types.getValueForRoot(
         root, stateObj, currentPath + '/' + currentPathPart
       );
       if ('handlingReference' in stateObj && stateObj.handlingReference) {
@@ -349,7 +355,7 @@ const arrayType = {
   },
 
   // Try to keep in sync with basic structure of `editUI`
-  viewUI ({typeNamespace, type, value, topRoot, resultType, format}) {
+  viewUI ({typeNamespace, type, types, value, topRoot, resultType, format}) {
     // const {sparse} = this;
     let itemIndex = -1;
 
@@ -406,7 +412,7 @@ const arrayType = {
             schemaContent, schemaState
           }) {
             if (parentType === 'map') {
-              const root = Types.getUIForModeAndType({
+              const root = types.getUIForModeAndType({
                 resultType,
                 readonly: true,
                 typeNamespace, type, topRoot,
@@ -437,7 +443,7 @@ const arrayType = {
             }
 
             const fieldset = this.$addArrayElement({propName});
-            const root = Types.getUIForModeAndType({
+            const root = types.getUIForModeAndType({
               resultType,
               readonly: true,
               typeNamespace, type, topRoot,
@@ -547,6 +553,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
+    formats, types,
     type, arrayState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -637,7 +644,7 @@ const arrayType = {
       } else {
         group.before(swapGroup);
       }
-      Types.validateAllReferences({
+      types.validateAllReferences({
         // eslint-disable-next-line object-shorthand -- TS
         topRoot: /** @type {HTMLDivElement} */ (topRoot)
       }); // Needed
@@ -820,7 +827,7 @@ const arrayType = {
                 (this).$validateMapKey();
 
                 // Needed?
-                Types.validateAllReferences({
+                types.validateAllReferences({
                   // eslint-disable-next-line object-shorthand -- TS
                   topRoot: /** @type {HTMLDivElement} */ (topRoot)
                 });
@@ -905,7 +912,7 @@ const arrayType = {
                   /* await */ this.$validateLegend();
                   // Todo (low): We could make this more efficient by waiting
                   //   until all added (when pre-populating)
-                  Types.validateAllReferences({
+                  types.validateAllReferences({
                     // eslint-disable-next-line object-shorthand -- TS
                     topRoot: /** @type {HTMLDivElement} */ (topRoot)
                   }); // Needed
@@ -1160,7 +1167,17 @@ const arrayType = {
                       parentTypeObject.getValue.call({
                         ...parentTypeObject,
                         set: false
-                      }, {root})
+                      }, {
+                        root,
+                        stateObj: {
+                          types,
+                          // eslint-disable-next-line object-shorthand -- TS
+                          formats:
+                          /** @type {import('../formats.js').default} */ (
+                            formats
+                          )
+                        }
+                      })
                     );
                     // console.log('values', values);
 
@@ -1182,7 +1199,7 @@ const arrayType = {
                       if (!root) {
                         return null;
                       }
-                      return Types.getFormControlForRoot(root);
+                      return types.getFormControlForRoot(root);
                     });
 
                     const control = controls[dupeIndex];
@@ -1284,7 +1301,7 @@ const arrayType = {
           }
           // Maybe not needed as addition (without renumbering)
           //   wouldn't yet add type
-          Types.validateAllReferences({
+          types.validateAllReferences({
             // eslint-disable-next-line object-shorthand -- TS
             topRoot: /** @type {HTMLDivElement} */ (topRoot)
           });
@@ -1310,7 +1327,7 @@ const arrayType = {
                   });
                 }
                 // Maybe not needed as removal would remove circular
-                Types.validateAllReferences({
+                types.validateAllReferences({
                   // eslint-disable-next-line object-shorthand -- TS
                   topRoot: /** @type {HTMLDivElement} */ (topRoot)
                 });
@@ -1422,7 +1439,7 @@ const arrayType = {
           (this).$addArrayElement({alwaysFocus: true});
           // Maybe not needed as addition (without renumbering)
           //   wouldn't yet add type
-          Types.validateAllReferences({
+          types.validateAllReferences({
             // eslint-disable-next-line object-shorthand -- TS
             topRoot: /** @type {HTMLDivElement} */ (topRoot)
           });
@@ -1474,7 +1491,7 @@ const arrayType = {
                       fieldset.remove();
                     });
                     // Maybe not needed as removal would remove circular
-                    Types.validateAllReferences({
+                    types.validateAllReferences({
                       // eslint-disable-next-line object-shorthand -- TS
                       topRoot: /** @type {HTMLDivElement} */ (topRoot)
                     });
@@ -1568,7 +1585,7 @@ const arrayType = {
             ).$redrawMoveArrows();
           }
           // Maybe not needed as removal would remove circular
-          Types.validateAllReferences({
+          types.validateAllReferences({
             // eslint-disable-next-line object-shorthand -- TS
             topRoot: /** @type {HTMLDivElement} */ (topRoot)
           });
@@ -1590,7 +1607,7 @@ const arrayType = {
             itemIndex = -1;
           }
           // Maybe not needed as removal would remove circular
-          Types.validateAllReferences({
+          types.validateAllReferences({
             // eslint-disable-next-line object-shorthand -- TS
             topRoot: /** @type {HTMLDivElement} */ (topRoot)
           });
@@ -1645,13 +1662,13 @@ const arrayType = {
             //   from `errorsSpecialType` (and `filelistType`)
             if (setAValue) {
               const typeObj = /** @type {import('../types.js').TypeObject} */ (
-                Types.availableTypes[type]
+                types.getTypeObject(type)
               );
               if (typeObj.setValue) {
                 typeObj.setValue({root, value});
               }
             }
-            Types.validate({type, root, topRoot});
+            types.validate({type, root, topRoot});
             return root;
           },
 

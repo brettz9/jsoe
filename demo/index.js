@@ -1,19 +1,16 @@
 import {jml, body, $} from '../src/vendor-imports.js';
-// import FileList from '../src/utils/FileList.js';
 
 import {
   typeChoices,
   getFormatAndSchemaChoices,
   formatAndTypeChoices,
-  Types,
-  Formats
+  Types
 } from '../src/index.js';
 
-const formats = new Formats();
+const types = new Types();
 
 const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
   hasKeyPath: false,
-  formats,
   typeNamespace: 'demo-keypath-not-expected'
 });
 
@@ -64,15 +61,18 @@ setTimeout(async function () {
       id: 'viewUI',
       $on: {
         async click () {
-          const controls = await formats.getControlsForFormatAndValue(
-            $('#useIndexedDBKey').checked
-              ? 'indexedDBKey'
-              : 'structuredCloning',
-            keyPathNotExpectedTypeChoices.getValue(),
-            {
-              readonly: true
-            }
-          );
+          const controls =
+            // eslint-disable-next-line @stylistic/max-len -- Long
+            await keyPathNotExpectedTypeChoices.formats.getControlsForFormatAndValue(
+              keyPathNotExpectedTypeChoices.types,
+              $('#useIndexedDBKey').checked
+                ? 'indexedDBKey'
+                : 'structuredCloning',
+              keyPathNotExpectedTypeChoices.getValue(),
+              {
+                readonly: true
+              }
+            );
           $('#viewUIResults').firstChild?.remove();
           $('#viewUIResults').append(controls);
         }
@@ -120,10 +120,11 @@ setTimeout(async function () {
       id: 'setCustomValidateAllReferences',
       $on: {
         click () {
-          Types.customValidateAllReferences = () => {
-            // eslint-disable-next-line no-alert -- Simple demo
-            alert('customValidateAllReferences set');
-          };
+          keyPathNotExpectedTypeChoices.types.customValidateAllReferences =
+            () => {
+              // eslint-disable-next-line no-alert -- Simple demo
+              alert('customValidateAllReferences set');
+            };
         }
       }
     }, [
@@ -138,7 +139,8 @@ setTimeout(async function () {
             '#formatAndTypeChoices > .typesHolder > ' +
               '.typeContainer > div[data-type]'
           );
-          const formControl = Types.getFormControlForRoot(root);
+          const formControl =
+            keyPathNotExpectedTypeChoices.types.getFormControlForRoot(root);
           formControl.style.backgroundColor = 'red';
           setTimeout(() => {
             formControl.style.backgroundColor = 'white';
@@ -151,10 +153,11 @@ setTimeout(async function () {
       id: 'getValueFromRootAncestor',
       $on: {
         click () {
-          const val = Types.getValueFromRootAncestor(
-            '#formatAndTypeChoices > .typesHolder > ' +
-              '.typeContainer'
-          );
+          const val =
+            keyPathNotExpectedTypeChoices.types.getValueFromRootAncestor(
+              '#formatAndTypeChoices > .typesHolder > ' +
+                '.typeContainer'
+            );
           console.log(val);
         }
       }
@@ -166,10 +169,11 @@ setTimeout(async function () {
       id: 'showFormControlFromRootAncestor',
       $on: {
         click () {
-          const formControl = Types.getFormControlFromRootAncestor(
-            '#formatAndTypeChoices > .typesHolder > ' +
-              '.typeContainer'
-          );
+          const formControl =
+            keyPathNotExpectedTypeChoices.types.getFormControlFromRootAncestor(
+              '#formatAndTypeChoices > .typesHolder > ' +
+                '.typeContainer'
+            );
           formControl.style.backgroundColor = 'red';
           setTimeout(() => {
             formControl.style.backgroundColor = 'initial';
@@ -184,7 +188,6 @@ setTimeout(async function () {
       'Format and type choices: Key path expected (object required at root)'
     ]],
     ...formatAndTypeChoices({
-      formats,
       hasKeyPath: true,
       typeNamespace: 'demo-keypath-expected'
     }).domArray,
@@ -458,15 +461,16 @@ setTimeout(async function () {
       'Convert arbitrary value to an editable menu'
     ]],
 
-    await formats.getControlsForFormatAndValue(
-      'structuredCloning', new Date('1999-01-01')
+    await types.getControlsForFormatAndValue(
+      'structuredCloning',
+      new Date('1999-01-01')
     ),
 
     ['h2', [
       'Convert arbitrary value to a readonly menu'
     ]],
 
-    await formats.getControlsForFormatAndValue(
+    await types.getControlsForFormatAndValue(
       'structuredCloning',
       new Date('1999-01-01'), {
         readonly: true
@@ -481,7 +485,8 @@ setTimeout(async function () {
       placeholder: 'e.g., ["abc", 17]',
       $on: {
         change () {
-          const value = Types.getValueForString(this.value, {
+          const types = new Types();
+          const value = types.getValueForString(this.value, {
             format: $('#useIndexedDBKey').checked
               ? 'indexedDBKey'
               : 'structuredCloning'

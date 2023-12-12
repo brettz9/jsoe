@@ -40,7 +40,8 @@ describe('`Types.getTypeForRoot`', function () {
 
 describe('`Types.getFormControlFromRootAncestor`', function () {
   it('`getFormControlFromRootAncestor` with non-root ancestor', function () {
-    expect(Types.getFormControlFromRootAncestor(
+    const types = new Types();
+    expect(types.getFormControlFromRootAncestor(
       'missing'
     )).to.equal(null);
   });
@@ -51,13 +52,15 @@ describe('`Types.getTypeOptionsForFormatAndState`', function () {
     '`getTypeOptionsForFormatAndState` with bad states for format',
     function () {
       expect(() => {
-        Types.getTypeOptionsForFormatAndState(
+        const types = new Types();
+        types.getTypeOptionsForFormatAndState(
           'json', 'nonexistent'
         );
       }).to.throw('Unexpected type for format and state');
 
       expect(() => {
-        Types.getTypeOptionsForFormatAndState(
+        const types = new Types();
+        types.getTypeOptionsForFormatAndState(
           'indexedDBKey', 'nonexistent'
         );
       }).to.throw('Unexpected type for format and state');
@@ -68,9 +71,12 @@ describe('`Types.getTypeOptionsForFormatAndState`', function () {
 describe('`Types.getValueForString`', function () {
   it('`getValueForString` throws with bad state for format', function () {
     expect(() => {
-      Types.getValueForString('test', {
+      const types = new Types();
+      types.getValueForString('test', {
         format: 'json',
-        state: 'badFormat'
+        state: 'badFormat',
+        parent: {},
+        parentPath: ''
       });
     }).to.throw('Could not get types for format and state');
   });

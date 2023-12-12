@@ -9,6 +9,7 @@ import structuredCloning from './formats/structuredCloning.js';
 
 /**
  * @callback GetTypesForFormatAndState
+ * @param {import('./types.js').default} types
  * @param {AvailableFormat} format
  * @param {string} [state]
  * @returns {import('./types.js').AvailableType[]|undefined}
@@ -37,7 +38,10 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *     typesonType: import('./types.js').AvailableType
  *   ) => import('./types.js').AvailableType|undefined,
  *   iterate: import('./formats/structuredCloning.js').FormatIterator,
- *   getTypesForState: (state?: string) => undefined|
+ *   getTypesForState: (
+ *     types: import('./types.js').default,
+ *     state?: string
+ *   ) => undefined|
  *     (import('./types.js').AvailableType)[]
  * }} Format
  */
@@ -76,7 +80,7 @@ class Formats {
     this.availableFormats = /** @type {{[key: string]: Format}} */ ({
       indexedDBKey,
       json,
-      // Todo (readme): these too? getTypesForState(state)
+      // Todo (readme): these too? getTypesForState(types, state)
       /* schema:
       schemaAndArbitrary,
       schemaOnly,
@@ -86,15 +90,18 @@ class Formats {
   }
 
   /**
+   * @param {import('./types.js').default} types
    * @param {AvailableFormat} format
    * @param {StructuredCloneValue} record
    * @param {import('./types.js').StateObject} stateObj
    * @returns {Promise<Element>}
    */
-  async getControlsForFormatAndValue (format, record, stateObj) {
+  async getControlsForFormatAndValue (types, format, record, stateObj) {
     return await this.availableFormats[format].
       iterate(record, {
         ...stateObj,
+        types,
+        formats: this,
         // This had been before `stateObj` but should apparently have precedence
         //   or just avoid passing `format` to this function
         format
@@ -105,9 +112,9 @@ class Formats {
    * @type {GetTypesForFormatAndState}
    */
   getTypesForFormatAndState (
-    format, state
+    types, format, state
   ) {
-    return this.availableFormats[format].getTypesForState(state);
+    return this.availableFormats[format].getTypesForState(types, state);
   }
 
   /**

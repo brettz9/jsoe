@@ -2,9 +2,6 @@ import {
   Typeson, unescapeKeyPathComponent, structuredCloningThrowing
 } from '../vendor-imports.js';
 
-import Formats from '../formats.js';
-
-import Types from '../types.js';
 import {buildTypeChoices} from '../typeChoices.js';
 import {
   typesonPathToJSONPointer
@@ -35,6 +32,8 @@ import json from './json.js';
 const encapsulateObserver = (stateObj) => {
   const {
     typeNamespace, readonly, format: frmt, schemaContent,
+    formats,
+    types,
     getPossibleSchemasForPathAndType
   } = stateObj;
 
@@ -107,12 +106,13 @@ const encapsulateObserver = (stateObj) => {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
       newType = canonicalToAvailableType(
-        stateObj.formats, format, state, newType, value
+        types, formats, format, state, newType, value
       ); // Todo (low): Add accurate state for second argument
     } else {
       try {
         newType = canonicalToAvailableType(
-          stateObj.formats,
+          types,
+          formats,
           format,
           state,
           /**
@@ -149,7 +149,7 @@ const encapsulateObserver = (stateObj) => {
 
     if (!stateObj.rootUI) {
       // console.log('vvvv0', newType, newValue);
-      stateObj.rootUI = Types.getUIForModeAndType({
+      stateObj.rootUI = types.getUIForModeAndType({
         readonly,
         typeNamespace,
         type: newType,
@@ -247,13 +247,13 @@ const encapsulateObserver = (stateObj) => {
       }
 
       if (!readonly) {
-        Types.setValue({
+        types.setValue({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
           root: /** @type {HTMLDivElement} */ (root),
           value: newValue
         });
-        Types.validate({
+        types.validate({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
           root: /** @type {HTMLDivElement} */ (root),
@@ -297,6 +297,7 @@ const replaceTypes = (originTypes, replacements) => {
 };
 
 /**
+ * @param {import('../types.js').default} types
  * @param {import('../formats.js').default} formats
  * @param {import('../formats.js').AvailableFormat} format
  * @param {string} state
@@ -305,10 +306,12 @@ const replaceTypes = (originTypes, replacements) => {
  * @throws {Error}
  * @returns {import('../types.js').AvailableType}
  */
-const canonicalToAvailableType = (formats, format, state, valType, v) => {
+const canonicalToAvailableType = (
+  types, formats, format, state, valType, v
+) => {
   const frmt = formats.getAvailableFormat(format);
   const {getTypesForState, convertFromTypeson, testInvalid} = frmt;
-  const allowableTypes = getTypesForState.call(frmt, state);
+  const allowableTypes = getTypesForState.call(frmt, types, state);
   /* istanbul ignore if -- Guard */
   if (!allowableTypes) {
     throw new Error('Unexpected undefined type for state');
@@ -345,7 +348,7 @@ const canonicalToAvailableType = (formats, format, state, valType, v) => {
   allowableTypes.some((allowableType) => {
     // eslint-disable-next-line @stylistic/max-len -- Long
     const typeObj = /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
-      Types.availableTypes[allowableType]
+      types.getTypeObject(allowableType)
     );
     const {
       valueMatch, superType, childTypes
@@ -394,9 +397,6 @@ const structuredCloning = {
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
     }
-    if (!stateObj.formats) {
-      stateObj.formats = new Formats();
-    }
     // Todo: Replace this with async typeson?
     // eslint-disable-next-line promise/avoid-new
     return new Promise((resolve, reject) => {
@@ -415,12 +415,13 @@ const structuredCloning = {
       }
     });
   },
-  getTypesForState (state) {
-    if (state && Types.contexts.structuredCloning[state]) {
-      const typesForFormat = this.getTypesForState() ||
+  getTypesForState (types, state) {
+    if (state && types.getContextInfo('structuredCloning', state)) {
+      const typesForFormat = this.getTypesForState(types) ||
         /* istanbul ignore next -- types should be an array */
         [];
-      Types.contexts.structuredCloning[state].forEach(({type, after}) => {
+      const contextInfo = types.getContextInfo('structuredCloning', state);
+      contextInfo.forEach(({type, after}) => {
         const precedingIdx = typesForFormat.indexOf(after);
         typesForFormat.splice(precedingIdx + 1, 0, type);
       });

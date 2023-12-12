@@ -76,6 +76,7 @@ import dialogs from './utils/dialogs.js';
  *   objectHasValue?: boolean,
  *   topRoot?: import('./types.js').RootElement,
  *   formats?: import('./formats.js').default
+ *   types?: import('./types.js').default
  *   schema?: string,
  *   schemaContent?: object,
  * }} cfg
@@ -103,13 +104,14 @@ export const buildTypeChoices = ({
   objectHasValue,
   topRoot,
   formats = new Formats(),
+  types = new Types(),
   schema,
   schemaContent
 }) => {
   // console.log('format', format, 'state', state, 'path', typeNamespace);
   const typeOptions = requireObject
-    ? [Types.getOptionForType('object')]
-    : Types.getTypeOptionsForFormatAndState(format, state);
+    ? [types.getOptionForType('object')]
+    : types.getTypeOptionsForFormatAndState(format, state);
 
   let editUI;
 
@@ -118,11 +120,13 @@ export const buildTypeChoices = ({
     const root = /** @type {HTMLDivElement} */ (
       $e(typeContainer, 'div[data-type]')
     );
-    return Types.getValueForRoot(
+    return types.getValueForRoot(
       root,
       /** @type {import('./types.js').StateObject} */ ({
         typeNamespace,
+        formats,
         format,
+        types,
         ...stateObj
       }),
       currentPath
@@ -185,7 +189,7 @@ export const buildTypeChoices = ({
         //    (needed by arrayNonindexKeys for setting an array
         //    length and avoiding errors); could set all
         //    values through here?
-        editUI = Types.getUIForModeAndType({
+        editUI = types.getUIForModeAndType({
           readonly: false,
           typeNamespace,
           type,
@@ -200,7 +204,7 @@ export const buildTypeChoices = ({
         this.$validate();
         topRoot = this.$getTopRoot(); // May be existing now
         // Needed; Array/object ref somewhere could now be valid or invalid
-        Types.validateAllReferences({topRoot});
+        types.validateAllReferences({topRoot});
       },
 
       /** @type {AddTypeAndEditUI} */
@@ -232,7 +236,7 @@ export const buildTypeChoices = ({
           return false;
         }
         const editUI = container.firstElementChild;
-        return Types.validate({
+        return types.validate({
           type, root: editUI, topRoot: this.$getTopRoot()
         });
       }
@@ -270,6 +274,7 @@ export const buildTypeChoices = ({
       }
       try {
         const rootEditUI = await formats.getControlsForFormatAndValue(
+          types,
           format,
           value,
           {
@@ -277,7 +282,8 @@ export const buildTypeChoices = ({
             typeNamespace,
             schema,
             schemaContent,
-            formats
+            formats,
+            types
           }
         );
         const type =
@@ -334,6 +340,7 @@ export const buildTypeChoices = ({
     async setValue (value, stateObj) {
       const rootEditUI = /** @type {HTMLDivElement} */ (
         await formats.getControlsForFormatAndValue(
+          types,
           format, value, stateObj
         )
       );

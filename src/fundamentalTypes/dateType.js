@@ -1,6 +1,5 @@
 import {jml} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
-import Types from '../types.js';
 
 /**
  * @typedef {(
@@ -94,7 +93,7 @@ const dateType = {
   },
   // Change to default to `new Date()` when can't be `NaN`
   //   value (keys)?
-  editUI ({typeNamespace, value = ''}) {
+  editUI ({typeNamespace, types, value = ''}) {
     const notANum = this.isValueInvalid(value);
     const invalid = this.valid
       ? ''
@@ -124,7 +123,7 @@ const dateType = {
                 const root = /** @type {HTMLDivElement} */ (
                   label.parentElement
                 );
-                Types.validate({type: 'date', root});
+                types.validate({type: 'date', root});
               }
             },
             $on: {

@@ -41,7 +41,7 @@ const json = {
       return undefined; // Todo: Fix?
     }
   },
-  getTypesForState (state) {
+  getTypesForState (types, state) {
     /* istanbul ignore else -- No other states apparently */
     if (!state || ['array', 'object'].includes(state)) {
       return this.types();

@@ -176,12 +176,12 @@ const arrayReferenceType = {
       valid: true
     };
   },
-  validateAll ({topRoot}) {
+  validateAll ({types, topRoot}) {
     const type = /** @type {import('../types.js').AvailableType} */ (
       `${this.type}Reference`
     );
     $$e(topRoot, `div[data-type="${type}"]`).forEach((root) => {
-      Types.validate({
+      types.validate({
         type,
         // eslint-disable-next-line object-shorthand -- TS
         root: /** @type {HTMLDivElement} */ (root),

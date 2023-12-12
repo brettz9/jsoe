@@ -534,6 +534,6 @@ export const iterate = (records, stateObj) => {
  */
 export const getTypesForState = (state) => {
   return structuredCloning.getTypesForState.call(
-    this, state
+    this, types, state
   );
 };

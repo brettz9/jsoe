@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.13.0
+
+- refactor(BREAKING): make Types and Formats classes
+
 ## 0.12.4
 
 - refactor: Rollup dist.
