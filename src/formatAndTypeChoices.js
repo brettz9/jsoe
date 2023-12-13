@@ -90,7 +90,7 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   plain object).
  * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
  *   instances of typeChoices on the page
- * @param {import('./formats.js').default} cfg.formats
+ * @param {import('./formats.js').default} [cfg.formats]
  * @param {import('./types.js').default} [cfg.types]
  * @returns {{
  *   formatChoices: FormatChoices,
