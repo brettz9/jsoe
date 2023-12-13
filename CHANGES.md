@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.13.6
+
+- fix: distribution file not updated
+
 ## 0.13.5
 
 - fix(TS): allow for default arguments
