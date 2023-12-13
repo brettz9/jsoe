@@ -106,13 +106,15 @@ const encapsulateObserver = (stateObj) => {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
       newType = canonicalToAvailableType(
-        types, formats, format, state, newType, value
+        /** @type {import('../types.js').default} */ (types),
+        /** @type {import('../formats.js').default} */ (formats),
+        format, state, newType, value
       ); // Todo (low): Add accurate state for second argument
     } else {
       try {
         newType = canonicalToAvailableType(
-          types,
-          formats,
+          /** @type {import('../types.js').default} */ (types),
+          /** @type {import('../formats.js').default} */ (formats),
           format,
           state,
           /**
@@ -149,7 +151,7 @@ const encapsulateObserver = (stateObj) => {
 
     if (!stateObj.rootUI) {
       // console.log('vvvv0', newType, newValue);
-      stateObj.rootUI = types.getUIForModeAndType({
+      stateObj.rootUI = types?.getUIForModeAndType({
         readonly,
         typeNamespace,
         type: newType,
@@ -247,13 +249,13 @@ const encapsulateObserver = (stateObj) => {
       }
 
       if (!readonly) {
-        types.setValue({
+        types?.setValue({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
           root: /** @type {HTMLDivElement} */ (root),
           value: newValue
         });
-        types.validate({
+        types?.validate({
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
           root: /** @type {HTMLDivElement} */ (root),
