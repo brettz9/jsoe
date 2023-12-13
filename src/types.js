@@ -83,7 +83,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   state and path.
  * @callback GetValueForRoot
  * @param {RootElement} root
- * @param {StateObject} stateObj
+ * @param {StateObject} [stateObj]
  * @param {string} [currentPath]
  * @returns {StructuredCloneValue}
  */
