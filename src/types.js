@@ -100,7 +100,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * Utility to get the value for a root using its ancestor and state.
  * @callback GetValueFromRootAncestor
  * @param {string|HTMLElement} selOrEl
- * @param {StateObject} stateObj
+ * @param {StateObject} [stateObj]
  * @returns {StructuredCloneValue}
  */
 
@@ -622,6 +622,7 @@ class Types {
       ($e(selOrEl, 'div[data-type]')),
       {
         ...stateObj,
+        types: this,
         formats: this.formats
       }
     );
