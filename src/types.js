@@ -592,7 +592,13 @@ class Types {
       ]
     );
     return typeObject.getValue({
-      root, stateObj, currentPath
+      root,
+      stateObj: {
+        types: this,
+        formats: this.formats,
+        ...stateObj
+      },
+      currentPath
     });
   }
 

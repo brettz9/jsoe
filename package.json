@@ -1,6 +1,6 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./src/index.js",
@@ -14,6 +14,7 @@
   "scripts": {
     "tsc": "tsc",
     "tsc-cypress": "tsc -p cypress/tsconfig.json",
+    "prepublishOnly": "tsc",
     "eslint": "eslint .",
     "lint": "npm run eslint --",
     "coverage": "open-cli http://localhost:8087/coverage/lcov-report/",

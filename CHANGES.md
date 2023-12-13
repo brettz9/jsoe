@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.13.2
+
+- fix(TS): allow for default arguments
+
 ## 0.13.1
 
 - fix(TS): allow for default arguments
