@@ -500,14 +500,29 @@ const domexception = {
     }
 };
 
-/* globals DOMMatrix */
+/* globals DOMMatrix, DOMMatrixReadOnly */
 
 /**
  * @type {import('typeson').TypeSpecSet}
  */
-const dommatrix = {
-    dommatrix: {
-        test (x) { return toStringTag(x) === 'DOMMatrix'; },
+const dommatrix = {};
+
+/* c8 ignore next */
+if (typeof DOMMatrix !== 'undefined') {
+    create$5(DOMMatrix);
+}
+/* c8 ignore next */
+if (typeof DOMMatrixReadOnly !== 'undefined') {
+    create$5(DOMMatrixReadOnly);
+}
+
+/**
+ * @param {typeof DOMMatrix|typeof DOMMatrixReadOnly} Ctor
+ * @returns {void}
+ */
+function create$5 (Ctor) {
+    dommatrix[Ctor.name.toLowerCase()] = {
+        test (x) { return toStringTag(x) === Ctor.name; },
         replace (dm) {
             if (dm.is2D) {
                 return {
@@ -540,26 +555,41 @@ const dommatrix = {
         },
         revive (o) {
             if (Object.hasOwn(o, 'a')) {
-                return new DOMMatrix([o.a, o.b, o.c, o.d, o.e, o.f]);
+                return new Ctor([o.a, o.b, o.c, o.d, o.e, o.f]);
             }
-            return new DOMMatrix([
+            return new Ctor([
                 o.m11, o.m12, o.m13, o.m14,
                 o.m21, o.m22, o.m23, o.m24,
                 o.m31, o.m32, o.m33, o.m34,
                 o.m41, o.m42, o.m43, o.m44
             ]);
         }
-    }
-};
+    };
+}
 
-/* globals DOMPoint */
+/* globals DOMPoint, DOMPointReadOnly */
 
 /**
  * @type {import('typeson').TypeSpecSet}
  */
-const dompoint = {
-    dompoint: {
-        test (x) { return toStringTag(x) === 'DOMPoint'; },
+const dompoint = {};
+
+/* c8 ignore next */
+if (typeof DOMPoint !== 'undefined') {
+    create$4(DOMPoint);
+}
+/* c8 ignore next */
+if (typeof DOMPointReadOnly !== 'undefined') {
+    create$4(DOMPointReadOnly);
+}
+
+/**
+ * @param {typeof DOMPoint|typeof DOMPointReadOnly} Ctor
+ * @returns {void}
+ */
+function create$4 (Ctor) {
+    dompoint[Ctor.name.toLowerCase()] = {
+        test (x) { return toStringTag(x) === Ctor.name; },
         replace (dp) {
             return {
                 x: dp.x,
@@ -569,19 +599,56 @@ const dompoint = {
             };
         },
         revive ({x, y, z, w}) {
-            return new DOMPoint(x, y, z, w);
+            return new Ctor(x, y, z, w);
         }
-    }
-};
+    };
+}
 
-/* globals DOMRect */
+/* globals DOMQuad */
 
 /**
  * @type {import('typeson').TypeSpecSet}
  */
-const domrect = {
-    domrect: {
-        test (x) { return toStringTag(x) === 'DOMRect'; },
+const domquad = {
+    domquad: {
+        test (x) { return toStringTag(x) === 'DOMQuad'; },
+        replace (dp) {
+            return {
+                p1: dp.p1,
+                p2: dp.p2,
+                p3: dp.p3,
+                p4: dp.p4
+            };
+        },
+        revive ({p1, p2, p3, p4}) {
+            return new DOMQuad(p1, p2, p3, p4);
+        }
+    }
+};
+
+/* globals DOMRect, DOMRectReadOnly */
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const domrect = {};
+
+/* c8 ignore next */
+if (typeof DOMRect !== 'undefined') {
+    create$3(DOMRect);
+}
+/* c8 ignore next */
+if (typeof DOMRectReadOnly !== 'undefined') {
+    create$3(DOMRectReadOnly);
+}
+
+/**
+ * @param {typeof DOMRect|typeof DOMRectReadOnly} Ctor
+ * @returns {void}
+ */
+function create$3 (Ctor) {
+    domrect[Ctor.name.toLowerCase()] = {
+        test (x) { return toStringTag(x) === Ctor.name; },
         replace (dr) {
             return {
                 x: dr.x,
@@ -591,10 +658,10 @@ const domrect = {
             };
         },
         revive ({x, y, width, height}) {
-            return new DOMRect(x, y, width, height);
+            return new Ctor(x, y, width, height);
         }
-    }
-};
+    };
+}
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -719,12 +786,6 @@ function create$2 (Ctor) {
             e.lineNumber = obj.lineNumber;
             e.columnNumber = obj.columnNumber;
 
-            /* c8 ignore next 6 */
-            if (isAggregateError) {
-                /** @type {AggregateError} */ (
-                    e
-                ).errors = obj.errors;
-            }
             return e;
         }
     };
@@ -1604,6 +1665,8 @@ const expObj = [
     /* c8 ignore next */
     typeof DOMPoint !== 'undefined' ? dompoint : [],
     /* c8 ignore next */
+    typeof DOMQuad !== 'undefined' ? domquad : [],
+    /* c8 ignore next */
     typeof DOMMatrix !== 'undefined' ? dommatrix : []
 );
 
@@ -1673,7 +1736,6 @@ const structuredCloningThrowing = expObj.concat({
                     typeof val.nodeType === 'number' &&
                     typeof val.insertBefore === 'function')
             ) {
-              alert(stringTag);
                 throw new DOMException(
                     'The object cannot be cloned.', 'DataCloneError'
                 );
@@ -1700,5 +1762,5 @@ const universal = [
     //   built-in into ecmasript standard.
 ];
 
-export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, domexception, dommatrix, dompoint, domrect, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
+export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, domexception, dommatrix, dompoint, domquad, domrect, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
 //# sourceMappingURL=index.js.map

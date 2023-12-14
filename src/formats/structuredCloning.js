@@ -1,5 +1,6 @@
 import {
-  Typeson, unescapeKeyPathComponent, structuredCloningThrowing
+  Typeson, unescapeKeyPathComponent, structuredCloningThrowing,
+  resurrectable as noneditable, toStringTag
 } from '../vendor-imports.js';
 
 import {buildTypeChoices} from '../typeChoices.js';
@@ -8,6 +9,15 @@ import {
 } from '../utils/jsonPointer.js';
 
 import json from './json.js';
+
+// We modify resurrectable in hopes an including application doesn't need it
+/** @type {import('typeson').TypeSpecSet} */ (
+  noneditable.resurrectable
+).test = /** @type {import('typeson').Tester} */ (x) => {
+  return x && typeof x === 'object' && !Array.isArray(x) &&
+          // Could be a user object with a string tag, but we can't tell
+          toStringTag(x) !== 'Object';
+};
 
 /**
  * @typedef {(info: {
@@ -90,8 +100,6 @@ const encapsulateObserver = (stateObj) => {
     if (type === 'sparseUndefined') { // We'll handle otherwise
       return;
     }
-
-    // console.log('observerObj', observerObj);
 
     /** @type {import('../types.js').AvailableType} */
     let newType;
@@ -396,15 +404,59 @@ const canonicalToAvailableType = (
 const structuredCloning = {
   iterate (records, stateObj) {
     // console.log('records', records);
+    /* istanbul ignore if -- Just a guard */
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
     }
     // Todo: Replace this with async typeson?
     // eslint-disable-next-line promise/avoid-new
     return new Promise((resolve, reject) => {
+      const structuredCloningFixed = structuredCloningThrowing.filter(
+        (typeSpecSet) => {
+          // For these three, we only want to delete the given property
+          if ('domrectreadonly' in typeSpecSet) {
+            delete typeSpecSet.domrectreadonly;
+          }
+          if ('dompointreadonly' in typeSpecSet) {
+            delete typeSpecSet.dompointreadonly;
+          }
+          if ('dommatrixreadonly' in typeSpecSet) {
+            delete typeSpecSet.dommatrixreadonly;
+          }
+          return ![
+            // Not yet supported within JSOE
+            'imagedata',
+            'imagebitmap',
+            'arraybuffer',
+            'dataview',
+            'cryptokey',
+            'domquad',
+
+            'bigint64array',
+            'biguint64array',
+            'float32array',
+            'float64array',
+            'int8array',
+            'int16array',
+            'int32array',
+            'uint8array',
+            'uint8clampedarray',
+            'uint16array',
+            'uint32array'
+          ].some((prop) => {
+            return Object.hasOwn(typeSpecSet, prop);
+          });
+        }
+      );
+      structuredCloningFixed.splice(
+        // Add after userObjects
+        1,
+        0,
+        noneditable
+      );
       const typeson = new Typeson({
         encapsulateObserver: encapsulateObserver(stateObj)
-      }).register(structuredCloningThrowing);
+      }).register(structuredCloningFixed);
       typeson.encapsulate(records);
       // Todo (low): We might want to run async encapsulate for
       //   async types (and put this after Promise resolves)
@@ -482,11 +534,15 @@ const structuredCloning = {
       'domexception',
       'domrect',
       'dompoint',
-      'dommatrix'
+      'dommatrix',
+      'resurrectable'
+
+      // Easy enough; add readonly toggle
+      // 'dompointreadonly', 'dommatrixreadonly', 'domrectreadonly',
 
       // Ok, but will need some work and/or decisions on how to present:
       // 'cryptokey',
-
+      // 'domquad',
       // 'arraybuffer',
       // 'dataview', 'imagedata', 'imagebitmap',
       /*

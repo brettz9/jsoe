@@ -106,6 +106,40 @@ setTimeout(async function () {
     }, ['Initialize with a complex value']],
 
     ['button', {
+      id: 'initializeWithNoneditableValue',
+      $on: {
+        click () {
+          const a = new ArrayBuffer(16);
+          const root = $(
+            '#formatAndTypeChoices div[data-type="resurrectable"]'
+          );
+          keyPathNotExpectedTypeChoices.types.setValue({
+            type: 'resurrectable',
+            root,
+            value: a
+          });
+          keyPathNotExpectedTypeChoices.types.validate({
+            type: 'resurrectable',
+            root
+          });
+
+          setTimeout(() => {
+            keyPathNotExpectedTypeChoices.types.setValue({
+              type: 'resurrectable',
+              root,
+              value: undefined
+            });
+            keyPathNotExpectedTypeChoices.types.validate({
+              type: 'resurrectable',
+              root
+            });
+          }, 3000);
+          // await keyPathNotExpectedTypeChoices.setValue(a);
+        }
+      }
+    }, ['Initialize with noneditable value then change']],
+
+    ['button', {
       id: 'programmaticallySetFormatToJSON',
       $on: {
         click () {
@@ -358,7 +392,8 @@ setTimeout(async function () {
             5, 6, 7, 8,
             9, 10, 11, 12,
             13, 14, 15, 16
-          ])
+          ]),
+          new ArrayBuffer()
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
@@ -429,6 +464,13 @@ setTimeout(async function () {
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 
+      const typeSelectionNoneditable = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: new ArrayBuffer(16),
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
       return ['form', [
         ...typeSelection.domArray,
         ...typeSelectionBlobHTML.domArray,
@@ -437,7 +479,8 @@ setTimeout(async function () {
         ...typeSelectionTypeErrorWithCause.domArray,
         ...typeSelectionTypeErrorWithAggregate.domArray,
         ...typeSelectionFile.domArray,
-        ...typeSelectionBlob.domArray
+        ...typeSelectionBlob.domArray,
+        ...typeSelectionNoneditable.domArray
       ]];
     })(),
 

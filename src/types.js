@@ -41,6 +41,7 @@ import domexceptionType from './fundamentalTypes/domexceptionType.js';
 import domrectType from './fundamentalTypes/domrectType.js';
 import dompointType from './fundamentalTypes/dompointType.js';
 import dommatrixType from './fundamentalTypes/dommatrixType.js';
+import noneditableType from './fundamentalTypes/noneditableType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -301,7 +302,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   value?: StructuredCloneValue,
  *   remnant?: string,
  *   assign?: false
- * }} toValue Converts from string to value. May use
+ * }} [toValue] Converts from string to value. May use
  *   `stringRegex` to find components.
  * @property {(info: {
  *   root: HTMLDivElement,
@@ -370,7 +371,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
- *   "dompoint"|"dommatrix"} AvailableType
+ *   "dompoint"|"dommatrix"|"resurrectable"} AvailableType
  */
 
 /**
@@ -435,6 +436,8 @@ class Types {
       domrect: domrectType,
       dompoint: dompointType,
       dommatrix: dommatrixType,
+
+      resurrectable: noneditableType,
 
       arraybuffer: {
         option: ['ArrayBuffer']
@@ -594,6 +597,7 @@ class Types {
     // Ensure `stateObj` remains a reference if present
     return typeObject.getValue({
       root,
+      /* istanbul ignore next -- Guard */
       stateObj: stateObj ?? {
         types: this
       },
@@ -638,11 +642,12 @@ class Types {
 
   /** @type {GetOptionForType} */
   getOptionForType (type) {
+    const availableType = /** @type {TypeObject} */ (
+      this.availableTypes[type]
+    );
     /** @type {[string, {value?: AvailableType, title?: string}?]} */
     const optInfo = [
-      ...(/** @type {TypeObject} */ (
-        this.availableTypes[type]
-      )).option
+      ...availableType.option
     ];
     optInfo[1] = {value: type, ...(optInfo[1])};
     return /** @type {[string, {value: AvailableType, title?: string}]} */ (
@@ -658,6 +663,7 @@ class Types {
     if (!typesForFormatAndState) {
       throw new Error('Unexpected type for format and state');
     }
+
     return typesForFormatAndState.map((type) => {
       return this.getOptionForType(type);
     });
@@ -840,7 +846,12 @@ class Types {
       // console.log('s0', s, '::', remnant, match);
       let valObj;
       try {
-        valObj = /** @type {TypeObject} */ (found[1]).toValue(
+        const typeObj = /** @type {TypeObject} */ (found[1]);
+        /* istanbul ignore if -- TS guard */
+        if (!typeObj.toValue) {
+          throw new Error('Type has no `toValue` method');
+        }
+        valObj = typeObj.toValue(
           mtch.groups?.innerContent || innerContent || s, {
             types: this,
             format,

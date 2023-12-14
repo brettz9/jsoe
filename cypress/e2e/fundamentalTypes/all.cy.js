@@ -17,6 +17,7 @@ import './domexception.cy.js';
 import './domrect.cy.js';
 import './dompoint.cy.js';
 import './dommatrix.cy.js';
+import './noneditable.cy.js';
 
 import './BooleanObject.cy.js';
 import './NumberObject.cy.js';

@@ -280,7 +280,7 @@ const dommatrixType = {
         $on: {
           click (e) {
             const {target} = e;
-            /* c8 ignore next 3 */
+            /* istanbul ignore if */
             if (/** @type {HTMLInputElement} */ (target).type !== 'radio') {
               return;
             }

@@ -1744,7 +1744,7 @@ const arrayType = {
                * @this {HTMLInputElement}
                */
               change () {
-                /* c8 ignore next 3 */
+                /* istanbul ignore if */
                 if (!this.files) {
                   return;
                 }

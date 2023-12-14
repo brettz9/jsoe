@@ -19,6 +19,7 @@ module.exports = {
       'Array.includes',
       'Array.map',
       'Array.reduce',
+      'Array.some',
       'ArrayBuffer',
       'BigInt',
       'Blob',
