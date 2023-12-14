@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.13.8
+
+- fix: array/object reference value-retrieval broken
+
 ## 0.13.7
 
 - fix: array/object reference value-retrieval broken

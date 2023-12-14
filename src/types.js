@@ -591,10 +591,12 @@ class Types {
         (Types.getTypeForRoot(root))
       ]
     );
-    // Ensure `stateObj` remains a reference
+    // Ensure `stateObj` remains a reference if present
     return typeObject.getValue({
       root,
-      stateObj,
+      stateObj: stateObj ?? {
+        types: this
+      },
       currentPath
     });
   }
