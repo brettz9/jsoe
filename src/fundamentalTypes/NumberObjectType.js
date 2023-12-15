@@ -20,7 +20,9 @@ const NumberObjectType = {
     return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   getValue ({root}) {
-    return this.toValue(this.getInput({root}).value).value;
+    return /** @type {import('../types.js').ToValue} */ (
+      this.toValue
+    )(this.getInput({root}).value).value;
   },
   setValue ({root, value}) {
     this.getInput({root}).value = String(value);

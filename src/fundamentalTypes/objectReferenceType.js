@@ -8,7 +8,9 @@ const objectReferenceType = {
   type: 'object',
   stringRegex: /^objectRef\((?:|\/[^)]*)\)$/u,
   toValue (...args) {
-    return arrayReferenceType.toValue.apply(this, args);
+    return /** @type {import('../types.js').ToValue} */ (
+      arrayReferenceType.toValue
+    ).apply(this, args);
   },
   resolveReference (...args) {
     return arrayReferenceType.resolveReference?.apply(

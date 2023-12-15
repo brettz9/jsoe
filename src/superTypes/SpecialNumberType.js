@@ -32,7 +32,7 @@ const SpecialNumberSuperType = {
     return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },
   getValue ({root}) {
-    return this.toValue(
+    return /** @type {import('../types.js').ToValue} */ (this.toValue)(
       /** @type {Required<import('../types.js').TypeObject>} */ (
         this
       ).getSelect({root}).value

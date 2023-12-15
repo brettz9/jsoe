@@ -10,7 +10,9 @@ const undefinedType = {
     return {value: undefined};
   },
   getValue () {
-    return this.toValue('').value;
+    return /** @type {import('../types.js').ToValue} */ (
+      this.toValue
+    )('').value;
   },
   viewUI (/* {value} */) {
     return ['i', {dataset: {type: 'undef'}}, ['undefined']];

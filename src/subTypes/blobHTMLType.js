@@ -58,7 +58,7 @@ const blobHTMLType = {
     );
   },
   getValue ({root}) {
-    return this.toValue(
+    return /** @type {import('../types.js').ToValue} */ (this.toValue)(
       'data:text/html,' + /** @type {SCEditorTextarea} */ (
         this.getInput({root})
       ).sceditorInstance.val()

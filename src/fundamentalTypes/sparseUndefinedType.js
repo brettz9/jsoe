@@ -18,7 +18,9 @@ const sparseUndefinedType = {
     return {value: undefined};
   },
   getValue () {
-    return this.toValue('').value;
+    return /** @type {import('../types.js').ToValue} */ (
+      this.toValue
+    )('').value;
   },
   /* istanbul ignore next -- Catching instead of this placeholder */
   viewUI (/* {value} */) {

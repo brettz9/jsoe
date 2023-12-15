@@ -11,7 +11,9 @@ const mapType = {
   stringRegexBegin: /^Map\(/u,
   stringRegexEnd: /^\)/u,
   toValue (...args) {
-    return arrayType.toValue.apply(this, args);
+    return /** @type {import('../types.js').ToValue} */ (
+      arrayType.toValue
+    ).apply(this, args);
   },
   getValue (...args) {
     return arrayType.getValue.apply(this, args);

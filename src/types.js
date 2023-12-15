@@ -268,6 +268,16 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
+ * @typedef {(
+ *   s: string, info?: RootInfo
+ * ) => {
+ *   value?: StructuredCloneValue,
+ *   remnant?: string,
+ *   assign?: false
+ * }} ToValue
+ */
+
+/**
  * @typedef {object} TypeObject
  * @property {[
  *   string, {value?: AvailableType, title?: string}?
@@ -296,13 +306,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   check whether this subtype matches
  * @property {string} [superType] The greater fundamental type to which
  *   the type belongs
- * @property {(
- *   s: string, info?: RootInfo
- * ) => {
- *   value?: StructuredCloneValue,
- *   remnant?: string,
- *   assign?: false
- * }} [toValue] Converts from string to value. May use
+ * @property {ToValue} [toValue] Converts from string to value. May use
  *   `stringRegex` to find components.
  * @property {(info: {
  *   root: HTMLDivElement,

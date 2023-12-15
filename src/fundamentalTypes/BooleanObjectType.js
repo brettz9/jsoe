@@ -16,7 +16,9 @@ const BooleanObjectType = {
     return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   getValue ({root}) {
-    return this.toValue(String(/** @type {HTMLInputElement} */ (
+    return /** @type {import('../types.js').ToValue} */ (
+      this.toValue
+    )(String(/** @type {HTMLInputElement} */ (
       this.getInput({root})
     ).checked)).value;
   },

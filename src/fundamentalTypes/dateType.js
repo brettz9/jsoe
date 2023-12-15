@@ -75,9 +75,13 @@ const dateType = {
   },
   getValue ({root}) {
     if (this.isInvalid({root})) {
-      return this.toValue('NaN').value;
+      return /** @type {import('../types.js').ToValue} */ (
+        this.toValue
+      )('NaN').value;
     }
-    return this.toValue(this.getInput({root}).value).value;
+    return /** @type {import('../types.js').ToValue} */ (
+      this.toValue
+    )(this.getInput({root}).value).value;
   },
   isValueInvalid (value) {
     return value && Number.isNaN(value.getTime());
