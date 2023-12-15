@@ -31,9 +31,6 @@ Supported types include:
 - `Boolean` object
 - `Date`
 - `DOMException`,
-- `DOMMatrix`
-- `DOMPoint`
-- `DOMRect`
 - `Error`
 - `TypeError`, `RangeError`, `SyntaxError`, `ReferenceError`, `EvalError`,
     `URIError`, `AggregateError`, `InternalError`
@@ -72,6 +69,9 @@ Supported supertypes include:
 
 - Special Real Number (`Infinity`, `-Infinity`, `-0`) - Used with IndexedDB keys (even though -0 apparently [to be converted](https://github.com/w3c/IndexedDB/issues/375) to 0)
 - Special Number (`Infinity`, `-Infinity`, `-0`, `NaN`) - Used with Structured Cloning values
+- `DOMMatrix` (also includes `DOMMatrixReadOnly`)
+- `DOMPoint` (also includes `DOMPointReadOnly`)
+- `DOMRect` (also includes `DOMRectReadOnly`)
 
 ## Known issues
 
@@ -114,7 +114,6 @@ Supported supertypes include:
                 1. imagedata, imagebitmap
                 1. cryptokey
                 1. domquad
-                1. dompointreadonly, dommatrixreadonly, domrectreadonly
             1. Our own custom derivative types? (e.g., MIDI using TypedArray)
 1. Expand subtypes
     1. String

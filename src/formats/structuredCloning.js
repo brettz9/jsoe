@@ -413,16 +413,6 @@ const structuredCloning = {
     return new Promise((resolve, reject) => {
       const structuredCloningFixed = structuredCloningThrowing.filter(
         (typeSpecSet) => {
-          // For these three, we only want to delete the given property
-          if ('domrectreadonly' in typeSpecSet) {
-            delete typeSpecSet.domrectreadonly;
-          }
-          if ('dompointreadonly' in typeSpecSet) {
-            delete typeSpecSet.dompointreadonly;
-          }
-          if ('dommatrixreadonly' in typeSpecSet) {
-            delete typeSpecSet.dommatrixreadonly;
-          }
           return ![
             // Not yet supported within JSOE
             'imagedata',
@@ -536,9 +526,6 @@ const structuredCloning = {
       'dompoint',
       'dommatrix',
       'resurrectable'
-
-      // Easy enough; add readonly toggle
-      // 'dompointreadonly', 'dommatrixreadonly', 'domrectreadonly',
 
       // Ok, but will need some work and/or decisions on how to present:
       // 'cryptokey',

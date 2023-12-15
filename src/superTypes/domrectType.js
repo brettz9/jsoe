@@ -1,17 +1,30 @@
 import {$e} from '../utils/templateUtils.js';
+import {toStringTag} from '../vendor-imports.js';
+
+let idx = 0;
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const domrectType = {
   option: ['DOMRect'],
-  stringRegex: /^DOMRect\((.*)\)$/u,
-  toValue (s) {
+  childTypes: ['domrectreadonly'],
+  stringRegex: /^(?<domRectClass>DOMRect|DOMRectReadOnly)\((?<innerContent>.*)\)$/u,
+  toValue (s, rootInfo) {
+    const {groups: {
+      domRectClass
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
     const {x, y, width, height} = JSON.parse(s);
-    return {value: new DOMRect(x, y, width, height)};
+    return {
+      value: new (
+        domRectClass === 'DOMRect' ? DOMRect : DOMRectReadOnly
+      )(x, y, width, height)};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
   },
   setValue ({root, value}) {
     /** @type {HTMLInputElement} */ (
@@ -26,6 +39,16 @@ const domrectType = {
     /** @type {HTMLInputElement} */ (
       $e(root, '.height')
     ).value = String(value.height);
+
+    if (toStringTag(value) === 'DOMRect') {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.domrect-readonly-readwrite')
+      ).checked = true;
+    } else {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.domrect-readonly-readonly')
+      ).checked = true;
+    }
   },
   getValue ({root}) {
     const x = Number(/** @type {HTMLInputElement} */ (
@@ -40,11 +63,16 @@ const domrectType = {
     const height = Number(/** @type {HTMLInputElement} */ (
       $e(root, '.height')
     ).value);
-    return new DOMRect(x, y, width, height);
+
+    const isReadWrite = /** @type {HTMLInputElement} */ (
+      $e(root, '.domrect-readonly-readwrite')
+    ).checked;
+    return new (isReadWrite ? DOMRect : DOMRectReadOnly)(x, y, width, height);
   },
   viewUI ({value}) {
+    const isReadWrite = toStringTag(value) === 'DOMRect';
     return ['div', {dataset: {type: 'domrect'}}, [
-      ['b', {class: 'emphasis'}, ['DOMRect']],
+      ['b', {class: 'emphasis'}, [isReadWrite ? 'DOMRect' : 'DOMRectReadOnly']],
       ['br'],
       ['b', ['x ']],
       value.x,
@@ -65,8 +93,32 @@ const domrectType = {
     width: '',
     height: ''
   }}) {
+    idx++;
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'domrect'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+      ['div', [
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'domrect-readonly-readwrite',
+            name: `${typeNamespace}-domrect-readonly-${idx}`,
+            value: 'readwrite',
+            checked: toStringTag(value) !== 'DOMRectReadOnly'
+          }],
+          'Readwrite'
+        ]],
+        ' ',
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'domrect-readonly-readonly',
+            name: `${typeNamespace}-domrect-readonly-${idx}`,
+            value: 'readonly',
+            checked: toStringTag(value) === 'DOMRectReadOnly'
+          }],
+          'Read-only'
+        ]]
+      ]],
       ['label', [
         'x: ',
         ['input', {

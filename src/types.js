@@ -38,9 +38,9 @@ import fileType from './fundamentalTypes/fileType.js';
 import filelistType from './fundamentalTypes/filelistType.js';
 import blobType from './fundamentalTypes/blobType.js';
 import domexceptionType from './fundamentalTypes/domexceptionType.js';
-import domrectType from './fundamentalTypes/domrectType.js';
-import dompointType from './fundamentalTypes/dompointType.js';
-import dommatrixType from './fundamentalTypes/dommatrixType.js';
+import domrectType from './superTypes/domrectType.js';
+import dompointType from './superTypes/dompointType.js';
+import dommatrixType from './superTypes/dommatrixType.js';
 import noneditableType from './fundamentalTypes/noneditableType.js';
 
 /**
@@ -377,6 +377,12 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"} AvailableType
  */
+
+/**
+ * @typedef {TypeObject & {
+*   childTypes: string[]
+* }} SuperTypeObject
+*/
 
 /**
  *

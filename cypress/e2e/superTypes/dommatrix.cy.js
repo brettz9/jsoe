@@ -114,6 +114,23 @@ describe('DOMMatrix spec', () => {
     );
   });
 
+  it('logs value (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dommatrix'
+    );
+    cy.get('[name="demo-keypath-not-expected-dommatrix-readonly-4"]').check(
+      'readonly'
+    );
+    cy.get(sel + '.d2').click();
+    input2dMatrix(sel);
+
+    cy.get('button#logValue').click();
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6])
+    );
+  });
+
   it('views UI', function () {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -123,6 +140,32 @@ describe('DOMMatrix spec', () => {
     input2dMatrix(sel);
 
     cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', 'DOMMatrix'
+    );
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', '1'
+    );
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', '2'
+    );
+  });
+
+  it('views UI (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dommatrix'
+    );
+    cy.get('[name="demo-keypath-not-expected-dommatrix-readonly-4"]').check(
+      'readonly'
+    );
+    cy.get(sel + '.d2').click();
+    input2dMatrix(sel);
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', 'DOMMatrixReadOnly'
+    );
     cy.get('#viewUIResults div[data-type="dommatrix"]').should(
       'contain', '1'
     );
@@ -140,6 +183,32 @@ describe('DOMMatrix spec', () => {
     input3dMatrix(sel);
 
     cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', 'DOMMatrix'
+    );
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', '1'
+    );
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', '2'
+    );
+  });
+
+  it('views UI (3d) (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dommatrix'
+    );
+    cy.get('[name="demo-keypath-not-expected-dommatrix-readonly-4"]').check(
+      'readonly'
+    );
+    cy.get(sel + '.d3').click();
+    input3dMatrix(sel);
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"]').should(
+      'contain', 'DOMMatrixReadOnly'
+    );
     cy.get('#viewUIResults div[data-type="dommatrix"]').should(
       'contain', '1'
     );
@@ -160,7 +229,7 @@ describe('DOMMatrix spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="dommatrix"] input'
+        'div[data-type="dommatrix"] input:not([type])'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.equal('red');
       });
@@ -187,6 +256,16 @@ describe('DOMMatrix spec', () => {
     );
   });
 
+  it('gets value (readonly)', function () {
+    cy.clearTypeAndBlur(
+      '#getValueForString',
+      'DOMMatrixReadOnly({{}"a":1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6})'
+    );
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6])
+    );
+  });
+
   it('gets value (3d)', function () {
     cy.clearTypeAndBlur(
       '#getValueForString',
@@ -198,6 +277,20 @@ describe('DOMMatrix spec', () => {
     );
     cy.get('@consoleLog').should(
       'be.calledWith', new DOMMatrix([1, 2, 3, 4, 5, 6])
+    );
+  });
+
+  it('gets value (3d) (readonly)', function () {
+    cy.clearTypeAndBlur(
+      '#getValueForString',
+      'DOMMatrixReadOnly({{}"m11":1, "m12": 2, "m13": 3, "m14": 4, ' +
+      '"m21": 1, "m22": 2, "m23": 3, "m24": 4, ' +
+      '"m31": 1, "m32": 2, "m33": 3, "m34": 4, ' +
+      '"m41": 1, "m42": 2, "m43": 3, "m44": 4' +
+      '})'
+    );
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6])
     );
   });
 

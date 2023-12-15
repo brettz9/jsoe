@@ -44,7 +44,7 @@ if (typeof InternalError !== 'undefined') {
 const specialErrors = [...specialErrorsMap.keys()];
 
 /**
- * @type {import('./SpecialNumberType.js').SuperTypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const errorsSpecialType = {
   option: ['Special errors'],

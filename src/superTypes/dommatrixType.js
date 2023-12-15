@@ -1,19 +1,31 @@
 import {$e} from '../utils/templateUtils.js';
+import {toStringTag} from '../vendor-imports.js';
 
 let idx = 0;
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const dommatrixType = {
   option: ['DOMMatrix'],
-  stringRegex: /^DOMMatrix\((.*)\)$/u,
-  toValue (s) {
+  childTypes: ['dommatrixreadonly'],
+  stringRegex: /^(?<domMatrixClass>DOMMatrix|DOMMatrixReadOnly)\((?<innerContent>.*)\)$/u,
+  toValue (s, rootInfo) {
+    const {groups: {
+      domMatrixClass
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
     const o = JSON.parse(s);
 
+    const DOMMatrixClass = domMatrixClass === 'DOMMatrix'
+      ? DOMMatrix
+      : DOMMatrixReadOnly;
+
     const dommatrix = Object.hasOwn(o, 'a')
-      ? new DOMMatrix([o.a, o.b, o.c, o.d, o.e, o.f])
-      : new DOMMatrix([
+      ? new DOMMatrixClass([o.a, o.b, o.c, o.d, o.e, o.f])
+      : new DOMMatrixClass([
         o.m11, o.m12, o.m13, o.m14,
         o.m21, o.m22, o.m23, o.m24,
         o.m31, o.m32, o.m33, o.m34,
@@ -23,7 +35,7 @@ const dommatrixType = {
     return {value: dommatrix};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
   },
   setValue ({root, value: o}) {
     const {is2D} = o;
@@ -109,8 +121,23 @@ const dommatrixType = {
         $e(root, '.m44')
       ).value = o.m44;
     }
+
+    if (toStringTag(o) === 'DOMMatrix') {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.dommatrix-readonly-readwrite')
+      ).checked = true;
+    } else {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.dommatrix-readonly-readonly')
+      ).checked = true;
+    }
   },
   getValue ({root}) {
+    const isReadWrite = /** @type {HTMLInputElement} */ (
+      $e(root, '.dommatrix-readonly-readwrite')
+    ).checked;
+    const DOMMatrixClass = isReadWrite ? DOMMatrix : DOMMatrixReadOnly;
+
     const aType = /** @type {HTMLInputElement} */ (
       $e(root, '.a')
     ).value;
@@ -132,7 +159,7 @@ const dommatrixType = {
       const f = Number(/** @type {HTMLInputElement} */ (
         $e(root, '.f')
       ).value);
-      return new DOMMatrix([a, b, c, d, e, f]);
+      return new DOMMatrixClass([a, b, c, d, e, f]);
     }
 
     const m11 = Number(/** @type {HTMLInputElement} */ (
@@ -187,7 +214,7 @@ const dommatrixType = {
       $e(root, '.m44')
     ).value);
 
-    return new DOMMatrix([
+    return new DOMMatrixClass([
       m11, m12, m13, m14,
       m21, m22, m23, m24,
       m31, m32, m33, m34,
@@ -195,8 +222,11 @@ const dommatrixType = {
     ]);
   },
   viewUI ({value}) {
+    const isReadWrite = toStringTag(value) === 'DOMMatrix';
     return ['div', {dataset: {type: 'dommatrix'}}, [
-      ['b', {class: 'emphasis'}, ['DOMMatrix']],
+      ['b', {class: 'emphasis'}, [
+        isReadWrite ? 'DOMMatrix' : 'DOMMatrixReadOnly'
+      ]],
       value.is2D
         ? ['div', [
           ['b', ['a ']],
@@ -276,6 +306,29 @@ const dommatrixType = {
     const {is2D} = value;
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'dommatrix'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+      ['div', [
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'dommatrix-readonly-readwrite',
+            name: `${typeNamespace}-dommatrix-readonly-${idx}`,
+            value: 'readwrite',
+            checked: toStringTag(value) !== 'DOMMatrixReadOnly'
+          }],
+          'Readwrite'
+        ]],
+        ' ',
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'dommatrix-readonly-readonly',
+            name: `${typeNamespace}-dommatrix-readonly-${idx}`,
+            value: 'readonly',
+            checked: toStringTag(value) === 'DOMMatrixReadOnly'
+          }],
+          'Read-only'
+        ]]
+      ]],
       ['div', {
         $on: {
           click (e) {

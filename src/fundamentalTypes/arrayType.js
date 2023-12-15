@@ -1723,7 +1723,9 @@ const arrayType = {
             //    and object reference checking?
             if (![
               'checkbox', 'radio', 'file',
-              'datetime-local'
+              'datetime-local',
+              // For label radio clicks
+              undefined
             ].includes(target.type)) {
               e.preventDefault();
             }

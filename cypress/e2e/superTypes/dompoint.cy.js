@@ -78,6 +78,29 @@ describe('DOMPoint spec', () => {
     );
   });
 
+  it('logs value (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dompoint'
+    );
+    cy.get('[name="demo-keypath-not-expected-dompoint-readonly-3"]').check(
+      'readonly'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-dompoint-x"]',
+      '123'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-dompoint-y"]',
+      '456'
+    );
+
+    cy.get('button#logValue').click();
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMPointReadOnly(123, 456)
+    );
+  });
+
   it('views UI', function () {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -93,6 +116,38 @@ describe('DOMPoint spec', () => {
     );
 
     cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dompoint"]').should(
+      'contain', 'DOMPoint'
+    );
+    cy.get('#viewUIResults div[data-type="dompoint"]').should(
+      'contain', '123'
+    );
+    cy.get('#viewUIResults div[data-type="dompoint"]').should(
+      'contain', '456'
+    );
+  });
+
+  it('views UI (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dompoint'
+    );
+    cy.get('[name="demo-keypath-not-expected-dompoint-readonly-3"]').check(
+      'readonly'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-dompoint-x"]',
+      '123'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-dompoint-y"]',
+      '456'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dompoint"]').should(
+      'contain', 'DOMPointReadOnly'
+    );
     cy.get('#viewUIResults div[data-type="dompoint"]').should(
       'contain', '123'
     );
@@ -137,6 +192,16 @@ describe('DOMPoint spec', () => {
     );
     cy.get('@consoleLog').should(
       'be.calledWith', new DOMPoint(123, 456)
+    );
+  });
+
+  it('gets value (readonly)', function () {
+    cy.clearTypeAndBlur(
+      '#getValueForString',
+      'DOMPointReadOnly({{}"x":123, "y": 456})'
+    );
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMPointReadOnly(123, 456)
     );
   });
 

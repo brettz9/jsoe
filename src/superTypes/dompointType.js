@@ -1,17 +1,29 @@
 import {$e} from '../utils/templateUtils.js';
+import {toStringTag} from '../vendor-imports.js';
+
+let idx = 0;
 
 /**
- * @type {import('../types.js').TypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const dompointType = {
   option: ['DOMPoint'],
-  stringRegex: /^DOMPoint\((.*)\)$/u,
-  toValue (s) {
+  childTypes: ['dompointreadonly'],
+  stringRegex: /^(?<domPointClass>DOMPoint|DOMPointReadOnly)\((?<innerContent>.*)\)$/u,
+  toValue (s, rootInfo) {
+    const {groups: {
+      domPointClass
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
     const {x, y, z, w} = JSON.parse(s);
-    return {value: new DOMPoint(x, y, z, w)};
+    return {value: new (
+      domPointClass === 'DOMPoint' ? DOMPoint : DOMPointReadOnly
+    )(x, y, z, w)};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
   },
   setValue ({root, value}) {
     /** @type {HTMLInputElement} */ (
@@ -26,6 +38,16 @@ const dompointType = {
     /** @type {HTMLInputElement} */ (
       $e(root, '.w')
     ).value = String(value.w);
+
+    if (toStringTag(value) === 'DOMPoint') {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.dompoint-readonly-readwrite')
+      ).checked = true;
+    } else {
+      /** @type {HTMLInputElement} */ (
+        $e(root, '.dompoint-readonly-readonly')
+      ).checked = true;
+    }
   },
   getValue ({root}) {
     const x = Number(/** @type {HTMLInputElement} */ (
@@ -40,11 +62,18 @@ const dompointType = {
     const w = Number(/** @type {HTMLInputElement} */ (
       $e(root, '.w')
     ).value);
-    return new DOMPoint(x, y, z, w);
+
+    const isReadWrite = /** @type {HTMLInputElement} */ (
+      $e(root, '.dompoint-readonly-readwrite')
+    ).checked;
+    return new (isReadWrite ? DOMPoint : DOMPointReadOnly)(x, y, z, w);
   },
   viewUI ({value}) {
+    const isReadWrite = toStringTag(value) === 'DOMPoint';
     return ['div', {dataset: {type: 'dompoint'}}, [
-      ['b', {class: 'emphasis'}, ['DOMPoint']],
+      ['b', {class: 'emphasis'}, [
+        isReadWrite ? 'DOMPoint' : 'DOMPointReadOnly'
+      ]],
       ['br'],
       ['b', ['x ']],
       value.x,
@@ -65,8 +94,32 @@ const dompointType = {
     z: '',
     w: ''
   }}) {
+    idx++;
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'dompoint'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+      ['div', [
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'dompoint-readonly-readwrite',
+            name: `${typeNamespace}-dompoint-readonly-${idx}`,
+            value: 'readwrite',
+            checked: toStringTag(value) !== 'DOMPointReadOnly'
+          }],
+          'Readwrite'
+        ]],
+        ' ',
+        ['label', [
+          ['input', {
+            type: 'radio',
+            class: 'dompoint-readonly-readonly',
+            name: `${typeNamespace}-dompoint-readonly-${idx}`,
+            value: 'readonly',
+            checked: toStringTag(value) === 'DOMPointReadOnly'
+          }],
+          'Read-only'
+        ]]
+      ]],
       ['label', [
         'x: ',
         ['input', {

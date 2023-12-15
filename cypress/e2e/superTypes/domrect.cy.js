@@ -78,6 +78,31 @@ describe('DOMRect spec', () => {
     );
   });
 
+  it('logs value (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'domrect'
+    );
+
+    cy.get('[name="demo-keypath-not-expected-domrect-readonly-3"]').check(
+      'readonly'
+    );
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domrect-x"]',
+      '123'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domrect-y"]',
+      '456'
+    );
+
+    cy.get('button#logValue').click();
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMRectReadOnly(123, 456)
+    );
+  });
+
   it('views UI', function () {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -93,6 +118,38 @@ describe('DOMRect spec', () => {
     );
 
     cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="domrect"]').should(
+      'contain', 'DOMRect'
+    );
+    cy.get('#viewUIResults div[data-type="domrect"]').should(
+      'contain', '123'
+    );
+    cy.get('#viewUIResults div[data-type="domrect"]').should(
+      'contain', '456'
+    );
+  });
+
+  it('views UI (readonly)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'domrect'
+    );
+    cy.get('[name="demo-keypath-not-expected-domrect-readonly-3"]').check(
+      'readonly'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domrect-x"]',
+      '123'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domrect-y"]',
+      '456'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="domrect"]').should(
+      'contain', 'DOMRectReadOnly'
+    );
     cy.get('#viewUIResults div[data-type="domrect"]').should(
       'contain', '123'
     );
@@ -137,6 +194,16 @@ describe('DOMRect spec', () => {
     );
     cy.get('@consoleLog').should(
       'be.calledWith', new DOMRect(123, 456)
+    );
+  });
+
+  it('gets value (readonly)', function () {
+    cy.clearTypeAndBlur(
+      '#getValueForString',
+      'DOMRectReadOnly({{}"x":123, "y": 456})'
+    );
+    cy.get('@consoleLog').should(
+      'be.calledWith', new DOMRectReadOnly(123, 456)
     );
   });
 

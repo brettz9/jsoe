@@ -1,5 +1,11 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.14.0
+
+- feat: allow DOMRect, DOMPoint, DOMMatrix read-only versions
+- feat: add noneditable type to catch and transparently pass on
+    unsupported types
+
 ## 0.13.8
 
 - fix: array/object reference value-retrieval broken

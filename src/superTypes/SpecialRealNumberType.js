@@ -1,7 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @type {import('./SpecialNumberType.js').SuperTypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const SpecialRealNumberSuperType = {
   option: ['Special Real Number', {title: '`Infinity`, `-Infinity`, `-0`'}],

@@ -1,13 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
 /**
- * @typedef {import('../types.js').TypeObject & {
- *   childTypes: string[]
- * }} SuperTypeObject
- */
-
-/**
- * @type {SuperTypeObject}
+ * @type {import('../types.js').SuperTypeObject}
  */
 const SpecialNumberSuperType = {
   option: ['Special Number', {title: '`NaN`, `Infinity`, `-Infinity`, `-0`'}],

@@ -405,8 +405,11 @@ setTimeout(async function () {
           }),
           new DOMException('some message', 'someName'),
           new DOMRect(1, 2, 3, 4),
+          new DOMRectReadOnly(1, 2, 3, 4),
           new DOMPoint(1, 2, 3, 4),
+          new DOMPointReadOnly(1, 2, 3, 4),
           new DOMMatrix([1, 2, 3, 4, 5, 6]),
+          new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6]),
           new DOMMatrix([
             1, 2, 3, 4,
             5, 6, 7, 8,
