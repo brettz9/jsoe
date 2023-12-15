@@ -40,6 +40,8 @@ Supported types include:
 - `File`
 - `FileList`
 - `Map`
+- Non-editable type (catch-all for not-yet-supported object types; allows
+    for preexisting data to be passed on transparently)
 - `null`
 - `Number` object
 - number

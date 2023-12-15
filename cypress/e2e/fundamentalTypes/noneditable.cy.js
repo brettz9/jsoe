@@ -102,7 +102,7 @@ describe('Non-editable (Resurrectable) spec', () => {
     ).should(($button) => {
       expect(
         /** @type {HTMLButtonElement & {$value: any}} */ ($button[0]).$value
-      ).to.be.a('ArrayBuffer');
+      ).to.be.a('NonEditableType');
     });
   });
 });

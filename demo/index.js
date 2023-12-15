@@ -9,6 +9,26 @@ import {
 
 const types = new Types();
 
+/**
+ *
+ */
+const makeNoneditableType = () => {
+  /**
+   *
+   */
+  class NonEditableType {
+    /* eslint-disable class-methods-use-this -- `this` not needed */
+    /**
+     * @returns {string}
+     */
+    get [Symbol.toStringTag] () {
+      /* eslint-enable class-methods-use-this -- `this` not needed */
+      return 'NonEditableType';
+    }
+  }
+  return new NonEditableType();
+};
+
 const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
   hasKeyPath: false,
   typeNamespace: 'demo-keypath-not-expected'
@@ -109,7 +129,7 @@ setTimeout(async function () {
       id: 'initializeWithNoneditableValue',
       $on: {
         click () {
-          const a = new ArrayBuffer(16);
+          const a = makeNoneditableType();
           const root = $(
             '#formatAndTypeChoices div[data-type="resurrectable"]'
           );
@@ -393,7 +413,7 @@ setTimeout(async function () {
             9, 10, 11, 12,
             13, 14, 15, 16
           ]),
-          new ArrayBuffer()
+          makeNoneditableType()
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
@@ -467,7 +487,7 @@ setTimeout(async function () {
       const typeSelectionNoneditable = typeChoices({
         format: 'structuredCloning',
         setValue: true,
-        value: new ArrayBuffer(16),
+        value: makeNoneditableType(),
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 

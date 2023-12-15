@@ -64,6 +64,7 @@ module.exports = {
       'requestAnimationFrame',
       'Set',
       'String.replaceAll',
+      'Symbol',
       'Symbol.toStringTag',
       'Uint8Array',
       'URL',
