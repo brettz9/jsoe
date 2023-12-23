@@ -416,6 +416,9 @@ setTimeout(async function () {
             9, 10, 11, 12,
             13, 14, 15, 16
           ]),
+          new ArrayBuffer(8),
+          new DataView(new ArrayBuffer(8), 2, 4),
+          new Uint8Array(new ArrayBuffer(8), 2, 4),
           makeNoneditableType()
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'
@@ -494,6 +497,13 @@ setTimeout(async function () {
         typeNamespace: 'demo-type-choices-only-initial-value'
       });
 
+      const typeSelectionArrayBuffer = typeChoices({
+        format: 'structuredCloning',
+        setValue: true,
+        value: new ArrayBuffer(8),
+        typeNamespace: 'demo-type-choices-only-initial-value'
+      });
+
       return ['form', [
         ...typeSelection.domArray,
         ...typeSelectionBlobHTML.domArray,
@@ -503,7 +513,8 @@ setTimeout(async function () {
         ...typeSelectionTypeErrorWithAggregate.domArray,
         ...typeSelectionFile.domArray,
         ...typeSelectionBlob.domArray,
-        ...typeSelectionNoneditable.domArray
+        ...typeSelectionNoneditable.domArray,
+        ...typeSelectionArrayBuffer.domArray
       ]];
     })(),
 

@@ -3,7 +3,8 @@ import structuredCloning from './structuredCloning.js';
 /** @type {import('../formats.js').Format} */
 const indexedDBKey = {
   types: () => [
-    'number', 'SpecialRealNumber', 'string', 'ValidDate', 'array'
+    'number', 'SpecialRealNumber', 'string', 'ValidDate', 'array',
+    'buffersource'
   ],
   // A hack until we simply pass in our own types or do own parsing
   testInvalid (newType, value) {
@@ -40,8 +41,6 @@ const indexedDBKey = {
     return undefined;
   }
 };
-
-// Todo (low): Support ArrayBuffer
 
 /**
  * @type {Map<import('../types.js').AvailableType,

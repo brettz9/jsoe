@@ -417,22 +417,8 @@ const structuredCloning = {
             // Not yet supported within JSOE
             'imagedata',
             'imagebitmap',
-            'arraybuffer',
-            'dataview',
             'cryptokey',
-            'domquad',
-
-            'bigint64array',
-            'biguint64array',
-            'float32array',
-            'float64array',
-            'int8array',
-            'int16array',
-            'int32array',
-            'uint8array',
-            'uint8clampedarray',
-            'uint16array',
-            'uint32array'
+            'domquad'
           ].some((prop) => {
             return Object.hasOwn(typeSpecSet, prop);
           });
@@ -525,25 +511,13 @@ const structuredCloning = {
       'domrect',
       'dompoint',
       'dommatrix',
+      'buffersource',
       'resurrectable'
 
       // Ok, but will need some work and/or decisions on how to present:
       // 'cryptokey',
       // 'domquad',
-      // 'arraybuffer',
-      // 'dataview', 'imagedata', 'imagebitmap',
-      /*
-      // Typed Arrays
-        'int8array',
-        'uint8array',
-        'uint8clampedarray',
-        'int16array',
-        'uint16array',
-        'int32array',
-        'uint32array',
-        'float32array',
-        'float64array',
-      */
+      // 'imagedata', 'imagebitmap',
     ];
   }
 };

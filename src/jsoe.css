@@ -105,6 +105,70 @@ video.recordedMedia {
   background-color: lightgray;
 }
 
+[data-type="buffersource"] {
+  background-color: beige;
+}
+
 [class^="propertyName-"] {
   background-color: yellow;
+}
+
+.typedArrayArea {
+  overflow: auto;
+  max-height: 250px;
+}
+
+/* -128 to 127 */
+.typedArray-Int8Array {
+  width: 45px;
+}
+
+/* 0 to 255 */
+.typedArray-Uint8Array {
+  width: 45px;
+}
+
+/* 0 to 255 */
+.typedArray-Uint8ClampedArray {
+  width: 45px;
+}
+
+/* -32768 to 32767 */
+.typedArray-Int16Array {
+  width: 65px;
+}
+
+/* 0 to 65535 */
+.typedArray-Uint16Array {
+  width: 65px;
+}
+
+/* -2147483648 to 2147483647 */
+.typedArray-Int32Array {
+  width: 100px;
+}
+
+/* 0 to 4294967295 */
+.typedArray-Uint32Array {
+  width: 100px;
+}
+
+/* -3.4e38 to 3.4e38 */
+.typedArray-Float32Array {
+  width: 120px;
+}
+
+/* -1.8e308 to 1.8e308 */
+.typedArray-Float64Array {
+  width: 120px;
+}
+
+/* -2^63 to 2^63 - 1 */
+.typedArray-BigInt64Array {
+  width: 120px;
+}
+
+/* 0 to 2^64 - 1 */
+.typedArray-BigUint64Array {
+  width: 120px;
 }

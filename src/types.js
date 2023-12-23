@@ -41,6 +41,7 @@ import domexceptionType from './fundamentalTypes/domexceptionType.js';
 import domrectType from './superTypes/domrectType.js';
 import dompointType from './superTypes/dompointType.js';
 import dommatrixType from './superTypes/dommatrixType.js';
+import buffersourceType from './superTypes/buffersourceType.js';
 import noneditableType from './fundamentalTypes/noneditableType.js';
 
 /**
@@ -371,7 +372,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "objectReference"|"array"|"object"|"date"|"userObject"|"undef"|
  *   "SpecialRealNumber"|"SpecialNumber"|"regexp"|"BooleanObject"|
  *   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
- *   "arraybuffer"|"arraybufferview"|"dataview"|"imagedata"|"imagebitmap"|
+ *   "buffersource"|"dataview"|"imagedata"|"imagebitmap"|
  *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
@@ -449,12 +450,7 @@ class Types {
 
       resurrectable: noneditableType,
 
-      arraybuffer: {
-        option: ['ArrayBuffer']
-      },
-      arraybufferview: {
-        option: ['ArrayBufferView']
-      },
+      buffersource: buffersourceType,
       dataview: {
         option: ['DataView']
       },
