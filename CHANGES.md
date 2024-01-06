@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.15.0
+
+- feat: `buffersource`
+
 ## 0.14.0
 
 - feat: allow DOMRect, DOMPoint, DOMMatrix read-only versions
