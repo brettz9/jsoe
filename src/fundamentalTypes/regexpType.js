@@ -60,7 +60,7 @@ const regexpType = {
       }, '')
     );
   },
-  allowedFlags: ['g', 'i', 'm', 'u', 'y', 's'],
+  allowedFlags: ['g', 'i', 'm', 'u', 'y', 's', 'v'],
   viewUI ({value}) {
     return ['i', {dataset: {type: 'regexp'}}, [String(value)]];
   },
