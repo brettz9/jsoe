@@ -16,7 +16,7 @@ export default [{
     commonjs()
   ]
 }, {
-  input: 'demo/index.js',
+  input: 'demo/index-instrumented.js',
   output: {
     file: 'instrumented/demo/index.js',
     format: 'es'
