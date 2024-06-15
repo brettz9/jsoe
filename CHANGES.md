@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.16.0
+
+- feat(regexp): support v flag
+- docs: add simpler demo
+
 ## 0.15.0
 
 - feat: `buffersource`
