@@ -14,7 +14,7 @@ Formats are a collection of allowed types.
 
 Supported formats include:
 
-- Structured Cloning (using [typeson](https://github.com/dfahlander/typeson)) (e.g., IndexedDB)
+- Structured Cloning (using [typeson](https://github.com/dfahlander/typeson)) (e.g., IndexedDB values)
 - JSON
 - IndexedDB keys
 
