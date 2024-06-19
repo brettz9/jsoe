@@ -306,9 +306,7 @@ export const buildTypeChoices = ({
     });
   }
 
-  const typeContainer = /** @type {HTMLDivElement} */ (
-    jml('div', {class: 'typeContainer'})
-  );
+  const typeContainer = jml('div', {class: 'typeContainer'});
 
   return {
     domArray: [

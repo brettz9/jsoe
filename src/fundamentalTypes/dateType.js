@@ -101,7 +101,7 @@ const dateType = {
     const notANum = this.isValueInvalid(value);
     const invalid = this.valid
       ? ''
-      : /** @type {HTMLDivElement} */ (jml('div', [
+      : jml('div', [
         ['label', [
           'Invalid date',
           ['input', {
@@ -116,7 +116,13 @@ const dateType = {
               $setValidity (legitimateInvalid) {
                 // console.log('legitimateInvalid', legitimateInvalid);
                 if (legitimateInvalid === true) {
-                  /** @type {HTMLInputElement} */ (this).checked = true;
+                  /**
+                   * @type {HTMLInputElement & {
+                   *   $setValidity: SetValidity
+                   * }}
+                   */ (
+                    this
+                  ).checked = true;
                 }
                 const label = /** @type {HTMLLabelElement} */ (
                   /** @type {HTMLDivElement} */ (
@@ -139,7 +145,7 @@ const dateType = {
             }
           }]
         ]]
-      ]));
+      ]);
     return ['div', {dataset: {type: this.valid ? 'ValidDate' : 'date'}}, [
       ['label', {
         hidden: notANum

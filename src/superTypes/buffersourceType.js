@@ -389,7 +389,7 @@ const buffersourceType = {
      * @typedef {() => void} BuildInstances
      */
 
-    const div = /** @type {HTMLDivElement} */ (jml('div', {
+    const div = jml('div', {
       dataset: {type: 'buffersource'}
     }, [
       ['fieldset', {
@@ -406,7 +406,11 @@ const buffersourceType = {
         $custom: {
           /** @type {BuildInstances} */
           $buildInstances () {
-            const that = /** @type {HTMLFieldSetElement} */ (this);
+            const that = /**
+            * @type {HTMLFieldSetElement & {
+            *   $buildInstances: BuildInstances
+            * }}
+            */ (this);
             const ancestor = /** @type {HTMLDivElement} */ (that.parentElement);
             const {value} = /** @type {HTMLInputElement} */ ($e(
               that, `[name=${typeNamespace}-buffersource-returnType-${idx}]` +
@@ -795,9 +799,13 @@ const buffersourceType = {
 
                 /** @type {CheckDataViewByteLength} */
                 $checkDataViewByteLength (e) {
-                  const that = /** @type {HTMLInputElement} */ (
-                    this
-                  );
+                  const that = /**
+                  * @type {HTMLInputElement & {
+                  *   $checkDataViewByteLength: CheckDataViewByteLength
+                  * }}
+                  */ (
+                      this
+                    );
                   const greatGrandparent = /** @type {HTMLElement} */
                     (that.parentElement?.parentElement?.parentElement);
 
@@ -894,7 +902,11 @@ const buffersourceType = {
 
                 /** @type {CheckByteOffsetMultiple} */
                 $checkByteOffsetMultiple (e) {
-                  const that = /** @type {HTMLInputElement} */ (this);
+                  const that = /**
+                  * @type {HTMLInputElement & {
+                  *   $checkByteOffsetMultiple: CheckByteOffsetMultiple
+                  * }}
+                  */ (this);
                   const ancestor = /** @type {HTMLElement} */ (
                     that.
                       parentElement?.parentElement?.parentElement?.parentElement
@@ -979,7 +991,12 @@ const buffersourceType = {
 
               /** @type {HTMLInputElement[]} */ (
                 $$e(/** @type {HTMLElement} */ (
-                  /** @type {HTMLSelectElement} */ (this).parentElement
+                  /**
+                   * @type {HTMLSelectElement & {
+                   *   $setMinsAndMaxes: SetMinsAndMaxes,
+                   *   $checkTypedArrayByteLength: CheckTypedArrayByteLength
+                   * }}
+                   */ (this).parentElement
                 ), '.typedArrayValue')
               ).forEach((typedArrayValue) => {
                 typedArrayValue.className =
@@ -995,7 +1012,12 @@ const buffersourceType = {
 
             /** @type {CheckTypedArrayByteLength} */
             $checkTypedArrayByteLength (e) {
-              const that = /** @type {HTMLSelectElement} */ (this);
+              const that = /**
+              * @type {HTMLSelectElement & {
+              *   $setMinsAndMaxes: SetMinsAndMaxes,
+              *   $checkTypedArrayByteLength: CheckTypedArrayByteLength
+              * }}
+              */ (this);
               const TypedArray = getTypedArray(
                 /** @type {TypedArray} */ (that.value)
               );
@@ -1104,7 +1126,12 @@ const buffersourceType = {
 
               /** @type {CheckBufferBounds} */
               $checkBufferBounds (e) {
-                const that = /** @type {HTMLInputElement} */ (this);
+                const that = /**
+                * @type {HTMLInputElement & {
+                *   $checkBufferBounds: CheckBufferBounds,
+                *   $buildTypedArray: BuildTypedArray
+                * }}
+                */ (this);
 
                 const ancestor = /** @type {HTMLElement} */ (
                   that.parentElement?.parentElement?.parentElement
@@ -1170,7 +1197,12 @@ const buffersourceType = {
 
               /** @type {BuildTypedArray} */
               $buildTypedArray () {
-                const that = /** @type {HTMLInputElement} */ (this);
+                const that = /**
+                * @type {HTMLInputElement & {
+                *   $checkBufferBounds: CheckBufferBounds,
+                *   $buildTypedArray: BuildTypedArray
+                * }}
+                */ (this);
                 const length = Number.parseInt(that.value);
                 const grandparent = /** @type {HTMLElement} */ (
                   that.parentElement?.parentElement
@@ -1434,7 +1466,7 @@ const buffersourceType = {
         ' ',
         ['div', {class: 'dataViewArea'}]
       ]]
-    ]));
+    ]);
 
     if (this.setValue && value) {
       this.setValue({root: div, value});

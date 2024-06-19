@@ -55,9 +55,7 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
         }]
     */
   ]).map(([optText, optAtts]) => {
-    return /** @type {HTMLOptionElement} */ (
-      jml('option', optAtts, [optText])
-    );
+    return jml('option', optAtts, [optText]);
   }).reduce((
     frag,
     option
@@ -126,12 +124,18 @@ export function formatAndTypeChoices ({
        * Sets the desired format and rebuilds the type choices.
        * @callback SetFormat
        * @param {string} valueFormat
+       * @this {HTMLSelectElement & {
+       *   $buildTypeChoices: TypeChoiceBuilder
+       * }}
        * @returns {void}
        */
 
       /**
        * Rebuilds the type choices.
        * @callback TypeChoiceBuilder
+       * @this {HTMLSelectElement & {
+       *   $buildTypeChoices: TypeChoiceBuilder
+       * }}
        * @returns {void}
        */
 
@@ -160,7 +164,9 @@ export function formatAndTypeChoices ({
             $e(typesHolder, 'div[data-type]')
           ),
           // resultType: 'both',
-          format: this.value,
+          format: /** @type {import('./formats.js').AvailableFormat} */ (
+            this.value
+          ),
           formats,
           types,
           typeNamespace,
@@ -172,7 +178,11 @@ export function formatAndTypeChoices ({
       }
     },
     $on: {change () {
-      /** @type {HTMLElement & {$buildTypeChoices: TypeChoiceBuilder}} */ (
+      /**
+       * @type {HTMLSelectElement & {
+       *   $buildTypeChoices: TypeChoiceBuilder
+       * }}
+       */ (
         this
       ).$buildTypeChoices();
     }}
@@ -189,7 +199,7 @@ export function formatAndTypeChoices ({
    * @property {TypeSelectGetter} $getTypeSelect
    */
 
-  const typesHolder = /** @type {HTMLDivElement} */ (
+  const typesHolder = (
     jml('div', {class: 'typesHolder', $custom: {
       /**
        * @type {TypeRootGetter}

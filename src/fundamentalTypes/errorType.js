@@ -252,7 +252,7 @@ const errorType = {
       });
     }
 
-    const div = /** @type {HTMLDivElement} */ (jml(
+    const div = jml(
       'div',
       {dataset: {type: 'error'}},
       /** @type {import('jamilih').JamilihChildren} */ ([
@@ -410,7 +410,7 @@ const errorType = {
           ['div', {class: 'causeContents'}]
         ]]
       ])
-    ));
+    );
 
     return [div];
   }

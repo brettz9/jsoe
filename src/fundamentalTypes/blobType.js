@@ -185,7 +185,7 @@ const blobType = {
       ['br'],
       value.type.startsWith('text/') || value.type === 'application/json'
         ? (() => {
-          const div = /** @type {HTMLDivElement} */ (jml('div'));
+          const div = jml('div');
           const reader = new FileReader();
           reader.addEventListener('load', function () {
             div.append(jml('div', [
@@ -217,7 +217,7 @@ const blobType = {
       value.type.startsWith('video/')
         ? (() => {
           const objURL = URL.createObjectURL(value);
-          const video = /** @type {HTMLVideoElement} */ (jml('video', {
+          const video = jml('video', {
             src: objURL,
             class: 'video',
             $on: {
@@ -225,7 +225,7 @@ const blobType = {
                 URL.revokeObjectURL(objURL);
               }
             }
-          }));
+          });
 
           return ['div', [
             video,
@@ -270,7 +270,7 @@ const blobType = {
       value.type.startsWith('audio/')
         ? (() => {
           const objURL = URL.createObjectURL(value);
-          const audio = /** @type {HTMLAudioElement} */ (jml('audio', {
+          const audio = jml('audio', {
             src: objURL,
             class: 'audio',
             $on: {
@@ -278,7 +278,7 @@ const blobType = {
                 URL.revokeObjectURL(objURL);
               }
             }
-          }));
+          });
           return ['div', [
             audio,
             ['button', {
@@ -481,194 +481,192 @@ const blobType = {
           'Supply blob through recording'
         ]],
         (() => {
-          const select = /** @type {HTMLSelectElement} */ (
-            jml('select', {
-              class: 'device',
-              $on: {
-                async change () {
-                  const videoContainer = /** @type {HTMLDivElement} */ (
-                    this.nextElementSibling?.nextElementSibling
-                  );
+          const select = jml('select', {
+            class: 'device',
+            $on: {
+              async change () {
+                const videoContainer = /** @type {HTMLDivElement} */ (
+                  this.nextElementSibling?.nextElementSibling
+                );
 
-                  const photo =
-                    /**
-                     * @type {HTMLCanvasElement}
-                     */
-                    ($e(videoContainer, 'img.photo'));
-                  photo.hidden = true;
-
-                  const oldVideo =
-                    /**
-                     * @type {HTMLVideoElement & {
-                     *   $stream: MediaStream
-                     * }}
-                     */
-                    ($e(
-                      videoContainer,
-                      'video.previewMedia'
-                    ));
-
-                  // Drop preexisting listeners
-                  const previewMedia =
-                    /**
-                     * @type {HTMLVideoElement & {
-                     *   $stream: MediaStream,
-                     *   $screenShare: boolean
-                     * }}
-                     */ (
-                      jml('video', {
-                        class: 'previewMedia'
-                      })
-                    );
-
-                  if (oldVideo.$stream) {
-                    const tracks = /** @type {MediaStream} */ (
-                      oldVideo.$stream
-                    ).getTracks();
-                    tracks.forEach((track) => {
-                      track.stop();
-                    });
-                    oldVideo.srcObject = null;
-                  }
-
-                  oldVideo.replaceWith(previewMedia);
-
-                  const takeSnapshot = /** @type {HTMLButtonElement} */ (
-                    $e(/** @type {HTMLDivElement} */ (
-                      select.nextElementSibling
-                    ), '.takeSnapshot')
-                  );
-
-                  const recordMedia = /** @type {HTMLButtonElement} */ (
-                    $e(/** @type {HTMLDivElement} */ (
-                      select.nextElementSibling
-                    ), '.recordMedia')
-                  );
-
-                  /** @type {HTMLDivElement} */ ($e(
-                    /** @type {HTMLDivElement} */
-                    (select.nextElementSibling?.
-                      nextElementSibling),
-                    'div.recordedMedia'
-                  )).hidden = true;
-
-                  const visualizer = /** @type {HTMLCanvasElement} */ (
-                    $e(videoContainer, 'canvas.visualizer')
-                  );
-
+                const photo =
                   /**
-                   * @type {{
-                   *   video?: true,
-                   *   audio?: true
-                   * }|undefined}
+                   * @type {HTMLCanvasElement}
                    */
-                  let constraints;
-                  let screenShareConstraints;
+                  ($e(videoContainer, 'img.photo'));
+                photo.hidden = true;
 
-                  previewMedia.$screenShare = false;
-                  switch (select.value) {
-                  case 'audio-and-video':
-                    constraints = {video: true, audio: true};
-                    previewMedia.hidden = false;
-                    takeSnapshot.hidden = false;
-                    recordMedia.textContent = 'Record video/audio';
-                    break;
-                  case 'video':
-                    constraints = {video: true};
-                    previewMedia.hidden = false;
-                    takeSnapshot.hidden = false;
-                    recordMedia.textContent = 'Record video';
-                    break;
-                  case 'audio':
-                    constraints = {audio: true};
-                    previewMedia.hidden = true;
-                    takeSnapshot.hidden = true;
-                    recordMedia.textContent = 'Record audio';
-                    break;
-                  case 'screenShare':
-                    screenShareConstraints = {video: true};
-                    // Fallthrough
-                  case 'screenShareAndVideo':
-                    if (!screenShareConstraints) {
-                      screenShareConstraints = {video: true, audio: true};
-                    }
-                    previewMedia.$screenShare = true;
-                    previewMedia.hidden = true;
-                    takeSnapshot.hidden = true;
-                    visualizer.hidden = true;
-                    break;
-                  default:
+                const oldVideo =
+                  /**
+                   * @type {HTMLVideoElement & {
+                   *   $stream: MediaStream
+                   * }}
+                   */
+                  ($e(
+                    videoContainer,
+                    'video.previewMedia'
+                  ));
+
+                // Drop preexisting listeners
+                const previewMedia =
+                  /**
+                   * @type {HTMLVideoElement & {
+                   *   $stream: MediaStream,
+                   *   $screenShare: boolean
+                   * }}
+                   */ (
+                    jml('video', {
+                      class: 'previewMedia'
+                    })
+                  );
+
+                if (oldVideo.$stream) {
+                  const tracks = /** @type {MediaStream} */ (
+                    oldVideo.$stream
+                  ).getTracks();
+                  tracks.forEach((track) => {
+                    track.stop();
+                  });
+                  oldVideo.srcObject = null;
+                }
+
+                oldVideo.replaceWith(previewMedia);
+
+                const takeSnapshot = /** @type {HTMLButtonElement} */ (
+                  $e(/** @type {HTMLDivElement} */ (
+                    select.nextElementSibling
+                  ), '.takeSnapshot')
+                );
+
+                const recordMedia = /** @type {HTMLButtonElement} */ (
+                  $e(/** @type {HTMLDivElement} */ (
+                    select.nextElementSibling
+                  ), '.recordMedia')
+                );
+
+                /** @type {HTMLDivElement} */ ($e(
+                  /** @type {HTMLDivElement} */
+                  (select.nextElementSibling?.
+                    nextElementSibling),
+                  'div.recordedMedia'
+                )).hidden = true;
+
+                const visualizer = /** @type {HTMLCanvasElement} */ (
+                  $e(videoContainer, 'canvas.visualizer')
+                );
+
+                /**
+                 * @type {{
+                 *   video?: true,
+                 *   audio?: true
+                 * }|undefined}
+                 */
+                let constraints;
+                let screenShareConstraints;
+
+                previewMedia.$screenShare = false;
+                switch (select.value) {
+                case 'audio-and-video':
+                  constraints = {video: true, audio: true};
+                  previewMedia.hidden = false;
+                  takeSnapshot.hidden = false;
+                  recordMedia.textContent = 'Record video/audio';
+                  break;
+                case 'video':
+                  constraints = {video: true};
+                  previewMedia.hidden = false;
+                  takeSnapshot.hidden = false;
+                  recordMedia.textContent = 'Record video';
+                  break;
+                case 'audio':
+                  constraints = {audio: true};
+                  previewMedia.hidden = true;
+                  takeSnapshot.hidden = true;
+                  recordMedia.textContent = 'Record audio';
+                  break;
+                case 'screenShare':
+                  screenShareConstraints = {video: true};
+                  // Fallthrough
+                case 'screenShareAndVideo':
+                  if (!screenShareConstraints) {
+                    screenShareConstraints = {video: true, audio: true};
+                  }
+                  previewMedia.$screenShare = true;
+                  previewMedia.hidden = true;
+                  takeSnapshot.hidden = true;
+                  visualizer.hidden = true;
+                  break;
+                default:
+                  return;
+                }
+
+                if (constraints) {
+                  const mediaStream = await getUserMedia(constraints);
+                  /* istanbul ignore if */
+                  if (!mediaStream) {
+                    await dialogs.alert('Error getting user media');
                     return;
                   }
 
-                  if (constraints) {
-                    const mediaStream = await getUserMedia(constraints);
-                    /* istanbul ignore if */
-                    if (!mediaStream) {
-                      await dialogs.alert('Error getting user media');
-                      return;
-                    }
+                  videoContainer.hidden = false;
+                  previewMedia.srcObject = mediaStream;
 
-                    videoContainer.hidden = false;
-                    previewMedia.srcObject = mediaStream;
+                  // Save as stream for later reuse as stream
+                  previewMedia.$stream = mediaStream;
 
-                    // Save as stream for later reuse as stream
-                    previewMedia.$stream = mediaStream;
-
-                    if (constraints.video) {
-                      const canvas =
-                        /**
-                         * @type {HTMLCanvasElement}
-                         */
-                        ($e(
-                          videoContainer,
-                          'canvas.recordedImage'
-                        ));
-                      // https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Taking_still_photos
-                      previewMedia.addEventListener('canplay', () => {
-                        canvas.setAttribute('width', String(
-                          previewMedia.videoWidth
-                        ));
-                        canvas.setAttribute(
-                          'height', String(previewMedia.videoHeight)
-                        );
-                      });
-                    }
-
-                    previewMedia.addEventListener('loadedmetadata', () => {
-                      previewMedia.play();
-                      if (constraints?.audio) {
-                        visualizer.hidden = false;
-                        visualize(
-                          mediaStream,
-                          visualizer
-                        );
-                      } else {
-                        visualizer.hidden = true;
-                      }
+                  if (constraints.video) {
+                    const canvas =
+                      /**
+                       * @type {HTMLCanvasElement}
+                       */
+                      ($e(
+                        videoContainer,
+                        'canvas.recordedImage'
+                      ));
+                    // https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Taking_still_photos
+                    previewMedia.addEventListener('canplay', () => {
+                      canvas.setAttribute('width', String(
+                        previewMedia.videoWidth
+                      ));
+                      canvas.setAttribute(
+                        'height', String(previewMedia.videoHeight)
+                      );
                     });
-                  } else if (screenShareConstraints) {
-                    const mediaStream = await startScreenCapture(
-                      screenShareConstraints
-                    );
-                    /* istanbul ignore if */
-                    if (!mediaStream) {
-                      await dialogs.alert('Error getting user media');
-                      return;
-                    }
-
-                    videoContainer.hidden = false;
-                    previewMedia.srcObject = mediaStream;
-
-                    // Save as stream for later reuse as stream
-                    previewMedia.$stream = mediaStream;
                   }
+
+                  previewMedia.addEventListener('loadedmetadata', () => {
+                    previewMedia.play();
+                    if (constraints?.audio) {
+                      visualizer.hidden = false;
+                      visualize(
+                        mediaStream,
+                        visualizer
+                      );
+                    } else {
+                      visualizer.hidden = true;
+                    }
+                  });
+                } else if (screenShareConstraints) {
+                  const mediaStream = await startScreenCapture(
+                    screenShareConstraints
+                  );
+                  /* istanbul ignore if */
+                  if (!mediaStream) {
+                    await dialogs.alert('Error getting user media');
+                    return;
+                  }
+
+                  videoContainer.hidden = false;
+                  previewMedia.srcObject = mediaStream;
+
+                  // Save as stream for later reuse as stream
+                  previewMedia.$stream = mediaStream;
                 }
               }
-            }, [
-              ['option', {value: ''}, ['Please choose a device']]
-            ])
-          );
+            }
+          }, [
+            ['option', {value: ''}, ['Please choose a device']]
+          ]);
 
           (async () => {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -909,9 +907,9 @@ const blobType = {
                     dialogs.alert('Error converting canvas to Blob');
                     return;
                   }
-                  const newPhoto = /** @type {HTMLImageElement} */ (jml('img', {
+                  const newPhoto = jml('img', {
                     class: 'photo'
-                  }));
+                  });
                   const url = URL.createObjectURL(blob);
 
                   newPhoto.addEventListener('load', () => {
@@ -951,9 +949,9 @@ const blobType = {
             {class: 'recordedMedia'},
             /** @type {import('jamilih').JamilihChildren} */ ([
               ...(() => {
-                const recordedMedia = /** @type {HTMLVideoElement} */ (jml(
+                const recordedMedia = jml(
                   'video', {class: 'recordedMedia'}
-                ));
+                );
                 return [
                   recordedMedia,
                   ['br'],

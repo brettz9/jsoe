@@ -45,9 +45,7 @@ const dialogs = {
         atts.$on.close = /** @type {import('jamilih').EventHandler} */ (close);
       }
     }
-    const dialog = /** @type {HTMLDialogElement} */ (
-      jml('dialog', atts, children, body)
-    );
+    const dialog = jml('dialog', atts, children, body);
     dialog.showModal();
     if (remove) {
       dialog.addEventListener('close', () => {
@@ -134,7 +132,7 @@ const dialogs = {
     const {submitClass = 'submit'} = message;
     const {message: outputMessage} = message;
     return new Promise((resolve /* , _reject */) => {
-      const dialog = /** @type {HTMLDialogElement} */ (jml('dialog', [
+      const dialog = jml('dialog', [
         /** @type {string|import('jamilih').JamilihArray} */ (outputMessage),
         ['br'], ['br'],
         ['div', {class: submitClass}, [
@@ -143,7 +141,7 @@ const dialogs = {
             resolve();
           }}}, [this.localeStrings.ok]]
         ]]
-      ], body));
+      ], body);
       dialog.showModal();
     });
   },
@@ -160,7 +158,7 @@ const dialogs = {
       resolve,
       reject
     ) => {
-      const dialog = /** @type {HTMLDialogElement} */ (jml('dialog', atts, [
+      const dialog = jml('dialog', atts, [
         message,
         ['br'], ['br'],
         ['div', {class: submitClass}, [
@@ -174,7 +172,7 @@ const dialogs = {
             reject(new Error('cancelled'));
           }}}, [this.localeStrings.cancel]]
         ]]
-      ], body));
+      ], body);
       dialog.showModal();
     });
   }

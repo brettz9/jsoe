@@ -66,43 +66,48 @@ const regexpType = {
   },
   editUI ({typeNamespace, types, value = {source: '', flags: ''}}) {
     // Todo (low): Add RegExp syntax highlighter
-    const select = /** @type {HTMLSelectElement} */ (jml(
-      'select',
-      {multiple: true, size: 5, $custom: {
+    const select = jml('select', {
+      multiple: true, size: 5, $custom: {
         /**
+         * @callback $Set
          * @param {string[]} valArr
          * @returns {void}
          */
+
+        /** @type {$Set} */
         $set (valArr) { // A useful reusable method for multiple selects
-          [...(/** @type {HTMLSelectElement} */ (
-            this
-          )).options].forEach((opt) => {
+          [...(
+            /**
+             * @type {HTMLSelectElement & {
+             *   $set: $Set
+             * }}
+             */ (
+              this
+            )
+          ).options].forEach((opt) => {
             opt.selected = valArr.includes(opt.value);
           });
         }
-      }},
-      this.allowedFlags.map((flag) => {
-        return ['option', {
-          selected: value.flags.includes(flag)
-        }, [flag]];
-      })
-    ));
-    const root = /** @type {HTMLDivElement} */ (
-      jml('div', {dataset: {type: 'regexp'}}, [
-        ['label', [
-          'Source ',
-          ['input', {
-            name: `${typeNamespace}-regexp`, type: 'text',
-            value: value.source
-          }]
-        ]],
-        ['br'],
-        ['label', [
-          'Flags ',
-          select
-        ]]
-      ])
-    );
+      }
+    }, this.allowedFlags.map((flag) => {
+      return ['option', {
+        selected: value.flags.includes(flag)
+      }, [flag]];
+    }));
+    const root = jml('div', {dataset: {type: 'regexp'}}, [
+      ['label', [
+        'Source ',
+        ['input', {
+          name: `${typeNamespace}-regexp`, type: 'text',
+          value: value.source
+        }]
+      ]],
+      ['br'],
+      ['label', [
+        'Flags ',
+        select
+      ]]
+    ]);
     // Could be disallowed flags; we might instead try in
     //   advance which will work
     select.addEventListener('change', () => {

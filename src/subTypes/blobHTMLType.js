@@ -78,19 +78,17 @@ const blobHTMLType = {
   viewUI ({value}) {
     /** @type {string} */
     let val;
-    const div = /** @type {HTMLDivElement} */ (
-      jml('div', {dataset: {type: 'blobHTML'}}, [
-        'HTML: ',
-        ['button', {$on: {
-          click () {
-            dialogs.alert({message: ['div', [
-              'Source: ',
-              ['textarea', {class: 'view-source'}, [val]]
-            ]]});
-          }
-        }}, ['View source']]
-      ])
-    );
+    const div = jml('div', {dataset: {type: 'blobHTML'}}, [
+      'HTML: ',
+      ['button', {$on: {
+        click () {
+          dialogs.alert({message: ['div', [
+            'Source: ',
+            ['textarea', {class: 'view-source'}, [val]]
+          ]]});
+        }
+      }}, ['View source']]
+    ]);
     // eslint-disable-next-line promise/prefer-await-to-then
     this.loadBlob(value).then((
       result
@@ -125,13 +123,13 @@ const blobHTMLType = {
       }
     };
 
-    const root = /** @type {HTMLDivElement} */ (jml(
+    const root = jml(
       'div',
       {dataset: {type: 'blobHTML'}},
       [
         textarea
       ]
-    ));
+    );
     setTimeout(() => {
       // Push onto these: https://www.sceditor.com/documentation/formats/xhtml/
       // sceditor.formats.xhtml.converters array

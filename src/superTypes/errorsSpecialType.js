@@ -447,7 +447,7 @@ const errorsSpecialType = {
       });
     }
 
-    const div = /** @type {HTMLDivElement} */ (jml(
+    const div = jml(
       'div',
       {dataset: {type: 'errors'}},
       /** @type {import('jamilih').JamilihChildren} */ ([
@@ -766,7 +766,7 @@ const errorsSpecialType = {
           ['div', {class: 'aggregateErrorsContents'}]
         ]]
       ])
-    ));
+    );
 
     return [div];
   }

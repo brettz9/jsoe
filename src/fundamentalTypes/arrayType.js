@@ -390,59 +390,27 @@ const arrayType = {
         ]]
       ]];
     };
-    const div = /** @type {HTMLDivElement} */ (
-      jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
-        class: 'arrayHolder',
-        dataset: {type},
-        $custom: {
-          /**
-           * @param {{
-           *   propName: string,
-           *   type: import('../types.js').AvailableType,
-           *   value: import('../formats.js').StructuredCloneValue,
-           *   bringIntoFocus: boolean,
-           *   schemaContent: object,
-           *   schemaState:
-           *     import('../types.js').GetPossibleSchemasForPathAndType
-           * }} cfg
-           * @returns {Element}
-           */
-          $addAndSetArrayElement ({
-            propName, type, value, bringIntoFocus,
-            schemaContent, schemaState
-          }) {
-            if (parentType === 'map') {
-              const root = types.getUIForModeAndType({
-                resultType,
-                readonly: true,
-                typeNamespace, type, topRoot,
-                bringIntoFocus,
-                format, schemaContent, schemaState,
-                value,
-                hasValue: true // type === 'sparseArrays' && value
-              });
-              if (propName === '0') {
-                const fieldset = this.$addMapElement();
-                this._lastFieldset = fieldset;
-                const keyFieldset = /** @type {HTMLFieldSetElement} */ (jml(
-                  'fieldset', [
-                    ['legend', ['Key']]
-                  ], fieldset
-                ));
-                jml(root, keyFieldset);
-              } else { // propName === '1'
-                const valueFieldset = /** @type {HTMLFieldSetElement} */ (jml(
-                  'fieldset', [
-                    ['legend', ['Value']]
-                  ], this._lastFieldset
-                ));
-                this._lastFieldset = null;
-                jml(root, valueFieldset);
-              }
-              return root;
-            }
-
-            const fieldset = this.$addArrayElement({propName});
+    const div = jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
+      class: 'arrayHolder',
+      dataset: {type},
+      $custom: {
+        /**
+         * @param {{
+         *   propName: string,
+         *   type: import('../types.js').AvailableType,
+         *   value: import('../formats.js').StructuredCloneValue,
+         *   bringIntoFocus: boolean,
+         *   schemaContent: object,
+         *   schemaState:
+         *     import('../types.js').GetPossibleSchemasForPathAndType
+         * }} cfg
+         * @returns {Element}
+         */
+        $addAndSetArrayElement ({
+          propName, type, value, bringIntoFocus,
+          schemaContent, schemaState
+        }) {
+          if (parentType === 'map') {
             const root = types.getUIForModeAndType({
               resultType,
               readonly: true,
@@ -452,96 +420,122 @@ const arrayType = {
               value,
               hasValue: true // type === 'sparseArrays' && value
             });
-            jml(root, fieldset);
+            if (propName === '0') {
+              const fieldset = this.$addMapElement();
+              this._lastFieldset = fieldset;
+              const keyFieldset = jml(
+                'fieldset', [
+                  ['legend', ['Key']]
+                ], fieldset
+              );
+              jml(root, keyFieldset);
+            } else { // propName === '1'
+              const valueFieldset = jml(
+                'fieldset', [
+                  ['legend', ['Value']]
+                ], this._lastFieldset
+              );
+              this._lastFieldset = null;
+              jml(root, valueFieldset);
+            }
             return root;
-          },
-          /**
-           * @returns {HTMLFieldSetElement}
-           */
-          $addMapElement () {
-            itemIndex++;
-            const arrayItems = this.$getArrayItems();
-            // const className = `${type}Item`;
-            const fieldset = /** @type {HTMLFieldSetElement} */ (
-              jml('fieldset', [
-                buildLegend({
-                  // className,
-                  // type,
-                  // arrayItems,
-                  itemIndex,
-                  typeNamespace,
-                  propName: undefined
-                })
-              ], arrayItems)
-            );
-            return fieldset;
-          },
-          /**
-           * @param {{propName: string}} cfg
-           * @returns {HTMLFieldSetElement}
-           */
-          $addArrayElement ({propName}) {
-            itemIndex++;
-            const arrayItems = this.$getArrayItems();
-            // const className = `${type}Item`;
-            const fieldset = /** @type {HTMLFieldSetElement} */ (
-              jml('fieldset', [
-                buildLegend({
-                  // className,
-                  // type,
-                  // arrayItems,
-                  itemIndex,
-                  typeNamespace,
-                  propName
-                })
-              ], arrayItems)
-            );
-            return fieldset;
-          },
-          $getArrayItems () {
-            return this.lastElementChild.lastElementChild;
           }
+
+          const fieldset = this.$addArrayElement({propName});
+          const root = types.getUIForModeAndType({
+            resultType,
+            readonly: true,
+            typeNamespace, type, topRoot,
+            bringIntoFocus,
+            format, schemaContent, schemaState,
+            value,
+            hasValue: true // type === 'sparseArrays' && value
+          });
+          jml(root, fieldset);
+          return root;
+        },
+        /**
+         * @returns {HTMLFieldSetElement}
+         */
+        $addMapElement () {
+          itemIndex++;
+          const arrayItems = this.$getArrayItems();
+          // const className = `${type}Item`;
+          const fieldset = jml('fieldset', [
+            buildLegend({
+              // className,
+              // type,
+              // arrayItems,
+              itemIndex,
+              typeNamespace,
+              propName: undefined
+            })
+          ], arrayItems);
+          return fieldset;
+        },
+        /**
+         * @param {{propName: string}} cfg
+         * @returns {HTMLFieldSetElement}
+         */
+        $addArrayElement ({propName}) {
+          itemIndex++;
+          const arrayItems = this.$getArrayItems();
+          // const className = `${type}Item`;
+          const fieldset = jml('fieldset', [
+            buildLegend({
+              // className,
+              // type,
+              // arrayItems,
+              itemIndex,
+              typeNamespace,
+              propName
+            })
+          ], arrayItems);
+          return fieldset;
+        },
+        $getArrayItems () {
+          return this.lastElementChild.lastElementChild;
         }
-      }), [
-        DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
-          type
-        )).replace(/s$/u, ''), nbsp.repeat(2),
-        ['button', {$on: {click (/** @type {Event} */ e) {
-          e.preventDefault();
-          const {target} = e;
-          const arrayContents = /** @type {HTMLDivElement} */ ($e(
-            /** @type {HTMLElement} */
-            (/** @type {HTMLElement} */ (target).closest('.arrayHolder')),
-            '.arrayContents'
-          ));
-          arrayContents.hidden = !arrayContents.hidden;
-          /** @type {HTMLElement} */ (
-            target
-          ).textContent = arrayContents.hidden ? '+' : '-';
-        }}}, ['-']],
-        ['div', {class: 'arrayContents'}, [
-          this.array
-            ? ['div', [
-              type === 'filelist'
-                ? 'FileList length: '
-                : type === 'set'
-                  ? 'Set size: '
-                  : type === 'map'
-                    ? 'Map size: '
-                    : 'Array length: ',
-              ['span', [
-                (value && (type === 'set' || type === 'map')
-                  ? value.size
-                  : value.length) || 0
-              ]]
+      }
+    }), [
+      DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
+        type
+      )).replace(/s$/u, ''), nbsp.repeat(2),
+      ['button', {$on: {click (/** @type {Event} */ e) {
+        e.preventDefault();
+        const {target} = e;
+        const arrayContents = /** @type {HTMLDivElement} */ ($e(
+          /** @type {HTMLElement} */
+          (/** @type {HTMLElement} */ (target).closest('.arrayHolder')),
+          '.arrayContents'
+        ));
+        arrayContents.hidden = !arrayContents.hidden;
+        /** @type {HTMLElement} */ (
+          target
+        ).textContent = arrayContents.hidden ? '+' : '-';
+      }}}, ['-']],
+      ['div', {class: 'arrayContents'}, [
+        this.array
+          ? ['div', [
+            type === 'filelist'
+              ? 'FileList length: '
+              : type === 'set'
+                ? 'Set size: '
+                : type === 'map'
+                  ? 'Map size: '
+                  : 'Array length: ',
+            ['span', [
+              (value && (type === 'set' || type === 'map')
+                ? value.size
+                : value.length) || 0
             ]]
-            : '',
-          ['div', {
-            class: 'arrayItems'
-          }]
-        ]]
-      ])
-    );
+          ]]
+          : '',
+        ['div', {
+          class: 'arrayItems'
+        }]
+      ]]
+    ]);
     return [div];
   },
   getInput ({root}) {
@@ -1152,94 +1146,95 @@ const arrayType = {
       }
       const thisButton = this; // eslint-disable-line consistent-this
       const className = `${type}Item`;
-      const fieldset =
-        /** @type {HTMLFieldSetElement} */ (
-          jml('fieldset',
-            {
-              $on: {
-                change: [() => {
-                  if (type !== 'set') {
-                    return;
-                  }
-                  setTimeout(() => {
-                    const root = div;
-                    const values = /** @type {any[]} */ (
-                      parentTypeObject.getValue.call({
-                        ...parentTypeObject,
-                        set: false
-                      }, {
-                        root,
-                        stateObj: {
-                          types,
-                          // eslint-disable-next-line object-shorthand -- TS
-                          formats:
-                          /** @type {import('../formats.js').default} */ (
-                            formats
-                          )
-                        }
-                      })
-                    );
-                    // console.log('values', values);
-
-                    const dupeIndex = values.findLastIndex((value, idx) => {
-                      return values.some((val, index) => {
-                        return idx !== index && value === val;
-                      });
-                    });
-
-                    if (dupeIndex === -1) {
-                      return;
-                    }
-                    const fieldsets = arrayItems.children;
-                    const controls = [...fieldsets].map((fieldset) => {
-                      const root = /** @type {HTMLDivElement} */ (
-                        $e(fieldset, 'div[data-type]')
-                      );
-                      /* istanbul ignore if -- Should err first? */
-                      if (!root) {
-                        return null;
-                      }
-                      return types.getFormControlForRoot(root);
-                    });
-
-                    const control = controls[dupeIndex];
-                    /* istanbul ignore if -- Should exist */
-                    if (!control) {
-                      return;
-                    }
-
-                    control.setCustomValidity(
-                      'Duplicate Set value'
-                    );
-                    control.reportValidity();
-                  });
-                }, true]
-              },
-              $custom: {
-                /** @type {GetPropertyInput} */
-                $getPropertyInput () {
-                  return /** @type {HTMLInputElement} */ (
-                    DOM.filterChildElements(
-                      /** @type {HTMLFieldSetElement} */ (this),
-                      ['legend', `input.propertyName-${typeNamespace}`]
-                    ).pop()
-                  );
-                }
+      const fieldset = jml('fieldset',
+        {
+          $on: {
+            change: [() => {
+              if (type !== 'set') {
+                return;
               }
-            },
-            [
-              buildLegend({
-                className,
-                splice,
-                itemIndex,
-                // type,
-                typeNamespace,
-                arrayItems,
-                propName
-              })
-            ],
-            arrayItems)
-        );
+              setTimeout(() => {
+                const root = div;
+                const values = /** @type {any[]} */ (
+                  parentTypeObject.getValue.call({
+                    ...parentTypeObject,
+                    set: false
+                  }, {
+                    root,
+                    stateObj: {
+                      types,
+                      // eslint-disable-next-line object-shorthand -- TS
+                      formats:
+                      /** @type {import('../formats.js').default} */ (
+                        formats
+                      )
+                    }
+                  })
+                );
+                // console.log('values', values);
+
+                const dupeIndex = values.findLastIndex((value, idx) => {
+                  return values.some((val, index) => {
+                    return idx !== index && value === val;
+                  });
+                });
+
+                if (dupeIndex === -1) {
+                  return;
+                }
+                const fieldsets = arrayItems.children;
+                const controls = [...fieldsets].map((fieldset) => {
+                  const root = /** @type {HTMLDivElement} */ (
+                    $e(fieldset, 'div[data-type]')
+                  );
+                  /* istanbul ignore if -- Should err first? */
+                  if (!root) {
+                    return null;
+                  }
+                  return types.getFormControlForRoot(root);
+                });
+
+                const control = controls[dupeIndex];
+                /* istanbul ignore if -- Should exist */
+                if (!control) {
+                  return;
+                }
+
+                control.setCustomValidity(
+                  'Duplicate Set value'
+                );
+                control.reportValidity();
+              });
+            }, true]
+          },
+          $custom: {
+            /** @type {GetPropertyInput} */
+            $getPropertyInput () {
+              return /** @type {HTMLInputElement} */ (
+                DOM.filterChildElements(
+                  /**
+                   * @type {HTMLFieldSetElement & {
+                   *   $getPropertyInput: GetPropertyInput
+                   * }}
+                   */ (this),
+                  ['legend', `input.propertyName-${typeNamespace}`]
+                ).pop()
+              );
+            }
+          }
+        },
+        [
+          buildLegend({
+            className,
+            splice,
+            itemIndex,
+            // type,
+            typeNamespace,
+            arrayItems,
+            propName
+          })
+        ],
+        arrayItems);
       // We must ensure fieldset is built before passing it
       jml({'#': [
         ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
@@ -1260,6 +1255,8 @@ const arrayType = {
         ['button', {$on: {click (/** @type {Event} */ e) {
           e.preventDefault();
           // e.stopPropagation();
+
+          /** @type {number | "append" | undefined} */
           let splice;
           if (sparse) {
             const prevInputVal =
