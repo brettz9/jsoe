@@ -2,7 +2,7 @@
 
 JavaScript Object Editor.
 
-Editing of arbitrary JavaScript objects.
+Editing and viewing of arbitrary JavaScript objects.
 
 See a [demo](https://es-joy.github.io/jsoe/demo/) of this tool or
 [a demo](https://brettz9.github.io/idb-manager/index-pages.html) of an
@@ -88,7 +88,6 @@ Supported supertypes include:
 
 ## To-dos
 
-1. Add tests of demo (lower priority as have tests in `idb-manager`)
 1. Support Schemas based on a JSON serialization of Zod
 1. Expand fundamental types
     1. Not in typeson-registry
