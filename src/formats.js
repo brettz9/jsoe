@@ -1,6 +1,7 @@
 import indexedDBKey from './formats/indexedDBKey.js';
 import json from './formats/json.js';
 import structuredCloning from './formats/structuredCloning.js';
+import schema from './formats/schema.js';
 
 /**
  * An arbitrary Structured Clone, JSON, etc. value.
@@ -12,6 +13,8 @@ import structuredCloning from './formats/structuredCloning.js';
  * @param {import('./types.js').default} types
  * @param {AvailableFormat} format
  * @param {string} [state]
+ * @param {import('./formatAndTypeChoices.js').ZodexSchema|
+ *   undefined} [schemaObject]
  * @returns {import('./types.js').AvailableType[]|undefined}
  */
 
@@ -25,7 +28,7 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
 */
 
 /**
- * @typedef {"indexedDBKey"|"json"|"structuredCloning"} AvailableFormat
+ * @typedef {"indexedDBKey"|"json"|"structuredCloning"|"schema"} AvailableFormat
  */
 
 /**
@@ -40,7 +43,8 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *   iterate: import('./formats/structuredCloning.js').FormatIterator,
  *   getTypesForState: (
  *     types: import('./types.js').default,
- *     state?: string
+ *     state?: string,
+ *     schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
  *   ) => undefined|
  *     (import('./types.js').AvailableType)[]
  * }} Format
@@ -80,11 +84,7 @@ class Formats {
     this.availableFormats = /** @type {{[key: string]: Format}} */ ({
       indexedDBKey,
       json,
-      // Todo (readme): these too? getTypesForState(types, state)
-      /* schema:
-      schemaAndArbitrary,
-      schemaOnly,
-      */
+      schema,
       structuredCloning
     });
   }
@@ -112,9 +112,11 @@ class Formats {
    * @type {GetTypesForFormatAndState}
    */
   getTypesForFormatAndState (
-    types, format, state
+    types, format, state, schemaObject
   ) {
-    return this.availableFormats[format].getTypesForState(types, state);
+    return this.availableFormats[format].getTypesForState(
+      types, state, schemaObject
+    );
   }
 
   /**

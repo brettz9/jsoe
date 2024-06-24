@@ -123,6 +123,8 @@ export const getPropertyValueFromLegend = (legend) => {
  * @callback GetTypeOptionsForFormatAndState
  * @param {import('./formats.js').AvailableFormat} format
  * @param {string} [parserState]
+ * @param {import('./formatAndTypeChoices.js').ZodexSchema|
+ *   undefined} [schemaContent]
  * @returns {[string, {value: AvailableType, title?: string}][]}
  */
 
@@ -218,7 +220,8 @@ export const getPropertyValueFromLegend = (legend) => {
  *     path: string
  *   ][],
  *   parent?: {[key: string]: any},
- *   parentPath?: string|number
+ *   parentPath?: string|number,
+ *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
  * }) => [
 *   value: StructuredCloneValue,
 *   remnant: string,
@@ -256,6 +259,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   parent?: object,
  *   parentPath?: string|number,
  *   types?: Types
+ *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
  * }} RootInfo
  */
 
@@ -662,9 +666,9 @@ class Types {
   }
 
   /** @type {GetTypeOptionsForFormatAndState} */
-  getTypeOptionsForFormatAndState (format, parserState) {
+  getTypeOptionsForFormatAndState (format, parserState, schemaContent) {
     const typesForFormatAndState = this.formats.getTypesForFormatAndState(
-      this, format, parserState
+      this, format, parserState, schemaContent
     );
     if (!typesForFormatAndState) {
       throw new Error('Unexpected type for format and state');
@@ -772,10 +776,10 @@ class Types {
   /** @type {GetValueForString} */
   getValueForString (s, {
     format, state, endMatchTypeObjs = [], firstRun = true,
-    rootHolder = [], parent, parentPath
+    rootHolder = [], parent, parentPath, schemaObject
   }) {
     const allowedTypes = this.formats.getTypesForFormatAndState(
-      this, format, state
+      this, format, state, schemaObject
     );
     if (!allowedTypes) {
       throw new Error('Could not get types for format and state');
@@ -866,7 +870,8 @@ class Types {
             remnant,
             rootHolder,
             parent,
-            parentPath
+            parentPath,
+            schemaObject
           }
         );
       /* istanbul ignore next -- Good regexes should prevent */

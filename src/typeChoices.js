@@ -78,7 +78,7 @@ import dialogs from './utils/dialogs.js';
  *   formats?: import('./formats.js').default
  *   types?: import('./types.js').default
  *   schema?: string,
- *   schemaContent?: object,
+ *   schemaContent?: import('./formatAndTypeChoices.js').ZodexSchema,
  * }} cfg
  * @returns {{
  *   domArray: [select: HTMLElement, typeContainer: HTMLElement],
@@ -111,7 +111,7 @@ export const buildTypeChoices = ({
   // console.log('format', format, 'state', state, 'path', typeNamespace);
   const typeOptions = requireObject
     ? [types.getOptionForType('object')]
-    : types.getTypeOptionsForFormatAndState(format, state);
+    : types.getTypeOptionsForFormatAndState(format, state, schemaContent);
 
   let editUI;
 
@@ -198,7 +198,8 @@ export const buildTypeChoices = ({
           value: baseValue,
           buildTypeChoices,
           format,
-          topRoot
+          topRoot,
+          schemaContent
         });
         this.$addEditUI({editUI});
         this.$validate();
@@ -252,14 +253,12 @@ export const buildTypeChoices = ({
     ['option', {value: ''}, [
       '(Choose a type)'
     ]],
-    // [string, {value: AvailableType; title?: string | undefined;}]
+
     // @ts-ignore Apparent TS bug
     ...typeOptions.map(
       ([optText, optAtts]) => [
         'option',
-        optAtts ||
-          /* istanbul ignore next -- Should always have atts */
-          {},
+        optAtts,
         [optText]
       ]
     )

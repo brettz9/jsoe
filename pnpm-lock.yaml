@@ -14,6 +14,9 @@ importers:
       jamilih:
         specifier: 0.59.0
         version: 0.59.0
+      jsonref:
+        specifier: ^8.0.8
+        version: 8.0.8
       sceditor:
         specifier: 3.2.0
         version: 3.2.0
@@ -2957,6 +2960,10 @@ packages:
 
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
+
+  jsonref@8.0.8:
+    resolution: {integrity: sha512-K978Ev7Gsq0aDvyLNI7N717Ya8OIISIm2Rv1o37V8sOfxsN6q71P3lpvtC2Kob5Q+HaJx2JEtwT4E2ZtFH/H/w==}
+    engines: {node: '>=16.14.0'}
 
   jsprim@1.4.2:
     resolution: {integrity: sha512-P2bSOMAc/ciLz6DzgjVlGJP9+BrJWu5UDGK70C2iweC5QBIeFf0ZXRvGjEj2uYgrY2MkAAhsSWHDWlFtEroZWw==}
@@ -7847,6 +7854,8 @@ snapshots:
       universalify: 2.0.0
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jsonref@8.0.8: {}
 
   jsprim@1.4.2:
     dependencies:

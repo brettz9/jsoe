@@ -93,7 +93,8 @@ const arrayType = {
       /* istanbul ignore next -- Just a guard */
       endMatchTypeObjs = [],
       remnant: innerContents,
-      rootHolder
+      rootHolder,
+      schemaObject
     } = /** @type {import('../types.js').RootInfo} */ (info);
     // eslint-disable-next-line prefer-destructuring -- TS
     const format = /** @type {import('../types.js').RootInfo} */ (info).format;
@@ -157,6 +158,7 @@ const arrayType = {
               firstRun: false,
               format,
               state,
+              schemaObject,
               endMatchTypeObjs, rootHolder, parent: retObj, parentPath: idx
             }
           );
@@ -211,7 +213,7 @@ const arrayType = {
         [v, stringVal, beginOnly, assign] = types.getValueForString(
           stringVal,
           {
-            firstRun: false, format, state,
+            firstRun: false, format, state, schemaObject,
             endMatchTypeObjs, rootHolder, parent: retObj, parentPath: pr
           }
         );

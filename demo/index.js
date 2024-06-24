@@ -9,7 +9,7 @@ import {
 
 const types = new Types();
 
-const keyPathNotExpectedTypeChoices = formatAndTypeChoices({
+const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,
   typeNamespace: 'demo-keypath-not-expected'
 });
@@ -91,10 +91,10 @@ setTimeout(async function () {
     ['h2', [
       'Format and type choices: Key path expected (object required at root)'
     ]],
-    ...formatAndTypeChoices({
+    ...(await formatAndTypeChoices({
       hasKeyPath: true,
       typeNamespace: 'demo-keypath-expected'
-    }).domArray,
+    })).domArray,
 
     ['h2', [
       'Format choices without type selection ' +

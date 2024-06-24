@@ -14,5 +14,5 @@
     "outDir": "dist"
   },
   "include": ["src/**/*.js", "typings/sceditor.d.ts"],
-  "exclude": ["node_modules", "src/deepEqual.js", "src/formats/schemaOnly.js", "src/formats/schemaAndArbitrary.js", "./src/index.ts", "./dist/**/*.js"]
+  "exclude": ["node_modules", "src/deepEqual.js", "src/formats/schema.js", "./src/index.ts", "./dist/**/*.js"]
 }

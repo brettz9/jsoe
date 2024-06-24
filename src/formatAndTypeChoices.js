@@ -13,14 +13,14 @@ import {$e, DOM} from './utils/templateUtils.js';
  * Defaults to structured cloning.
  * @todo Compose from format metadata, so can make user customizable.
  * @param {object} cfg
- * @param {string} [cfg.schema] (NOT IN USE)
+ * @param {string[]} [cfg.schemas]
  * @param {boolean} [cfg.hasKeyPath] Whether or not a key path is expected; if
  *   true, an indexedDB key is not allowed here as a key does not support
  *   the object type which is needed for a key path.
  * @returns {DocumentFragment}
  */
-export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
-  const hasSchema = typeof schema === 'string';
+export const getFormatAndSchemaChoices = ({schemas, hasKeyPath} = {}) => {
+  const hasSchema = schemas && schemas.length;
   // eslint-disable-next-line @stylistic/max-len -- Long
   return /** @type {[optText: string, opts: {value: string, selected?: boolean}][]} */ ([
     ['JSON only', {value: 'json'}],
@@ -29,31 +29,16 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
       : [['IndexedDB key', {value: 'indexedDBKey'}]]),
     ['Structured Clone (via Typeson JSON)', {
       value: 'structuredCloning', selected: !hasSchema
-    }]
-    /* schema:
+    }],
     ...(hasSchema
-      ? [
-        [`Schema + arbitrary: ${schema}`, {
-          value: 'schemaAndArbitrary',
-          dataset: {schema}
-        }],
-        [`Schema only: ${schema}`, {
-          value: 'schemaOnly',
+      ? schemas.map((schema, idx) => {
+        return [`Schema: ${schema}`, {
+          value: 'schema',
           dataset: {schema},
-          selected: hasSchema
-        }]
-      ]
-      : []
-    )
-    */
-    /*
-        // This can be supported for editing only
-        ['Arbitrary (Non-Typeson-serializable will be read-only)', {
-            value: 'arbitrary',
-            title: 'Any value that the typeson-registry supports ' +
-              'for structured cloning'
-        }]
-    */
+          selected: idx === 0
+        }];
+      })
+      : [])
   ]).map(([optText, optAtts]) => {
     return jml('option', optAtts, [optText]);
   }).reduce((
@@ -73,10 +58,17 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  */
 
 /**
+ * TODO: Use imported Zodex SzType?
+ * @typedef {object} ZodexSchema
+ * @property {string} type
+ */
+
+/**
  * Builds a selector and container for types.
  * @param {object} cfg
- * @param {string} [cfg.schema] The schema name (NOT IN USE)
- * @param {object} [cfg.schemaContent] The schema content (NOT IN USE)
+ * @param {string[]} [cfg.schemas] The schema names
+ * @param {(schema: string) => Promise<ZodexSchema>} [cfg.getSchemaContent] The
+ *    schema content retriever
  * @param {boolean} [cfg.hasValue] Set to `true` if you are supplying
  *   your own value. If `false` and `hasKeyPath` is `true`,
  *   will initialize with an object.
@@ -90,7 +82,7 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   instances of typeChoices on the page
  * @param {import('./formats.js').default} [cfg.formats]
  * @param {import('./types.js').default} [cfg.types]
- * @returns {{
+ * @returns {Promise<{
  *   formatChoices: FormatChoices,
  *   typesHolder: TypesHolder,
  *   domArray: [formatChoices: FormatChoices, typesHolder: TypesHolder],
@@ -101,12 +93,12 @@ export const getFormatAndSchemaChoices = ({schema, hasKeyPath} = {}) => {
  *   setValue: SetValue,
  *   formats: import('./formats.js').default,
  *   types: import('./types.js').default
- * }} The selector for types and the container for them. Both should be
+ * }>} The selector for types and the container for them. Both should be
  *   added to the page.
  */
-export function formatAndTypeChoices ({
-  schema,
-  schemaContent,
+export async function formatAndTypeChoices ({
+  schemas,
+  getSchemaContent,
   hasValue,
   singleValue,
   hasKeyPath,
@@ -114,7 +106,7 @@ export function formatAndTypeChoices ({
   formats = new Formats(),
   types = new Types()
 }) {
-  const format = 'structuredCloning';
+  const format = schemas && schemas.length ? 'schema' : 'structuredCloning';
   const formatChoices = /** @type {FormatChoices} */ (jml('select', {
     class: 'formatChoices',
     hidden: singleValue,
@@ -127,7 +119,7 @@ export function formatAndTypeChoices ({
        * @this {HTMLSelectElement & {
        *   $buildTypeChoices: TypeChoiceBuilder
        * }}
-       * @returns {void}
+       * @returns {Promise<void>}
        */
 
       /**
@@ -136,7 +128,7 @@ export function formatAndTypeChoices ({
        * @this {HTMLSelectElement & {
        *   $buildTypeChoices: TypeChoiceBuilder
        * }}
-       * @returns {void}
+       * @returns {Promise<void>}
        */
 
       /**
@@ -149,16 +141,17 @@ export function formatAndTypeChoices ({
       /**
        * @type {SetFormat}
        */
-      $setFormat (valueFormat) {
+      async $setFormat (valueFormat) {
         this.value = valueFormat;
-        this.$buildTypeChoices();
+        await this.$buildTypeChoices();
       },
 
       /**
        * @type {TypeChoiceBuilder}
        */
-      $buildTypeChoices () {
+      async $buildTypeChoices () {
         DOM.removeChildren(typesHolder);
+        const {schema} = this.selectedOptions[0].dataset;
         jml({'#': buildTypeChoices({
           topRoot: /** @type {HTMLDivElement} */ (
             $e(typesHolder, 'div[data-type]')
@@ -173,20 +166,24 @@ export function formatAndTypeChoices ({
           requireObject: hasKeyPath,
           objectHasValue: hasValue,
           schema,
-          schemaContent
+          schemaContent: await getSchemaContent?.(
+            /** @type {string} */ (schema)
+          )
         }).domArray}, typesHolder);
       }
     },
-    $on: {change () {
-      /**
-       * @type {HTMLSelectElement & {
-       *   $buildTypeChoices: TypeChoiceBuilder
-       * }}
-       */ (
-        this
-      ).$buildTypeChoices();
-    }}
-  }, [getFormatAndSchemaChoices({schema, hasKeyPath})]));
+    $on: {
+      async change () {
+        await /**
+         * @type {HTMLSelectElement & {
+         *   $buildTypeChoices: TypeChoiceBuilder
+         * }}
+         */ (
+          this
+        ).$buildTypeChoices();
+      }
+    }
+  }, [getFormatAndSchemaChoices({schemas, hasKeyPath})]));
 
   /**
    * @callback TypeSelectGetter
@@ -220,6 +217,10 @@ export function formatAndTypeChoices ({
     }})
   );
 
+  const schema = format === 'schema'
+    ? formatChoices.selectedOptions[0].dataset.schema
+    : undefined;
+
   jml({'#': buildTypeChoices({
     // resultType: 'both',
     topRoot: /** @type {HTMLDivElement} */ ($e(typesHolder, 'div[data-type]')),
@@ -230,7 +231,7 @@ export function formatAndTypeChoices ({
     requireObject: hasKeyPath,
     objectHasValue: hasValue,
     schema,
-    schemaContent
+    schemaContent: await getSchemaContent?.(/** @type {string} */ (schema))
   }).domArray}, typesHolder);
 
   return {
