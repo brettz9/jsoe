@@ -58,9 +58,7 @@ export const getFormatAndSchemaChoices = ({schemas, hasKeyPath} = {}) => {
  */
 
 /**
- * TODO: Use imported Zodex SzType?
- * @typedef {object} ZodexSchema
- * @property {string} type
+ * @typedef {import('./formats/schema.js').ZodexSchema} ZodexSchema
  */
 
 /**

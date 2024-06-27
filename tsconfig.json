@@ -10,7 +10,7 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "strict": true,
-    "target": "es6",
+    "target": "es2018",
     "outDir": "dist"
   },
   "include": ["src/**/*.js", "typings/sceditor.d.ts"],

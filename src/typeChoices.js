@@ -22,7 +22,8 @@ import dialogs from './utils/dialogs.js';
 /**
  * @typedef {(info?: {
  *   baseValue?: import('./formats.js').StructuredCloneValue,
- *   bringIntoFocus?: boolean
+ *   bringIntoFocus?: boolean,
+ *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema
  * }) => void} AddAndValidateEditUI
  */
 
@@ -109,9 +110,13 @@ export const buildTypeChoices = ({
   schemaContent
 }) => {
   // console.log('format', format, 'state', state, 'path', typeNamespace);
-  const typeOptions = requireObject
-    ? [types.getOptionForType('object')]
+  const typeAndSchemaInfo = requireObject
+    ? {
+      typeOptions: [types.getOptionForType('object')], schemaObjects: undefined
+    }
     : types.getTypeOptionsForFormatAndState(format, state, schemaContent);
+  const {typeOptions} = typeAndSchemaInfo;
+  const schemaObjs = typeAndSchemaInfo.schemaObjects;
 
   let editUI;
 
@@ -163,7 +168,7 @@ export const buildTypeChoices = ({
         if (parEl.nodeName.toLowerCase() === 'fieldset') {
           parEl.dataset.type = type;
           DOM.filterChildElements(parEl, 'legend').forEach((legend) => {
-            /** @type {HTMLElement} */ (legend).dataset.type = type;
+            legend.dataset.type = type;
           });
         }
       },
@@ -177,7 +182,9 @@ export const buildTypeChoices = ({
       },
 
       /** @type {AddAndValidateEditUI} */
-      $addAndValidateEditUI ({baseValue, bringIntoFocus} = {}) {
+      $addAndValidateEditUI ({
+        baseValue, bringIntoFocus, schemaObject
+      } = {}) {
         const {value: type} = this;
 
         if (!type) {
@@ -199,7 +206,8 @@ export const buildTypeChoices = ({
           buildTypeChoices,
           format,
           topRoot,
-          schemaContent
+          schemaContent,
+          specificSchemaObject: schemaObject
         });
         this.$addEditUI({editUI});
         this.$validate();
@@ -246,7 +254,14 @@ export const buildTypeChoices = ({
       // We don't want form `onchange` to run `$checkForKeyDuplicates`
       //   again (through `addAndValidateEditUI`->`validateAllReferences`)
       e?.stopPropagation();
-      /** @type {TypeChoicesElementAPI} */ (this).$addAndValidateEditUI();
+      /** @type {TypeChoicesElementAPI} */ (this).$addAndValidateEditUI({
+        schemaObject: schemaObjs
+          ? schemaObjs[Number(
+            /** @type {HTMLSelectElement} */
+            (e.target).selectedOptions[0].dataset.idx
+          )]
+          : undefined
+      });
       /** @type {TypeChoicesElementAPI} */ (this).$setStyles();
     }}
   }, [
@@ -254,13 +269,18 @@ export const buildTypeChoices = ({
       '(Choose a type)'
     ]],
 
-    // @ts-ignore Apparent TS bug
+    // @ts-expect-error Apparent TS bug
     ...typeOptions.map(
-      ([optText, optAtts]) => [
-        'option',
-        optAtts,
-        [optText]
-      ]
+      ([optText, optAtts], idx) => {
+        return [
+          'option',
+          {
+            ...optAtts,
+            dataset: schemaObjs ? {idx} : {}
+          },
+          [optText]
+        ];
+      }
     )
   ]));
   if (setValue || (requireObject && !objectHasValue)) {

@@ -402,7 +402,7 @@ const arrayType = {
          *   type: import('../types.js').AvailableType,
          *   value: import('../formats.js').StructuredCloneValue,
          *   bringIntoFocus: boolean,
-         *   schemaContent: object,
+         *   schemaContent: import('../formats/schema.js').ZodexSchema,
          *   schemaState:
          *     import('../types.js').GetPossibleSchemasForPathAndType
          * }} cfg
@@ -549,7 +549,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
-    formats, types,
+    formats, types, schemaContent, specificSchemaObject,
     type, arrayState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -748,13 +748,14 @@ const arrayType = {
      *   itemIndex: number,
      *   typeNamespace: string|undefined,
      *   arrayItems: ArrayItems,
-     *   propName: string|undefined
+     *   propName: string|undefined,
+     *   readonly?: true
      * }} cfg
      * @returns {import('jamilih').JamilihArray}
      */
     const buildLegend = ({
       className, splice, itemIndex, /* type, */ typeNamespace,
-      arrayItems, propName
+      arrayItems, propName, readonly
     }) => {
       /**
        * @callback ValidateLength
@@ -865,16 +866,24 @@ const arrayType = {
         ]];
       }
       if (editableProperties) {
+        const description = /** @type {import('zodex').SzObject} */ (
+          specificSchemaObject
+        )?.properties[/** @type {string} */ (propName)]?.description;
         return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse
             ? 'Item'
-            : {'#': [
+            : {'#': readonly ? [
+              ['span', {className, title: description ? propName : undefined}, [
+                description ?? propName
+              ]]
+            ] : [
               'Property ',
               ['span', {className}, [String(itemIndex)]],
               ':'
             ]},
           nbsp.repeat(2),
           ['input', {
+            style: {display: readonly ? 'none' : 'block'},
             value: sparse
               ? (
                 splice === 'append'
@@ -1106,19 +1115,20 @@ const arrayType = {
      *   propName?: string,
      *   splice?: "append"|number,
      *   alwaysFocus?: true
+     *   readonly?: true
      * }} cfg
      * @returns {void}
      */
 
     /**
      * @type {AddArrayElement}
-     * @this {HTMLButtonElement & {
+     * @this {HTMLElement & {
      *   $getArrayItems: GetArrayItems,
      *   $addArrayElement: AddArrayElement,
      *   $getMapKeySelects?: GetMapKeySelects
      * }}
      */
-    const $addArrayElement = function ({propName, splice, alwaysFocus}) {
+    const $addArrayElement = function ({propName, splice, alwaysFocus, readonly}) {
       // console.log('propName', propName);
       const arrayItems = this.$getArrayItems();
       if (sparse) {
@@ -1146,7 +1156,7 @@ const arrayType = {
       } else {
         itemIndex++;
       }
-      const thisButton = this; // eslint-disable-line consistent-this
+      const thisButton = this; // eslint-disable-line consistent-this -- Clarity
       const className = `${type}Item`;
       const fieldset = jml('fieldset',
         {
@@ -1233,7 +1243,8 @@ const arrayType = {
             // type,
             typeNamespace,
             arrayItems,
-            propName
+            propName,
+            readonly
           })
         ],
         arrayItems);
@@ -1247,6 +1258,8 @@ const arrayType = {
           topRoot: /** @type {HTMLDivElement} */ (topRoot),
           // eslint-disable-next-line object-shorthand, @stylistic/max-len -- TS
           format: /** @type {import('../formats.js').AvailableFormat} */ (format),
+          schemaContent,
+          // schemaState,
           state: parentTypeObject.filelist
             ? 'filelistArray'
             : arrayState ?? type,
@@ -1617,7 +1630,15 @@ const arrayType = {
     const parentType = type;
 
     // eslint-disable-next-line @stylistic/max-len -- Long
-    const div = /** @type {HTMLDivElement & {$addAndSetArrayElement: import('../formats/structuredCloning.js').AddAndSetArrayElement}} */ (
+    const div =
+      /**
+       * @type {HTMLDivElement & {
+       *   $addAndSetArrayElement:
+       *     import('../formats/structuredCloning.js').AddAndSetArrayElement,
+       *   $addArrayElement: AddArrayElement
+       *   $getArrayItems: GetArrayItems,
+       *   $getMapKeySelects?: GetMapKeySelects
+       * }} */ (
       jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
         dataset: {type},
         // is: 'array-or-object-editor',
@@ -1687,8 +1708,8 @@ const arrayType = {
            *   $getAddArrayElement: GetAddArrayElement
            * }}
            */
-          // @ts-ignore TS is apparently getting wrong $addArrayElement
-          $addArrayElement ({propName, splice, alwaysFocus}) {
+          // @ts-expect-error TS is apparently getting wrong $addArrayElement
+          $addArrayElement ({propName, splice, alwaysFocus, readonly}) {
             const addArrayElement = this.$getAddArrayElement();
             /**
              * @type {HTMLButtonElement & {
@@ -1696,7 +1717,9 @@ const arrayType = {
              *   $getArrayItems: GetArrayItems
              * }}
              */
-            (addArrayElement).$addArrayElement({propName, splice, alwaysFocus});
+            (addArrayElement).$addArrayElement({
+              propName, splice, alwaysFocus, readonly
+            });
           },
           $getArrayItems () {
             const addArrayElement = this.$getAddArrayElement();
@@ -1731,7 +1754,7 @@ const arrayType = {
           }
         }
       }), /** @type {import('jamilih').JamilihChildren} */ ([
-        DOM.initialCaps(
+        specificSchemaObject?.description ?? DOM.initialCaps(
           /** @type {import('../types.js').AvailableType} */
           (type)
         ).replace(/s$/u, ''), nbsp.repeat(2),
@@ -1769,6 +1792,17 @@ const arrayType = {
       ]))
     );
     topRoot = topRoot || div;
+
+    if (!value && type === 'object' && specificSchemaObject) {
+      for (const [prop, val] of
+        Object.entries(/** @type {import('zodex').SzObject} */ (specificSchemaObject).properties)) {
+        if (!val.isOptional) {
+          div.$addArrayElement({propName: prop, readonly: true});
+        }
+      }
+      // alert(JSON.stringify(specificSchemaObject, null, 2));
+    }
+
     return [div];
   }
 };

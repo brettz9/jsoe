@@ -12,18 +12,24 @@ import {$e, $$e} from './utils/templateUtils.js';
 import nullType from './fundamentalTypes/nullType.js';
 import trueType from './subTypes/trueType.js';
 import falseType from './subTypes/falseType.js';
+import nanType from './fundamentalTypes/nanType.js';
 import blobHTMLType from './subTypes/blobHTMLType.js';
+import booleanType from './fundamentalTypes/booleanType.js';
 import numberType from './fundamentalTypes/numberType.js';
 import bigintType from './fundamentalTypes/bigintType.js';
 import stringType from './fundamentalTypes/stringType.js';
 import arrayReferenceType from './fundamentalTypes/arrayReferenceType.js';
 import objectReferenceType from './fundamentalTypes/objectReferenceType.js';
 import arrayType from './fundamentalTypes/arrayType.js';
+import tupleType from './fundamentalTypes/tupleType.js';
 import objectType from './fundamentalTypes/objectType.js';
+import recordType from './fundamentalTypes/recordType.js';
 import dateType from './fundamentalTypes/dateType.js';
+import enumType from './fundamentalTypes/enumType.js';
 import setType from './fundamentalTypes/setType.js';
 import mapType from './fundamentalTypes/mapType.js';
 import undefinedType from './fundamentalTypes/undefinedType.js';
+import voidType from './fundamentalTypes/voidType.js';
 import regexpType from './fundamentalTypes/regexpType.js';
 import BooleanObjectType from './fundamentalTypes/BooleanObjectType.js';
 import NumberObjectType from './fundamentalTypes/NumberObjectType.js';
@@ -114,8 +120,14 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
+ * @typedef {number} Integer
+ */
+
+/**
  * @callback GetOptionForType
  * @param {AvailableType} type
+ * @param {import('./formatAndTypeChoices.js').ZodexSchema|
+ *   undefined} [schemaContent]
  * @returns {[string, {value: AvailableType, title?: string}]}
  */
 
@@ -125,7 +137,10 @@ export const getPropertyValueFromLegend = (legend) => {
  * @param {string} [parserState]
  * @param {import('./formatAndTypeChoices.js').ZodexSchema|
  *   undefined} [schemaContent]
- * @returns {[string, {value: AvailableType, title?: string}][]}
+ * @returns {{
+ *   typeOptions: [string, {value: AvailableType, title?: string}][],
+ *   schemaObjects: import('./formats/schema.js').ZodexSchema[]
+ * }}
  */
 
 /**
@@ -147,7 +162,7 @@ export const getPropertyValueFromLegend = (legend) => {
 *   error?: Error,
 *   rootUI?: Element,
 *   schema?: string,
-*   schemaContent?: object,
+*   schemaContent?: import('./formats/schema.js').ZodexSchema,
 *   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
 *   paths?: {[currentPath: string]: {
 *     referentPath: string,
@@ -168,7 +183,8 @@ export const getPropertyValueFromLegend = (legend) => {
  *   bringIntoFocus?: boolean|undefined,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
  *   format: import('./formats.js').AvailableFormat,
- *   schemaContent?: object
+ *   schemaContent?: import('./formats/schema.js').ZodexSchema
+ *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema
  *   schemaState?: GetPossibleSchemasForPathAndType,
  *   value: StructuredCloneValue,
  *   hasValue: boolean,
@@ -293,6 +309,10 @@ export const getPropertyValueFromLegend = (legend) => {
  *   it is a `Map`. Do not use in other types.
  * @property {boolean} [set] Private context variable. Whether or not
  *   it is a `Set`. Do not use in other types.
+ * @property {boolean} [record] Private context variable. Whether or not
+ *   it is a `Record`. Do not use in other types.
+ * @property {boolean} [tuple] Private context variable. Whether or not
+ *   it is a tuple type. Do not use in other types.
  * @property {boolean} [filelist] Private context variable. Whether or not
  *   it is a `FileList` type. Do not use in other types.
  * @property {boolean} [sparse] Private context variable. Whether or not
@@ -329,6 +349,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   topRoot?: HTMLDivElement,
  *   resultType?: "keys"|"values"|"both",
  *   format: import('./formats.js').AvailableFormat,
+ *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema,
  *   types: Types
  * }) => JamilihArray} viewUI
  * @property {(info: {
@@ -343,6 +364,8 @@ export const getPropertyValueFromLegend = (legend) => {
  *   arrayState?: string,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
  *   topRoot?: HTMLDivElement
+ *   schemaContent?: import('./formats/schema.js').ZodexSchema,
+ *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema,
  * }) => JamilihArray} editUI
  * @property {(info: {root: HTMLDivElement}) =>
  *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
@@ -380,7 +403,8 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int8array"|"uint8array"|"uint8clampedarray"|"int16array"|"uint16array"|
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
- *   "dompoint"|"dommatrix"|"resurrectable"} AvailableType
+ *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
+ *   "record"|"void"|"enum"} AvailableType
  */
 
 /**
@@ -410,17 +434,22 @@ class Types {
       null: nullType,
       true: trueType,
       false: falseType,
+      nan: nanType, // Schema type
+      boolean: booleanType, // Schema type
       number: numberType,
       bigint: bigintType,
       string: stringType,
       arrayReference: arrayReferenceType,
       objectReference: objectReferenceType,
       array: arrayType,
+      tuple: tupleType, // Schema type
       // Note: We don't do for BooleanObject/NumberObject/StringObject, date,
       //   regexp, as added properties on them are not being cloned (in Chrome
       //   at least)
       object: objectType,
+      record: recordType, // Schema type
       date: dateType,
+      enum: enumType,
 
       // This type is only for throwing upon cloning errors:
       // 'checkDataCloneException'
@@ -428,6 +457,7 @@ class Types {
       //   passed in:
       userObject: ['User objects'],
       undef: undefinedType,
+      void: voidType,
       SpecialRealNumber: SpecialRealNumberSuperType,
       SpecialNumber: SpecialNumberSuperType,
 
@@ -651,7 +681,7 @@ class Types {
   }
 
   /** @type {GetOptionForType} */
-  getOptionForType (type) {
+  getOptionForType (type, schemaContent = undefined) {
     const availableType = /** @type {TypeObject} */ (
       this.availableTypes[type]
     );
@@ -659,7 +689,15 @@ class Types {
     const optInfo = [
       ...availableType.option
     ];
-    optInfo[1] = {value: type, ...(optInfo[1])};
+
+    if (schemaContent && schemaContent.description) {
+      optInfo[0] = `${optInfo[0]} (${schemaContent.description})`;
+    }
+
+    optInfo[1] = {
+      value: type,
+      ...(optInfo[1])
+    };
     return /** @type {[string, {value: AvailableType, title?: string}]} */ (
       optInfo
     );
@@ -667,23 +705,29 @@ class Types {
 
   /** @type {GetTypeOptionsForFormatAndState} */
   getTypeOptionsForFormatAndState (format, parserState, schemaContent) {
-    const typesForFormatAndState = this.formats.getTypesForFormatAndState(
-      this, format, parserState, schemaContent
-    );
+    const typesForFormatAndState =
+      this.formats.getTypesAndSchemasForFormatAndState(
+        this, format, parserState, schemaContent
+      );
     if (!typesForFormatAndState) {
       throw new Error('Unexpected type for format and state');
     }
 
-    return typesForFormatAndState.map((type) => {
-      return this.getOptionForType(type);
-    });
+    return {
+      typeOptions: typesForFormatAndState.types.map((type, idx) => {
+        return this.getOptionForType(
+          type, typesForFormatAndState.schemaObjects[idx]
+        );
+      }),
+      schemaObjects: typesForFormatAndState.schemaObjects
+    };
   }
 
   /** @type {GetUIForModeAndType} */
   getUIForModeAndType ({
     readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
     buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
-    replaced
+    replaced, specificSchemaObject
   }) {
     const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
     const arg = hasValue
@@ -692,6 +736,7 @@ class Types {
         format, schemaContent, schemaState,
         resultType, topRoot, bringIntoFocus, value,
         replaced,
+        specificSchemaObject,
         types: this
       }
       : {
@@ -699,6 +744,7 @@ class Types {
         format, schemaContent, schemaState,
         resultType, topRoot, bringIntoFocus,
         replaced,
+        specificSchemaObject,
         types: this
       };
     const root = /** @type {HTMLDivElement} */ (jml(
@@ -778,9 +824,9 @@ class Types {
     format, state, endMatchTypeObjs = [], firstRun = true,
     rootHolder = [], parent, parentPath, schemaObject
   }) {
-    const allowedTypes = this.formats.getTypesForFormatAndState(
+    const allowedTypes = this.formats.getTypesAndSchemasForFormatAndState(
       this, format, state, schemaObject
-    );
+    )?.types;
     if (!allowedTypes) {
       throw new Error('Could not get types for format and state');
     }
