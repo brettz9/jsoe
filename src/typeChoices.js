@@ -138,7 +138,7 @@ export const buildTypeChoices = ({
     );
   };
   const sel = /** @type {HTMLSelectElement} */ (jml('select', {
-    hidden: requireObject,
+    hidden: requireObject || typeOptions.length === 1,
     class: `typeChoices-${typeNamespace}${keySelectClass
       ? ' ' + keySelectClass
       : ''
@@ -283,7 +283,12 @@ export const buildTypeChoices = ({
       }
     )
   ]));
-  if (setValue || (requireObject && !objectHasValue)) {
+  if (typeOptions.length === 1) {
+    setTimeout(() => {
+      sel.selectedIndex = 1;
+      sel.dispatchEvent(new Event('change'));
+    });
+  } else if (setValue || (requireObject && !objectHasValue)) {
     setTimeout(async () => {
       if (!setValue) { // if (requireObject && !objectHasValue) {
         // Todo (low): We could auto-populate keypath if has

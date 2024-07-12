@@ -39,6 +39,14 @@ video.recordedMedia {
   height: 60px;
 }
 
+[data-type="literal"] {
+  background-color: lightblue;
+}
+
+:invalid {
+  background-color: 1px solid pink !important;
+}
+
 [data-type="undef"], [data-type="void"] {
   background-color: green;
 }

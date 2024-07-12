@@ -28,6 +28,7 @@ import dateType from './fundamentalTypes/dateType.js';
 import enumType from './fundamentalTypes/enumType.js';
 import setType from './fundamentalTypes/setType.js';
 import mapType from './fundamentalTypes/mapType.js';
+import literalType from './fundamentalTypes/literalType.js';
 import undefinedType from './fundamentalTypes/undefinedType.js';
 import voidType from './fundamentalTypes/voidType.js';
 import regexpType from './fundamentalTypes/regexpType.js';
@@ -404,7 +405,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
- *   "record"|"void"|"enum"} AvailableType
+ *   "record"|"void"|"enum"|"literal"} AvailableType
  */
 
 /**
@@ -468,6 +469,8 @@ class Types {
       BooleanObject: BooleanObjectType,
       NumberObject: NumberObjectType,
       StringObject: StringObjectType,
+
+      literal: literalType,
 
       map: mapType,
       set: setType,

@@ -291,6 +291,7 @@ const schema = {
       ['array', 'array'],
       ['object', 'object'],
       ['enum', 'enum'],
+      ['literal', 'literal'],
 
       ['tuple', 'tuple'],
       ['record', 'record'],

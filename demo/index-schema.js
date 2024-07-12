@@ -69,10 +69,22 @@ const zodexSchemaJSON = {
       type: 'enum',
       values: ['abc', 'def', 'ghi'],
       defaultValue: 'def'
+    },
+    {
+      type: 'literal',
+      value: true
+    },
+    {
+      type: 'literal',
+      value: 135
+    },
+    {
+      type: 'literal',
+      value: 'abc'
     }
 
     // Todo:
-    //        literal (boolean, number, string), nativeEnum subgroups
+    //        nativeEnum subgroups
     //        any, unknown, never, catch,
     //        effect (and preset examples like -0, Infinity, -Infinity,
     //          classes: Blob, Boolean, DOMException, Error, FileList,
@@ -80,7 +92,6 @@ const zodexSchemaJSON = {
     //          BlobHTML; supertypes (including inner items): BufferSource,
     //          DOMMatrix, DOMPoint, DOMRect, Errors, SpecialNumber)
 
-    // 'literal',
     // 'nativeEnum'
     // 'any',
     // 'unknown',

@@ -1,12 +1,14 @@
 import {jml, nbsp} from '../vendor-imports.js';
 
 import {getPropertyValueFromLegend} from '../types.js';
-import {$e, U, DOM} from '../utils/templateUtils.js';
+import {$e, $$e, U, DOM} from '../utils/templateUtils.js';
 import dialogs from '../utils/dialogs.js';
 import {
   resolveJSONPointer, getJSONPointerParts, reduceJSONPointerParts
 } from '../utils/jsonPointer.js';
 import FileList from '../utils/FileList.js';
+
+let datalistId = 0;
 
 /**
  * @typedef {number} Integer
@@ -593,7 +595,7 @@ const arrayType = {
       if (!swapGroup || swapGroup.nodeName.toLowerCase() !== 'fieldset') {
         return;
       }
-      if (!sparse) {
+      if (!sparse && !specificSchemaObject) {
         const swapCountElem = DOM.filterChildElements(
           swapGroup, ['legend', `.${type}Item`]
         )[0];
@@ -869,20 +871,43 @@ const arrayType = {
         const description = /** @type {import('zodex').SzObject} */ (
           specificSchemaObject
         )?.properties[/** @type {string} */ (propName)]?.description;
+        const optionalProperties = Object.entries(/** @type {import('zodex').SzObject} */ (
+          specificSchemaObject
+        )?.properties).map(([prop, val]) => {
+          if (!val.isOptional) {
+            return null;
+          }
+          return prop;
+        }).filter(Boolean);
+        datalistId++;
         return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse
             ? 'Item'
-            : {'#': readonly ? [
-              ['span', {className, title: description ? propName : undefined}, [
-                description ?? propName
+            : {'#': readonly
+              ? [
+                ['b', {className, title: description ? propName : undefined}, [
+                  description ?? propName ?? ''
+                ]]
+              ]
+              : [
+                ['span', {className: `${className}_propertyHolder${datalistId}`}, [
+                'Property ',
+                ['span', {className}, [String(itemIndex)]],
+                ':'
               ]]
-            ] : [
-              'Property ',
-              ['span', {className}, [String(itemIndex)]],
-              ':'
-            ]},
+              ]},
           nbsp.repeat(2),
+          specificSchemaObject && !readonly
+            ? ['datalist', {
+              id: `optionalProperties_${datalistId}`
+            }, optionalProperties.map((optionalProperty) => {
+              return ['option', {value: optionalProperty}];
+            })]
+            : '',
           ['input', {
+            list: specificSchemaObject && !readonly
+              ? `optionalProperties_${datalistId}`
+              : undefined,
             style: {display: readonly ? 'none' : 'block'},
             value: sparse
               ? (
@@ -891,7 +916,7 @@ const arrayType = {
                   : (propName !== undefined ? propName : itemIndex)
               )
               : propName || '',
-            dataset: {prop: true, object: true},
+            dataset: {prop: true, object: true, datalistId},
             /*
             // Works but we do want to let the user input non-integer
             type: sparse ? 'number' : 'text',
@@ -948,12 +973,12 @@ const arrayType = {
                 * })[]}
                 */
                   (/**
-                   * @type {HTMLInputElement & {
-                   *   $arrayItems: HTMLDivElement & {
-                   *     $getPropertyInputs: GetPropertyInputs
-                   *   }
-                   * }}
-                   */ (
+                  * @type {HTMLInputElement & {
+                  *   $arrayItems: HTMLDivElement & {
+                  *     $getPropertyInputs: GetPropertyInputs
+                  *   }
+                  * }}
+                  */ (
                       this
                     ).$arrayItems.$getPropertyInputs());
                 if (inputs.length === 1) {
@@ -1057,6 +1082,21 @@ const arrayType = {
             },
             $on: {
               /**
+               * @this {HTMLInputElement}
+               */
+              input () {
+                if (!specificSchemaObject) {
+                  return;
+                }
+                const propHolder = /** @type {HTMLElement} */ (
+                  $e(arrayItems, `.${className}_propertyHolder${this.dataset.datalistId}`)
+                );
+                DOM.removeChildren(propHolder);
+                jml('b', [
+                  this.value
+                ], propHolder);
+              },
+              /**
                * @param {Event} e
                * @this {HTMLInputElement & {
                *   $validate: Validate,
@@ -1064,7 +1104,21 @@ const arrayType = {
                * }}
                */
               change (e) {
-                this.$validate();
+                if (this.list) {
+                  const dataListValues = [
+                    ...this.list.options
+                  ].map(({value}) => value);
+
+                  if (!dataListValues.includes(this.value)) {
+                    this.setCustomValidity('Bad value');
+                    this.reportValidity();
+                    this.style.backgroundColor = 'pink';
+                  } else {
+                    this.style.backgroundColor = 'revert-layer';
+                  }
+                }
+
+                this.$validate(); // Should this be awaited or awaited after stopPropagation?
                 // We don't want form `onchange` to run
                 //   `$checkForKeyDuplicates` again
                 e.stopPropagation();
@@ -1160,6 +1214,7 @@ const arrayType = {
       const className = `${type}Item`;
       const fieldset = jml('fieldset',
         {
+          dataset: readonly ? {readonly: 'readonly'} : {},
           $on: {
             change: [() => {
               if (type !== 'set') {
@@ -1297,7 +1352,7 @@ const arrayType = {
               arrayItems.lastElementChild
             );
           fieldset.after(newArrayFieldset);
-          if (sparse) {
+          if (sparse || specificSchemaObject) {
             const newPrevInput = /** @type {HTMLInputElement} */ (
               newArrayFieldset.$getPropertyInput()
             );
@@ -1325,13 +1380,14 @@ const arrayType = {
         ([
           'button',
           {
+            disabled: readonly,
             $on: {
               click (/** @type {Event} */ e) {
                 e.preventDefault();
                 // e.stopPropagation();
                 fieldset.remove();
                 decrementItemIndex(arrayItems);
-                if (!sparse) {
+                if (!sparse && !specificSchemaObject) {
                   DOM.filterChildElements(arrayItems, [
                     'fieldset', 'legend', '.' + className
                   ]).forEach((span, i) => {
@@ -1588,7 +1644,7 @@ const arrayType = {
               $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             );
           const lastElement = arrayItems.lastElementChild;
-          if (lastElement) {
+          if (lastElement && !lastElement.matches('[data-readonly]')) {
             lastElement.remove();
             decrementItemIndex(arrayItems);
             // eslint-disable-next-line @stylistic/max-len -- Long
@@ -1604,15 +1660,25 @@ const arrayType = {
         }}}, ['- Last item']],
         // We could only add this when there was more than one
         ['button', {$on: {click () {
+          const arrayContents = /** @type {HTMLElement} */ (
+            /** @type {HTMLElement} */ (this).closest('.arrayContents')
+          );
           const arrayItems =
             // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {HTMLDivElement & {$getPropertyInputs: GetPropertyInputs}} */ ($e(
-              /** @type {HTMLElement} */ (
-                /** @type {HTMLElement} */ (this).closest('.arrayContents')
-              ),
+              arrayContents,
               '.arrayItems'
             ));
-          DOM.removeChildren(arrayItems);
+
+          const optionalFieldsetItems = $$e(
+            arrayContents,
+            '.arrayItems > fieldset:not([data-readonly])'
+          );
+
+          for (const optionalFieldsetItem of optionalFieldsetItems) {
+            optionalFieldsetItem.remove();
+          }
+
           if (sparse) {
             decrementItemIndex(arrayItems);
           } else {
@@ -1754,10 +1820,11 @@ const arrayType = {
           }
         }
       }), /** @type {import('jamilih').JamilihChildren} */ ([
-        specificSchemaObject?.description ?? DOM.initialCaps(
+        ['b', [specificSchemaObject?.description ?? DOM.initialCaps(
           /** @type {import('../types.js').AvailableType} */
           (type)
-        ).replace(/s$/u, ''), nbsp.repeat(2),
+        ).replace(/s$/u, '')]],
+        nbsp.repeat(2),
         type === 'filelist'
           ? ['input', {
             name: typeNamespace + '-filelist',
