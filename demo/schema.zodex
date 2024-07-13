@@ -161,6 +161,16 @@
         "finite": {"type": "boolean", "isOptional": true}
       }
     },
+    "symbol": {
+      "description": "Symbol",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "literal",
+          "value": "symbol"
+        }
+      }
+    },
     "key": {
       "description": "Key",
       "type": "union",
@@ -170,6 +180,9 @@
         },
         {
           "$ref": "#/$defs/number"
+        },
+        {
+          "$ref": "#/$defs/symbol"
         }
       ]
     },
@@ -326,14 +339,7 @@
             }
           },
           {
-            "description": "Symbol",
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "literal",
-                "value": "symbol"
-              }
-            }
+            "$ref": "#/$defs/symbol"
           },
           {
             "description": "Literal",
@@ -488,7 +494,7 @@
                 "value": "map"
               },
               "key": {
-                "$ref": "#/$defs/key"
+                "type": "any"
               },
               "value": {
                 "$ref": "#/$defs/reference-or-type"

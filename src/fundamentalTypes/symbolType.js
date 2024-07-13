@@ -1,0 +1,75 @@
+import {$e} from '../utils/templateUtils.js';
+
+/**
+ * @type {import('../types.js').TypeObject & {ct: number}}
+ */
+const symbolType = {
+  option: ['Symbol'],
+  stringRegex: /^(?<symbolClassType>Symbol|Symbol.for)\("(?<innerContent>[^\\"]|\\\\|\\")*"\)$/u,
+  ct: 0,
+  toValue (s, rootInfo) {
+    const {groups: {
+      symbolClassType
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
+    const symbolClass = symbolClassType === 'Symbol'
+      ? Symbol
+      : Symbol.for.bind(Symbol);
+
+    return {value: symbolClass(s)};
+  },
+  getInput ({root}) {
+    return /** @type {HTMLInputElement} */ ($e(root, 'input.symbolInput'));
+  },
+  setValue ({root, value}) {
+    if (Symbol.keyFor(value)) {
+      /** @type {HTMLInputElement} */ (
+        $e(root, 'input[value="Symbol.for"]')
+      ).checked = true;
+    } else {
+      /** @type {HTMLInputElement} */ (
+        $e(root, 'input[value="Symbol"]')
+      ).checked = true;
+    }
+    this.getInput({root}).value = String(value).slice(7, -1);
+  },
+  getValue ({root}) {
+    const method = /** @type {HTMLInputElement} */ (
+      $e(root, 'input[value="Symbol"]')
+    ).checked
+      ? Symbol
+      : Symbol.for.bind(Symbol);
+    return method(this.getInput({root}).value);
+  },
+  viewUI ({value}) {
+    return ['span', {dataset: {type: 'symbol'}}, [value]];
+  },
+  editUI ({typeNamespace, value = ''}) {
+    return ['div', {dataset: {type: 'symbol'}}, [
+      ['label', [
+        'Symbol()',
+        ['input', {
+          type: 'radio', name: `${typeNamespace}-symbol${this.ct}`,
+          value: 'Symbol', checked: !value || !Symbol.keyFor(value)
+        }]
+      ]],
+      ['label', [
+        'Symbol.for()',
+        ['input', {
+          type: 'radio', name: `${typeNamespace}-symbol${this.ct}`,
+          value: 'Symbol.for', checked: value && Boolean(Symbol.keyFor(value))
+        }]
+      ]],
+      ['br'],
+      ['input', {
+        className: 'symbolInput',
+        name: `${typeNamespace}-string`,
+        value: String(value).slice(7, -1)
+      }]
+    ]];
+  }
+};
+
+export default symbolType;

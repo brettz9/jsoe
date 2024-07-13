@@ -14,12 +14,15 @@ import {$e, DOM} from './utils/templateUtils.js';
  * @todo Compose from format metadata, so can make user customizable.
  * @param {object} cfg
  * @param {string[]} [cfg.schemas]
+ * @param {string} [cfg.selectedSchema]
  * @param {boolean} [cfg.hasKeyPath] Whether or not a key path is expected; if
  *   true, an indexedDB key is not allowed here as a key does not support
  *   the object type which is needed for a key path.
  * @returns {DocumentFragment}
  */
-export const getFormatAndSchemaChoices = ({schemas, hasKeyPath} = {}) => {
+export const getFormatAndSchemaChoices = ({
+  schemas, selectedSchema, hasKeyPath
+} = {}) => {
   const hasSchema = schemas && schemas.length;
   // eslint-disable-next-line @stylistic/max-len -- Long
   return /** @type {[optText: string, opts: {value: string, selected?: boolean}][]} */ ([
@@ -35,7 +38,7 @@ export const getFormatAndSchemaChoices = ({schemas, hasKeyPath} = {}) => {
         return [`Schema: ${schema}`, {
           value: 'schema',
           dataset: {schema},
-          selected: idx === 0
+          selected: selectedSchema ? schema === selectedSchema : idx === 0
         }];
       })
       : [])
@@ -78,6 +81,7 @@ export const getFormatAndSchemaChoices = ({schemas, hasKeyPath} = {}) => {
  *   plain object).
  * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
  *   instances of typeChoices on the page
+ * @param {string} [cfg.selectedSchema]
  * @param {import('./formats.js').default} [cfg.formats]
  * @param {import('./types.js').default} [cfg.types]
  * @returns {Promise<{
@@ -101,6 +105,7 @@ export async function formatAndTypeChoices ({
   singleValue,
   hasKeyPath,
   typeNamespace,
+  selectedSchema,
   formats = new Formats(),
   types = new Types()
 }) {
@@ -181,7 +186,7 @@ export async function formatAndTypeChoices ({
         ).$buildTypeChoices();
       }
     }
-  }, [getFormatAndSchemaChoices({schemas, hasKeyPath})]));
+  }, [getFormatAndSchemaChoices({schemas, hasKeyPath, selectedSchema})]));
 
   /**
    * @callback TypeSelectGetter

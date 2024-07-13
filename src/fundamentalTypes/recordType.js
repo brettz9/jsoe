@@ -8,6 +8,7 @@ const recordType = {
   regexEndings: [',', '}'],
   stringRegexBegin: /^Record\{/u,
   stringRegexEnd: /^\}/u,
+  array: true,
   record: true,
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
@@ -25,7 +26,7 @@ const recordType = {
   },
   editUI ({...args}) {
     return arrayType.editUI.call(this, {
-      ...args, type: 'object'
+      ...args, type: 'record'
     });
   }
 };

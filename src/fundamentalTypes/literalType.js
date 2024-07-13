@@ -35,15 +35,15 @@ const literalType = {
     let specificLiteralEditUI;
     switch (typeof val) {
     case 'boolean':
-      arg.specificSchemaObject = {type: 'boolean'};
+      // arg.specificSchemaObject = {type: 'boolean'};
       specificLiteralEditUI = booleanType.editUI(arg);
       break;
     case 'number':
-      arg.specificSchemaObject = {type: 'number'};
+      // arg.specificSchemaObject = {type: 'number'};
       specificLiteralEditUI = numberType.editUI(arg);
       break;
     case 'string': default:
-      arg.specificSchemaObject = {type: 'string'};
+      // arg.specificSchemaObject = {type: 'string'};
       specificLiteralEditUI = stringType.editUI(arg);
       break;
     }

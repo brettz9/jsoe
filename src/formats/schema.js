@@ -3,14 +3,17 @@ import structuredCloning from './structuredCloning.js';
 /**
  * @param {import('zodex').SzType} obj
  * @param {string} pointer
+ * @returns {import('zodex').SzType}
  */
-function pointer(obj, pointer) {
-  const tokens = pointer.split("/").slice(1);
+function pointer (obj, pointer) {
+  const tokens = pointer.split('/').slice(1);
   return tokens.reduce((acc, token) => {
     /* c8 ignore next -- Guard */
-    if (acc === undefined) return acc;
+    if (acc === undefined) {
+      return acc;
+    }
     // @ts-expect-error Ok
-    return acc[token.replace(/~1/g, "/").replace(/~0/g, "~")];
+    return acc[token.replaceAll('~1', '/').replaceAll('~0', '~')];
   }, obj);
 }
 
@@ -33,8 +36,11 @@ function pointer(obj, pointer) {
  * @returns {ArbitraryObject}
  */
 function copyObject (obj) {
-  /** @type {NestedObject} */
-  const newObj = {};
+  const newObj = Array.isArray(obj)
+    ? /** @type {Array<ArbitraryObject> & {[key: string]: ArbitraryObject}} */ (
+      []
+    )
+    : /** @type {NestedObject} */ ({});
   for (const [prop, val] of Object.entries(obj)) {
     newObj[prop] = val && typeof val === 'object' ? copyObject(val) : val;
   }
@@ -215,11 +221,85 @@ function getTypesForSchema (schemaObject, originalJSON) {
     const set = flattenIntersection(left, right);
     addModifiers(schemaObject, set);
     return new Set(set);
-  } default: {
+  } case 'any': case 'unknown':
+    return new Set([
+      {
+        type: 'boolean'
+      },
+      {
+        type: 'number'
+      },
+      {
+        type: 'nan'
+      },
+      {
+        type: 'bigInt'
+      },
+      {
+        type: 'string'
+      },
+      {
+        description: 'Email',
+        type: 'string',
+        kind: 'email'
+      },
+      {
+        description: 'URL',
+        type: 'string',
+        kind: 'url'
+      },
+      {
+        description: 'Date',
+        type: 'string',
+        kind: 'date'
+      },
+      {
+        type: 'date'
+      },
+      {
+        type: 'undefined'
+      },
+      {
+        type: 'null'
+      },
+      {
+        type: 'object',
+        properties: {}, // Todo: Remove when may be Zodex updated
+        unknownKeys: 'passthrough'
+      },
+      {
+        type: 'symbol'
+      },
+      {
+        type: 'array',
+        element: {
+          type: 'any'
+        }
+      },
+      {
+        type: 'set',
+        value: {
+          type: 'any'
+        }
+      },
+      {
+        type: 'map',
+        key: {
+          type: 'any'
+        },
+        value: {
+          type: 'any'
+        }
+      },
+      {
+        type: 'never'
+      }
+    ]);
+  default: {
     if ('$ref' in schemaObject) {
       const refObj = pointer(
         originalJSON,
-        // todo: When Zodex updated, switch to `import('zodex').SzRef`
+        // todo: When Zodex may be updated, switch to `import('zodex').SzRef`
         /** @type {{$ref: string}} */ (schemaObject).$ref.slice(1)
       );
       return getTypesForSchema(refObj, originalJSON);
@@ -266,14 +346,6 @@ const schema = {
 
     // Note: Zod does not support array/object references
 
-    // Todo: Allow non-cloning version to return these too, but filter out
-    //         otherwise
-    // const nonStructuredCloning = [
-    //   'symbol',
-    //   'function',
-    //   'promise'
-    // ];
-
     // Todo: implement schema restrictions like tuple on array, record on object
     // Todo: Fix `iterate` for schemas (e.g., inject a value method in demo)
 
@@ -288,7 +360,10 @@ const schema = {
       ['undefined', 'undef'],
       ['void', 'void'],
       ['null', 'null'],
-      ['array', 'array'],
+
+      // ['array', 'array'],
+      ['array', 'arrayNonindexKeys'],
+
       ['object', 'object'],
       ['enum', 'enum'],
       ['literal', 'literal'],
@@ -296,7 +371,20 @@ const schema = {
       ['tuple', 'tuple'],
       ['record', 'record'],
       ['map', 'map'],
-      ['set', 'set']
+      ['set', 'set'],
+
+      ['symbol', 'symbol'],
+
+      ['never', 'never']
+
+      // Todo: Allow non-cloning version to return these too, but filter out
+      //         otherwise
+      // ['function', 'function'],
+      // ['promise', 'promise']
+
+      // Todo: Wait until added to Zodex
+      // ['catch', 'catch'],
+      // ['nativeEnum', 'nativeEnum']
     ]);
 
     /** @type {AvailableZodexType[]} */

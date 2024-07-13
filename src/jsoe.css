@@ -47,6 +47,10 @@ video.recordedMedia {
   background-color: 1px solid pink !important;
 }
 
+[data-type="symbol"] {
+  background-color: lightgreen;
+}
+
 [data-type="undef"], [data-type="void"] {
   background-color: green;
 }

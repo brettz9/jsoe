@@ -26,7 +26,7 @@ const tupleType = {
   },
   editUI ({...args}) {
     return arrayType.editUI.call(this, {
-      ...args, type: 'array'
+      ...args, type: 'tuple'
     });
   }
 };

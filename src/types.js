@@ -13,6 +13,7 @@ import nullType from './fundamentalTypes/nullType.js';
 import trueType from './subTypes/trueType.js';
 import falseType from './subTypes/falseType.js';
 import nanType from './fundamentalTypes/nanType.js';
+import symbolType from './fundamentalTypes/symbolType.js';
 import blobHTMLType from './subTypes/blobHTMLType.js';
 import booleanType from './fundamentalTypes/booleanType.js';
 import numberType from './fundamentalTypes/numberType.js';
@@ -50,6 +51,7 @@ import dompointType from './superTypes/dompointType.js';
 import dommatrixType from './superTypes/dommatrixType.js';
 import buffersourceType from './superTypes/buffersourceType.js';
 import noneditableType from './fundamentalTypes/noneditableType.js';
+import neverType from './fundamentalTypes/neverType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -405,8 +407,11 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
- *   "record"|"void"|"enum"|"literal"} AvailableType
+ *   "record"|"void"|"enum"|"literal"|"symbol"|"never"
+ * } AvailableType
  */
+// Todo: Add "function"|"promise" (but when done, move off here with symbol?)
+// Todo: Add when Zodex ready: "catch"|"nativeEnum"
 
 /**
  * @typedef {TypeObject & {
@@ -436,6 +441,7 @@ class Types {
       true: trueType,
       false: falseType,
       nan: nanType, // Schema type
+      symbol: symbolType, // Non-cloning type
       boolean: booleanType, // Schema type
       number: numberType,
       bigint: bigintType,
@@ -486,6 +492,7 @@ class Types {
       dommatrix: dommatrixType,
 
       resurrectable: noneditableType,
+      never: neverType,
 
       buffersource: buffersourceType,
       dataview: {

@@ -21,13 +21,15 @@ const enumType = {
   viewUI ({value}) {
     return ['span', {dataset: {type: 'enum'}}, [value]];
   },
-  editUI ({typeNamespace, schemaContent, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject /* , value = '' */}) {
     return ['div', {dataset: {type: 'enum'}}, [
-      ['select', {name: `${typeNamespace}-enum`}, /** @type {import('zodex').SzEnum} */ (
-        schemaContent
+      ['select', {
+        name: `${typeNamespace}-enum`
+      }, /** @type {import('zodex').SzEnum} */ (
+        specificSchemaObject
       )?.values.map((value) => {
         return ['option', {
-          selected: schemaContent?.defaultValue === value
+          selected: specificSchemaObject?.defaultValue === value
         }, [value]];
       })]
     ]];

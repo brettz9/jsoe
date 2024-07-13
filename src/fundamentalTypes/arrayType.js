@@ -8,7 +8,7 @@ import {
 } from '../utils/jsonPointer.js';
 import FileList from '../utils/FileList.js';
 
-let datalistId = 0;
+let optionalPropertyId = 0;
 
 /**
  * @typedef {number} Integer
@@ -551,7 +551,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
-    formats, types, schemaContent, specificSchemaObject,
+    formats, types, specificSchemaObject, // schemaContent,
     type, arrayState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -560,8 +560,13 @@ const arrayType = {
     const itemAdjust = type === 'object' ? 1 : 0;
     let itemIndex = itemAdjust - 1;
     const editableProperties = type !== 'array' &&
-      type !== 'set' && type !== 'map' && type !== 'filelist';
-    const mapProperties = type === 'map';
+      type !== 'set' && type !== 'map' && type !== 'filelist' &&
+      type !== 'tuple' && type !== 'record'; // arrayNonindexKeys and object?
+    const mapProperties = type === 'map' || type === 'record';
+
+    const elementDesc = /** @type {import('zodex').SzArray} */ (
+      specificSchemaObject
+    )?.element?.description;
 
     /**
      * @param {HTMLInputElement} input
@@ -595,7 +600,7 @@ const arrayType = {
       if (!swapGroup || swapGroup.nodeName.toLowerCase() !== 'fieldset') {
         return;
       }
-      if (!sparse && !specificSchemaObject) {
+      if (!sparse && (!specificSchemaObject || parentTypeObject.array)) {
         const swapCountElem = DOM.filterChildElements(
           swapGroup, ['legend', `.${type}Item`]
         )[0];
@@ -657,6 +662,9 @@ const arrayType = {
      * @this {HTMLDivElement & {$swapGroup: SwapGroup}}
      */
     const $redrawMoveArrows = function () {
+      if (type === 'tuple') { // Don't want to move non-rest items at least
+        return;
+      }
       DOM.filterChildElements(this, [
         'fieldset', `.${type}Item-arrowHolder-${typeNamespace}`
       ]).forEach((holder, j, arr) => {
@@ -751,13 +759,13 @@ const arrayType = {
      *   typeNamespace: string|undefined,
      *   arrayItems: ArrayItems,
      *   propName: string|undefined,
-     *   readonly?: true
+     *   required?: true
      * }} cfg
      * @returns {import('jamilih').JamilihArray}
      */
     const buildLegend = ({
       className, splice, itemIndex, /* type, */ typeNamespace,
-      arrayItems, propName, readonly
+      arrayItems, propName, required
     }) => {
       /**
        * @callback ValidateLength
@@ -802,7 +810,14 @@ const arrayType = {
           /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
             buildTypeChoices
           )({
-            format: 'structuredCloning',
+            // eslint-disable-next-line object-shorthand -- TS
+            format: /** @type {import('../formats.js').AvailableFormat} */ (
+              format
+            ),
+            // Can also be a `Record`
+            schemaContent: /** @type {import('zodex').SzMap<any, any>} */ (
+              specificSchemaObject
+            )?.key,
             typeNamespace: 'key-type-choices-only'
           });
         return ['legend', [
@@ -870,45 +885,49 @@ const arrayType = {
       if (editableProperties) {
         const description = /** @type {import('zodex').SzObject} */ (
           specificSchemaObject
-        )?.properties[/** @type {string} */ (propName)]?.description;
-        const optionalProperties = Object.entries(/** @type {import('zodex').SzObject} */ (
-          specificSchemaObject
-        )?.properties).map(([prop, val]) => {
+        )?.properties?.[/** @type {string} */ (propName)]?.description;
+        const optionalProperties = Object.entries(
+          /** @type {import('zodex').SzObject} */ (
+            specificSchemaObject
+          )?.properties ?? {}
+        ).map(([prop, val]) => {
           if (!val.isOptional) {
             return null;
           }
           return prop;
         }).filter(Boolean);
-        datalistId++;
+        optionalPropertyId++;
         return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse
-            ? 'Item'
-            : {'#': readonly
+            ? elementDesc ?? 'Item'
+            : {'#': required
               ? [
                 ['b', {className, title: description ? propName : undefined}, [
                   description ?? propName ?? ''
                 ]]
               ]
               : [
-                ['span', {className: `${className}_propertyHolder${datalistId}`}, [
-                'Property ',
-                ['span', {className}, [String(itemIndex)]],
-                ':'
-              ]]
+                ['span', {
+                  className: `${className}_propertyHolder${optionalPropertyId}`
+                }, [
+                  'Property ',
+                  ['span', {className}, [String(itemIndex)]],
+                  ':'
+                ]]
               ]},
           nbsp.repeat(2),
-          specificSchemaObject && !readonly
+          specificSchemaObject && !required
             ? ['datalist', {
-              id: `optionalProperties_${datalistId}`
+              id: `optionalProperties_${optionalPropertyId}`
             }, optionalProperties.map((optionalProperty) => {
               return ['option', {value: optionalProperty}];
             })]
             : '',
           ['input', {
-            list: specificSchemaObject && !readonly
-              ? `optionalProperties_${datalistId}`
+            list: specificSchemaObject && !required
+              ? `optionalProperties_${optionalPropertyId}`
               : undefined,
-            style: {display: readonly ? 'none' : 'block'},
+            style: {display: required ? 'none' : 'block'},
             value: sparse
               ? (
                 splice === 'append'
@@ -916,7 +935,7 @@ const arrayType = {
                   : (propName !== undefined ? propName : itemIndex)
               )
               : propName || '',
-            dataset: {prop: true, object: true, datalistId},
+            dataset: {prop: true, object: true, optionalPropertyId},
             /*
             // Works but we do want to let the user input non-integer
             type: sparse ? 'number' : 'text',
@@ -1089,7 +1108,9 @@ const arrayType = {
                   return;
                 }
                 const propHolder = /** @type {HTMLElement} */ (
-                  $e(arrayItems, `.${className}_propertyHolder${this.dataset.datalistId}`)
+                  $e(arrayItems, `.${className}_propertyHolder${
+                    this.dataset.optionalPropertyId
+                  }`)
                 );
                 DOM.removeChildren(propHolder);
                 jml('b', [
@@ -1104,21 +1125,49 @@ const arrayType = {
                * }}
                */
               change (e) {
-                if (this.list) {
+                if (this.list && !parentTypeObject.array) {
                   const dataListValues = [
                     ...this.list.options
                   ].map(({value}) => value);
 
-                  if (!dataListValues.includes(this.value)) {
+                  if (
+                    !dataListValues.includes(this.value) &&
+                    /** @type {import('zodex').SzObject} */ (
+                      specificSchemaObject
+                    ).unknownKeys === 'strict'
+                  ) {
                     this.setCustomValidity('Bad value');
                     this.reportValidity();
                     this.style.backgroundColor = 'pink';
                   } else {
                     this.style.backgroundColor = 'revert-layer';
+                    const {optionalPropertyId} = this.dataset;
+                    const placeholder = /** @type {HTMLElement} */ (
+                      $e(
+                        arrayItems,
+                        `.optionalProperties-placeholder${optionalPropertyId}`
+                      )
+                    );
+                    placeholder.replaceWith(
+                      jml('div', {
+                        className:
+                          `optionalProperties-placeholder${optionalPropertyId}`
+                      }, [
+                        ...buildTypeChoicesForProperty({
+                          propName: this.value,
+                          fallbackSchema:
+                          /** @type {import('zodex').SzObject} */ (
+                            specificSchemaObject
+                          // @ts-expect-error Wait for Zodex update to fix
+                          )?.catchall ?? {type: 'any'}
+                        })
+                      ])
+                    );
                   }
                 }
 
-                this.$validate(); // Should this be awaited or awaited after stopPropagation?
+                // Should this be awaited or awaited after stopPropagation?
+                this.$validate();
                 // We don't want form `onchange` to run
                 //   `$checkForKeyDuplicates` again
                 e.stopPropagation();
@@ -1129,13 +1178,18 @@ const arrayType = {
           }]
         ]]);
       }
+
       return /** @type {import('jamilih').JamilihArray} */ (['legend', [
-        'Item ',
+        elementDesc ? '' : 'Item ',
         ['span', {
           dataset: {prop: true, array: true},
           className
         }, [
-          propName !== undefined ? propName : String(itemIndex)
+          propName !== undefined
+            ? propName
+            : elementDesc
+              ? `${elementDesc} ${itemIndex + 1}`
+              : String(itemIndex)
         ]]
       ]]);
     };
@@ -1164,12 +1218,78 @@ const arrayType = {
     };
 
     /**
+     * @param {{
+     *   propName: string|undefined,
+     *   tupleSchema?: import('zodex').SzType,
+     *   fallbackSchema?: import('zodex').SzType
+     * }} cfg
+     */
+    const buildTypeChoicesForProperty = ({
+      propName, tupleSchema, fallbackSchema
+    }) => {
+      return /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
+        buildTypeChoices
+      )({
+        // resultType,
+        // eslint-disable-next-line object-shorthand -- TS
+        topRoot: /** @type {HTMLDivElement} */ (topRoot),
+        // eslint-disable-next-line object-shorthand -- TS
+        format: /** @type {import('../formats.js').AvailableFormat} */ (format),
+        schemaContent: type === 'tuple'
+          ? tupleSchema ?? /** @type {import('zodex').SzTuple} */ (
+            specificSchemaObject
+          ).rest
+          : mapProperties
+            // Can also be a `Record`
+            ? /** @type {import('zodex').SzMap<any, any>} */ (
+              specificSchemaObject
+            )?.value
+            : type === 'set'
+              ? /** @type {import('zodex').SzSet} */ (
+                specificSchemaObject
+              )?.value
+              : type === 'array' || type === 'arrayNonindexKeys'
+                ? /** @type {import('zodex').SzArray} */ (
+                  specificSchemaObject
+                )?.element
+                : /** @type {import('zodex').SzObject} */ (
+                  specificSchemaObject
+                )?.properties?.[/** @type {string} */ (propName)] ??
+                  fallbackSchema,
+        // schemaState,
+        state: parentTypeObject.filelist
+          ? 'filelistArray'
+          : arrayState ?? type,
+        // itemIndex,
+        typeNamespace
+      }).domArray;
+    };
+
+    /**
+     * @returns {boolean}
+     */
+    function checkTupleRest () {
+      if (
+        type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
+          specificSchemaObject
+        )?.rest?.type === 'never'
+      ) {
+        dialogs.alert(
+          'Tuple has rest type "never", so one cannot add to it.'
+        );
+        return true;
+      }
+      return false;
+    }
+
+    /**
      * @callback AddArrayElement
      * @param {{
      *   propName?: string,
      *   splice?: "append"|number,
      *   alwaysFocus?: true
-     *   readonly?: true
+     *   required?: true
+     *   tupleSchema?: import('zodex').SzType
      * }} cfg
      * @returns {void}
      */
@@ -1182,8 +1302,9 @@ const arrayType = {
      *   $getMapKeySelects?: GetMapKeySelects
      * }}
      */
-    const $addArrayElement = function ({propName, splice, alwaysFocus, readonly}) {
-      // console.log('propName', propName);
+    const $addArrayElement = function ({
+      propName, splice, alwaysFocus, required, tupleSchema
+    }) {
       const arrayItems = this.$getArrayItems();
       if (sparse) {
         if (propName) {
@@ -1214,7 +1335,7 @@ const arrayType = {
       const className = `${type}Item`;
       const fieldset = jml('fieldset',
         {
-          dataset: readonly ? {readonly: 'readonly'} : {},
+          dataset: required ? {required: 'required'} : {},
           $on: {
             change: [() => {
               if (type !== 'set') {
@@ -1299,32 +1420,26 @@ const arrayType = {
             typeNamespace,
             arrayItems,
             propName,
-            readonly
+            required
           })
         ],
         arrayItems);
+
       // We must ensure fieldset is built before passing it
       jml({'#': [
-        ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
-          buildTypeChoices
-        )({
-          // resultType,
-          // eslint-disable-next-line object-shorthand -- TS
-          topRoot: /** @type {HTMLDivElement} */ (topRoot),
-          // eslint-disable-next-line object-shorthand, @stylistic/max-len -- TS
-          format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-          schemaContent,
-          // schemaState,
-          state: parentTypeObject.filelist
-            ? 'filelistArray'
-            : arrayState ?? type,
-          // itemIndex,
-          typeNamespace
-        }).domArray),
+        ...(specificSchemaObject && !propName && !parentTypeObject.array
+          ? [jml('span', {
+            className: `optionalProperties-placeholder${optionalPropertyId}`
+          })]
+          : buildTypeChoicesForProperty({propName, tupleSchema})),
         nbsp.repeat(2),
         ['button', {$on: {click (/** @type {Event} */ e) {
           e.preventDefault();
           // e.stopPropagation();
+
+          if (checkTupleRest()) {
+            return;
+          }
 
           /** @type {number | "append" | undefined} */
           let splice;
@@ -1352,7 +1467,7 @@ const arrayType = {
               arrayItems.lastElementChild
             );
           fieldset.after(newArrayFieldset);
-          if (sparse || specificSchemaObject) {
+          if (sparse || (specificSchemaObject && !parentTypeObject.array)) {
             const newPrevInput = /** @type {HTMLInputElement} */ (
               newArrayFieldset.$getPropertyInput()
             );
@@ -1363,7 +1478,9 @@ const arrayType = {
                 'fieldset', 'legend', '.' + className
               ]
             ).forEach((span, i) => {
-              span.textContent = String(i + itemAdjust);
+              span.textContent = elementDesc
+                ? `${elementDesc} ${i + itemAdjust + 1}`
+                : String(i + itemAdjust);
             });
           }
           // Maybe not needed as addition (without renumbering)
@@ -1380,18 +1497,22 @@ const arrayType = {
         ([
           'button',
           {
-            disabled: readonly,
+            disabled: required,
             $on: {
               click (/** @type {Event} */ e) {
                 e.preventDefault();
                 // e.stopPropagation();
                 fieldset.remove();
                 decrementItemIndex(arrayItems);
-                if (!sparse && !specificSchemaObject) {
+                if (!sparse &&
+                  (!specificSchemaObject || parentTypeObject.array)
+                ) {
                   DOM.filterChildElements(arrayItems, [
                     'fieldset', 'legend', '.' + className
                   ]).forEach((span, i) => {
-                    span.textContent = String(i + itemAdjust);
+                    span.textContent = elementDesc
+                      ? `${elementDesc} ${i + itemAdjust + 1}`
+                      : String(i + itemAdjust);
                   });
                 }
                 // Maybe not needed as removal would remove circular
@@ -1414,6 +1535,7 @@ const arrayType = {
           class: `${type}Item-arrowHolder-${typeNamespace}`
         }, []]
       ]}, fieldset);
+
       // Need to validate if adding more than one property (in
       //   case two have empty string)
       if (editableProperties) {
@@ -1498,6 +1620,33 @@ const arrayType = {
           }
         },
         $on: {click () {
+          if (
+            type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
+              specificSchemaObject
+            )?.items?.[0]?.type === 'never'
+          ) {
+            dialogs.alert(
+              'Tuple has items type "never", so one cannot add to it.'
+            );
+            return;
+          }
+          if (checkTupleRest()) {
+            return;
+          }
+          if (/** @type {import('zodex').SzArray} */ (
+            specificSchemaObject
+          )?.element?.type === 'never') {
+            dialogs.alert('Array has type "never", so one cannot add to it.');
+            return;
+          }
+          if (/** @type {import('zodex').SzSet} */ (
+            specificSchemaObject
+          )?.value?.type === 'never') {
+            dialogs.alert('Set has type "never", so one cannot add to it.');
+            return;
+          }
+          // Todo: Should really check if all object properties have been used,
+          //        and stop and warn if so
           /**
            * @type {HTMLButtonElement & {
            *   $addArrayElement: AddArrayElement,
@@ -1644,7 +1793,7 @@ const arrayType = {
               $e(/** @type {HTMLElement} */ (arrayContents), '.arrayItems')
             );
           const lastElement = arrayItems.lastElementChild;
-          if (lastElement && !lastElement.matches('[data-readonly]')) {
+          if (lastElement && !lastElement.matches('[data-required]')) {
             lastElement.remove();
             decrementItemIndex(arrayItems);
             // eslint-disable-next-line @stylistic/max-len -- Long
@@ -1672,7 +1821,7 @@ const arrayType = {
 
           const optionalFieldsetItems = $$e(
             arrayContents,
-            '.arrayItems > fieldset:not([data-readonly])'
+            '.arrayItems > fieldset:not([data-required])'
           );
 
           for (const optionalFieldsetItem of optionalFieldsetItems) {
@@ -1693,9 +1842,6 @@ const arrayType = {
       ]]
     );
 
-    const parentType = type;
-
-    // eslint-disable-next-line @stylistic/max-len -- Long
     const div =
       /**
        * @type {HTMLDivElement & {
@@ -1704,170 +1850,193 @@ const arrayType = {
        *   $addArrayElement: AddArrayElement
        *   $getArrayItems: GetArrayItems,
        *   $getMapKeySelects?: GetMapKeySelects
-       * }} */ (
-      jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
-        dataset: {type},
-        // is: 'array-or-object-editor',
-        $custom: {
-          // eslint-disable-next-line @stylistic/max-len -- Long
-          /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
-          $addAndSetArrayElement ({
-            propName, type, value, bringIntoFocus, setAValue
-            // , schemaContent, schemaState
-          }) {
-            if (parentType === 'map') {
-              if (propName === '0') {
+       * }}
+       */ (
+        jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
+          dataset: {type},
+          // is: 'array-or-object-editor',
+          $custom: {
+            // eslint-disable-next-line @stylistic/max-len -- Long
+            /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
+            $addAndSetArrayElement ({
+              propName, type, value, bringIntoFocus, setAValue
+              // , schemaContent, schemaState
+            }) {
+              if (mapProperties) {
+                if (propName === '0') {
+                  this.$addArrayElement({propName});
+                  const arrayItems = this.$getArrayItems();
+                  const keyTypeChoices = /**
+                  * @type {HTMLSelectElement & {
+                  *   $setType: import('../typeChoices.js').SetType,
+                  *   $getTypeRoot: import('../formatAndTypeChoices.js').
+                  *     TypeRootGetter
+                  * }}
+                  */ (DOM.filterChildElements(
+                      arrayItems,
+                      ['fieldset:last-of-type', 'legend', '.mapKey', 'select']
+                    )[0]);
+                  keyTypeChoices.$setType({
+                    type, baseValue: value, bringIntoFocus
+                  });
+
+                  // The key may itself be a map, etc.
+                  return keyTypeChoices.$getTypeRoot();
+                }
+              } else {
                 this.$addArrayElement({propName});
-                const arrayItems = this.$getArrayItems();
-                const keyTypeChoices = /**
-                 * @type {HTMLSelectElement & {
-                 *   $setType: import('../typeChoices.js').SetType,
-                 *   $getTypeRoot: import('../formatAndTypeChoices.js').
-                 *     TypeRootGetter
-                 * }}
-                */ (DOM.filterChildElements(
-                    arrayItems,
-                    ['fieldset:last-of-type', 'legend', '.mapKey', 'select']
-                  )[0]);
-                keyTypeChoices.$setType({
-                  type, baseValue: value, bringIntoFocus
-                });
-
-                // The key may itself be a map, etc.
-                return keyTypeChoices.$getTypeRoot();
               }
-            } else {
-              this.$addArrayElement({propName});
-            }
-            const typeChoices = this.$getTypeChoices();
-            typeChoices.$setType({type, baseValue: value, bringIntoFocus});
-            const root = typeChoices.$getTypeRoot();
-            // If run for all, causes problems with running `Error.cause`
-            //   type twice and is inefficient;
-            //   currently put behind `setAValue` as we need to set a value
-            //   from `errorsSpecialType` (and `filelistType`)
-            if (setAValue) {
-              const typeObj = /** @type {import('../types.js').TypeObject} */ (
-                types.getTypeObject(type)
-              );
-              if (typeObj.setValue) {
-                typeObj.setValue({root, value});
+              const typeChoices = this.$getTypeChoices();
+              typeChoices.$setType({type, baseValue: value, bringIntoFocus});
+              const root = typeChoices.$getTypeRoot();
+              // If run for all, causes problems with running `Error.cause`
+              //   type twice and is inefficient;
+              //   currently put behind `setAValue` as we need to set a value
+              //   from `errorsSpecialType` (and `filelistType`)
+              if (setAValue) {
+                const typeObj =
+                  /** @type {import('../types.js').TypeObject} */ (
+                    types.getTypeObject(type)
+                  );
+                if (typeObj.setValue) {
+                  typeObj.setValue({root, value});
+                }
               }
-            }
-            types.validate({type, root, topRoot});
-            return root;
-          },
+              types.validate({type, root, topRoot});
+              return root;
+            },
 
-          /**
-           * @typedef {() => Element} GetAddArrayElement
-           */
-
-          /** @type {GetAddArrayElement} */
-          $getAddArrayElement () {
-            const el = this.
-              lastElementChild.firstElementChild.nextElementSibling;
-            return sparse ? el.nextElementSibling : el;
-          },
-          /**
-           * @type {AddArrayElement}
-           * @this {HTMLDivElement & {
-           *   $getAddArrayElement: GetAddArrayElement
-           * }}
-           */
-          // @ts-expect-error TS is apparently getting wrong $addArrayElement
-          $addArrayElement ({propName, splice, alwaysFocus, readonly}) {
-            const addArrayElement = this.$getAddArrayElement();
             /**
-             * @type {HTMLButtonElement & {
-             *   $addArrayElement: AddArrayElement,
-             *   $getArrayItems: GetArrayItems
+             * @typedef {() => Element} GetAddArrayElement
+             */
+
+            /** @type {GetAddArrayElement} */
+            $getAddArrayElement () {
+              const el = this.
+                lastElementChild.firstElementChild.nextElementSibling;
+              return sparse ? el.nextElementSibling : el;
+            },
+            /**
+             * @type {AddArrayElement}
+             * @this {HTMLDivElement & {
+             *   $getAddArrayElement: GetAddArrayElement
              * }}
              */
-            (addArrayElement).$addArrayElement({
-              propName, splice, alwaysFocus, readonly
-            });
-          },
-          $getArrayItems () {
-            const addArrayElement = this.$getAddArrayElement();
-            return addArrayElement.previousElementSibling;
-          },
-          $getTypeChoices () {
-            const arrayItems = this.$getArrayItems();
-            return $e(
-              arrayItems.lastElementChild,
-              `fieldset > .typeChoices-${typeNamespace}` // Avoid keys
-            );
-          }
-        },
-        $on: {
-          click (ev) {
-            const e = /** @type {Event} */ (ev);
-            // eslint-disable-next-line prefer-destructuring -- TS
-            const target = /** @type {HTMLInputElement} */ (e.target);
-
-            // We needed to stop preventing the default for the
-            //    invalid date checkbox; is this sufficient to prevent
-            //    other stray clicks apparently meant for the array
-            //    and object reference checking?
-            if (![
-              'checkbox', 'radio', 'file',
-              'datetime-local',
-              // For label radio clicks
-              undefined
-            ].includes(target.type)) {
-              e.preventDefault();
-            }
-          }
-        }
-      }), /** @type {import('jamilih').JamilihChildren} */ ([
-        ['b', [specificSchemaObject?.description ?? DOM.initialCaps(
-          /** @type {import('../types.js').AvailableType} */
-          (type)
-        ).replace(/s$/u, '')]],
-        nbsp.repeat(2),
-        type === 'filelist'
-          ? ['input', {
-            name: typeNamespace + '-filelist',
-            multiple: true,
-            type: 'file',
-            $on: {
+            // @ts-expect-error TS is apparently getting wrong $addArrayElement
+            $addArrayElement ({
+              propName, splice, alwaysFocus, required, tupleSchema
+            }) {
+              const addArrayElement = this.$getAddArrayElement();
               /**
-               * @this {HTMLInputElement}
+               * @type {HTMLButtonElement & {
+               *   $addArrayElement: AddArrayElement,
+               *   $getArrayItems: GetArrayItems
+               * }}
                */
-              change () {
-                /* istanbul ignore if */
-                if (!this.files) {
-                  return;
-                }
-                for (let i = 0; i < this.files.length; i++) {
-                  const file = this.files.item(i);
+              (addArrayElement).$addArrayElement({
+                propName, splice, alwaysFocus, required, tupleSchema
+              });
+            },
+            $getArrayItems () {
+              const addArrayElement = this.$getAddArrayElement();
+              return addArrayElement.previousElementSibling;
+            },
+            $getTypeChoices () {
+              const arrayItems = this.$getArrayItems();
+              return $e(
+                arrayItems.lastElementChild,
+                `fieldset > .typeChoices-${typeNamespace}` // Avoid keys
+              );
+            }
+          },
+          $on: {
+            click (ev) {
+              const e = /** @type {Event} */ (ev);
+              // eslint-disable-next-line prefer-destructuring -- TS
+              const target = /** @type {HTMLInputElement} */ (e.target);
 
-                  div.$addAndSetArrayElement({
-                    propName: String(i),
-                    type: 'file',
-                    value: file,
-                    bringIntoFocus: false,
-                    setAValue: true
-                  });
-                }
+              // We needed to stop preventing the default for the
+              //    invalid date checkbox; is this sufficient to prevent
+              //    other stray clicks apparently meant for the array
+              //    and object reference checking?
+              if (![
+                'checkbox', 'radio', 'file',
+                'datetime-local',
+                // For label radio clicks
+                undefined
+              ].includes(target.type)) {
+                e.preventDefault();
               }
             }
-          }]
-          : '',
-        minusButton,
-        arrayContents
-      ]))
-    );
+          }
+        }), /** @type {import('jamilih').JamilihChildren} */ ([
+          ['b', [specificSchemaObject?.description ?? DOM.initialCaps(
+            /** @type {import('../types.js').AvailableType} */
+            (type)
+          ).replace(/s$/u, '')]],
+          nbsp.repeat(2),
+          type === 'filelist'
+            ? ['input', {
+              name: typeNamespace + '-filelist',
+              multiple: true,
+              type: 'file',
+              $on: {
+                /**
+                 * @this {HTMLInputElement}
+                 */
+                change () {
+                  /* istanbul ignore if */
+                  if (!this.files) {
+                    return;
+                  }
+                  for (let i = 0; i < this.files.length; i++) {
+                    const file = this.files.item(i);
+
+                    div.$addAndSetArrayElement({
+                      propName: String(i),
+                      type: 'file',
+                      value: file,
+                      bringIntoFocus: false,
+                      setAValue: true
+                    });
+                  }
+                }
+              }
+            }]
+            : '',
+          minusButton,
+          arrayContents
+        ]))
+      );
     topRoot = topRoot || div;
 
-    if (!value && type === 'object' && specificSchemaObject) {
-      for (const [prop, val] of
-        Object.entries(/** @type {import('zodex').SzObject} */ (specificSchemaObject).properties)) {
-        if (!val.isOptional) {
-          div.$addArrayElement({propName: prop, readonly: true});
+    if (!value && specificSchemaObject) {
+      if (type === 'object') {
+        for (const [prop, val] of
+          Object.entries(
+            /** @type {import('zodex').SzObject} */ (
+              specificSchemaObject
+            ).properties ?? {}
+          )
+        ) {
+          if (!val.isOptional && val.type !== 'never') {
+            div.$addArrayElement({propName: prop, required: true});
+          }
+        }
+      } else if (type === 'tuple') {
+        const specificSchemaObj = /** @type {import('zodex').SzTuple} */ (
+          specificSchemaObject
+        );
+        if (
+          type !== 'tuple' || /** @type {import('zodex').SzTuple} */ (
+            specificSchemaObject
+          )?.items?.[0]?.type !== 'never'
+        ) {
+          for (const tupleSchema of specificSchemaObj.items) {
+            div.$addArrayElement({tupleSchema, required: true});
+          }
         }
       }
-      // alert(JSON.stringify(specificSchemaObject, null, 2));
     }
 
     return [div];

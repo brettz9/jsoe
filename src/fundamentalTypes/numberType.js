@@ -44,10 +44,13 @@ const numberType = {
   viewUI ({value}) {
     return ['i', {dataset: {type: 'number'}}, [String(value)]];
   },
-  editUI ({typeNamespace, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    const isLiteral = specificSchemaObject?.type === 'literal';
     return ['div', {dataset: {type: 'number'}}, [
       ['input', {
-        name: `${typeNamespace}-number`, type: 'number', step: 'any', value
+        disabled: isLiteral,
+        name: `${typeNamespace}-number`, type: 'number', step: 'any',
+        value: isLiteral ? specificSchemaObject?.value : value
       }]
     ]];
   }

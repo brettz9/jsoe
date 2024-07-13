@@ -10,7 +10,9 @@ const stringType = {
     return {value: s.slice(1, -1)};
   },
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
+    return /** @type {HTMLTextAreaElement} */ (
+      $e(root, '[data-type="string"] > textarea,input')
+    );
   },
   setValue ({root, value}) {
     this.getInput({root}).value = value;
@@ -21,9 +23,22 @@ const stringType = {
   viewUI ({value}) {
     return ['span', {dataset: {type: 'string'}}, [value]];
   },
-  editUI ({typeNamespace, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    const kind = /** @type {import('zodex').SzString} */ (
+      specificSchemaObject
+    // @ts-expect-error Does exist
+    )?.kind;
+    const isLiteral = specificSchemaObject?.type === 'literal';
     return ['div', {dataset: {type: 'string'}}, [
-      ['textarea', {name: `${typeNamespace}-string`}, [value]]
+      kind
+        ? ['input', {
+          name: `${typeNamespace}-string`,
+          type: kind, // email, url, date
+          value
+        }]
+        : ['textarea', {name: `${typeNamespace}-string`, disabled: isLiteral}, [
+          isLiteral ? specificSchemaObject?.value : value
+        ]]
     ]];
   }
 };
