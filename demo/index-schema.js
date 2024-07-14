@@ -265,13 +265,17 @@ const schemaInstanceJSON = {
       returns: {
         type: 'never'
       }
+    },
+
+    {
+      type: 'catch',
+      name: 'abc',
+      innerType: {
+        type: 'string'
+      }
     }
-    // Todo: add Promise, function and symbol to regular demo
 
     // Todo: add these above and in schema.js, uncomment nativeEnum there
-    // {
-    //   type: 'catch'
-    // },
     // {
     //   type: 'nativeEnum'
     // }
@@ -287,11 +291,12 @@ const schemaInstanceJSON = {
     //          Sparse arrays
     // 'effect'
 
-    // Todo: allow function/promise/symbol to be cloneable albeit not through
-    //        structured cloneable; note that typeson has an issue for
-    //        symbol-iterating keys
     // Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
     //         `getValue`, `viewUI`
+
+    // Todo: allow function/promise/symbol to be cloneable albeit not through
+    //        structured cloneable; note that typeson has an issue for
+    //        symbol-iterating keys; then add to regular demo and test
   ]
 };
 

@@ -54,6 +54,7 @@ import noneditableType from './fundamentalTypes/noneditableType.js';
 import neverType from './fundamentalTypes/neverType.js';
 import promiseType from './fundamentalTypes/promiseType.js';
 import functionType from './fundamentalTypes/functionType.js';
+import catchType from './fundamentalTypes/catchType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -413,11 +414,11 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
  *   "record"|"void"|"enum"|"literal"|"symbol"|"never"|"promise"|
- *   "function"
+ *   "function"|"catch"
  * } AvailableType
  */
 // Todo: When done with function/promise/symbol, move off here
-// Todo: Add when Zodex ready: "catch"|"nativeEnum"
+// Todo: Add when Zodex ready: "nativeEnum"
 
 /**
  * @typedef {TypeObject & {
@@ -501,6 +502,7 @@ class Types {
       never: neverType,
       promise: promiseType,
       function: functionType,
+      catch: catchType,
 
       buffersource: buffersourceType,
       dataview: {

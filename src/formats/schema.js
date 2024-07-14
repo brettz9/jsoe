@@ -352,6 +352,7 @@ const schema = {
     // Todo: Fix `iterate` for schemas (e.g., inject a value method in demo)
 
     /** @type {Map<AvailableZodexType, import('../types.js').AvailableType>} */
+    // @ts-expect-error Remove after Zodex update allows `catch`, etc.
     const zodexToStructuredCloningTypeMap = new Map([
       ['boolean', 'boolean'],
       ['number', 'number'],
@@ -382,10 +383,10 @@ const schema = {
       // Todo: Allow non-cloning version to return these too, but filter out
       //         otherwise
       ['function', 'function'],
-      ['promise', 'promise']
+      ['promise', 'promise'],
 
       // Todo: Wait until added to Zodex
-      // ['catch', 'catch'],
+      ['catch', 'catch']
       // ['nativeEnum', 'nativeEnum']
     ]);
 

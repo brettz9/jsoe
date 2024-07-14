@@ -27,6 +27,13 @@ const functionType = {
     format, type, buildTypeChoices, specificSchemaObject,
     topRoot, schemaContent, typeNamespace
   }) {
+    // Todo: Could make a function instance result type which builds a Function
+    //        like `new Function('arg1', 'return !arg1');` this just builds a
+    //        specific function schema instance, and can't have a meaningful
+    //        `getValue`, etc.; add to demo with tests; could also add to
+    //        use with `Promise` so that could also build a meaningful
+    //        implementation
+
     // We want to allow overriding its descriptions
     const specificSchemaObj = copyObject(specificSchemaObject);
     const argsTuple = /** @type {import('zodex').SzFunction<any, any>} */ (
