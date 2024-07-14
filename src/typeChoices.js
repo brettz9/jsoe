@@ -79,6 +79,7 @@ import dialogs from './utils/dialogs.js';
  *   formats?: import('./formats.js').default
  *   types?: import('./types.js').default
  *   schema?: string,
+ *   schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema,
  *   schemaContent?: import('./formatAndTypeChoices.js').ZodexSchema,
  * }} cfg
  * @returns {{
@@ -107,6 +108,7 @@ export const buildTypeChoices = ({
   formats = new Formats(),
   types = new Types(),
   schema,
+  schemaOriginal,
   schemaContent
 }) => {
   // console.log('format', format, 'state', state, 'path', typeNamespace);
@@ -114,7 +116,9 @@ export const buildTypeChoices = ({
     ? {
       typeOptions: [types.getOptionForType('object')], schemaObjects: undefined
     }
-    : types.getTypeOptionsForFormatAndState(format, state, schemaContent);
+    : types.getTypeOptionsForFormatAndState(
+      format, state, schemaContent, schemaOriginal
+    );
   const {typeOptions} = typeAndSchemaInfo;
   const schemaObjs = typeAndSchemaInfo.schemaObjects;
 
@@ -206,7 +210,7 @@ export const buildTypeChoices = ({
           buildTypeChoices,
           format,
           topRoot,
-          schemaContent,
+          schemaContent: schemaOriginal ?? schemaContent,
           specificSchemaObject: schemaObject
         });
         this.$addEditUI({editUI});

@@ -226,9 +226,7 @@ const schemaInstanceJSON = {
       }
     }
 
-    // Todo: Fix the Object (Array), Object (Object), etc.
-
-    // Todo: Fix these (and add these and symbol to regular demo and test)
+    // Todo: Fix these:
     // {
     //   type: 'promise',
     //   value: {
@@ -247,6 +245,7 @@ const schemaInstanceJSON = {
     //     type: 'void'
     //   }
     // }
+    // Todo: add Promise, function and symbol to regular demo and test
 
     // Todo: Wait until added to Zodex
     // {

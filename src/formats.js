@@ -15,6 +15,8 @@ import schema from './formats/schema.js';
  * @param {string} [state]
  * @param {import('./formatAndTypeChoices.js').ZodexSchema|
  *   undefined} [schemaObject]
+ * @param {import('./formatAndTypeChoices.js').ZodexSchema|
+ *   undefined} [schemaOriginal]
  * @returns {TypesAndSchemaObjects|undefined}
  */
 
@@ -51,7 +53,9 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *   getTypesAndSchemasForState: (
  *     types: import('./types.js').default,
  *     state?: string,
- *     schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
+ *     schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined,
+ *     schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema|
+ *       undefined
  *   ) => TypesAndSchemaObjects|undefined
  * }} Format
  */
@@ -118,10 +122,10 @@ class Formats {
    * @type {GetTypesAndSchemasForFormatAndState}
    */
   getTypesAndSchemasForFormatAndState (
-    types, format, state, schemaObject
+    types, format, state, schemaObject, schemaOriginal
   ) {
     return this.availableFormats[format].getTypesAndSchemasForState(
-      types, state, schemaObject
+      types, state, schemaObject, schemaOriginal
     );
   }
 

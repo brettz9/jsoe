@@ -140,6 +140,8 @@ export const getPropertyValueFromLegend = (legend) => {
  * @param {string} [parserState]
  * @param {import('./formatAndTypeChoices.js').ZodexSchema|
  *   undefined} [schemaContent]
+ * @param {import('./formatAndTypeChoices.js').ZodexSchema|
+ *   undefined} [schemaOriginal]
  * @returns {{
  *   typeOptions: [string, {value: AvailableType, title?: string}][],
  *   schemaObjects: import('./formats/schema.js').ZodexSchema[]
@@ -241,6 +243,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   parent?: {[key: string]: any},
  *   parentPath?: string|number,
  *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
+ *   schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema|undefined
  * }) => [
 *   value: StructuredCloneValue,
 *   remnant: string,
@@ -714,10 +717,12 @@ class Types {
   }
 
   /** @type {GetTypeOptionsForFormatAndState} */
-  getTypeOptionsForFormatAndState (format, parserState, schemaContent) {
+  getTypeOptionsForFormatAndState (
+    format, parserState, schemaContent, schemaOriginal
+  ) {
     const typesForFormatAndState =
       this.formats.getTypesAndSchemasForFormatAndState(
-        this, format, parserState, schemaContent
+        this, format, parserState, schemaContent, schemaOriginal
       );
     if (!typesForFormatAndState) {
       throw new Error('Unexpected type for format and state');
@@ -832,10 +837,10 @@ class Types {
   /** @type {GetValueForString} */
   getValueForString (s, {
     format, state, endMatchTypeObjs = [], firstRun = true,
-    rootHolder = [], parent, parentPath, schemaObject
+    rootHolder = [], parent, parentPath, schemaObject, schemaOriginal
   }) {
     const allowedTypes = this.formats.getTypesAndSchemasForFormatAndState(
-      this, format, state, schemaObject
+      this, format, state, schemaObject, schemaOriginal
     )?.types;
     if (!allowedTypes) {
       throw new Error('Could not get types for format and state');

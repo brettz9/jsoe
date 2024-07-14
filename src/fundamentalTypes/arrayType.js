@@ -551,7 +551,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
-    formats, types, specificSchemaObject, // schemaContent,
+    formats, types, specificSchemaObject, schemaContent,
     type, arrayState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -814,6 +814,7 @@ const arrayType = {
             format: /** @type {import('../formats.js').AvailableFormat} */ (
               format
             ),
+            schemaOriginal: schemaContent,
             // Can also be a `Record`
             schemaContent: /** @type {import('zodex').SzMap<any, any>} */ (
               specificSchemaObject
@@ -1235,6 +1236,7 @@ const arrayType = {
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
         // eslint-disable-next-line object-shorthand -- TS
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
+        schemaOriginal: schemaContent,
         schemaContent: type === 'tuple'
           ? tupleSchema ?? /** @type {import('zodex').SzTuple} */ (
             specificSchemaObject

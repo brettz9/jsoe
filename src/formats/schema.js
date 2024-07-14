@@ -302,6 +302,9 @@ function getTypesForSchema (schemaObject, originalJSON) {
         // todo: When Zodex may be updated, switch to `import('zodex').SzRef`
         /** @type {{$ref: string}} */ (schemaObject).$ref.slice(1)
       );
+      if (!refObj) {
+        console.log('111', schemaObject.$ref, originalJSON);
+      }
       return getTypesForSchema(refObj, originalJSON);
     }
     return new Set([schemaObject]);
@@ -321,12 +324,15 @@ const schema = {
     return structuredCloning.types();
   },
 
-  getTypesAndSchemasForState (types, state, schemaObject) {
+  getTypesAndSchemasForState (types, state, schemaObject, schemaOriginal) {
     if (!schemaObject) {
       throw new Error('Missing schema object');
     }
     // alert(JSON.stringify(schemaObject));
-    const schemaObjects = [...getTypesForSchema(schemaObject, schemaObject)];
+    const schemaObjects = [...getTypesForSchema(
+      schemaObject,
+      /** @type {import('zodex').SzType} */ (schemaOriginal) ?? schemaObject
+    )];
     console.log(
       schemaObjects
     );
