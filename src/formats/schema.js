@@ -1,51 +1,16 @@
 import structuredCloning from './structuredCloning.js';
 
-/**
- * @param {import('zodex').SzType} obj
- * @param {string} pointer
- * @returns {import('zodex').SzType}
- */
-function pointer (obj, pointer) {
-  const tokens = pointer.split('/').slice(1);
-  return tokens.reduce((acc, token) => {
-    /* c8 ignore next -- Guard */
-    if (acc === undefined) {
-      return acc;
-    }
-    // @ts-expect-error Ok
-    return acc[token.replaceAll('~1', '/').replaceAll('~0', '~')];
-  }, obj);
-}
+import {resolveJSONPointer} from '../utils/jsonPointer.js';
+import {copyObject} from '../utils/objects.js';
 
 // Todo: After updating Zodex, switch to this type: `import('zodex').SzType`
 
 /**
- * @typedef {any} ArbitraryObject
- */
-
-/**
  * @typedef {import('zodex').SzType} ZodexSchema
  */
-
 /**
- * @typedef {{[key: string]: string|NestedObject}} NestedObject
+ * @typedef {import('../utils/objects.js').NestedObject} NestedObject
  */
-
-/**
- * @param {ArbitraryObject} obj
- * @returns {ArbitraryObject}
- */
-function copyObject (obj) {
-  const newObj = Array.isArray(obj)
-    ? /** @type {Array<ArbitraryObject> & {[key: string]: ArbitraryObject}} */ (
-      []
-    )
-    : /** @type {NestedObject} */ ({});
-  for (const [prop, val] of Object.entries(obj)) {
-    newObj[prop] = val && typeof val === 'object' ? copyObject(val) : val;
-  }
-  return newObj;
-}
 
 /**
  * @param {ZodexSchema} leftItem
@@ -276,19 +241,19 @@ function getTypesForSchema (schemaObject, originalJSON) {
           type: 'any'
         }
       },
-      // {
-      //   type: 'function',
-      //   args: {
-      //     type: 'tuple',
-      //     items: [],
-      //     rest: {
-      //       type: 'any'
-      //     }
-      //   },
-      //   returns: {
-      //     type: 'any'
-      //   }
-      // },
+      {
+        type: 'function',
+        args: {
+          type: 'tuple',
+          items: [],
+          rest: {
+            type: 'any'
+          }
+        },
+        returns: {
+          type: 'any'
+        }
+      },
       // {
       //   type: 'nativeEnum',
       //   values: {
@@ -334,14 +299,11 @@ function getTypesForSchema (schemaObject, originalJSON) {
     ]);
   default: {
     if ('$ref' in schemaObject) {
-      const refObj = pointer(
-        originalJSON,
-        // todo: When Zodex may be updated, switch to `import('zodex').SzRef`
-        /** @type {{$ref: string}} */ (schemaObject).$ref.slice(1)
-      );
-      if (!refObj) {
-        console.log('111', schemaObject.$ref, originalJSON);
-      }
+      const refObj = resolveJSONPointer({
+        obj: originalJSON,
+        // todo: When Zodex may be updated, switch to `import('zodex').SzRef`;
+        path: /** @type {{$ref: string}} */ (schemaObject).$ref
+      });
       return getTypesForSchema(refObj, originalJSON);
     }
     return new Set([schemaObject]);
@@ -370,9 +332,6 @@ const schema = {
       schemaObject,
       /** @type {import('zodex').SzType} */ (schemaOriginal) ?? schemaObject
     )];
-    console.log(
-      schemaObjects
-    );
 
     /* eslint-disable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/147 */
     /**
@@ -422,7 +381,7 @@ const schema = {
 
       // Todo: Allow non-cloning version to return these too, but filter out
       //         otherwise
-      // ['function', 'function'],
+      ['function', 'function'],
       ['promise', 'promise']
 
       // Todo: Wait until added to Zodex

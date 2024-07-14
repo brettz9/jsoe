@@ -230,23 +230,43 @@ const schemaInstanceJSON = {
       value: {
         type: 'number'
       }
+    },
+    {
+      type: 'function',
+      args: {
+        type: 'tuple',
+        items: [
+          {
+            type: 'number'
+          }
+        ],
+        rest: {
+          type: 'string'
+        }
+      },
+      returns: {
+        type: 'boolean'
+      }
+    },
+    {
+      type: 'function',
+      description: 'With never',
+      args: {
+        type: 'tuple',
+        items: [
+          {
+            type: 'never'
+          }
+        ],
+        rest: {
+          type: 'never'
+        }
+      },
+      returns: {
+        type: 'never'
+      }
     }
-
-    // Todo: Fix this (and uncomment `function` usage in schema.js):
-    // Todo: Also check `never` as part of function args, function returns
-    // {
-    //   type: 'function',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [],
-    //     rest: {}
-    //   },
-    //   returns: {
-    //     type: 'void'
-    //   }
-    // }
-    // Todo: add Promise, function and symbol to regular demo and test; allow
-    //        to be cloneable albeit not through structured cloneable
+    // Todo: add Promise, function and symbol to regular demo
 
     // Todo: add these above and in schema.js, uncomment nativeEnum there
     // {
@@ -266,6 +286,12 @@ const schemaInstanceJSON = {
     //          DOMMatrix, DOMPoint, DOMRect, Errors, SpecialNumber),
     //          Sparse arrays
     // 'effect'
+
+    // Todo: allow function/promise/symbol to be cloneable albeit not through
+    //        structured cloneable; note that typeson has an issue for
+    //        symbol-iterating keys
+    // Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
+    //         `getValue`, `viewUI`
   ]
 };
 

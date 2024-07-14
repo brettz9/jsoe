@@ -39,16 +39,8 @@ video.recordedMedia {
   height: 60px;
 }
 
-[data-type="literal"] {
-  background-color: lightblue;
-}
-
 :invalid {
   background-color: 1px solid pink !important;
-}
-
-[data-type="symbol"] {
-  background-color: lightgreen;
 }
 
 [data-type="undef"], [data-type="void"] {
@@ -84,6 +76,19 @@ video.recordedMedia {
   background-color: orange;
 }
 
+[data-type="literal"] {
+  background-color: lightblue;
+}
+
+[data-type="symbol"] {
+  background-color: lightgreen;
+}
+[data-type="promise"] {
+  background-color: orange;
+}
+[data-type="function"] {
+  background-color: teal;
+}
 
 [data-type="arrayReference"] {
   color: white;
