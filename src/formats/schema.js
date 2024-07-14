@@ -271,6 +271,43 @@ function getTypesForSchema (schemaObject, originalJSON) {
         type: 'symbol'
       },
       {
+        type: 'promise',
+        value: {
+          type: 'any'
+        }
+      },
+      // {
+      //   type: 'function',
+      //   args: {
+      //     type: 'tuple',
+      //     items: [],
+      //     rest: {
+      //       type: 'any'
+      //     }
+      //   },
+      //   returns: {
+      //     type: 'any'
+      //   }
+      // },
+      // {
+      //   type: 'nativeEnum',
+      //   values: {
+      //     type: 'object',
+      //     properties: {},
+      //     catchall: {
+      //       type: 'union',
+      //       options: [
+      //         {
+      //           type: 'string'
+      //         },
+      //         {
+      //           type: 'number'
+      //         }
+      //       ]
+      //     }
+      //   }
+      // },
+      {
         type: 'array',
         element: {
           type: 'any'
@@ -381,12 +418,12 @@ const schema = {
 
       ['symbol', 'symbol'],
 
-      ['never', 'never']
+      ['never', 'never'],
 
       // Todo: Allow non-cloning version to return these too, but filter out
       //         otherwise
       // ['function', 'function'],
-      // ['promise', 'promise']
+      ['promise', 'promise']
 
       // Todo: Wait until added to Zodex
       // ['catch', 'catch'],

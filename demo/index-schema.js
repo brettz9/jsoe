@@ -224,15 +224,15 @@ const schemaInstanceJSON = {
           isOptional: true
         }
       }
+    },
+    {
+      type: 'promise',
+      value: {
+        type: 'number'
+      }
     }
 
-    // Todo: Fix these:
-    // {
-    //   type: 'promise',
-    //   value: {
-    //     type: 'void'
-    //   }
-    // },
+    // Todo: Fix this (and uncomment `function` usage in schema.js):
     // Todo: Also check `never` as part of function args, function returns
     // {
     //   type: 'function',
@@ -245,9 +245,10 @@ const schemaInstanceJSON = {
     //     type: 'void'
     //   }
     // }
-    // Todo: add Promise, function and symbol to regular demo and test
+    // Todo: add Promise, function and symbol to regular demo and test; allow
+    //        to be cloneable albeit not through structured cloneable
 
-    // Todo: Wait until added to Zodex
+    // Todo: add these above and in schema.js, uncomment nativeEnum there
     // {
     //   type: 'catch'
     // },
@@ -274,7 +275,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   schemas: [
     'Zodex schema', 'Zodex schema instance', 'any schema', 'unknown schema'
   ],
-  selectedSchema: 'Zodex schema',
+  selectedSchema: 'Zodex schema instance',
   getSchemaContent (schema) {
     switch (schema) {
     case 'Zodex schema':

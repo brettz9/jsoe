@@ -52,6 +52,7 @@ import dommatrixType from './superTypes/dommatrixType.js';
 import buffersourceType from './superTypes/buffersourceType.js';
 import noneditableType from './fundamentalTypes/noneditableType.js';
 import neverType from './fundamentalTypes/neverType.js';
+import promiseType from './fundamentalTypes/promiseType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -410,10 +411,11 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
- *   "record"|"void"|"enum"|"literal"|"symbol"|"never"
+ *   "record"|"void"|"enum"|"literal"|"symbol"|"never"|"promise"
  * } AvailableType
  */
-// Todo: Add "function"|"promise" (but when done, move off here with symbol?)
+// Todo: Add "function"
+// Todo: When done with function/promise/symbol, move off here
 // Todo: Add when Zodex ready: "catch"|"nativeEnum"
 
 /**
@@ -496,6 +498,7 @@ class Types {
 
       resurrectable: noneditableType,
       never: neverType,
+      promise: promiseType,
 
       buffersource: buffersourceType,
       dataview: {
