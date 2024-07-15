@@ -21,7 +21,7 @@ describe('DOMException spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'domexception'
     );
-    cy.get(sel + '.predefinedNames').select('SyntaxError');
+    cy.clearTypeAndBlur(sel + '.name', 'SyntaxError');
     cy.get(
       sel + 'input[name="demo-keypath-not-expected-domexception-name"]'
     ).should(($input) => {

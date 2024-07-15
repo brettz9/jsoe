@@ -1,5 +1,7 @@
 import {$e} from '../utils/templateUtils.js';
 
+let domExceptionNameId = 0;
+
 /**
  * @type {import('../types.js').TypeObject}
  */
@@ -43,72 +45,57 @@ const domexceptionType = {
     ]];
   },
   editUI ({typeNamespace, value = ''}) {
+    domExceptionNameId++;
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'domexception'}}, /** @type {import('jamilih').JamilihChildren} */ ([
       ['label', [
         'Name: ',
         ['input', {
           class: 'name',
-          name: `${typeNamespace}-domexception-name`, value
+          list: `domExceptionNames-${domExceptionNameId}`,
+          name: `${typeNamespace}-domexception-name`, value,
+          size: 30,
+          placeholder: '(Optional predefined name)'
         }]
       ]],
-      ' ',
-      ['select', {
-        class: 'predefinedNames',
-        $on: {
-          /**
-           * @this {HTMLSelectElement}
-           */
-          change () {
-            /** @type {HTMLInputElement} */
-            ($e(
-              /** @type {HTMLLabelElement} */ (
-                this.previousElementSibling
-              ),
-              '.name'
-            )).value = this.value;
-          }
-        }
+      ['datalist', {
+        id: `domExceptionNames-${domExceptionNameId}`,
+        class: 'predefinedNames'
       }, [
-        ['option', {value: ''}, [
-          '(Choose an optional predefined name)'
-        ]],
-        ...[
-          'IndexSizeError',
-          'HierarchyRequestError',
-          'WrongDocumentError',
-          'InvalidCharacterError',
-          'NoModificationAllowedError',
-          'NotFoundError',
-          'NotSupportedError',
-          'InvalidStateError',
-          'InUseAttributeError',
-          'SyntaxError',
-          'InvalidModificationError',
-          'NamespaceError',
-          'InvalidAccessError',
-          'TypeMismatchError',
-          'SecurityError',
-          'NetworkError',
-          'AbortError',
-          'URLMismatchError',
-          'QuotaExceededError',
-          'TimeoutError',
-          'InvalidNodeTypeError',
-          'DataCloneError',
-          'EncodingError',
-          'NotReadableError',
-          'UnknownError',
-          'ConstraintError',
-          'DataError',
-          'TransactionInactiveError',
-          'ReadOnlyErrorVersionError',
-          'OperationError',
-          'NotAllowedError'
-        ].map((name) => {
-          return ['option', [name]];
-        })
-      ]],
+        'IndexSizeError',
+        'HierarchyRequestError',
+        'WrongDocumentError',
+        'InvalidCharacterError',
+        'NoModificationAllowedError',
+        'NotFoundError',
+        'NotSupportedError',
+        'InvalidStateError',
+        'InUseAttributeError',
+        'SyntaxError',
+        'InvalidModificationError',
+        'NamespaceError',
+        'InvalidAccessError',
+        'TypeMismatchError',
+        'SecurityError',
+        'NetworkError',
+        'AbortError',
+        'URLMismatchError',
+        'QuotaExceededError',
+        'TimeoutError',
+        'InvalidNodeTypeError',
+        'DataCloneError',
+        'EncodingError',
+        'NotReadableError',
+        'UnknownError',
+        'ConstraintError',
+        'DataError',
+        'TransactionInactiveError',
+        'ReadOnlyErrorVersionError',
+        'OperationError',
+        'NotAllowedError'
+      ].map((name) => {
+        return ['option', [name]];
+      })],
       ['br'],
       ['label', [
         'Message: ',

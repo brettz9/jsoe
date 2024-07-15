@@ -1168,10 +1168,6 @@ const buffersourceType = {
                   ? Number.parseInt(typedArrayByteOffsetVal)
                   : 0;
 
-                console.log('1111', typedArrayByteOffset,
-                  length, TypedArray.BYTES_PER_ELEMENT,
-                  bufferByteLength);
-
                 if (
                   (typedArrayByteOffset +
                     (length * TypedArray.BYTES_PER_ELEMENT)) >

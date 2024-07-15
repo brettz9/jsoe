@@ -6,9 +6,6 @@ module.exports = {
     ecmaVersion: 2022
   },
   settings: {
-    jsdoc: {
-      mode: 'typescript'
-    },
     polyfills: [
       'AggregateError',
       'Array.isArray',
@@ -94,6 +91,12 @@ module.exports = {
       rules: {
         'import/unambiguous': 'off'
       }
+    },
+    {
+      env: {
+        node: true
+      },
+      files: 'server.js'
     }
   ],
   rules: {

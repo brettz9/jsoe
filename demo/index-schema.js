@@ -4,7 +4,7 @@ import {
   formatAndTypeChoices
 } from '../src/formatAndTypeChoices.js';
 
-const zodexSchemaJSON = await (await fetch('./schema.zodex')).json();
+const zodexSchemaJSON = await (await fetch('./schema.zodex.json')).json();
 
 const anySchemaJSON = {
   type: 'any'
@@ -80,7 +80,8 @@ const schemaInstanceJSON = {
       value: 'abc'
     },
     {
-      type: 'object'
+      type: 'object',
+      properties: {}
     },
     {
       description: 'With properties',
@@ -273,27 +274,199 @@ const schemaInstanceJSON = {
       innerType: {
         type: 'string'
       }
+    },
+    {
+      type: 'nativeEnum',
+      values: {
+        type: 'record',
+        key: {
+          type: 'number'
+        },
+        value: {
+          type: 'string'
+        }
+      }
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'regexp',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'blob',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'BooleanObject',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'NumberObject',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'StringObject',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'SpecialRealNumber',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'domexception',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'error',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'filelist',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'file',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'resurrectable', // noneditable
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'blobHTML',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'buffersource',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'dommatrix',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'dompoint',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'domrect',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'errors',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
     }
 
-    // Todo: add these above and in schema.js, uncomment nativeEnum there
-    // {
-    //   type: 'nativeEnum'
-    // }
-
-    // Todo:
-    //        Zod can't do circular data, but can do other types:
-    //        effect (and preset examples like -0, Infinity, -Infinity,
-    //          These can't be subdivided, but can be detected
-    //          classes: Blob, Boolean, DOMException, Error, FileList,
-    //          File, noneditable?, Number, RegExp, String; subtypes:
-    //          BlobHTML; supertypes (including inner items): BufferSource,
-    //          DOMMatrix, DOMPoint, DOMRect, Errors, SpecialNumber),
-    //          Sparse arrays
-    // 'effect'
-
+    // Test: editing, including fixing aggregate errors and aggregate error
+    //         as cause
     // Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
     //         `getValue`, `viewUI`
 
+    // Todo: If Zod starts to do circular data, support with reference types
+    // Todo: If Zod starts to allow specific types for our effects, use those
+    //         instead, not just for more standard semanticness, but for any
+    //         additional validations
     // Todo: allow function/promise/symbol to be cloneable albeit not through
     //        structured cloneable; note that typeson has an issue for
     //        symbol-iterating keys; then add to regular demo and test

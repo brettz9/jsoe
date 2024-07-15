@@ -3,8 +3,6 @@ import structuredCloning from './structuredCloning.js';
 import {resolveJSONPointer} from '../utils/jsonPointer.js';
 import {copyObject} from '../utils/objects.js';
 
-// Todo: After updating Zodex, switch to this type: `import('zodex').SzType`
-
 /**
  * @typedef {import('zodex').SzType} ZodexSchema
  */
@@ -187,6 +185,7 @@ function getTypesForSchema (schemaObject, originalJSON) {
     addModifiers(schemaObject, set);
     return new Set(set);
   } case 'any': case 'unknown':
+    // @ts-expect-error Remove after Zodex update allows `nativeEnum`
     return new Set([
       {
         type: 'boolean'
@@ -229,7 +228,7 @@ function getTypesForSchema (schemaObject, originalJSON) {
       },
       {
         type: 'object',
-        properties: {}, // Todo: Remove when may be Zodex updated
+        properties: {},
         unknownKeys: 'passthrough'
       },
       {
@@ -254,24 +253,42 @@ function getTypesForSchema (schemaObject, originalJSON) {
           type: 'any'
         }
       },
-      // {
-      //   type: 'nativeEnum',
-      //   values: {
-      //     type: 'object',
-      //     properties: {},
-      //     catchall: {
-      //       type: 'union',
-      //       options: [
-      //         {
-      //           type: 'string'
-      //         },
-      //         {
-      //           type: 'number'
-      //         }
-      //       ]
-      //     }
-      //   }
-      // },
+      {
+        type: 'nativeEnum',
+        values: {
+          type: 'union',
+          options: [
+            {
+              description: 'Numeric',
+              type: 'record',
+              key: {
+                type: 'number'
+              },
+              value: {
+                type: 'string'
+              }
+            },
+            {
+              description: 'String',
+              type: 'record',
+              key: {
+                type: 'string'
+              },
+              value: {
+                type: 'union',
+                options: [
+                  {
+                    type: 'string'
+                  },
+                  {
+                    type: 'number'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
       {
         type: 'array',
         element: {
@@ -295,6 +312,176 @@ function getTypesForSchema (schemaObject, originalJSON) {
       },
       {
         type: 'never'
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'regexp',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'blob',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'BooleanObject',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'NumberObject',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'StringObject',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'SpecialRealNumber',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'domexception',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'error',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'filelist',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'file',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'resurrectable', // noneditable
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'blobHTML',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'buffersource',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'dommatrix',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'dompoint',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'domrect',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      },
+      {
+        type: 'effect',
+        effects: [
+          {
+            name: 'errors',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
       }
     ]);
   default: {
@@ -385,9 +572,8 @@ const schema = {
       ['function', 'function'],
       ['promise', 'promise'],
 
-      // Todo: Wait until added to Zodex
-      ['catch', 'catch']
-      // ['nativeEnum', 'nativeEnum']
+      ['catch', 'catch'],
+      ['nativeEnum', 'nativeEnum']
     ]);
 
     /** @type {AvailableZodexType[]} */
@@ -397,7 +583,14 @@ const schema = {
 
     return {
       schemaObjects,
-      types: typeArray.map((item) => {
+      types: typeArray.map((item, idx) => {
+        if (item === 'effect') {
+          return /** @type {import('../types.js').AvailableType} */ (
+            /** @type {import('zodex').SzEffect} */ (
+              schemaObjects[idx]
+            ).effects[0].name
+          );
+        }
         return /** @type {import('../types.js').AvailableType} */ (
           zodexToStructuredCloningTypeMap.get(item)
         );

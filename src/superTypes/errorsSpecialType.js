@@ -622,6 +622,7 @@ const errorsSpecialType = {
                 const causeContents = $e(causeHolder, '.causeContents');
                 if (!causeContents?.children.length) {
                   const editui = component.editUI({
+                    buildTypeChoices,
                     typeNamespace,
                     types,
                     value: value.cause

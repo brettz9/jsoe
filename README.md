@@ -1,3 +1,5 @@
+[![Licenses badge](https://raw.githubusercontent.com/brettz9/integrity-matters/master/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
+
 # @es-joy/jsoe
 
 JavaScript Object Editor.
@@ -14,6 +16,7 @@ Formats are a collection of allowed types.
 
 Supported formats include:
 
+- Schemas (using [zodex](https://github.com/commonbaseapp/zodex) serialization of [Zod](https://github.com/colinhacks/zod))
 - Structured Cloning (using [typeson](https://github.com/dfahlander/typeson)) (e.g., IndexedDB values)
 - JSON
 - IndexedDB keys
@@ -49,6 +52,21 @@ Supported types include:
 - `String` object
 - string
 - `undefined`
+
+There are also the following fundamental (Zodex) schema types:
+
+- `boolean` (using in place of true/false when schema specifies)
+- `catch`
+- `enum`
+- `function` (not structured cloning)
+- `literal`
+- `nan` (standalone in Zodex)
+- `nativeEnum`
+- `promise` (not structured cloning)
+- `record`
+- `symbol` (not structured cloning)
+- `tuple`
+- `void` (preferred in Zodex when specified as such)
 
 ## Subtypes
 
@@ -88,7 +106,6 @@ Supported supertypes include:
 
 ## To-dos
 
-1. Support Schemas based on a JSON serialization of Zod
 1. Expand fundamental types
     1. Not in typeson-registry
         1. Structured Cloning

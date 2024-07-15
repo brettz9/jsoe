@@ -137,6 +137,10 @@ video.recordedMedia {
   background-color: yellow;
 }
 
+[data-type="catch"], [data-type="enum"], [data-type="nativeEnum"] {
+  background-color: lightgray;
+}
+
 .typedArrayArea {
   overflow: auto;
   max-height: 250px;
