@@ -21,8 +21,8 @@ importers:
         specifier: 11.0.0
         version: 11.0.0
       zodex:
-        specifier: ^0.14.0
-        version: 0.14.0(@types/react@18.3.3)(react@18.3.1)(zod@3.23.8)
+        specifier: ^0.15.0
+        version: 0.15.0(@types/react@18.3.3)(react@18.3.1)(zod@3.23.8)
     devDependencies:
       '@babel/core':
         specifier: ^7.24.9
@@ -5462,8 +5462,8 @@ packages:
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
-  zodex@0.14.0:
-    resolution: {integrity: sha512-7pnMSKzlVVMXTWarn4Yixaf6OYYQG7Z1mEJoFTJxRFQ0yH2Vxyz4B0C4IGcPGMDGJKqC4mLoIyvXMtWs/niQUg==}
+  zodex@0.15.0:
+    resolution: {integrity: sha512-1uJVvdAZOB4TgRcuISMNG8sTsiUZZMoX+HK4405RjlvjHrCap0+oQFiUWLdVa1Wj8g9Tv20YLmJRbcqIwNKe2A==}
     peerDependencies:
       '@types/react': ^18.x
       react: ^18.x
@@ -11749,7 +11749,7 @@ snapshots:
 
   zod@3.23.8: {}
 
-  zodex@0.14.0(@types/react@18.3.3)(react@18.3.1)(zod@3.23.8):
+  zodex@0.15.0(@types/react@18.3.3)(react@18.3.1)(zod@3.23.8):
     dependencies:
       '@types/react': 18.3.3
       react: 18.3.1

@@ -1159,7 +1159,6 @@ const arrayType = {
                           fallbackSchema:
                           /** @type {import('zodex').SzObject} */ (
                             specificSchemaObject
-                          // @ts-expect-error Wait for Zodex update to fix
                           )?.catchall ?? {type: 'any'}
                         })
                       ])

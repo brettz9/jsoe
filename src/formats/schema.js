@@ -482,14 +482,23 @@ function getTypesForSchema (schemaObject, originalJSON) {
           }
         ],
         inner: {type: 'any'}
+      },
+      // Todo: Adapt into a widget to drag to point back to another object
+      {
+        description: 'JSON Reference',
+        type: 'object',
+        properties: {
+          $ref: {
+            type: 'string'
+          }
+        }
       }
     ]);
   default: {
     if ('$ref' in schemaObject) {
       const refObj = resolveJSONPointer({
         obj: originalJSON,
-        // todo: When Zodex may be updated, switch to `import('zodex').SzRef`;
-        path: /** @type {{$ref: string}} */ (schemaObject).$ref
+        path: /** @type {import('zodex').SzRef} */ (schemaObject).$ref
       });
       return getTypesForSchema(refObj, originalJSON);
     }

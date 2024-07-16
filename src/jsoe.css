@@ -137,6 +137,11 @@ video.recordedMedia {
   background-color: yellow;
 }
 
+[data-type="map"], [data-type="set"],
+[data-type="bigint"], [data-type="never"], [data-type="domexception"],
+[data-type="resurrectable"], /* i.e., `noneditable` */
+[data-type="domrect"], [data-type="dompoint"],
+[data-type="dommatrix"],
 [data-type="catch"], [data-type="enum"], [data-type="nativeEnum"] {
   background-color: lightgray;
 }

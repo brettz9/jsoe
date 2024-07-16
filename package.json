@@ -37,6 +37,7 @@
     "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; nyc report",
     "cypress": "cypress run; nyc report",
     "cypress:record": "cypress run --record --parallel",
+    "report": "nyc report",
     "test": "npm run eslint && npm run rollup && npm run cypress"
   },
   "browserslist": [
@@ -54,7 +55,7 @@
     "jamilih": "0.59.0",
     "sceditor": "3.2.0",
     "typeson-registry": "11.0.0",
-    "zodex": "^0.14.0"
+    "zodex": "^0.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
