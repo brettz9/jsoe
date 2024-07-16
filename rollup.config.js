@@ -27,6 +27,17 @@ export default [{
     commonjs()
   ]
 }, {
+  input: 'demo/index-schema.js',
+  output: {
+    file: 'instrumented/demo/index-schema.js',
+    format: 'es'
+  },
+  plugins: [
+    istanbul(),
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
   input: 'node_modules/fast-deep-equal/es6/index.js',
   output: {
     file: 'src/deepEqual.js',

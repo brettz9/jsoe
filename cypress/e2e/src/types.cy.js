@@ -76,7 +76,9 @@ describe('`Types.getValueForString`', function () {
         format: 'json',
         state: 'badFormat',
         parent: {},
-        parentPath: ''
+        parentPath: '',
+        schemaObject: {},
+        schemaOriginal: {}
       });
     }).to.throw('Could not get types for format and state');
   });
