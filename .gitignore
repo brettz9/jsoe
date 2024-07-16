@@ -4,5 +4,5 @@ proj.json
 coverage
 cypress/downloads
 cypress/screenshots
-instrumented
+# instrumented # Disable for now for Cypress Cloud
 dist

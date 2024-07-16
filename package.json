@@ -36,6 +36,7 @@
     "instrument": "run-s -c instrument-remove instrument-add copy-index rollup",
     "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; nyc report",
     "cypress": "cypress run; nyc report",
+    "cypress:record": "cypress run --record --parallel",
     "test": "npm run eslint && npm run rollup && npm run cypress"
   },
   "browserslist": [
