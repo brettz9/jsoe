@@ -234,7 +234,7 @@ describe('Buffersource spec', () => {
         expect(
           /** @type {HTMLInputElement} */ ($input[0]).pattern
         ).to.eq(
-          '\\d+(?:\\.\\d+)?'
+          String.raw`\d+(?:\.\d+)?`
         );
       });
     }

@@ -1058,7 +1058,7 @@ Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
  */
 function escapeRegex (str) {
   return String(str).
-    replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, '\\$&');
+    replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, String.raw`\$&`);
 }
 
 export default Types;

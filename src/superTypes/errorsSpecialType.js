@@ -53,7 +53,7 @@ const errorsSpecialType = {
   }),
   stringRegex: new RegExp(
     '^(?<errorClass>' + specialErrors.join('|') +
-      ')\\((?<innerContent>.*)\\)$', 'u'
+      String.raw`)\((?<innerContent>.*)\)$`, 'u'
   ),
   toValue (s, rootInfo) {
     const {groups: {

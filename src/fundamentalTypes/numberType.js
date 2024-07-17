@@ -9,7 +9,7 @@ const numberType = {
     '^' + // No leading content.
       '[-+]?' + // Optional sign.
       // Optionally 0-30 decimal digits of mantissa.
-      '(?:[0-9]{0,30}\\.)?' +
+      String.raw`(?:[0-9]{0,30}\.)?` +
       // 1-30 decimal digits of integer or fraction.
       '[0-9]{1,30}' +
       // Optional exponent 0-29 for scientific notation.

@@ -219,7 +219,7 @@ const arrayType = {
             endMatchTypeObjs, rootHolder, parent: retObj, parentPath: pr
           }
         );
-      } catch (err) {
+      } catch {
         // console.log(
         //   'errrrr', stringVal,
         //   JSON.stringify(endMatchTypeObjs)
@@ -955,7 +955,7 @@ const arrayType = {
                 try {
                   try {
                     await this.$validateLength();
-                  } catch (err) {
+                  } catch {
                     // Give chance for other validations if cancelled
                   }
                   // Don't give chance to validate positively if failed
@@ -966,7 +966,7 @@ const arrayType = {
                     // eslint-disable-next-line object-shorthand -- TS
                     topRoot: /** @type {HTMLDivElement} */ (topRoot)
                   }); // Needed
-                } catch (err) {}
+                } catch {}
               },
 
               /**
@@ -1674,7 +1674,7 @@ const arrayType = {
             value: (value && value.length) || 0,
             step: 1,
             size: 4,
-            pattern: '\\d',
+            pattern: String.raw`\d`,
             $on: {
               /**
                * @this {HTMLInputElement & {
@@ -1715,7 +1715,7 @@ const arrayType = {
                     });
                   }
                   this.$oldvalue = this.value;
-                } catch (err) {
+                } catch {
                   this.value = this.$oldvalue; // Revert
                 }
               }

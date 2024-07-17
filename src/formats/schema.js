@@ -515,6 +515,14 @@ const schema = {
     return structuredCloning.iterate(records, stateObj);
   },
 
+  convertFromTypeson (typesonType, v, schemaContent) {
+    console.log('v, schemaContent', v, schemaContent);
+    if (schemaContent) {
+
+    }
+    return typesonType;
+  },
+
   types () {
     return structuredCloning.types();
   },

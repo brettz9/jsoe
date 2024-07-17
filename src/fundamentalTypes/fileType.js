@@ -863,7 +863,7 @@ const fileType = {
                 try {
                   mediaRecorder.start();
                 /* istanbul ignore if */
-                } catch (err) {
+                } catch {
                   dialogs.alert('Error starting media recorder');
                   return;
                 }

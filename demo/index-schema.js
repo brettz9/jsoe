@@ -473,6 +473,26 @@ const schemaInstanceJSON = {
   ]
 };
 
+/**
+ * @param {string} schema
+ * @returns {import('zodex').SzType}
+ */
+function getSchemaContent (schema) {
+  switch (schema) {
+  case 'Zodex schema':
+    return zodexSchemaJSON;
+  case 'Zodex schema instance':
+    return schemaInstanceJSON;
+  case 'any schema':
+    return anySchemaJSON;
+  case 'unknown schema':
+    return unknownSchemaJSON;
+  default:
+    break;
+  }
+  return {};
+}
+
 const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,
   typeNamespace: 'demo-keypath-not-expected',
@@ -480,21 +500,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
     'Zodex schema', 'Zodex schema instance', 'any schema', 'unknown schema'
   ],
   selectedSchema: 'Zodex schema instance',
-  getSchemaContent (schema) {
-    switch (schema) {
-    case 'Zodex schema':
-      return zodexSchemaJSON;
-    case 'Zodex schema instance':
-      return schemaInstanceJSON;
-    case 'any schema':
-      return anySchemaJSON;
-    case 'unknown schema':
-      return unknownSchemaJSON;
-    default:
-      break;
-    }
-    return {};
-  }
+  getSchemaContent
 });
 
 setTimeout(function () {
@@ -548,10 +554,15 @@ setTimeout(function () {
             // eslint-disable-next-line @stylistic/max-len -- Long
             await keyPathNotExpectedTypeChoices.formats.getControlsForFormatAndValue(
               keyPathNotExpectedTypeChoices.types,
-              'structuredCloning',
+              keyPathNotExpectedTypeChoices.formatChoices.
+                selectedOptions[0].value,
               keyPathNotExpectedTypeChoices.getValue(),
               {
-                readonly: true
+                readonly: true,
+                schemaContent: await getSchemaContent(
+                  keyPathNotExpectedTypeChoices.formatChoices.
+                    selectedOptions[0].dataset.schema
+                )
               }
             );
           $('#viewUIResults').firstChild?.remove();

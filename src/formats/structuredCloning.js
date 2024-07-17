@@ -116,7 +116,8 @@ const encapsulateObserver = (stateObj) => {
       newType = canonicalToAvailableType(
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
-        format, state, newType, value
+        format, state, newType, value,
+        stateObj.schemaContent
       ); // Todo (low): Add accurate state for second argument
     } else {
       try {
@@ -129,7 +130,8 @@ const encapsulateObserver = (stateObj) => {
            * @type {import('../types.js').AvailableType}
            */
           (type),
-          value
+          value,
+          stateObj.schemaContent
         ); // Todo (low): Add state for second argument
       } catch (err) {
         console.log('err', type, err);
@@ -313,16 +315,17 @@ const replaceTypes = (originTypes, replacements) => {
  * @param {string} state
  * @param {import('../types.js').AvailableType} valType
  * @param {import('../formats.js').StructuredCloneValue} v
+ * @param {import('zodex').SzType|undefined} schemaContent
  * @throws {Error}
  * @returns {import('../types.js').AvailableType}
  */
 const canonicalToAvailableType = (
-  types, formats, format, state, valType, v
+  types, formats, format, state, valType, v, schemaContent
 ) => {
   const frmt = formats.getAvailableFormat(format);
   const {getTypesAndSchemasForState, convertFromTypeson, testInvalid} = frmt;
   const allowableTypes = getTypesAndSchemasForState.call(
-    frmt, types, state
+    frmt, types, state, schemaContent
   )?.types;
   /* istanbul ignore if -- Guard */
   if (!allowableTypes) {
@@ -347,7 +350,7 @@ const canonicalToAvailableType = (
     throw err;
   };
   if (convertFromTypeson) {
-    const newValType = convertFromTypeson(valType);
+    const newValType = convertFromTypeson(valType, v, schemaContent);
     if (typeof newValType === 'string') {
       if (testInvalid && testInvalid(newValType, v)) {
         return isInvalid(newValType);

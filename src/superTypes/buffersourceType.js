@@ -674,7 +674,8 @@ const buffersourceType = {
             'Byte length ',
             ['input', {
               class: 'byteLength',
-              type: 'number', step: '1', size: '4', pattern: '\\d+',
+              type: 'number', step: '1', size: '4',
+              pattern: String.raw`\d+`,
               min: 0,
               $custom: {
                 $value: value ?? new ArrayBuffer(0)
@@ -756,7 +757,8 @@ const buffersourceType = {
             'Max byte length ',
             ['input', {
               class: 'maxByteLength',
-              type: 'number', step: '1', size: '4', pattern: '\\d+',
+              type: 'number', step: '1', size: '4',
+              pattern: String.raw`\d+`,
               min: 0,
               $on: {
                 change (e) {
@@ -790,7 +792,8 @@ const buffersourceType = {
             'Byte length ',
             ['input', {
               class: 'dataViewByteLength',
-              type: 'number', step: '1', size: '4', pattern: '\\d+',
+              type: 'number', step: '1', size: '4',
+              pattern: String.raw`\d+`,
               min: 0,
               $custom: {
                 /**
@@ -863,7 +866,8 @@ const buffersourceType = {
             'Byte offset ',
             ['input', {
               class: 'dataViewByteOffset',
-              type: 'number', step: '1', size: '4', pattern: '\\d+',
+              type: 'number', step: '1', size: '4',
+              pattern: String.raw`\d+`,
               min: 0,
               $on: {
                 change (e) {
@@ -892,7 +896,8 @@ const buffersourceType = {
             'Byte offset ',
             ['input', {
               class: 'typedArrayByteOffset',
-              type: 'number', step: '1', size: '4', pattern: '\\d+',
+              type: 'number', step: '1', size: '4',
+              pattern: String.raw`\d+`,
               min: 0,
               max: (2 ** 53) - 1,
               $custom: {
@@ -1114,7 +1119,8 @@ const buffersourceType = {
           'Array length: ',
           ['input', {
             class: 'typedArrayLength',
-            type: 'number', step: '1', size: '4', pattern: '\\d+',
+            type: 'number', step: '1', size: '4',
+            pattern: String.raw`\d+`,
             min: 0,
             $custom: {
               /**
@@ -1252,8 +1258,8 @@ const buffersourceType = {
                         },
                         type: 'number', step: '1',
                         pattern: value.startsWith('Float')
-                          ? '\\d+(?:\\.\\d+)?'
-                          : '\\d+',
+                          ? String.raw`\d+(?:\.\d+)?`
+                          : String.raw`\d+`,
                         value: bufferByteLength.$typedArray[key]
                           ? String(bufferByteLength.$typedArray[key])
                           : '0',
@@ -1296,7 +1302,7 @@ const buffersourceType = {
                   );
                   // eslint-disable-next-line no-new -- Testing
                   new TypedArray(length);
-                } catch (err) {
+                } catch {
                   that.setCustomValidity('Typed Array length is too long');
                   e.stopPropagation();
                   that.reportValidity();
@@ -1348,7 +1354,8 @@ const buffersourceType = {
                     ['input', {
                       type: 'number',
                       class: 'dataViewSetByteOffset',
-                      step: '1', size: '4', pattern: '\\d+'
+                      step: '1', size: '4',
+                      pattern: String.raw`\d+`
                     }]
                   ]
                 ),
@@ -1358,7 +1365,8 @@ const buffersourceType = {
                     'Value ',
                     ['input', {
                       type: 'number',
-                      step: '1', size: '4', pattern: '\\d+',
+                      step: '1', size: '4',
+                      pattern: String.raw`\d+`,
                       class: 'typedArrayValue typedArray-' + typedArray,
                       ...getMinMaxForTypedArray(typedArray)
                     }]

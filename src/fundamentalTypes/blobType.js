@@ -768,7 +768,7 @@ const blobType = {
                 try {
                   mediaRecorder.start();
                 /* istanbul ignore next */
-                } catch (err) {
+                } catch {
                   /* istanbul ignore next */
                   dialogs.alert('Error starting media recorder');
                   /* istanbul ignore next */
