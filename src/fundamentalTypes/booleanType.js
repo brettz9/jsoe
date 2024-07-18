@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const booleanType = {
   option: ['Boolean', {value: 'boolean'}],
   stringRegex: /^(?:true|false)$/u,
+  valueMatch (x) {
+    return typeof x === 'boolean';
+  },
   toValue: (s) => ({value: s === 'true'}),
   getValue ({root}) {
     return /** @type {HTMLInputElement} */ (this.getInput({root})).checked;

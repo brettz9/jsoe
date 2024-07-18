@@ -90,6 +90,9 @@ const arrayType = {
   regexEndings: [',', ']'],
   stringRegexBegin: /^\[/u,
   stringRegexEnd: /^\]/u,
+  valueMatch (x) {
+    return Array.isArray(x);
+  },
   toValue (s, info) {
     const {
       /* istanbul ignore next -- Just a guard */

@@ -1,4 +1,4 @@
-import {jml} from '../vendor-imports.js';
+import {jml, toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 import {visualize, getUserMedia, startScreenCapture} from '../utils/media.js';
 import dialogs from '../utils/dialogs.js';
@@ -146,6 +146,9 @@ function binaryButton (value, editable) {
 const blobType = {
   option: ['Blob'],
   stringRegex: /^Blob\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'Blob';
+  },
   toValue (s) {
     const obj = JSON.parse(s);
     return {value: new Blob([obj.stringContents], {

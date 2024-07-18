@@ -338,7 +338,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * @property {RegExp} [stringRegexEnd] Used for string parsing. If not
  *   present, use `stringRegex`
  * @property {(v: StructuredCloneValue) => boolean} [valueMatch] Function to
- *   check whether this subtype matches
+ *   check whether this type or subtype matches
  * @property {string} [superType] The greater fundamental type to which
  *   the type belongs
  * @property {ToValue} [toValue] Converts from string to value. May use

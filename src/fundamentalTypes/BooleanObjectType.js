@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e, $$e} from '../utils/templateUtils.js';
 
 /**
@@ -6,6 +7,9 @@ import {$e, $$e} from '../utils/templateUtils.js';
 const BooleanObjectType = {
   option: ['BooleanObject'],
   stringRegex: /^Boolean\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'Boolean' && typeof x === 'object';
+  },
   toValue (s) {
     return {
       // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins

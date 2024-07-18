@@ -1,4 +1,4 @@
-import {jml} from '../vendor-imports.js';
+import {jml, toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
 /**
@@ -28,6 +28,9 @@ const dateType = {
       return new RegExp('^' + '(?:InvalidDate)|' + source.slice(1), 'u');
     }
     return new RegExp(regex, 'u');
+  },
+  valueMatch (x) {
+    return toStringTag(x) === 'Date';
   },
   toValue (s) {
     return {value: new Date(s)};

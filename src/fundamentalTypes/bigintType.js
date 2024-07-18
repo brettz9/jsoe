@@ -14,6 +14,9 @@ const bigintType = {
       '$', // No trailing content.
     'u'
   ),
+  valueMatch (x) {
+    return typeof x === 'bigint';
+  },
   toValue (s) {
     return {value: BigInt(s.slice(0, -1))};
   },

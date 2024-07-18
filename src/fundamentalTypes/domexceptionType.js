@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
 let domExceptionNameId = 0;
@@ -8,6 +9,9 @@ let domExceptionNameId = 0;
 const domexceptionType = {
   option: ['DOMException'],
   stringRegex: /^DOMException\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'DOMException';
+  },
   toValue (s) {
     const {message, name} = JSON.parse(s);
     return {value: new DOMException(message, name)};

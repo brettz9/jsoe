@@ -20,7 +20,7 @@ const blobHTMLType = {
   // Todo (low): Support other content-types
   option: ['Blob (text/html)'],
   stringRegex: /^data:text\/html(?:;base64)?,.*$/u,
-  valueMatch: (v) => v.type === 'text/html',
+  valueMatch: (v) => v && v.type === 'text/html',
   superType: 'blob',
   toValue (s) {
     // Todo (low): `Blob` untested; use https://stackoverflow.com/a/30407840/271577 ?
