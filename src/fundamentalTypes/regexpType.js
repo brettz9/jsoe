@@ -1,4 +1,4 @@
-import {jml} from '../vendor-imports.js';
+import {jml, toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
 /**
@@ -13,6 +13,9 @@ const regexpType = {
     }]{0,${
       this.allowedFlags.length
     }})$`, 'u');
+  },
+  valueMatch (x) {
+    return toStringTag(x) === 'RegExp';
   },
   toValue (s) {
     /* istanbul ignore if */

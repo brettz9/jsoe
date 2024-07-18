@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import arrayType from './arrayType.js';
 
 /**
@@ -10,6 +11,9 @@ const setType = {
   regexEndings: [',', ')'],
   stringRegexBegin: /^Set\(/u,
   stringRegexEnd: /^\)/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'Set';
+  },
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
       arrayType.toValue

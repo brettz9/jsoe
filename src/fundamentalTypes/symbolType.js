@@ -7,6 +7,9 @@ const symbolType = {
   option: ['Symbol'],
   stringRegex: /^(?<symbolClassType>Symbol|Symbol.for)\("(?<innerContent>[^\\"]|\\\\|\\")*"\)$/u,
   ct: 0,
+  valueMatch (x) {
+    return typeof x === 'symbol';
+  },
   toValue (s, rootInfo) {
     const {groups: {
       symbolClassType

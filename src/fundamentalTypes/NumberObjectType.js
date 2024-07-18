@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 import numberType from './numberType.js';
 
@@ -7,6 +8,9 @@ import numberType from './numberType.js';
 const NumberObjectType = {
   option: ['NumberObject'],
   stringRegex: /^Number\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'Number' && typeof x === 'object';
+  },
   toValue (s) {
     // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins
     return {value: new Number(s)};

@@ -510,6 +510,7 @@ const structuredCloning = {
       ...jsonTypes,
       'undef', // Explicit undefined only
       'bigint',
+      'bigintObject',
       'SpecialNumber', // '`NaN`, `Infinity`, `-Infinity`, `-0`
       'date',
       'regexp',

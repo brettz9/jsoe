@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const nanType = {
   option: ['NaN'],
   stringRegex: /^NaN$/u,
+  valueMatch (x) {
+    return Number.isNaN(x);
+  },
   toValue: () => ({value: Number.NaN}),
   getValue: () => Number.NaN,
   viewUI () {

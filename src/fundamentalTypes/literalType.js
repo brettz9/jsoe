@@ -10,6 +10,10 @@ import stringType from './stringType.js';
 const literalType = {
   option: ['Literal'],
   stringRegex: /^Literal\((.*)\)$/u,
+  valueMatch (x) {
+    return typeof x === 'boolean' || typeof x === 'number' ||
+      typeof x === 'string';
+  },
   // Todo: Fix all the following methods up to `editUI` to work with children
   toValue (s) {
     return {value: s.slice(8, -1)};

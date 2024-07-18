@@ -1,4 +1,4 @@
-import {jml} from '../vendor-imports.js';
+import {jml, toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 import {visualize, getUserMedia, startScreenCapture} from '../utils/media.js';
 import dialogs from '../utils/dialogs.js';
@@ -168,6 +168,9 @@ function binaryButton (value, editable) {
 const fileType = {
   option: ['File'],
   stringRegex: /^File\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'File';
+  },
   toValue (s) {
     const obj = JSON.parse(s);
     return {value: new File([obj.stringContents], obj.name, {

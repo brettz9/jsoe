@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const neverType = {
   stringRegex: /^never$/u,
   option: ['Never'],
+  valueMatch () {
+    return false;
+  },
   toValue (/* _s */) {
     throw new Error('Cannot convert to value');
   },

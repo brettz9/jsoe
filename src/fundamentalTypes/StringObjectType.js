@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
 /**
@@ -5,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
  */
 const StringObjectType = {
   stringRegex: /^String\(([^)]*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'String' && typeof x === 'object';
+  },
   toValue (s) {
     /* eslint-disable no-new-wrappers, unicorn/new-for-builtins */
     return {value: new String(s)};

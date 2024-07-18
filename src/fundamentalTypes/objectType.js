@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import arrayType from './arrayType.js';
 
 /**
@@ -8,6 +9,11 @@ const objectType = {
   regexEndings: [',', '}'],
   stringRegexBegin: /^\{/u,
   stringRegexEnd: /^\}/u,
+  valueMatch (x) {
+    return x && typeof x === 'object' &&
+      // Exclude other special object types
+      toStringTag(x) === 'Object';
+  },
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
       arrayType.toValue

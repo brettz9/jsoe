@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const stringType = {
   option: ['String'],
   stringRegex: /^"(?:[^\\"]|\\\\|\\")*"$/u,
+  valueMatch (x) {
+    return typeof x === 'string';
+  },
   toValue (s) {
     return {value: s.slice(1, -1)};
   },

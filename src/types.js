@@ -18,6 +18,7 @@ import blobHTMLType from './subTypes/blobHTMLType.js';
 import booleanType from './fundamentalTypes/booleanType.js';
 import numberType from './fundamentalTypes/numberType.js';
 import bigintType from './fundamentalTypes/bigintType.js';
+import bigintObjectType from './fundamentalTypes/bigintObjectType.js';
 import stringType from './fundamentalTypes/stringType.js';
 import arrayReferenceType from './fundamentalTypes/arrayReferenceType.js';
 import objectReferenceType from './fundamentalTypes/objectReferenceType.js';
@@ -405,7 +406,8 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
- * @typedef {"null"|"true"|"false"|"number"|"bigint"|"string"|"arrayReference"|
+ * @typedef {"null"|"true"|"false"|"number"|"bigint"|"bigintObject"|
+ *   "string"|"arrayReference"|
  *   "objectReference"|"array"|"object"|"date"|"userObject"|"undef"|
  *   "SpecialRealNumber"|"SpecialNumber"|"regexp"|"BooleanObject"|
  *   "NumberObject"|"StringObject"|"map"|"set"|"file"|"filelist"|"blobHTML"|
@@ -452,6 +454,7 @@ class Types {
       boolean: booleanType, // Schema type
       number: numberType,
       bigint: bigintType,
+      bigintObject: bigintObjectType,
       string: stringType,
       arrayReference: arrayReferenceType,
       objectReference: objectReferenceType,

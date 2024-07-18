@@ -10,6 +10,9 @@ const tupleType = {
   stringRegexBegin: /^Tuple\[/u,
   stringRegexEnd: /^\]/u,
   tuple: true,
+  valueMatch (x) {
+    return Array.isArray(x);
+  },
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
       arrayType.toValue

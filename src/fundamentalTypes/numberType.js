@@ -17,6 +17,13 @@ const numberType = {
       '$', // No trailing content.
     'u'
   ),
+  valueMatch (x) {
+    return typeof x === 'number' &&
+      // Avoid special numbers:
+      !Number.isNaN(x) &&
+      x !== Number.POSITIVE_INFINITY && x !== Number.NEGATIVE_INFINITY &&
+      !Object.is(x, -0);
+  },
   toValue (s) {
     return {value: Number(s)};
   },

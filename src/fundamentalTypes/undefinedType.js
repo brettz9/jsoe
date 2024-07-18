@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const undefinedType = {
   stringRegex: /^undefined$/u,
   option: ['Explicit undefined'], // Explicit undefined only
+  valueMatch (x) {
+    return x === undefined;
+  },
   toValue (/* _s */) {
     return {value: undefined};
   },

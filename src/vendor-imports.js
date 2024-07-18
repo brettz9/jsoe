@@ -3,6 +3,6 @@ export {jml, body, nbsp, $} from 'jamilih';
 
 export {
   getJSONType, Typeson, unescapeKeyPathComponent, structuredCloningThrowing,
-  resurrectable, toStringTag
+  resurrectable, toStringTag, hasConstructorOf
 } from 'typeson-registry';
 // } from '../node_modules/typeson-registry/dist/index.js';

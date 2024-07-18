@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 import {copyObject} from '../utils/objects.js';
 
@@ -7,6 +8,16 @@ import {copyObject} from '../utils/objects.js';
 const nativeEnumType = {
   option: ['Native enum'],
   stringRegex: /^nativeEnum\((.*)\)$/u,
+  valueMatch (x) { // Like `object` type, can also match
+    return x && typeof x === 'object' &&
+      // Exclude other special object types
+      toStringTag(x) === 'Object' &&
+      // Check it is specifically like a native enum
+      Object.entries(x).every(([key, val]) => {
+        return ((/^\d+$/u).test(key) && typeof val === 'string') ||
+          ['number', 'string'].includes(typeof val);
+      });
+  },
   // Todo: Fix all the following methods up to `editUI` to work with children
   toValue (s) {
     return {value: s.slice(8, -1)};

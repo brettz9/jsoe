@@ -4,9 +4,11 @@ import commonjs from '@rollup/plugin-commonjs';
 // import babel from 'rollup-plugin-babel';
 // import {terser} from 'rollup-plugin-terser';
 import istanbul from 'rollup-plugin-istanbul';
+import noOp from 'rollup-plugin-no-op';
 
 export default [{
   input: 'src/index.js',
+  external: ['react'], // Todo: remove when removed from Zodex
   output: {
     file: 'dist/index.js',
     format: 'es'
@@ -22,6 +24,7 @@ export default [{
     format: 'es'
   },
   plugins: [
+    noOp({ids: ['react']}), // todo: remove when Zodex may remove dep.
     istanbul(),
     nodeResolve(),
     commonjs()
@@ -33,6 +36,7 @@ export default [{
     format: 'es'
   },
   plugins: [
+    noOp({ids: ['react']}), // todo: remove when Zodex may remove dep.
     istanbul(),
     nodeResolve(),
     commonjs()

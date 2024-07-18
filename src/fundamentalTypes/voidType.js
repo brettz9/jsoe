@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const voidType = {
   stringRegex: /^void$/u,
   option: ['Void'],
+  valueMatch (x) {
+    return x === undefined;
+  },
   toValue (/* _s */) {
     return {value: undefined};
   },

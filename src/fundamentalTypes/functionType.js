@@ -8,6 +8,9 @@ const functionType = {
   option: ['function'],
   stringRegex: /^function\((.*)\): (.*)$/u,
   // Todo: Fix all the following methods up to `editUI` to work with children
+  valueMatch (x) {
+    return typeof x === 'function';
+  },
   toValue (s) {
     return {value: s.slice(8, -1)};
   },

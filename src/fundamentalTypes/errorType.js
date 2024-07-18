@@ -1,6 +1,6 @@
 import {error as errorTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
-import {jml} from '../vendor-imports.js';
+import {jml, toStringTag} from '../vendor-imports.js';
 
 /**
  * @type {import('../types.js').TypeObject}
@@ -8,6 +8,9 @@ import {jml} from '../vendor-imports.js';
 const errorType = {
   option: ['Error'],
   stringRegex: /^Error\((.*)\)$/u,
+  valueMatch (x) {
+    return toStringTag(x) === 'Error';
+  },
   toValue (s) {
     const obj = JSON.parse(s);
     const errObj = /** @type {{revive: import('typeson-registry').Reviver}} */ (

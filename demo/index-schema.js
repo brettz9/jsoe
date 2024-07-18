@@ -456,6 +456,16 @@ const schemaInstanceJSON = {
         }
       ],
       inner: {type: 'any'}
+    },
+    {
+      type: 'effect',
+      effects: [
+        {
+          name: 'bigintObject',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
     }
 
     // Test: editing, including fixing aggregate errors and aggregate error

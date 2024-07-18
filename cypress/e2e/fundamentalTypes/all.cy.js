@@ -6,6 +6,7 @@
 // import './undefined.cy.js';
 // import './number.cy.js';
 // import './bigint.cy.js';
+// import './bigintObject.cy.js';
 // import './date.cy.js';
 // import './string.cy.js';
 // import './regexp.cy.js';

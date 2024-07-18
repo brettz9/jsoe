@@ -14,6 +14,9 @@ const sparseUndefinedType = {
       ]
     }
   },
+  valueMatch (x) {
+    return x === undefined;
+  },
   toValue (/* _s */) {
     return {value: undefined};
   },

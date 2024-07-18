@@ -138,7 +138,8 @@ video.recordedMedia {
 }
 
 [data-type="map"], [data-type="set"],
-[data-type="bigint"], [data-type="never"], [data-type="domexception"],
+[data-type="bigint"], [data-type="bigintObject"],
+[data-type="never"], [data-type="domexception"],
 [data-type="resurrectable"], /* i.e., `noneditable` */
 [data-type="domrect"], [data-type="dompoint"],
 [data-type="dommatrix"],

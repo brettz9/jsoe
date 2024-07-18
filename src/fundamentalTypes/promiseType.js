@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
 /**
@@ -7,6 +8,9 @@ const promiseType = {
   option: ['Promise'],
   stringRegex: /^Promise\((.*)\)$/u,
   // Todo: Fix all the following methods up to `editUI` to work with children
+  valueMatch (x) {
+    return toStringTag(x) === 'Promise';
+  },
   toValue (s) {
     return {value: s.slice(8, -1)};
   },

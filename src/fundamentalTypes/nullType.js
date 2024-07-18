@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const nullType = {
   option: ['Null'],
   stringRegex: /^null$/u,
+  valueMatch (x) {
+    return x === null;
+  },
   toValue: () => ({value: null}),
   getValue: () => null,
   viewUI () {

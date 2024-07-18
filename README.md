@@ -30,6 +30,7 @@ Supported types include:
 - Array reference (for cyclic arrays)
 - Array
 - `BigInt`
+- `bigintObject`
 - `Blob`
 - `Boolean` object
 - `Date`
@@ -113,8 +114,7 @@ Supported supertypes include:
                 1. See <https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#webapi_types>
     1. Already in typeson-registry
         1. Structured Cloning
-            1. (JavaScript types already complete except for)
-                1. bigintObject
+            1. (JavaScript types already complete)
             1. Web/API types
                 1. imagedata, imagebitmap
                 1. cryptokey

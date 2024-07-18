@@ -1,3 +1,4 @@
+import {toStringTag} from '../vendor-imports.js';
 import arrayType from './arrayType.js';
 
 /**
@@ -10,6 +11,11 @@ const recordType = {
   stringRegexEnd: /^\}/u,
   array: true,
   record: true,
+  valueMatch (x) { // Like `object` type, can also match
+    return x && typeof x === 'object' &&
+      // Exclude other special object types
+      toStringTag(x) === 'Object';
+  },
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
       arrayType.toValue
