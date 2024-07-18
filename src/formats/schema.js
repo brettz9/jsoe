@@ -1,7 +1,60 @@
+// import {z} from 'zod';
+import {dezerialize} from 'zodex';
+
 import structuredCloning from './structuredCloning.js';
 
 import {resolveJSONPointer} from '../utils/jsonPointer.js';
 import {copyObject} from '../utils/objects.js';
+
+/* eslint-disable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/147 */
+/**
+ * @typedef {T[keyof T]} ValueOf<T>
+ * @template T
+ */
+/* eslint-enable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/147 */
+
+/**
+ * @typedef {ValueOf<
+*   Pick<import('zodex').SzType, "type">
+* >} AvailableZodexType
+*/
+
+/** @type {Map<AvailableZodexType, import('../types.js').AvailableType>} */
+const zodexToStructuredCloningTypeMap = new Map([
+  ['boolean', 'boolean'],
+  ['number', 'number'],
+  ['nan', 'nan'],
+  ['bigInt', 'bigint'],
+  ['string', 'string'],
+  ['date', 'date'],
+  ['undefined', 'undef'],
+  ['void', 'void'],
+  ['null', 'null'],
+
+  // ['array', 'array'],
+  ['array', 'arrayNonindexKeys'],
+
+  ['object', 'object'],
+  ['enum', 'enum'],
+  ['literal', 'literal'],
+
+  ['tuple', 'tuple'],
+  ['record', 'record'],
+  ['map', 'map'],
+  ['set', 'set'],
+
+  ['symbol', 'symbol'],
+
+  ['never', 'never'],
+
+  // Todo: Allow non-cloning version to return these too, but filter out
+  //         otherwise
+  ['function', 'function'],
+  ['promise', 'promise'],
+
+  ['catch', 'catch'],
+  ['nativeEnum', 'nativeEnum']
+]);
 
 /**
  * @typedef {import('zodex').SzType} ZodexSchema
@@ -185,7 +238,7 @@ function getTypesForSchema (schemaObject, originalJSON) {
     addModifiers(schemaObject, set);
     return new Set(set);
   } case 'any': case 'unknown':
-    // @ts-expect-error Remove after Zodex update allows `nativeEnum`
+    // @ts-expect-error Problem with `nativeEnum` type
     return new Set([
       {
         type: 'boolean'
@@ -220,6 +273,9 @@ function getTypesForSchema (schemaObject, originalJSON) {
       {
         type: 'date'
       },
+      // {
+      //   type: 'void'
+      // },
       {
         type: 'undefined'
       },
@@ -517,8 +573,23 @@ const schema = {
 
   convertFromTypeson (typesonType, v, schemaContent) {
     console.log('v, schemaContent', v, schemaContent);
-    if (schemaContent) {
-
+    if (!schemaContent) {
+      return typesonType;
+    }
+    const schemaObjects = [...getTypesForSchema(
+      /** @type {import('zodex').SzType} */ (schemaContent),
+      /** @type {import('zodex').SzType} */ (schemaContent)
+    )];
+    for (const schema of schemaObjects) {
+      const dezSchema = dezerialize(schema);
+      const parsed = dezSchema.safeParse(v);
+      console.log('parsed', parsed, schema);
+      if (parsed.success) {
+        if (schemaContent.type === 'any') {
+          // Add to parentheses
+        }
+        return zodexToStructuredCloningTypeMap.get(schema.type);
+      }
     }
     return typesonType;
   },
@@ -537,61 +608,10 @@ const schema = {
       /** @type {import('zodex').SzType} */ (schemaOriginal) ?? schemaObject
     )];
 
-    /* eslint-disable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/147 */
-    /**
-     * @typedef {T[keyof T]} ValueOf<T>
-     * @template T
-     */
-    /* eslint-enable jsdoc/valid-types -- https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/147 */
-
-    /**
-     * @typedef {ValueOf<
-     *   Pick<import('zodex').SzType, "type">
-     * >} AvailableZodexType
-     */
-
     // Note: Zod does not support array/object references
 
     // Todo: implement schema restrictions like tuple on array, record on object
     // Todo: Fix `iterate` for schemas (e.g., inject a value method in demo)
-
-    /** @type {Map<AvailableZodexType, import('../types.js').AvailableType>} */
-    // @ts-expect-error Remove after Zodex update allows `catch`, etc.
-    const zodexToStructuredCloningTypeMap = new Map([
-      ['boolean', 'boolean'],
-      ['number', 'number'],
-      ['nan', 'nan'],
-      ['bigInt', 'bigint'],
-      ['string', 'string'],
-      ['date', 'date'],
-      ['undefined', 'undef'],
-      ['void', 'void'],
-      ['null', 'null'],
-
-      // ['array', 'array'],
-      ['array', 'arrayNonindexKeys'],
-
-      ['object', 'object'],
-      ['enum', 'enum'],
-      ['literal', 'literal'],
-
-      ['tuple', 'tuple'],
-      ['record', 'record'],
-      ['map', 'map'],
-      ['set', 'set'],
-
-      ['symbol', 'symbol'],
-
-      ['never', 'never'],
-
-      // Todo: Allow non-cloning version to return these too, but filter out
-      //         otherwise
-      ['function', 'function'],
-      ['promise', 'promise'],
-
-      ['catch', 'catch'],
-      ['nativeEnum', 'nativeEnum']
-    ]);
 
     /** @type {AvailableZodexType[]} */
     const typeArray = schemaObjects.map(({type}) => {

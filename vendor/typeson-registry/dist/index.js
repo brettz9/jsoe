@@ -185,6 +185,11 @@ const bigint = {
  * @param {ArrayBuffer} buf
  * @returns {string}
  */
+function arraybuffer2string (buf) {
+    return new Uint8Array(buf).reduce(
+        (s, byte) => s + String.fromCodePoint(byte), ''
+    );
+}
 
 /**
  *
@@ -247,7 +252,7 @@ function string2arraybuffer (str) {
     return array.buffer;
 }
 
-/* globals XMLHttpRequest, Blob, FileReader */
+/* globals XMLHttpRequest, FileReader */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -289,7 +294,9 @@ const blob = {
                 reader.addEventListener('load', () => {
                     resolve({
                         type: b.type,
-                        stringContents: reader.result
+                        stringContents: arraybuffer2string(
+                            /** @type {ArrayBuffer} */ (reader.result)
+                        )
                     });
                 });
                 // Seems not feasible to accurately simulate
@@ -297,13 +304,13 @@ const blob = {
                 reader.addEventListener('error', () => {
                     reject(reader.error);
                 });
-                reader.readAsBinaryString(b);
+                // eslint-disable-next-line @stylistic/max-len -- Long
+                // eslint-disable-next-line unicorn/prefer-blob-reading-methods -- Too new?
+                reader.readAsArrayBuffer(b);
             });
         }
     }
 };
-
-// The `performance` global is optional
 
 /**
  * @todo We could use `import generateUUID from 'uuid/v4';` (but it needs
@@ -314,13 +321,7 @@ const blob = {
  */
 function generateUUID () { //  Adapted from original: public domain/MIT: http://stackoverflow.com/a/8809472/271577
     /* c8 ignore next */
-    let d = Date.now() +
-        // use high-precision timer if available
-        /* c8 ignore next 4 */
-        (typeof performance !== 'undefined' &&
-            typeof performance.now === 'function'
-            ? performance.now()
-            : 0);
+    let d = Date.now();
 
     // eslint-disable-next-line @stylistic/max-len -- Long
     // eslint-disable-next-line no-use-extend-native/no-use-extend-native -- Need to update plugin
@@ -364,8 +365,6 @@ const cloneable = {
         }
     }
 };
-
-/* globals crypto */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -811,7 +810,7 @@ function create$2 (Ctor) {
     };
 }
 
-/* globals XMLHttpRequest, File, FileReader */
+/* globals XMLHttpRequest, FileReader */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -855,7 +854,9 @@ const file = {
                 reader.addEventListener('load', function () {
                     resolve({
                         type: f.type,
-                        stringContents: reader.result,
+                        stringContents: arraybuffer2string(
+                            /** @type {ArrayBuffer} */ (reader.result)
+                        ),
                         name: f.name,
                         lastModified: f.lastModified
                     });
@@ -865,7 +866,9 @@ const file = {
                 reader.addEventListener('error', function () {
                     reject(reader.error);
                 });
-                reader.readAsBinaryString(f);
+                // eslint-disable-next-line @stylistic/max-len -- Long
+                // eslint-disable-next-line unicorn/prefer-blob-reading-methods -- Too new?
+                reader.readAsArrayBuffer(f);
             });
         }
     }

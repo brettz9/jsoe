@@ -29,10 +29,7 @@ const nativeEnumType = {
   }) {
     // We want to allow overriding its descriptions
     const specificSchemaObj = copyObject(specificSchemaObject);
-    // @ts-expect-error Remove when Zodex updated to support
-    const nativeEnumValues = /** @type {import('zodex').SzNativeEnum} */ (
-      specificSchemaObj
-    )?.values ?? {
+    const nativeEnumValues = specificSchemaObj?.values ?? {
       type: 'union',
       options: [
         {

@@ -28,7 +28,8 @@ const voidType = {
         ['input', {
           type: 'checkbox',
           name: `${typeNamespace}-void`,
-          checked: true
+          checked: true,
+          disabled: true
         }]
       ]]
     ]];

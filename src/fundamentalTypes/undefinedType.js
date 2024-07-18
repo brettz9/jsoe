@@ -28,6 +28,7 @@ const undefinedType = {
         ['input', {
           type: 'checkbox',
           name: `${typeNamespace}-undef`,
+          disabled: true,
           checked: true
         }]
       ]]

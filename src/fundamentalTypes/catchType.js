@@ -27,7 +27,6 @@ const catchType = {
     topRoot, schemaContent, typeNamespace
   }) {
     const schemaName =
-      // @ts-expect-error Waiting for Zodex update
       /** @type {import('zodex').SzCatch} */ (
         specificSchemaObject
       )?.name;
@@ -55,7 +54,6 @@ const catchType = {
             format
           ),
           schemaOriginal: schemaContent,
-          // @ts-expect-error Waiting for Zodex update
           schemaContent: /** @type {import('zodex').SzCatch} */ (
             specificSchemaObject
           )?.innerType ?? {type: 'any'},
