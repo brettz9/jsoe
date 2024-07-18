@@ -27,7 +27,7 @@ const indexedDBKey = {
     }
   },
   convertFromTypeson (typesonType) {
-    return typesonToIndexedDBKey.get(typesonType);
+    return {type: typesonToIndexedDBKey.get(typesonType)};
   },
   iterate (records, stateObj) {
     stateObj.format = 'indexedDBKey';

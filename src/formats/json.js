@@ -26,7 +26,7 @@ const json = {
   },
   // A hack until we simply pass in our own types or do own parsing
   convertFromTypeson (typesonType) {
-    return typesonToJson.get(typesonType);
+    return {type: typesonToJson.get(typesonType)};
   },
   testInvalid (newType, value) {
     switch (newType) {

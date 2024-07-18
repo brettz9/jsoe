@@ -571,10 +571,10 @@ const schema = {
     return structuredCloning.iterate(records, stateObj);
   },
 
-  convertFromTypeson (typesonType, v, schemaContent) {
-    console.log('v, schemaContent', v, schemaContent);
+  convertFromTypeson (typesonType, types, v, schemaContent) {
+    console.log('v and schemaContent', v, schemaContent);
     if (!schemaContent) {
-      return typesonType;
+      return {type: typesonType};
     }
     const schemaObjects = [...getTypesForSchema(
       /** @type {import('zodex').SzType} */ (schemaContent),
@@ -583,15 +583,40 @@ const schema = {
     for (const schema of schemaObjects) {
       const dezSchema = dezerialize(schema);
       const parsed = dezSchema.safeParse(v);
-      console.log('parsed', parsed, schema);
+      console.log('parsed', parsed.success, schema);
       if (parsed.success) {
-        if (schemaContent.type === 'any') {
-          // Add to parentheses
+        if (schemaContent.type === 'any' && schema.description) {
+          schema.description += ' (any)';
         }
-        return zodexToStructuredCloningTypeMap.get(schema.type);
+        let type = zodexToStructuredCloningTypeMap.get(schema.type);
+        if (!type && schema.type === 'effect') {
+          console.log('schema1111', schema);
+          type = /** @type {import('../types.js').AvailableType} */ (
+            schema.effects[0].name
+          );
+          console.log('type', type);
+        }
+
+        const typeObject =
+          /** @type {Required<import('../types.js').TypeObject>} */ (
+            types.getTypeObject(
+              /** @type {import('../types.js').AvailableType} */ (type)
+            )
+          );
+        if (!typeObject || !('valueMatch' in typeObject)) {
+          // effect
+          console.log('ttt', typeObject, '::', type, '::', schema.type);
+        }
+
+        if (typeObject.valueMatch(v)) {
+          return {
+            type,
+            schema
+          };
+        }
       }
     }
-    return typesonType;
+    return {type: typesonType};
   },
 
   types () {

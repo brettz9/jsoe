@@ -48,9 +48,13 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *   ) => boolean|undefined,
  *   convertFromTypeson?: (
  *     typesonType: import('./types.js').AvailableType,
- *     v?: import('./formats.js').StructuredCloneValue,
- *     schemaContent?: import('zodex').SzType|undefined
- *   ) => import('./types.js').AvailableType|undefined,
+*      types: import('./types.js').default,
+*      v?: import('./formats.js').StructuredCloneValue,
+ *     schemaContent?: import('zodex').SzType|undefined,
+ *   ) => {
+ *     type: import('./types.js').AvailableType|undefined
+ *     schema?: import('zodex').SzType|undefined
+ *   },
  *   iterate: import('./formats/structuredCloning.js').FormatIterator,
  *   getTypesAndSchemasForState: (
  *     types: import('./types.js').default,

@@ -110,18 +110,20 @@ const encapsulateObserver = (stateObj) => {
       ? 'arrayNonindexKeys'
     // ? 'sparseArrays'
       : 'array';
+
+    let schema;
     if (typeof cyclicKeypath === 'string') {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
-      newType = canonicalToAvailableType(
+      ({newType, schema} = canonicalToAvailableType(
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
         format, state, newType, value,
         stateObj.schemaContent
-      ); // Todo (low): Add accurate state for second argument
+      )); // Todo (low): Add accurate state for second argument
     } else {
       try {
-        newType = canonicalToAvailableType(
+        ({newType, schema} = canonicalToAvailableType(
           /** @type {import('../types.js').default} */ (types),
           /** @type {import('../formats.js').default} */ (formats),
           format,
@@ -132,7 +134,7 @@ const encapsulateObserver = (stateObj) => {
           (type),
           value,
           stateObj.schemaContent
-        ); // Todo (low): Add state for second argument
+        )); // Todo (low): Add state for second argument
       } catch (err) {
         console.log('err', type, err);
         stateObj.error = /** @type {Error} */ (err);
@@ -168,7 +170,7 @@ const encapsulateObserver = (stateObj) => {
         bringIntoFocus: false,
         buildTypeChoices,
         format,
-        schemaContent,
+        schemaContent: schema ?? schemaContent,
         schemaState: getPossibleSchemasForPathAndType,
         /* schema:
         &&
@@ -241,7 +243,7 @@ const encapsulateObserver = (stateObj) => {
         type: newType,
         value: newValue,
         bringIntoFocus: false,
-        schemaContent,
+        schemaContent: schema ?? schemaContent,
         schemaState: getPossibleSchemasForPathAndType
         /* schema:
           && getPossibleSchemasForPathAndType({
@@ -317,7 +319,10 @@ const replaceTypes = (originTypes, replacements) => {
  * @param {import('../formats.js').StructuredCloneValue} v
  * @param {import('zodex').SzType|undefined} schemaContent
  * @throws {Error}
- * @returns {import('../types.js').AvailableType}
+ * @returns {{
+ *   newType: import('../types.js').AvailableType,
+ *   schema?: import('zodex').SzType|undefined
+ * }}
  */
 const canonicalToAvailableType = (
   types, formats, format, state, valType, v, schemaContent
@@ -336,7 +341,6 @@ const canonicalToAvailableType = (
    * @type {import('../types.js').AvailableType|undefined}
    */
   let ret;
-  // console.log('format, state, valType, v', format, state, valType, v);
 
   /**
    * @param {string} newValType
@@ -344,13 +348,19 @@ const canonicalToAvailableType = (
    * @returns {never}
    */
   const isInvalid = (newValType) => {
-    console.log('newValType', newValType);
-    const err = new Error('Invalid');
-    /** @type {Error & {newValType: string}} */ (err).newValType = newValType;
+    const err = /** @type {Error & {newValType: string}} */ (
+      new Error('Invalid')
+    );
+    err.newValType = newValType;
     throw err;
   };
+  let schema;
   if (convertFromTypeson) {
-    const newValType = convertFromTypeson(valType, v, schemaContent);
+    let newValType;
+    ({
+      type: newValType,
+      schema
+    } = convertFromTypeson(valType, types, v, schemaContent));
     if (typeof newValType === 'string') {
       if (testInvalid && testInvalid(newValType, v)) {
         return isInvalid(newValType);
@@ -359,18 +369,17 @@ const canonicalToAvailableType = (
     }
   }
 
-  // console.log('ret', ret);
   allowableTypes.some((allowableType) => {
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    const typeObj = /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
-      types.getTypeObject(allowableType)
-    );
+    const typeObj =
+      /** @type {import('../types.js').TypeObject & {childTypes: string[]}} */ (
+        types.getTypeObject(allowableType)
+      );
     const {
       valueMatch, superType, childTypes
     } = typeObj;
     if (
       (superType && valueMatch &&
-        // Currently using for `true` and `false`
+        // Using, e.g., for `true` and `false` subtypes
         superType === valType && valueMatch(v)) ||
       (childTypes && childTypes.includes(valType))
     ) {
@@ -380,7 +389,7 @@ const canonicalToAvailableType = (
 
     return false;
   });
-  // console.log('ret2', ret);
+
   if (ret === undefined) {
     // We run this separately from the `childTypes` check above
     //    to ensure `childTypes` have priority regardless of position
@@ -395,7 +404,10 @@ const canonicalToAvailableType = (
       return isInvalid(valType);
     }
   }
-  return ret;
+  return {
+    newType: ret,
+    schema
+  };
 };
 
 /**

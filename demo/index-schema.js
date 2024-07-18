@@ -569,10 +569,11 @@ setTimeout(function () {
               keyPathNotExpectedTypeChoices.getValue(),
               {
                 readonly: true,
-                schemaContent: await getSchemaContent(
-                  keyPathNotExpectedTypeChoices.formatChoices.
-                    selectedOptions[0].dataset.schema
-                )
+                schemaContent: anySchemaJSON
+                // schemaContent: await getSchemaContent(
+                //   keyPathNotExpectedTypeChoices.formatChoices.
+                //     selectedOptions[0].dataset.schema
+                // )
               }
             );
           $('#viewUIResults').firstChild?.remove();
