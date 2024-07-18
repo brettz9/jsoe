@@ -41,30 +41,42 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  */
 
 /**
- * @typedef {{
- *   types: () => (import('./types.js').AvailableType)[],
- *   testInvalid?: (
+ * Responsible for traversing over data (along with state information) to build
+ *   and return a relevant UI element.
+ * @callback FormatIterator
+ * @param {StructuredCloneValue} records
+ * @param {import('./types.js').StateObject} stateObj
+ * @returns {Promise<Element>}
+ */
+
+/**
+ * @typedef {object} Format
+ * @property {() => (import('./types.js').AvailableType)[]} types Returns list
+ *   of types generally available to structured cloning. See
+ *   {@link getTypesAndSchemasForState} for context-dependent method.
+ * @property {FormatIterator} iterate Traverses over data to build and return
+ *   a relevant UI element.
+ * @property {(
+ *   types: import('./types.js').default,
+ *   state?: string,
+ *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|
+ *     undefined,
+ *   schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema|
+ *     undefined
+ * ) => TypesAndSchemaObjects|undefined} getTypesAndSchemasForState Gets the
+ *   specific types (and schemas) relevant to a given state.
+ * @property {(
  *     newType: string, value: Date|Array<StructuredCloneValue>
- *   ) => boolean|undefined,
- *   convertFromTypeson?: (
- *     typesonType: import('./types.js').AvailableType,
-*      types: import('./types.js').default,
-*      v?: import('./formats.js').StructuredCloneValue,
- *     schemaContent?: import('zodex').SzType|undefined,
- *   ) => {
- *     type: import('./types.js').AvailableType|undefined
- *     schema?: import('zodex').SzType|undefined
- *   },
- *   iterate: import('./formats/structuredCloning.js').FormatIterator,
- *   getTypesAndSchemasForState: (
- *     types: import('./types.js').default,
- *     state?: string,
- *     schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema|
- *       undefined,
- *     schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema|
- *       undefined
- *   ) => TypesAndSchemaObjects|undefined
- * }} Format
+ *   ) => boolean|undefined} [testInvalid]
+ * @property {(
+ *   typesonType: import('./types.js').AvailableType,
+ *   types: import('./types.js').default,
+ *   v?: import('./formats.js').StructuredCloneValue,
+ *   schemaContent?: import('zodex').SzType|undefined,
+ * ) => {
+ *   type: import('./types.js').AvailableType|undefined
+ *   schema?: import('zodex').SzType|undefined
+ * }} [convertFromTypeson]
  */
 
 /**

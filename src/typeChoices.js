@@ -71,7 +71,7 @@ import dialogs from './utils/dialogs.js';
  *   value?: import('./formats.js').StructuredCloneValue,
  *   setValue?: boolean,
  *   state?: string,
- *   arrayState?: string,
+ *   forcedState?: string,
  *   keySelectClass?: string,
  *   requireObject?: boolean,
  *   objectHasValue?: boolean,

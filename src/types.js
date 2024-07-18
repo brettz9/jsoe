@@ -372,7 +372,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   types: Types,
  *   resultType?: "keys"|"values"|"both",
  *   type?: AvailableType,
- *   arrayState?: string,
+ *   forcedState?: string,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
  *   topRoot?: HTMLDivElement
  *   schemaContent?: import('./formats/schema.js').ZodexSchema,

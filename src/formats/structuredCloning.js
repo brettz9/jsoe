@@ -20,6 +20,8 @@ import json from './json.js';
 };
 
 /**
+ * Delegates data-based UI building to method for adding child elements (a
+ *   method which is housed in the array type object).
  * @typedef {(info: {
  *   propName: string,
  *   type: import('../types.js').AvailableType,
@@ -36,6 +38,8 @@ import json from './json.js';
  */
 
 /**
+ * Obtains state-specific data and returns an observer that can build a UI based
+ *   on data it receives.
  * @param {import('../types.js').StateObject} stateObj
  * @returns {EncapsulateObserver}
  */
@@ -115,7 +119,7 @@ const encapsulateObserver = (stateObj) => {
     if (typeof cyclicKeypath === 'string') {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
-      ({newType, schema} = canonicalToAvailableType(
+      ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
         format, state, newType, value,
@@ -123,7 +127,7 @@ const encapsulateObserver = (stateObj) => {
       )); // Todo (low): Add accurate state for second argument
     } else {
       try {
-        ({newType, schema} = canonicalToAvailableType(
+        ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
           /** @type {import('../types.js').default} */ (types),
           /** @type {import('../formats.js').default} */ (formats),
           format,
@@ -300,6 +304,7 @@ const encapsulateObserver = (stateObj) => {
 };
 
 /**
+ * Performs replacements on a list of types.
  * @param {string[]} originTypes
  * @param {[originType: string, replacementType: string][]} replacements
  * @returns {void}
@@ -311,20 +316,28 @@ const replaceTypes = (originTypes, replacements) => {
 };
 
 /**
- * @param {import('../types.js').default} types
- * @param {import('../formats.js').default} formats
- * @param {import('../formats.js').AvailableFormat} format
- * @param {string} state
- * @param {import('../types.js').AvailableType} valType
- * @param {import('../formats.js').StructuredCloneValue} v
- * @param {import('zodex').SzType|undefined} schemaContent
- * @throws {Error}
+ * Converts a (typeson structured cloning) type to a type name relevant for the
+ *   format, state, value, and schema content, and may supply a child type if
+ *   there is a match. Also returns relevant schema for the type.
+ * @param {import('../types.js').default} types The Types object containing
+ *   type-specific data.
+ * @param {import('../formats.js').default} formats The Formats object
+ *   containing format-specific data.
+ * @param {import('../formats.js').AvailableFormat} format The current format.
+ * @param {string} state The current state.
+ * @param {import('../types.js').AvailableType} valType The value type being
+ *   checked.
+ * @param {import('../formats.js').StructuredCloneValue} v The value being
+ *   checked.
+ * @param {import('zodex').SzType|undefined} schemaContent The schema content
+ *   being checked.
+ * @throws {Error} May throw if data found to be invalid.
  * @returns {{
  *   newType: import('../types.js').AvailableType,
  *   schema?: import('zodex').SzType|undefined
- * }}
+ * }} Schema and type info.
  */
-const canonicalToAvailableType = (
+const canonicalTypeToAvailableTypeAndSchema = (
   types, formats, format, state, valType, v, schemaContent
 ) => {
   const frmt = formats.getAvailableFormat(format);
@@ -343,9 +356,10 @@ const canonicalToAvailableType = (
   let ret;
 
   /**
-   * @param {string} newValType
-   * @throws {Error}
-   * @returns {never}
+   * Throws an error with information about the new value type.
+   * @param {string} newValType The new value type being recorded.
+   * @throws {Error} The invalid Error being thrown.
+   * @returns {never} Always throws instead of returning.
    */
   const isInvalid = (newValType) => {
     const err = /** @type {Error & {newValType: string}} */ (
@@ -410,17 +424,9 @@ const canonicalToAvailableType = (
   };
 };
 
-/**
- * @callback FormatIterator
- * @param {import('../formats.js').StructuredCloneValue} records
- * @param {import('../types.js').StateObject} stateObj
- * @returns {Promise<Element>}
- */
-
 /** @type {import('../formats.js').Format} */
 const structuredCloning = {
   iterate (records, stateObj) {
-    // console.log('records', records);
     /* istanbul ignore if -- Just a guard */
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
@@ -477,9 +483,9 @@ const structuredCloning = {
         schemaObjects: []
       };
     }
-    // Todo: Could we implement schemas here by introducing new keys to
-    //         `Types.contexts` which could be used rather than manual
-    //         handling to determine a delimited group of children
+    // Todo: Introduce new keys (to `Types.contexts`?) which could be used to
+    //         determine a delimited group of children (rather
+    //         than manual exception handling as we do here)
     if (state === 'errorsArray') {
       return {
         types: ['error', 'errors'],
@@ -497,9 +503,14 @@ const structuredCloning = {
       schemaObjects: []
     };
     /*
-    // Todo (low): These need to specify their own inner contexts
+    // These have their children determined internally to array
     if (['map', 'set'].includes(state)) {return;}
-    if ('int8array', 'uint8array', 'uint8clampedarray',
+    */
+
+    // These have their own internal numeric children instead
+    /*
+    if (
+      'int8array', 'uint8array', 'uint8clampedarray',
       'int16array', 'uint16array', 'int32array',
       'uint32array', 'float32array', 'float64array'
     ).includes(state)) {return;}
@@ -510,6 +521,8 @@ const structuredCloning = {
     replaceTypes(jsonTypes, [
       [
         'array',
+        // We can rename to this instead of `arrayNonindexKeys` if we change
+        //  typeson-registry name
         // 'sparseArrays',
         'arrayNonindexKeys'
       ]

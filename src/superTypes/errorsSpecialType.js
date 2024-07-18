@@ -694,7 +694,7 @@ const errorsSpecialType = {
                     typeNamespace, types, buildTypeChoices, format,
                     type: 'array',
                     topRoot, bringIntoFocus,
-                    arrayState: 'errorsArray',
+                    forcedState: 'errorsArray',
                     value: []
                   });
 

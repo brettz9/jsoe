@@ -555,7 +555,7 @@ const arrayType = {
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
     formats, types, specificSchemaObject, schemaContent,
-    type, arrayState, topRoot, value, bringIntoFocus = true
+    type, forcedState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
     // eslint-disable-next-line consistent-this
@@ -1263,7 +1263,7 @@ const arrayType = {
         // schemaState,
         state: parentTypeObject.filelist
           ? 'filelistArray'
-          : arrayState ?? type,
+          : forcedState ?? type,
         // itemIndex,
         typeNamespace
       }).domArray;
