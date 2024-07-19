@@ -652,11 +652,9 @@ const schema = {
         }
         let type = zodexToStructuredCloningTypeMap.get(schema.type);
         if (!type && schema.type === 'effect') {
-          console.log('schema1111', schema);
           type = /** @type {import('../types.js').AvailableType} */ (
             schema.effects[0].name
           );
-          console.log('type', type);
         }
 
         const typeObject =
@@ -665,10 +663,6 @@ const schema = {
               /** @type {import('../types.js').AvailableType} */ (type)
             )
           );
-        if (!typeObject || !('valueMatch' in typeObject)) {
-          // effect
-          console.log('ttt', typeObject, '::', type, '::', schema.type);
-        }
 
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
           return {

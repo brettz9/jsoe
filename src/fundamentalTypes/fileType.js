@@ -192,10 +192,13 @@ const fileType = {
       this.getInput({root})
     ).$value;
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     return ['div', {dataset: {type: 'file'}}, [
-      ['b', {class: 'emphasis'}, [
-        'File'
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description ? '(a File)' : undefined
+      }, [
+        specificSchemaObject?.description ?? 'File'
       ]],
       ['br'],
       ['br'],

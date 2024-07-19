@@ -68,11 +68,17 @@ const dompointType = {
     ).checked;
     return new (isReadWrite ? DOMPoint : DOMPointReadOnly)(x, y, z, w);
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     const isReadWrite = toStringTag(value) === 'DOMPoint';
-    return ['div', {dataset: {type: 'dompoint'}}, [
+    return ['div', {
+      dataset: {type: 'dompoint'},
+      title: specificSchemaObject?.description
+        ? `(a \`${(isReadWrite ? 'DOMPoint' : 'DOMPointReadOnly')}\`)`
+        : undefined
+    }, [
       ['b', {class: 'emphasis'}, [
-        isReadWrite ? 'DOMPoint' : 'DOMPointReadOnly'
+        specificSchemaObject?.description ??
+          (isReadWrite ? 'DOMPoint' : 'DOMPointReadOnly')
       ]],
       ['br'],
       ['b', ['x ']],

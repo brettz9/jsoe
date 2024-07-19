@@ -48,8 +48,13 @@ const numberType = {
     // Todo?
   },
   */
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'number'}}, [String(value)]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'number'},
+      title: specificSchemaObject?.description ?? '(a number)'
+    }, [
+      String(value)
+    ]];
   },
   editUI ({typeNamespace, specificSchemaObject, value = ''}) {
     const isLiteral = specificSchemaObject?.type === 'literal';

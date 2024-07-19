@@ -31,8 +31,13 @@ const NumberObjectType = {
   setValue ({root, value}) {
     this.getInput({root}).value = String(value);
   },
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'NumberObject'}}, [`Number(${value})`]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'NumberObject'},
+      title: specificSchemaObject?.description ?? '(a Number Object)'
+    }, [
+      specificSchemaObject ? `${value}` : `Number(${value})`
+    ]];
   },
   editUI ({typeNamespace, value}) {
     return ['div', {dataset: {type: 'NumberObject'}}, [

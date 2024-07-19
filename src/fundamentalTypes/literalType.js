@@ -14,21 +14,32 @@ const literalType = {
     return typeof x === 'boolean' || typeof x === 'number' ||
       typeof x === 'string';
   },
-  // Todo: Fix all the following methods up to `editUI` to work with children
+  // Todo: Fix all the following methods up to `setValue` to work with children
   toValue (s) {
     return {value: s.slice(8, -1)};
   },
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'input,textarea'));
   },
   setValue ({root, value}) {
     this.getInput({root}).value = value;
   },
-  getValue ({root}) {
-    return this.getInput({root}).value;
+  getValue ({root, stateObj}) {
+    const innerTypeHolder = $e(root, '[data-type]');
+    const typeObject = stateObj?.types?.getTypeObject?.(
+      /** @type {import('../types.js').AvailableType} */ (
+        innerTypeHolder?.dataset.type
+      )
+    );
+    return /** @type {import('../types.js').TypeObject} */ (
+      typeObject
+    )?.getValue({root, stateObj});
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'literal'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'literal'},
+      title: specificSchemaObject?.description ?? `(a literal ${typeof value})`
+    }, [`${value}`]];
   },
   editUI (arg) {
     const {specificSchemaObject} = arg;

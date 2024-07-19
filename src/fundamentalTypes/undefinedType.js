@@ -17,8 +17,11 @@ const undefinedType = {
       this.toValue
     )('').value;
   },
-  viewUI (/* {value} */) {
-    return ['i', {dataset: {type: 'undef'}}, ['undefined']];
+  viewUI ({specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'undef'},
+      title: specificSchemaObject?.description ?? '(an `undefined`)'
+    }, ['undefined']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {

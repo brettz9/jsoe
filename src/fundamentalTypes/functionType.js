@@ -23,8 +23,11 @@ const functionType = {
   getValue ({root}) {
     return this.getInput({root}).value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'function'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'function'},
+      title: specificSchemaObject?.description ?? '(a function)'
+    }, [value]];
   },
   editUI ({
     format, type, buildTypeChoices, specificSchemaObject,
@@ -35,7 +38,9 @@ const functionType = {
     //        specific function schema instance, and can't have a meaningful
     //        `getValue`, etc.; add to demo with tests; could also add to
     //        use with `Promise` so that could also build a meaningful
-    //        implementation
+    //        implementation; use schema to inform user of types of args,
+    //        but remember we are not reimplementing the function schema to
+    //        ask for argument types, etc.
 
     // We want to allow overriding its descriptions
     const specificSchemaObj = copyObject(specificSchemaObject);

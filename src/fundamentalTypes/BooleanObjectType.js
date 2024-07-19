@@ -31,8 +31,11 @@ const BooleanObjectType = {
     const input = inputs[value.valueOf() ? 0 : 1];
     input.checked = true;
   },
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'BooleanObject'}}, [`Boolean(${value})`]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'BooleanObject'},
+      title: specificSchemaObject?.description ?? '(a Boolean Object)'
+    }, [specificSchemaObject ? `${value}` : `Boolean(${value})`]];
   },
   ct: 0,
   editUI ({

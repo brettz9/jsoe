@@ -370,7 +370,10 @@ const arrayType = {
   },
 
   // Try to keep in sync with basic structure of `editUI`
-  viewUI ({typeNamespace, type, types, value, topRoot, resultType, format}) {
+  viewUI ({
+    typeNamespace, type, types, value, topRoot, resultType, format,
+    specificSchemaObject
+  }) {
     // const {sparse} = this;
     let itemIndex = -1;
 
@@ -391,14 +394,17 @@ const arrayType = {
       return ['legend', [
         this.array
           ? 'Item'
-          : 'Property',
-        ':',
+          : specificSchemaObject ? '' : 'Property',
+        specificSchemaObject ? '' : ':',
         nbsp.repeat(2),
         ['span', {
-          class: `propertyName-${typeNamespace}`
+          class: `propertyName-${typeNamespace}`,
+          title: specificSchemaObject ? propName : undefined
         }, [
           propName !== undefined
-            ? propName
+            ? /** @type {import('zodex').SzObject} */ (
+              specificSchemaObject
+            )?.properties[propName].description ?? propName
             // eslint-disable-next-line @stylistic/max-len -- Long
             /* istanbul ignore next -- Won't reach here as typeson will always give keypath? */
             : itemIndex
@@ -460,7 +466,9 @@ const arrayType = {
             readonly: true,
             typeNamespace, type, topRoot,
             bringIntoFocus,
-            format, schemaContent,
+            format,
+            schemaContent,
+            specificSchemaObject: schemaContent,
             value,
             hasValue: true // type === 'sparseArrays' && value
           });
@@ -511,9 +519,11 @@ const arrayType = {
         }
       }
     }), [
-      DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
-        type
-      )).replace(/s$/u, ''), nbsp.repeat(2),
+      specificSchemaObject
+        ? '—'
+        : DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
+          type
+        )).replace(/s$/u, ''), nbsp.repeat(2),
       ['button', {$on: {click (/** @type {Event} */ e) {
         e.preventDefault();
         const {target} = e;
@@ -1978,10 +1988,14 @@ const arrayType = {
             }
           }
         }), /** @type {import('jamilih').JamilihChildren} */ ([
-          ['b', [specificSchemaObject?.description ?? DOM.initialCaps(
-            /** @type {import('../types.js').AvailableType} */
-            (type)
-          ).replace(/s$/u, '')]],
+          [specificSchemaObject ? 'span' : 'b', [
+            specificSchemaObject
+              ? '—'
+              : DOM.initialCaps(
+                /** @type {import('../types.js').AvailableType} */
+                (type)
+              ).replace(/s$/u, '')
+          ]],
           nbsp.repeat(2),
           type === 'filelist'
             ? ['input', {

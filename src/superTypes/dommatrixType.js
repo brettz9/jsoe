@@ -221,11 +221,17 @@ const dommatrixType = {
       m41, m42, m43, m44
     ]);
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     const isReadWrite = toStringTag(value) === 'DOMMatrix';
     return ['div', {dataset: {type: 'dommatrix'}}, [
-      ['b', {class: 'emphasis'}, [
-        isReadWrite ? 'DOMMatrix' : 'DOMMatrixReadOnly'
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description
+          ? `(a \`${(isReadWrite ? 'DOMMatrix' : 'DOMMatrixReadOnly')}\`)`
+          : undefined
+      }, [
+        specificSchemaObject?.description ??
+          (isReadWrite ? 'DOMMatrix' : 'DOMMatrixReadOnly')
       ]],
       value.is2D
         ? ['div', [

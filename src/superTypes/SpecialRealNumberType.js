@@ -31,9 +31,17 @@ const SpecialRealNumberSuperType = {
       this
     ).getSelect({root}).value = Object.is(value, -0) ? '-0' : String(value);
   },
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'SpecialRealNumber'}}, [
-      Object.is(value, -0) ? '-0' : String(value)
+  viewUI ({value, specificSchemaObject}) {
+    const isNegativeZero = Object.is(value, -0);
+    return ['i', {
+      dataset: {type: 'SpecialRealNumber'},
+      title: specificSchemaObject?.description ?? isNegativeZero
+        ? '(negative zero)'
+        : `(${String(value)})`
+    }, [
+      isNegativeZero
+        ? '-0'
+        : String(value)
     ]];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */

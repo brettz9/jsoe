@@ -169,10 +169,13 @@ const blobType = {
       this.getInput({root})
     ).$value;
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     return ['div', {dataset: {type: 'blob'}}, [
-      ['b', {class: 'emphasis'}, [
-        'Blob'
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description ? '(a Blob)' : undefined
+      }, [
+        specificSchemaObject?.description ?? 'Blob'
       ]],
       ['br'],
       ['br'],

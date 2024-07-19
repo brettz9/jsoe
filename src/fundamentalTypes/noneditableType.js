@@ -36,15 +36,23 @@ const noneditableType = {
       valid: val !== undefined
     };
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
+    const stringTag = toStringTag(value);
     return ['div', {dataset: {type: 'resurrectable'}}, [
-      ['b', {class: 'emphasis'}, ['Non-editable']],
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description
+          ? `(a non-editable ${stringTag})`
+          : undefined
+      }, [
+        specificSchemaObject?.description ?? 'Non-editable'
+      ]],
       ['span', {
         title: 'There is no current support for editing this element\'s ' +
           'type, but its contents will be passed on transparently.'
       }, ['?']],
       ['b', ['String tag: ']],
-      toStringTag(value)
+      stringTag
     ]];
   },
   editUI ({typeNamespace, value}) {

@@ -89,12 +89,16 @@ const dateType = {
   isValueInvalid (value) {
     return value && Number.isNaN(value.getTime());
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     return !this.valid && this.isValueInvalid(value)
       ? ['i', {
-        dataset: {type: 'date'}, class: 'InvalidDate'
+        dataset: {type: 'date'}, class: 'InvalidDate',
+        title: specificSchemaObject?.description ?? '(an InvalidDate)'
       }, ['InvalidDate']]
-      : ['i', {dataset: {type: 'date'}, class: 'ValidDate'}, [
+      : ['i', {
+        dataset: {type: 'date'}, class: 'ValidDate',
+        title: specificSchemaObject?.description ?? '(a `Date`)'
+      }, [
         value.toISOString().slice(0, 10)
       ]];
   },

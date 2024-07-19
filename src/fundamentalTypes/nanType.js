@@ -11,8 +11,11 @@ const nanType = {
   },
   toValue: () => ({value: Number.NaN}),
   getValue: () => Number.NaN,
-  viewUI () {
-    return ['i', {dataset: {type: 'nan'}}, ['NaN']];
+  viewUI ({specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'nan'},
+      title: specificSchemaObject?.description ?? '(a `NaN`)'
+    }, ['NaN']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {

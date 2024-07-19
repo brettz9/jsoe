@@ -26,11 +26,14 @@ const StringObjectType = {
   setValue ({root, value}) {
     this.getInput({root}).value = value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'StringObject'}}, [
-      ['i', ['String(']],
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'StringObject'},
+      title: specificSchemaObject?.description ?? '(a String Object)'
+    }, [
+      specificSchemaObject ? '' : ['i', ['String(']],
       ['span', [value.valueOf()]],
-      ['i', [')']]
+      specificSchemaObject ? '' : ['i', [')']]
     ]];
   },
   editUI ({typeNamespace, value = ''}) {

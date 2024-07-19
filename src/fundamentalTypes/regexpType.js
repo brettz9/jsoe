@@ -64,8 +64,13 @@ const regexpType = {
     );
   },
   allowedFlags: ['g', 'i', 'm', 'u', 'y', 's', 'v'],
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'regexp'}}, [String(value)]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'regexp'},
+      title: specificSchemaObject?.description ?? '(a `RegExp`)'
+    }, [
+      String(value)
+    ]];
   },
   editUI ({typeNamespace, types, value = {source: '', flags: ''}}) {
     // Todo (low): Add RegExp syntax highlighter

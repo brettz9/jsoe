@@ -36,8 +36,11 @@ const domexceptionType = {
     ).value;
     return new DOMException(message, name);
   },
-  viewUI ({value}) {
-    return ['div', {dataset: {type: 'domexception'}}, [
+  viewUI ({value, specificSchemaObject}) {
+    return ['div', {
+      dataset: {type: 'domexception'},
+      title: specificSchemaObject?.description ?? '(a `DOMException`)'
+    }, [
       ['b', ['Message ']],
       value.message,
       ['br'],

@@ -186,6 +186,7 @@ const encapsulateObserver = (stateObj) => {
         bringIntoFocus: false,
         buildTypeChoices,
         format,
+        specificSchemaObject: schema,
         schemaContent: schema ?? schemaContent,
         value: newValue,
         hasValue: true,

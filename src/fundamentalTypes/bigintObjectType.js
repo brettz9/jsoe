@@ -42,8 +42,11 @@ const bigintObjectType = {
     // Todo?
   },
   */
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'bigintObject'}}, [`${String(value)}n`]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'bigintObject'},
+      title: specificSchemaObject?.description ?? '(a BigInt Object)'
+    }, [`${String(value)}n`]];
   },
   editUI ({typeNamespace, value = ''}) {
     return ['div', {dataset: {type: 'bigintObject'}}, [

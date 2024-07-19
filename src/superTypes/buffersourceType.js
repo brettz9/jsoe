@@ -278,12 +278,19 @@ const buffersourceType = {
       this.getInput({root})
     ).$value;
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     const stringTag = toStringTag(value);
     const buffer = stringTag === 'ArrayBuffer' ? value : value.buffer;
 
     return ['div', {dataset: {type: 'buffersource'}}, [
-      ['b', {class: 'emphasis'}, [stringTag]],
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description
+          ? `(a ${stringTag})`
+          : undefined
+      }, [
+        specificSchemaObject?.description ?? stringTag
+      ]],
       ['br'],
       ['b', ['Buffer byte length: ']],
       buffer.byteLength,

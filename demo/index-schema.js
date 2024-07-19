@@ -4,6 +4,10 @@ import {
   formatAndTypeChoices
 } from '../src/formatAndTypeChoices.js';
 
+import {
+  Types
+} from '../src/index.js';
+
 const zodexSchemaJSON = await (await fetch('./schema.zodex.json')).json();
 
 const anySchemaJSON = {
@@ -59,13 +63,19 @@ const schemaInstanceJSON = {
     {
       description: 'An undefined',
       type: 'undefined'
-    },
+    }
+  ]
+};
+
+const schemaInstanceJSON2 = {
+  type: 'union',
+  options: [
     {
       description: 'A void',
       type: 'void'
     },
     {
-      description: 'A void',
+      description: 'A null',
       type: 'null'
     },
     {
@@ -75,19 +85,19 @@ const schemaInstanceJSON = {
       defaultValue: 'def'
     },
     {
-      description: 'Boolean',
+      description: 'Literal boolean',
       type: 'literal',
       value: false
     },
     {
-      description: 'Number',
+      description: 'Literal number',
       type: 'literal',
       value: 135
     },
     {
-      description: 'String',
+      description: 'Literal string',
       type: 'literal',
-      value: 'abc'
+      value: 'abcde'
     },
     {
       description: 'An object',
@@ -100,8 +110,10 @@ const schemaInstanceJSON = {
       properties: {
         abc: {
           type: 'object',
+          description: 'Abc',
           properties: {
             def: {
+              description: 'A count',
               type: 'number'
             }
           }
@@ -290,7 +302,7 @@ const schemaInstanceJSON = {
     {
       description: 'A catch',
       type: 'catch',
-      name: 'abc',
+      value: 'abc',
       innerType: {
         type: 'string'
       }
@@ -532,6 +544,8 @@ function getSchemaContent (schema) {
     return zodexSchemaJSON;
   case 'Zodex schema instance':
     return schemaInstanceJSON;
+  case 'Zodex schema instance 2':
+    return schemaInstanceJSON2;
   case 'any schema':
     return anySchemaJSON;
   case 'unknown schema':
@@ -546,9 +560,10 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,
   typeNamespace: 'demo-keypath-not-expected',
   schemas: [
-    'Zodex schema', 'Zodex schema instance', 'any schema', 'unknown schema'
+    'Zodex schema', 'Zodex schema instance', 'Zodex schema instance 2',
+    'any schema', 'unknown schema'
   ],
-  selectedSchema: 'Zodex schema',
+  selectedSchema: 'Zodex schema instance 2',
   getSchemaContent
 });
 
@@ -634,6 +649,25 @@ setTimeout(function () {
           await keyPathNotExpectedTypeChoices.setValue(42);
         }
       }
-    }, ['Initialize with a value']]
+    }, ['Initialize with a value']],
+
+    ['h2', [
+      'Convert structured cloning string representation to value and log'
+    ]],
+    ['input', {
+      id: 'getValueForString',
+      placeholder: 'e.g., ["abc", 17]',
+      $on: {
+        change () {
+          const types = new Types();
+          const value = types.getValueForString(this.value, {
+            format: 'schema',
+            schemaObject: schemaInstanceJSON,
+            schemaOriginal: schemaInstanceJSON
+          })[0];
+          console.log(value);
+        }
+      }
+    }]
   ], body);
 }, 500);

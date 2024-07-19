@@ -31,8 +31,11 @@ const nativeEnumType = {
   getValue ({root}) {
     return this.getInput({root}).value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'nativeEnum'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'nativeEnum'},
+      title: specificSchemaObject?.description ?? '(a native enum)'
+    }, [value]];
   },
   editUI ({
     format, type, buildTypeChoices, specificSchemaObject,

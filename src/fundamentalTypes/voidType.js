@@ -17,8 +17,11 @@ const voidType = {
       this.toValue
     )('').value;
   },
-  viewUI (/* {value} */) {
-    return ['i', {dataset: {type: 'void'}}, ['void']];
+  viewUI ({specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'void'},
+      title: specificSchemaObject?.description ?? '(a `void`)'
+    }, ['void']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {

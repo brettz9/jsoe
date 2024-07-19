@@ -46,8 +46,11 @@ const symbolType = {
       : Symbol.for.bind(Symbol);
     return method(this.getInput({root}).value);
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'symbol'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'symbol'},
+      title: specificSchemaObject?.description ?? '(a Symbol)'
+    }, [value]];
   },
   editUI ({typeNamespace, value = ''}) {
     return ['div', {dataset: {type: 'symbol'}}, [

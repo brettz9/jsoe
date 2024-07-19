@@ -41,8 +41,13 @@ const bigintType = {
     // Todo?
   },
   */
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'bigint'}}, [`${String(value)}n`]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'bigint'},
+      title: specificSchemaObject?.description ?? '(a BigInt)'
+    }, [
+      `${String(value)}n`
+    ]];
   },
   editUI ({typeNamespace, value = ''}) {
     return ['div', {dataset: {type: 'bigint'}}, [

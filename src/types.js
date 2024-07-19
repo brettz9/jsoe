@@ -352,6 +352,10 @@ export const getPropertyValueFromLegend = (legend) => {
  *   format: import('./formats.js').AvailableFormat,
  *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema,
  *   types: Types
+ *   bringIntoFocus?: boolean|undefined,
+ *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
+ *   schemaContent?: import('./formats/schema.js').ZodexSchema
+ *   replaced?: any
  * }) => JamilihArray} viewUI
  * @property {(info: {
  *   value?: StructuredCloneValue,

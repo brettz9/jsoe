@@ -6,6 +6,9 @@ import {$e} from '../utils/templateUtils.js';
 const enumType = {
   option: ['Enum'],
   stringRegex: /^Enum\((?<innerContent>[^|]*)(?<choices>.*)\)$/u,
+  valueMatch (x) {
+    return typeof x === 'string';
+  },
   toValue (s) {
     return {value: s};
   },
@@ -18,8 +21,13 @@ const enumType = {
   getValue ({root}) {
     return this.getInput({root}).value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'enum'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'enum'},
+      title: specificSchemaObject?.description ?? '(an enum)'
+    }, [
+      value
+    ]];
   },
   editUI ({typeNamespace, specificSchemaObject /* , value = '' */}) {
     return ['div', {dataset: {type: 'enum'}}, [

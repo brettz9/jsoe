@@ -23,8 +23,11 @@ const stringType = {
   getValue ({root}) {
     return this.getInput({root}).value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'string'}}, [value]];
+  viewUI ({value, specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'string'},
+      title: specificSchemaObject?.description ?? '(a string)'
+    }, [value]];
   },
   editUI ({typeNamespace, specificSchemaObject, value = ''}) {
     const kind = /** @type {import('zodex').SzString} */ (

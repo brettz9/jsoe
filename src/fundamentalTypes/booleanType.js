@@ -13,8 +13,11 @@ const booleanType = {
   getValue ({root}) {
     return /** @type {HTMLInputElement} */ (this.getInput({root})).checked;
   },
-  viewUI ({value}) {
-    return ['i', {dataset: {type: 'boolean'}}, [value ? 'true' : 'false']];
+  viewUI ({value, specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'boolean'},
+      title: specificSchemaObject?.description ?? '(a boolean)'
+    }, [value ? 'true' : 'false']];
   },
   ct: 0,
   /* istanbul ignore next -- No dupe keys, array refs, or validation */

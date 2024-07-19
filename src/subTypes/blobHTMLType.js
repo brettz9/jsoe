@@ -75,11 +75,15 @@ const blobHTMLType = {
     ).sceditorInstance.val(/** @type {string} */ (result));
     // this.getInput({root}).value = result;
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     /** @type {string} */
     let val;
-    const div = jml('div', {dataset: {type: 'blobHTML'}}, [
-      'HTML: ',
+    const div = jml('div', {
+      dataset: {type: 'blobHTML'},
+      title: specificSchemaObject?.description ? 'HTML' : undefined
+    }, [
+      specificSchemaObject?.description ?? 'HTML',
+      ': ',
       ['button', {$on: {
         click () {
           dialogs.alert({message: ['div', [

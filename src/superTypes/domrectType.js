@@ -69,10 +69,18 @@ const domrectType = {
     ).checked;
     return new (isReadWrite ? DOMRect : DOMRectReadOnly)(x, y, width, height);
   },
-  viewUI ({value}) {
+  viewUI ({value, specificSchemaObject}) {
     const isReadWrite = toStringTag(value) === 'DOMRect';
     return ['div', {dataset: {type: 'domrect'}}, [
-      ['b', {class: 'emphasis'}, [isReadWrite ? 'DOMRect' : 'DOMRectReadOnly']],
+      ['b', {
+        class: 'emphasis',
+        title: specificSchemaObject?.description
+          ? `(a \`${(isReadWrite ? 'DOMRect' : 'DOMRectReadOnly')}\`)`
+          : undefined
+      }, [
+        specificSchemaObject?.description ??
+          (isReadWrite ? 'DOMRect' : 'DOMRectReadOnly')
+      ]],
       ['br'],
       ['b', ['x ']],
       value.x,

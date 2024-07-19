@@ -11,8 +11,11 @@ const nullType = {
   },
   toValue: () => ({value: null}),
   getValue: () => null,
-  viewUI () {
-    return ['i', {dataset: {type: 'null'}}, ['null']];
+  viewUI ({specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'null'},
+      title: specificSchemaObject?.description ?? '(a `null`)'
+    }, ['null']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {

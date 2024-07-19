@@ -23,8 +23,14 @@ const promiseType = {
   getValue ({root}) {
     return this.getInput({root}).value;
   },
-  viewUI ({value}) {
-    return ['span', {dataset: {type: 'promise'}}, [value]];
+  viewUI ({specificSchemaObject}) {
+    return ['span', {
+      dataset: {type: 'promise'},
+      title: specificSchemaObject?.description
+    }, [
+      // We don't know what it resolves to without awaiting it
+      'A Promise'
+    ]];
   },
   editUI ({
     format, type, buildTypeChoices, specificSchemaObject,

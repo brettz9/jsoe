@@ -288,14 +288,20 @@ const errorsSpecialType = {
     return errObj;
   },
   viewUI (
-    {value: o, types, format, typeNamespace, resultType}
+    {value: o, types, format, specificSchemaObject, typeNamespace, resultType}
   ) {
     const constructor = getConstructor(o.constructor);
     return /** @type {import('jamilih').JamilihArray} */ ([
-      'div', {dataset: {type: 'errors'}}, [
-        ['div', [['b', ['Error type: ']], ['span', [
-          constructor
-        ]]]],
+      'div', {
+        dataset: {type: 'errors'},
+        title: specificSchemaObject?.description
+          ? `(an Error ${constructor})`
+          : undefined
+      }, [
+        specificSchemaObject?.description ??
+          ['div', [['b', ['Error type: ']], ['span', [
+            constructor
+          ]]]],
         typeof o.message === 'string'
           ? ['div', [['b', ['Message: ']], ['span', [o.message]]]]
           : [],

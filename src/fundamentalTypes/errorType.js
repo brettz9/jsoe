@@ -172,11 +172,16 @@ const errorType = {
     return errObj;
   },
   viewUI (
-    {value: o, types, format}
+    {value: o, specificSchemaObject, types, format}
   ) {
     return /** @type {import('jamilih').JamilihArray} */ ([
       'div', {dataset: {type: 'error'}}, [
-        ['b', {class: 'emphasis'}, ['Error']],
+        ['b', {
+          class: 'emphasis',
+          title: specificSchemaObject?.description ? '(an Error)' : undefined
+        }, [
+          specificSchemaObject?.description ?? 'Error'
+        ]],
         typeof o.message === 'string'
           ? ['div', [['b', ['Message: ']], ['span', [o.message]]]]
           : [],

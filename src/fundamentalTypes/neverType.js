@@ -17,8 +17,11 @@ const neverType = {
       this.toValue
     )('');
   },
-  viewUI (/* {value} */) {
-    return ['i', {dataset: {type: 'never'}}, ['never']];
+  viewUI ({specificSchemaObject}) {
+    return ['i', {
+      dataset: {type: 'never'},
+      title: specificSchemaObject?.description ?? '(a `never`)'
+    }, ['never']];
   },
   /* istanbul ignore next -- No dupe keys, array refs, or validation */
   getInput ({root}) {
