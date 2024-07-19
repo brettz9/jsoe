@@ -86,7 +86,6 @@ const nativeEnumType = {
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
         schemaOriginal: schemaContent,
         schemaContent: nativeEnumValues,
-        // schemaState,
         state: type,
         // itemIndex,
         typeNamespace

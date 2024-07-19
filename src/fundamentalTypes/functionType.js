@@ -59,7 +59,6 @@ const functionType = {
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
         schemaOriginal: schemaContent,
         schemaContent: argsTuple,
-        // schemaState,
         state: type,
         // itemIndex,
         typeNamespace
@@ -78,7 +77,6 @@ const functionType = {
         schemaContent: /** @type {import('zodex').SzFunction<any, any>} */ (
           specificSchemaObj
         )?.returns ?? {type: 'any'},
-        // schemaState,
         state: type,
         // itemIndex,
         typeNamespace

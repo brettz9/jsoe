@@ -154,15 +154,6 @@ export const getPropertyValueFromLegend = (legend) => {
  */
 
 /**
- * @typedef {(
-*   keypath: string,
-*   parentPath: string,
-*   arrayOrObjectPropertyName: string,
-*   valueType: string
-* ) => StateObject} GetPossibleSchemasForPathAndType
-*/
-
-/**
 * @typedef {{
 *   typeNamespace?: string,
 *   "readonly"?: boolean,
@@ -174,7 +165,6 @@ export const getPropertyValueFromLegend = (legend) => {
 *   schema?: string,
 *   schemaParent?: import('./formats/schema.js').ZodexSchema,
 *   schemaContent?: import('./formats/schema.js').ZodexSchema,
-*   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
 *   paths?: {[currentPath: string]: {
 *     referentPath: string,
 *     expectArrayReferent: boolean
@@ -196,7 +186,6 @@ export const getPropertyValueFromLegend = (legend) => {
  *   format: import('./formats.js').AvailableFormat,
  *   schemaContent?: import('./formats/schema.js').ZodexSchema
  *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema
- *   schemaState?: GetPossibleSchemasForPathAndType,
  *   value: StructuredCloneValue,
  *   hasValue: boolean,
  *   replaced?: StructuredCloneValue,
@@ -753,14 +742,14 @@ class Types {
   /** @type {GetUIForModeAndType} */
   getUIForModeAndType ({
     readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
-    buildTypeChoices, format, schemaContent, schemaState, value, hasValue,
+    buildTypeChoices, format, schemaContent, value, hasValue,
     replaced, specificSchemaObject
   }) {
     const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
     const arg = hasValue
       ? {
         typeNamespace, type, buildTypeChoices,
-        format, schemaContent, schemaState,
+        format, schemaContent,
         resultType, topRoot, bringIntoFocus, value,
         replaced,
         specificSchemaObject,
@@ -768,7 +757,7 @@ class Types {
       }
       : {
         typeNamespace, type, buildTypeChoices,
-        format, schemaContent, schemaState,
+        format, schemaContent,
         resultType, topRoot, bringIntoFocus,
         replaced,
         specificSchemaObject,

@@ -18,18 +18,23 @@ const schemaInstanceJSON = {
   type: 'union',
   options: [
     {
+      description: 'A boolean',
       type: 'boolean'
     },
     {
+      description: 'A number',
       type: 'number'
     },
     {
+      description: 'A NaN',
       type: 'nan'
     },
     {
+      description: 'A BigInt',
       type: 'bigInt'
     },
     {
+      description: 'A string',
       type: 'string'
     },
     {
@@ -48,18 +53,23 @@ const schemaInstanceJSON = {
       kind: 'date'
     },
     {
+      description: 'A date',
       type: 'date'
     },
     {
+      description: 'An undefined',
       type: 'undefined'
     },
     {
+      description: 'A void',
       type: 'void'
     },
     {
+      description: 'A void',
       type: 'null'
     },
     {
+      description: 'An enum',
       type: 'enum',
       values: ['abc', 'def', 'ghi'],
       defaultValue: 'def'
@@ -80,6 +90,7 @@ const schemaInstanceJSON = {
       value: 'abc'
     },
     {
+      description: 'An object',
       type: 'object',
       properties: {}
     },
@@ -98,9 +109,11 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A symbol',
       type: 'symbol'
     },
     {
+      description: 'An array',
       type: 'array',
       element: {
         description: 'Cat',
@@ -108,12 +121,14 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A set',
       type: 'set',
       value: {
         type: 'string'
       }
     },
     {
+      description: 'A tuple',
       type: 'tuple',
       items: [
         {
@@ -137,6 +152,7 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A record',
       type: 'record',
       key: {
         type: 'symbol'
@@ -150,6 +166,7 @@ const schemaInstanceJSON = {
     //    catchall, record value, map key/value, promise value
     //    effect inner, catch innerType
     {
+      description: 'A never',
       type: 'never'
     },
     {
@@ -227,12 +244,14 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A Promise',
       type: 'promise',
       value: {
         type: 'number'
       }
     },
     {
+      description: 'A function',
       type: 'function',
       args: {
         type: 'tuple',
@@ -269,6 +288,7 @@ const schemaInstanceJSON = {
     },
 
     {
+      description: 'A catch',
       type: 'catch',
       name: 'abc',
       innerType: {
@@ -276,6 +296,7 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A native enum',
       type: 'nativeEnum',
       values: {
         type: 'record',
@@ -288,6 +309,7 @@ const schemaInstanceJSON = {
       }
     },
     {
+      description: 'A RegExp',
       type: 'effect',
       effects: [
         {
@@ -298,6 +320,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A Blob',
       type: 'effect',
       effects: [
         {
@@ -308,6 +331,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A Boolean object',
       type: 'effect',
       effects: [
         {
@@ -318,6 +342,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A Number object',
       type: 'effect',
       effects: [
         {
@@ -328,6 +353,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A String object',
       type: 'effect',
       effects: [
         {
@@ -338,6 +364,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A special real number',
       type: 'effect',
       effects: [
         {
@@ -348,6 +375,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A DOMException',
       type: 'effect',
       effects: [
         {
@@ -358,6 +386,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'An Error',
       type: 'effect',
       effects: [
         {
@@ -368,6 +397,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A FileList',
       type: 'effect',
       effects: [
         {
@@ -378,6 +408,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A File',
       type: 'effect',
       effects: [
         {
@@ -388,6 +419,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A Non-editable',
       type: 'effect',
       effects: [
         {
@@ -398,6 +430,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'An HTML Blob',
       type: 'effect',
       effects: [
         {
@@ -408,6 +441,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A BufferSource',
       type: 'effect',
       effects: [
         {
@@ -418,6 +452,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A DOMMatrix',
       type: 'effect',
       effects: [
         {
@@ -428,6 +463,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A DOMPoint',
       type: 'effect',
       effects: [
         {
@@ -438,6 +474,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A DOMRect',
       type: 'effect',
       effects: [
         {
@@ -448,6 +485,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'An Errors',
       type: 'effect',
       effects: [
         {
@@ -458,6 +496,7 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     },
     {
+      description: 'A BigInt object',
       type: 'effect',
       effects: [
         {
@@ -468,10 +507,10 @@ const schemaInstanceJSON = {
       inner: {type: 'any'}
     }
 
-    // Test: editing, including fixing aggregate errors and aggregate error
+    // Todo: test editing, including fixing aggregate errors and aggregate error
     //         as cause
     // Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
-    //         `getValue`, `viewUI`
+    //         `getValue`, `viewUI` (and check coverage of `valueMatch`)
 
     // Todo: If Zod starts to do circular data, support with reference types
     // Todo: If Zod starts to allow specific types for our effects, use those

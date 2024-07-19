@@ -29,7 +29,6 @@ import json from './json.js';
  *   bringIntoFocus?: boolean,
  *   setAValue?: boolean,
  *   schemaContent?: import('../formats/schema.js').ZodexSchema,
- *   schemaState?: import('../types.js').GetPossibleSchemasForPathAndType
  * }) => HTMLElement|null} AddAndSetArrayElement
  */
 
@@ -47,8 +46,7 @@ const encapsulateObserver = (stateObj) => {
   const {
     typeNamespace, readonly, format: frmt, schemaContent,
     formats,
-    types,
-    getPossibleSchemasForPathAndType
+    types
   } = stateObj;
 
   const format = /** @type {import('../formats.js').AvailableFormat} */ (frmt);
@@ -189,15 +187,6 @@ const encapsulateObserver = (stateObj) => {
         buildTypeChoices,
         format,
         schemaContent: schema ?? schemaContent,
-        schemaState: getPossibleSchemasForPathAndType,
-        /* schema:
-        &&
-        getPossibleSchemasForPathAndType({
-          keypath,
-          parentPath: '',
-          valueType: newType
-        }),
-        */
         value: newValue,
         hasValue: true,
         // Not currently in use but may be convenient for a
@@ -268,16 +257,7 @@ const encapsulateObserver = (stateObj) => {
         type: newType,
         value: newValue,
         bringIntoFocus: false,
-        schemaContent: schema ?? schemaContent,
-        schemaState: getPossibleSchemasForPathAndType
-        /* schema:
-          && getPossibleSchemasForPathAndType({
-            keypath,
-            parentPath,
-            arrayOrObjectPropertyName,
-            valueType: newType
-          })
-        */
+        schemaContent: schema ?? schemaContent
       });
 
       /* istanbul ignore if -- Guard for `null` return */

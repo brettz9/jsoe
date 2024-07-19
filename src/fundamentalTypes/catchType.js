@@ -57,7 +57,6 @@ const catchType = {
           schemaContent: /** @type {import('zodex').SzCatch} */ (
             specificSchemaObject
           )?.innerType ?? {type: 'any'},
-          // schemaState,
           state: type,
           // itemIndex,
           typeNamespace

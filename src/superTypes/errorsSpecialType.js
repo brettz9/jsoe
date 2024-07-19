@@ -378,7 +378,6 @@ const errorsSpecialType = {
                           : 'errors',
                         value: error,
                         bringIntoFocus: false
-                        // schemaContent, schemaState
                       });
                     });
                     return div;
@@ -714,7 +713,6 @@ const errorsSpecialType = {
                       value: error,
                       bringIntoFocus: false,
                       setAValue: true
-                      // schemaContent, schemaState
                     });
                   });
 

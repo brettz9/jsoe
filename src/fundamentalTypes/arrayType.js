@@ -416,14 +416,12 @@ const arrayType = {
          *   value: import('../formats.js').StructuredCloneValue,
          *   bringIntoFocus: boolean,
          *   schemaContent: import('../formats/schema.js').ZodexSchema,
-         *   schemaState:
-         *     import('../types.js').GetPossibleSchemasForPathAndType
          * }} cfg
          * @returns {Element}
          */
         $addAndSetArrayElement ({
           propName, type, value, bringIntoFocus,
-          schemaContent, schemaState
+          schemaContent
         }) {
           if (parentType === 'map') {
             const root = types.getUIForModeAndType({
@@ -431,7 +429,7 @@ const arrayType = {
               readonly: true,
               typeNamespace, type, topRoot,
               bringIntoFocus,
-              format, schemaContent, schemaState,
+              format, schemaContent,
               value,
               hasValue: true // type === 'sparseArrays' && value
             });
@@ -462,7 +460,7 @@ const arrayType = {
             readonly: true,
             typeNamespace, type, topRoot,
             bringIntoFocus,
-            format, schemaContent, schemaState,
+            format, schemaContent,
             value,
             hasValue: true // type === 'sparseArrays' && value
           });
@@ -1268,7 +1266,6 @@ const arrayType = {
                   specificSchemaObject
                 )?.properties?.[/** @type {string} */ (propName)] ??
                   fallbackSchema,
-        // schemaState,
         state: parentTypeObject.filelist
           ? 'filelistArray'
           : forcedState ?? type,
@@ -1872,7 +1869,6 @@ const arrayType = {
             /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
             $addAndSetArrayElement ({
               propName, type, value, bringIntoFocus, setAValue
-              // , schemaContent, schemaState
             }) {
               if (mapProperties) {
                 if (propName === '0') {

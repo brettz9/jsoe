@@ -43,7 +43,6 @@ const promiseType = {
         schemaContent: /** @type {import('zodex').SzPromise} */ (
           specificSchemaObject
         )?.value ?? {type: 'any'},
-        // schemaState,
         state: type,
         // itemIndex,
         typeNamespace
