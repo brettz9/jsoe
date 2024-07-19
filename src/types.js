@@ -172,6 +172,7 @@ export const getPropertyValueFromLegend = (legend) => {
 *   error?: Error,
 *   rootUI?: Element,
 *   schema?: string,
+*   schemaParent?: import('./formats/schema.js').ZodexSchema,
 *   schemaContent?: import('./formats/schema.js').ZodexSchema,
 *   getPossibleSchemasForPathAndType?: GetPossibleSchemasForPathAndType,
 *   paths?: {[currentPath: string]: {

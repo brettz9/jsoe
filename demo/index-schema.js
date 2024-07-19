@@ -509,7 +509,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   schemas: [
     'Zodex schema', 'Zodex schema instance', 'any schema', 'unknown schema'
   ],
-  selectedSchema: 'Zodex schema instance',
+  selectedSchema: 'Zodex schema',
   getSchemaContent
 });
 
@@ -560,6 +560,10 @@ setTimeout(function () {
       id: 'viewUI',
       $on: {
         async click () {
+          console.log('getting', await getSchemaContent(
+            keyPathNotExpectedTypeChoices.formatChoices.
+              selectedOptions[0].dataset.schema
+          ));
           const controls =
             // eslint-disable-next-line @stylistic/max-len -- Long
             await keyPathNotExpectedTypeChoices.formats.getControlsForFormatAndValue(
@@ -569,11 +573,11 @@ setTimeout(function () {
               keyPathNotExpectedTypeChoices.getValue(),
               {
                 readonly: true,
-                schemaContent: anySchemaJSON
-                // schemaContent: await getSchemaContent(
-                //   keyPathNotExpectedTypeChoices.formatChoices.
-                //     selectedOptions[0].dataset.schema
-                // )
+                // schemaContent: anySchemaJSON
+                schemaContent: await getSchemaContent(
+                  keyPathNotExpectedTypeChoices.formatChoices.
+                    selectedOptions[0].dataset.schema
+                )
               }
             );
           $('#viewUIResults').firstChild?.remove();

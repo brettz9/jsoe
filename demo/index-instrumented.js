@@ -420,7 +420,6 @@ setTimeout(async function () {
           new DataView(new ArrayBuffer(8), 2, 4),
           new Uint8Array(new ArrayBuffer(8), 2, 4),
           makeNoneditableType(),
-          // eslint-disable-next-line no-new-object -- Required
           new Object(123n)
         ],
         typeNamespace: 'demo-type-choices-only-initial-value'

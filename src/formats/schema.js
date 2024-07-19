@@ -571,21 +571,83 @@ const schema = {
     return structuredCloning.iterate(records, stateObj);
   },
 
-  convertFromTypeson (typesonType, types, v, schemaContent) {
-    console.log('v and schemaContent', v, schemaContent);
-    if (!schemaContent) {
+  convertFromTypeson (
+    typesonType, types, v, arrayOrObjectPropertyName, parentSchema, stateObj
+  ) {
+    if (!stateObj) {
+      throw new Error('State object expected for schema');
+    }
+    let currentSchema = stateObj.schemaContent;
+    switch (parentSchema?.type) {
+    case 'object':
+      currentSchema = /** @type {import('zodex').SzObject} */ (
+        parentSchema
+      ).properties[
+        /** @type {string} */ (arrayOrObjectPropertyName)
+      ] ??
+      /** @type {import('zodex').SzObject} */ (
+        parentSchema
+      ).catchall;
+      break;
+    case 'array':
+      currentSchema = /** @type {import('zodex').SzArray} */ (
+        parentSchema
+      ).element;
+      break;
+    case 'set':
+      currentSchema = /** @type {import('zodex').SzSet} */ (
+        parentSchema
+      ).value;
+      break;
+    case 'effect':
+      currentSchema = /** @type {import('zodex').SzEffect} */ (
+        parentSchema
+      ).inner;
+      break;
+    // eslint-disable-next-line sonarjs/no-duplicated-branches -- Maintenance
+    case 'promise':
+      currentSchema = /** @type {import('zodex').SzPromise} */ (
+        parentSchema
+      ).value;
+      break;
+    case 'tuple':
+      currentSchema = /** @type {import('zodex').SzTuple} */ (
+        parentSchema
+      ).items[Number(arrayOrObjectPropertyName)] ??
+      /** @type {import('zodex').SzTuple} */ (
+        parentSchema
+      ).rest;
+      break;
+    // Todo:
+    // 'record': key, value
+    // 'map': key, value
+    // 'function': args, returns
+    default:
+      break;
+    }
+    console.log(
+      'v and schemaContent', v, currentSchema,
+      arrayOrObjectPropertyName, parentSchema
+    );
+    if (!currentSchema) {
       return {type: typesonType};
     }
     const schemaObjects = [...getTypesForSchema(
-      /** @type {import('zodex').SzType} */ (schemaContent),
-      /** @type {import('zodex').SzType} */ (schemaContent)
+      /** @type {import('zodex').SzType} */ (currentSchema),
+      /** @type {import('zodex').SzType} */ (currentSchema)
     )];
     for (const schema of schemaObjects) {
+      if (schema.type === 'object') {
+        // We don't want to eagerly match, e.g., if there are other objects
+        //  which include the optional properties; this could cause a problem,
+        //  however, if the tested object has extra non-standard properties
+        schema.unknownKeys = 'strict';
+      }
       const dezSchema = dezerialize(schema);
       const parsed = dezSchema.safeParse(v);
       console.log('parsed', parsed.success, schema);
       if (parsed.success) {
-        if (schemaContent.type === 'any' && schema.description) {
+        if (currentSchema.type === 'any' && schema.description) {
           schema.description += ' (any)';
         }
         let type = zodexToStructuredCloningTypeMap.get(schema.type);
@@ -608,7 +670,7 @@ const schema = {
           console.log('ttt', typeObject, '::', type, '::', schema.type);
         }
 
-        if (typeObject.valueMatch(v)) {
+        if (typeObject.valueMatch && typeObject.valueMatch(v)) {
           return {
             type,
             schema

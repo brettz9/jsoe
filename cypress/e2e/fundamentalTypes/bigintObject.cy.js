@@ -60,7 +60,6 @@ describe('bigintObject spec', () => {
     );
 
     cy.get('button#logValue').click();
-    // eslint-disable-next-line no-new-object -- Required
     cy.get('@consoleLog').should('be.calledWith', new Object(12345n));
   });
 

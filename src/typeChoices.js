@@ -168,10 +168,14 @@ export const buildTypeChoices = ({
       $setStyles () {
         const {value: type} = this;
         this.dataset.type = type; // Used for styling
-        const parEl = this.parentElement;
-        if (parEl.nodeName.toLowerCase() === 'fieldset') {
-          parEl.dataset.type = type;
-          DOM.filterChildElements(parEl, 'legend').forEach((legend) => {
+        let ancestorEl = this.parentElement;
+        if (ancestorEl.nodeName.toLowerCase() !== 'fieldset') {
+          // Grandparent check added for optional items placeholder
+          ancestorEl = this.parentElement.parentElement;
+        }
+        if (ancestorEl.nodeName.toLowerCase() === 'fieldset') {
+          ancestorEl.dataset.type = type;
+          DOM.filterChildElements(ancestorEl, 'legend').forEach((legend) => {
             legend.dataset.type = type;
           });
         }

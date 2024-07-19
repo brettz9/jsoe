@@ -306,6 +306,14 @@ const arrayType = {
             '.typeContainer',
             'div[data-type]'
           ]
+        )[0] || DOM.filterChildElements(
+          /** @type {HTMLFieldSetElement} */
+          (fieldset),
+          [
+            '[class^=optionalProperties-placeholder]',
+            '.typeContainer',
+            'div[data-type]'
+          ]
         )[0]
       );
       /* istanbul ignore if -- Should err first? */

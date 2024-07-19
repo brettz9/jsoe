@@ -54,11 +54,17 @@ const encapsulateObserver = (stateObj) => {
   const format = /** @type {import('../formats.js').AvailableFormat} */ (frmt);
 
   /**
+   * Matches keypaths to the HTML UI Element.
    * @type {{[key: string]: HTMLElement & {
    *   $addAndSetArrayElement: AddAndSetArrayElement
    * }}}
    */
   const parents = {};
+
+  /**
+   * @type {{[key: string]: import('zodex').SzType|undefined}}
+   */
+  const schemaParents = {};
 
   /** @type {string[]} */
   const mapPaths = [];
@@ -115,6 +121,11 @@ const encapsulateObserver = (stateObj) => {
     // ? 'sparseArrays'
       : 'array';
 
+    const li = keypath.lastIndexOf('.');
+    const arrayOrObjectPropertyName =
+      unescapeKeyPathComponent(keypath.slice(li + 1));
+    const parentPath = li === -1 ? '' : keypath.slice(0, li);
+
     let schema;
     if (typeof cyclicKeypath === 'string') {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
@@ -123,7 +134,9 @@ const encapsulateObserver = (stateObj) => {
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
         format, state, newType, value,
-        stateObj.schemaContent
+        arrayOrObjectPropertyName,
+        schemaParents[parentPath],
+        stateObj
       )); // Todo (low): Add accurate state for second argument
     } else {
       try {
@@ -137,7 +150,9 @@ const encapsulateObserver = (stateObj) => {
            */
           (type),
           value,
-          stateObj.schemaContent
+          arrayOrObjectPropertyName,
+          schemaParents[parentPath],
+          stateObj
         )); // Todo (low): Add state for second argument
       } catch (err) {
         console.log('err', type, err);
@@ -145,11 +160,6 @@ const encapsulateObserver = (stateObj) => {
         return;
       }
     }
-
-    const li = keypath.lastIndexOf('.');
-    const arrayOrObjectPropertyName =
-      unescapeKeyPathComponent(keypath.slice(li + 1));
-    const parentPath = li === -1 ? '' : keypath.slice(0, li);
 
     const hasChildren = [
       'array', 'object', 'set', 'map',
@@ -164,6 +174,10 @@ const encapsulateObserver = (stateObj) => {
     if (mapType) {
       mapPaths.push(keypath);
     }
+
+    console.log('is', stateObj.schemaContent);
+    console.log('but could set to', schema);
+    console.log('arrayOrObjectPropertyName', arrayOrObjectPropertyName);
 
     if (!stateObj.rootUI) {
       // console.log('vvvv0', newType, newValue);
@@ -195,6 +209,10 @@ const encapsulateObserver = (stateObj) => {
       *   {$addAndSetArrayElement: AddAndSetArrayElement}}
       */ (stateObj.rootUI);
 
+      if (schema) {
+        schemaParents[''] = schema;
+      }
+
       // Since we're skipping the array elements, we need to add the
       //   map element to the array index where the array children
       //   will be found (which we do want)
@@ -207,6 +225,9 @@ const encapsulateObserver = (stateObj) => {
         });
       }
       return;
+    }
+    if (schema) {
+      schemaParents[keypath] = schema;
     }
 
     // Todo (low): If could be async, use async encapsulate method
@@ -329,7 +350,9 @@ const replaceTypes = (originTypes, replacements) => {
  *   checked.
  * @param {import('../formats.js').StructuredCloneValue} v The value being
  *   checked.
- * @param {import('zodex').SzType|undefined} schemaContent The schema content
+ * @param {string} arrayOrObjectPropertyName
+ * @param {import('zodex').SzType|undefined} parentSchema
+ * @param {import('../types.js').StateObject} stateObj The schema content
  *   being checked.
  * @throws {Error} May throw if data found to be invalid.
  * @returns {{
@@ -338,12 +361,13 @@ const replaceTypes = (originTypes, replacements) => {
  * }} Schema and type info.
  */
 const canonicalTypeToAvailableTypeAndSchema = (
-  types, formats, format, state, valType, v, schemaContent
+  types, formats, format, state, valType, v, arrayOrObjectPropertyName,
+  parentSchema, stateObj
 ) => {
   const frmt = formats.getAvailableFormat(format);
   const {getTypesAndSchemasForState, convertFromTypeson, testInvalid} = frmt;
   const allowableTypes = getTypesAndSchemasForState.call(
-    frmt, types, state, schemaContent
+    frmt, types, state, stateObj.schemaContent
   )?.types;
   /* istanbul ignore if -- Guard */
   if (!allowableTypes) {
@@ -374,12 +398,20 @@ const canonicalTypeToAvailableTypeAndSchema = (
     ({
       type: newValType,
       schema
-    } = convertFromTypeson(valType, types, v, schemaContent));
+    } = convertFromTypeson(
+      valType, types, v, arrayOrObjectPropertyName, parentSchema, stateObj
+    ));
     if (typeof newValType === 'string') {
       if (testInvalid && testInvalid(newValType, v)) {
         return isInvalid(newValType);
       }
       valType = newValType;
+      if (schema) {
+        return {
+          newType: valType,
+          schema
+        };
+      }
     }
   }
 

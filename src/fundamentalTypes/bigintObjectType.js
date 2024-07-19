@@ -19,7 +19,6 @@ const bigintObjectType = {
     return typeof x === 'object' && hasConstructorOf(x, BigInt);
   },
   toValue (s) {
-    // eslint-disable-next-line no-new-object -- Required
     return {value: new Object(BigInt(s.slice(12, -1)))};
   },
   getInput ({root}) {
@@ -36,7 +35,6 @@ const bigintObjectType = {
     };
   },
   getValue ({root}) {
-    // eslint-disable-next-line no-new-object -- Required
     return new Object(BigInt(this.getInput({root}).value));
   },
   /* schema:
