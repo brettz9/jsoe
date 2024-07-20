@@ -51,12 +51,9 @@ describe('Array reference spec', function () {
       'input[name="demo-keypath-not-expected-arrayReference"]'
     ).type('/aaa');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel +
       'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]
@@ -141,11 +138,8 @@ describe('Array reference spec', function () {
       sel + 'input[name="demo-keypath-not-expected-arrayReference"]'
     ).type('/bbb');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel + 'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]
@@ -191,12 +185,9 @@ describe('Array reference spec', function () {
       'input[name="demo-keypath-not-expected-arrayReference"]'
     ).type('/aaa');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel +
       'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]
@@ -222,12 +213,9 @@ describe('Array reference spec', function () {
       '.arrayItems select.typeChoices-demo-keypath-not-expected'
     ).select('arrayReference');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel +
       'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]
@@ -258,12 +246,9 @@ describe('Array reference spec', function () {
       'input[name="demo-keypath-not-expected-arrayReference"]'
     ).type('aaa');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel +
       'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]
@@ -293,12 +278,9 @@ describe('Array reference spec', function () {
       'input[name="demo-keypath-not-expected-arrayReference"]'
     ).type('/abc~d');
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       sel +
       'input[name="demo-keypath-not-expected-arrayReference"]'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($input) => {
       expect(/** @type {HTMLInputElement} */ (
         $input[0]

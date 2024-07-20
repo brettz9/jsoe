@@ -207,11 +207,8 @@ describe('Array spec', function () {
       'dialog[open]:not(.addRecordDialog) .submit button:nth-of-type(2)'
     ).click();
 
-    // eslint-disable-next-line promise/catch-or-return -- Cypress
     cy.get(
       'fieldset:nth-of-type(2) input.propertyName-demo-keypath-not-expected'
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
     ).then(($button) => {
       expect(/** @type {HTMLButtonElement} */ (
         $button[0]
@@ -1359,12 +1356,9 @@ describe('Array spec', function () {
         'aaa'
       );
 
-      // eslint-disable-next-line promise/catch-or-return -- Cypress
       cy.get(
         sel +
         'fieldset:nth-of-type(2) input.propertyName-demo-keypath-not-expected'
-      // eslint-disable-next-line @stylistic/max-len -- Long
-      // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
       ).then(($button) => {
         expect(/** @type {HTMLButtonElement} */ (
           $button[0]
@@ -1398,12 +1392,9 @@ describe('Array spec', function () {
         'aaa'
       );
 
-      // eslint-disable-next-line promise/catch-or-return -- Cypress
       cy.get(
         sel +
         'fieldset:nth-of-type(1) input.propertyName-demo-keypath-not-expected'
-      // eslint-disable-next-line @stylistic/max-len -- Long
-      // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
       ).then(($input) => {
         expect(/** @type {HTMLInputElement} */ (
           $input[0]
@@ -1412,12 +1403,9 @@ describe('Array spec', function () {
         );
       });
 
-      // eslint-disable-next-line promise/catch-or-return -- Cypress
       cy.get(
         sel +
         'fieldset:nth-of-type(2) input.propertyName-demo-keypath-not-expected'
-      // eslint-disable-next-line @stylistic/max-len -- Long
-      // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
       ).then(($input) => {
         expect(/** @type {HTMLInputElement} */ (
           $input[0]
@@ -1426,12 +1414,9 @@ describe('Array spec', function () {
         );
       });
 
-      // eslint-disable-next-line promise/catch-or-return -- Cypress
       cy.get(
         sel +
         'fieldset:nth-of-type(3) input.propertyName-demo-keypath-not-expected'
-      // eslint-disable-next-line @stylistic/max-len -- Long
-      // eslint-disable-next-line promise/always-return, promise/prefer-await-to-then
       ).then(($input) => {
         expect(/** @type {HTMLInputElement} */ (
           $input[0]

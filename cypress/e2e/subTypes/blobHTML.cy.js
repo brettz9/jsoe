@@ -30,8 +30,6 @@ describe('blobHTML spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
     cy.wait(1000);
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/prefer-await-to-then -- Not a real Promise
     cy.window().then((win) => {
       const textarea = /** @type {HTMLTextAreaElement} */ (
         win.document.querySelector(
@@ -58,8 +56,6 @@ describe('blobHTML spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
     cy.wait(1000);
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/prefer-await-to-then -- Not a real Promise
     cy.window().then((win) => {
       const textarea = /** @type {HTMLTextAreaElement} */ (
         win.document.querySelector(
@@ -91,8 +87,6 @@ describe('blobHTML spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
     cy.wait(1000);
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/prefer-await-to-then -- Not a real Promise
     cy.window().then((win) => {
       const textarea = /** @type {HTMLTextAreaElement} */ (
         win.document.querySelector(
@@ -119,8 +113,6 @@ describe('blobHTML spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
     cy.wait(1000);
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/prefer-await-to-then -- Not a real Promise
     cy.window().then((win) => {
       const textarea = /** @type {HTMLTextAreaElement} */ (
         win.document.querySelector(
@@ -162,8 +154,6 @@ describe('blobHTML spec', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
     cy.wait(1500);
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/prefer-await-to-then -- Not a real Promise
     cy.window().then((win) => {
       const textarea = /** @type {HTMLTextAreaElement} */ (
         win.document.querySelector(

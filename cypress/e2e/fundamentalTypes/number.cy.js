@@ -92,3 +92,34 @@ describe('number spec', () => {
     });
   });
 });
+
+describe('number spec', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'number'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '123.45'
+    );
+
+    cy.get('#viewUIResults i[data-type="number"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A number');
+    });
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="number"]').should('exist');
+    cy.get('#viewUIResults i[data-type="number"]').should('contain', '123.45');
+  });
+});
