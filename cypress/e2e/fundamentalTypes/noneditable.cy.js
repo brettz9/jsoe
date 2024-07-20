@@ -106,3 +106,34 @@ describe('Non-editable (Resurrectable) spec', () => {
     });
   });
 });
+
+describe('Non-Editable spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 3');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'resurrectable'
+    );
+    // cy.get('#initializeWithNoneditableValue').click();
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="resurrectable"]').should('exist');
+    cy.get(
+      '#viewUIResults div[data-type="resurrectable"]'
+    ).should('contain', 'Non-editable');
+
+    cy.get(
+      '#viewUIResults div[data-type="resurrectable"] > .emphasis'
+    ).then((elem) => {
+      expect(elem.attr('title')).to.equal('(a non-editable Undefined)');
+    });
+  });
+});

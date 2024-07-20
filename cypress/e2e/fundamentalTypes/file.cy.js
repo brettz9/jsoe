@@ -608,3 +608,30 @@ describe('file spec', () => {
     });
   });
 });
+
+describe('File spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'file'
+    );
+    cy.get(sel + 'input[name="demo-keypath-not-expected-file"]').selectFile(
+      'package.json'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults').should('contain', 'package.json');
+    cy.get('#viewUIResults div[data-type="file"] .emphasis').then((elem) => {
+      expect(elem.attr('title')).to.equal('(a File)');
+    });
+  });
+});

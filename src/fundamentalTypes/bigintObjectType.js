@@ -51,7 +51,7 @@ const bigintObjectType = {
   editUI ({typeNamespace, value = ''}) {
     return ['div', {dataset: {type: 'bigintObject'}}, [
       ['input', {
-        name: `${typeNamespace}-bigintObject`, type: 'number', step: 'any',
+        name: `${typeNamespace}-bigintObject`, type: 'number', step: '1',
         value
       }]
     ]];

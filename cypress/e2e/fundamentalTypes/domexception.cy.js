@@ -162,3 +162,40 @@ describe('DOMException spec', () => {
     });
   });
 });
+
+describe('DOMException spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'domexception'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domexception-name"]',
+      'someName'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-domexception-message"]',
+      'some message'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="domexception"]').should(
+      'contain', 'someName'
+    );
+    cy.get('#viewUIResults div[data-type="domexception"]').should(
+      'contain', 'some message'
+    );
+    cy.get('#viewUIResults div[data-type="domexception"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A DOMException');
+    });
+  });
+});

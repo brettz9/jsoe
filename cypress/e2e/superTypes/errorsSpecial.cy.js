@@ -536,3 +536,35 @@ describe('Special Errors spec', () => {
     });
   });
 });
+
+describe('File spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'errors'
+    );
+    cy.get(sel + '.errorType').select('TypeError');
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-errors-message"]',
+      'message1'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="errors"]').should('exist');
+    cy.get(
+      '#viewUIResults div[data-type="errors"]'
+    ).then((elem) => {
+      expect(elem.attr('title')).to.equal('(an Error TypeError)');
+    });
+  });
+});

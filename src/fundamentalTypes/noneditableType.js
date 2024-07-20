@@ -8,6 +8,9 @@ const noneditableType = {
   // Ideally, we would remove the option,
   //   but edit forms currently need a pull-down option
   option: ['Non-editable'],
+  valueMatch () {
+    return true;
+  },
   getInput ({root}) {
     return /** @type {HTMLButtonElement} */ ($e(root, 'button'));
   },

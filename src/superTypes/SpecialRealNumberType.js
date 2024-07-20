@@ -7,6 +7,10 @@ const SpecialRealNumberSuperType = {
   option: ['Special Real Number', {title: '`Infinity`, `-Infinity`, `-0`'}],
   childTypes: ['infinity', 'negativeInfinity', 'negativeZero'],
   stringRegex: /^(?:-?Infinity|-0)$/u,
+  valueMatch (x) {
+    return Object.is(x, -0) || x === Number.POSITIVE_INFINITY ||
+      x === Number.NEGATIVE_INFINITY;
+  },
   toValue (s) {
     return {
       value: s === '-0'
@@ -35,9 +39,9 @@ const SpecialRealNumberSuperType = {
     const isNegativeZero = Object.is(value, -0);
     return ['i', {
       dataset: {type: 'SpecialRealNumber'},
-      title: specificSchemaObject?.description ?? isNegativeZero
+      title: specificSchemaObject?.description ?? (isNegativeZero
         ? '(negative zero)'
-        : `(${String(value)})`
+        : `(${String(value)})`)
     }, [
       isNegativeZero
         ? '-0'

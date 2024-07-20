@@ -49,10 +49,25 @@ const bigintType = {
       `${String(value)}n`
     ]];
   },
-  editUI ({typeNamespace, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    const bigintSchemaObject = /** @type {import('zodex').SzBigInt} */ (
+      specificSchemaObject
+    );
     return ['div', {dataset: {type: 'bigint'}}, [
       ['input', {
-        name: `${typeNamespace}-bigint`, type: 'number', step: 'any', value
+        name: `${typeNamespace}-bigint`, type: 'number',
+        value: specificSchemaObject?.defaultValue ?? value,
+        min: bigintSchemaObject?.min
+          ? bigintSchemaObject?.minInclusive
+            ? bigintSchemaObject?.min
+            : String(BigInt(bigintSchemaObject?.min) + 1n)
+          : undefined,
+        max: bigintSchemaObject?.max
+          ? bigintSchemaObject?.maxInclusive
+            ? bigintSchemaObject?.max
+            : String(BigInt(bigintSchemaObject?.max) - 1n)
+          : undefined,
+        step: bigintSchemaObject?.multipleOf ?? '1'
       }]
     ]];
   }

@@ -94,3 +94,31 @@ describe('bigintObject spec', () => {
     });
   });
 });
+
+describe('bigintObject spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'bigintObject'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-bigintObject"]',
+      '12345'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="bigintObject"]').should('exist');
+    cy.get('#viewUIResults i[data-type="bigintObject"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A BigInt object');
+    });
+  });
+});

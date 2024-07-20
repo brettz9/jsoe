@@ -165,3 +165,40 @@ describe('blobHTML spec', () => {
     });
   });
 });
+
+describe('blobHTML spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 3');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'blobHTML'
+    );
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line cypress/no-unnecessary-waiting -- Waiting on sceditor
+    cy.wait(1000);
+
+    cy.window().then((win) => {
+      const textarea = /** @type {HTMLTextAreaElement} */ (
+        win.document.querySelector(
+          'textarea[name="demo-keypath-not-expected-blobHTML"]'
+        )
+      );
+      const sceinstance = win.sceditor.instance(textarea);
+      sceinstance.val('<b>test123</b>');
+    });
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults button').click();
+    cy.get('#viewUIResults div[data-type="blobHTML"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('HTML');
+    });
+  });
+});

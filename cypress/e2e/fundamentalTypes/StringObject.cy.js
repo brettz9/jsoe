@@ -96,3 +96,35 @@ describe('StringObject spec', () => {
     });
   });
 });
+
+describe('StringObject spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'StringObject'
+    );
+    cy.clearTypeAndBlur(
+      'textarea[name="demo-keypath-not-expected-StringObject"]',
+      'test123'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults span[data-type="StringObject"]').should('exist');
+    cy.get('#viewUIResults span[data-type="StringObject"]').should(
+      'contain', 'test123'
+    );
+    cy.get('#viewUIResults span[data-type="StringObject"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A String object');
+    });
+  });
+});

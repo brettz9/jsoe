@@ -27,7 +27,9 @@ const booleanType = {
   editUI ({typeNamespace, specificSchemaObject, value}) {
     this.ct++;
     const isLiteral = specificSchemaObject?.type === 'literal';
-    const val = isLiteral ? specificSchemaObject?.value : value;
+    const val = isLiteral
+      ? specificSchemaObject?.value
+      : (specificSchemaObject?.defaultValue ?? value);
     return ['div', {dataset: {type: 'boolean'}}, [
       ['label', [
         'True',

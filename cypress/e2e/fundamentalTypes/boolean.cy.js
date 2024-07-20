@@ -12,7 +12,18 @@ describe('boolean spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'
     );
-    cy.get(sel + 'input[name="demo-keypath-not-expected-boolean1"]').should(
+    cy.get(sel + 'div[data-type="boolean"] input[value="true"]').should(
+      'be.checked'
+    );
+  });
+
+  it('creates form control (with `defaultValue`)', () => {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 6');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'boolean'
+    );
+    cy.get(sel + 'div[data-type="boolean"] input[value="false"]').should(
       'be.checked'
     );
   });

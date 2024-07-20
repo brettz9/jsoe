@@ -110,6 +110,13 @@ const getTypedArray = (prop) => {
   }
 };
 
+const bufferSourceClasses = new Set([
+  'ArrayBuffer', 'DataView',
+  'Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array',
+  'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array',
+  'BigUint64Array'
+]);
+
 let idx = 0;
 
 /**
@@ -125,6 +132,9 @@ const buffersourceType = {
     'float64array', 'bigint64array', 'biguint64array'
   ],
   stringRegex: /^(?<bufferSourceClass>ArrayBuffer|DataView|(?:Int8|Uint8|Uint8Clamped|Int16|Uint16|Int32|Uint32|Float32|Float64|BigInt64|BigUint64)Array)\((?<innerContent>.*)\)$/u,
+  valueMatch (x) {
+    return bufferSourceClasses.has(toStringTag(x));
+  },
   toValue (s, rootInfo) {
     const {groups: {
       bufferSourceClass
@@ -286,7 +296,9 @@ const buffersourceType = {
       ['b', {
         class: 'emphasis',
         title: specificSchemaObject?.description
-          ? `(a ${stringTag})`
+          ? (/^[aeiou]/iu).test(stringTag)
+            ? `(an ${stringTag})`
+            : `(a ${stringTag})`
           : undefined
       }, [
         specificSchemaObject?.description ?? stringTag

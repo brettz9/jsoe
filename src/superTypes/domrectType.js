@@ -10,6 +10,9 @@ const domrectType = {
   option: ['DOMRect'],
   childTypes: ['domrectreadonly'],
   stringRegex: /^(?<domRectClass>DOMRect|DOMRectReadOnly)\((?<innerContent>.*)\)$/u,
+  valueMatch (x) {
+    return ['DOMRect', 'DOMRectReadOnly'].includes(toStringTag(x));
+  },
   toValue (s, rootInfo) {
     const {groups: {
       domRectClass
@@ -71,12 +74,16 @@ const domrectType = {
   },
   viewUI ({value, specificSchemaObject}) {
     const isReadWrite = toStringTag(value) === 'DOMRect';
-    return ['div', {dataset: {type: 'domrect'}}, [
+    return ['div', {
+      dataset: {
+        type: 'domrect'
+      },
+      title: specificSchemaObject?.description
+        ? `(a \`${(isReadWrite ? 'DOMRect' : 'DOMRectReadOnly')}\`)`
+        : undefined
+    }, [
       ['b', {
-        class: 'emphasis',
-        title: specificSchemaObject?.description
-          ? `(a \`${(isReadWrite ? 'DOMRect' : 'DOMRectReadOnly')}\`)`
-          : undefined
+        class: 'emphasis'
       }, [
         specificSchemaObject?.description ??
           (isReadWrite ? 'DOMRect' : 'DOMRectReadOnly')
@@ -102,6 +109,7 @@ const domrectType = {
     height: ''
   }}) {
     idx++;
+    const step = 'any'; // Proper step?
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'domrect'}}, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
@@ -130,6 +138,8 @@ const domrectType = {
       ['label', [
         'x: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'x',
           name: `${typeNamespace}-domrect-x`, value: value.x
         }]
@@ -138,6 +148,8 @@ const domrectType = {
       ['label', [
         'y: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'y',
           name: `${typeNamespace}-domrect-y`, value: value.y
         }]
@@ -146,6 +158,8 @@ const domrectType = {
       ['label', [
         'width: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'width',
           name: `${typeNamespace}-domrect-width`, value: value.width
         }]
@@ -154,6 +168,8 @@ const domrectType = {
       ['label', [
         'height: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'height',
           name: `${typeNamespace}-domrect-height`, value: value.height
         }]

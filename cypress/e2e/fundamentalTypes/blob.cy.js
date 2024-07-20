@@ -549,3 +549,33 @@ describe('Blob spec', () => {
     });
   });
 });
+
+describe('Blob spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('allows selection of local file and shows metadata', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'blob'
+    );
+    cy.get(sel + 'input[name="demo-keypath-not-expected-blob"]').selectFile(
+      'package.json'
+    );
+    cy.get('button#viewUI').click();
+
+    cy.get('#viewUIResults div[data-type="blob"] > b.emphasis').should(
+      'contain', 'A Blob'
+    );
+
+    cy.get('#viewUIResults div[data-type="blob"] > b.emphasis').then((elem) => {
+      expect(elem.attr('title')).to.equal('(a Blob)');
+    });
+  });
+});

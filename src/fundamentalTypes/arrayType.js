@@ -519,11 +519,16 @@ const arrayType = {
         }
       }
     }), [
-      specificSchemaObject
-        ? '—'
-        : DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
-          type
-        )).replace(/s$/u, ''), nbsp.repeat(2),
+      ['span', {
+        title: specificSchemaObject?.description
+      }, [
+        specificSchemaObject
+          ? '—'
+          : DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
+            type
+          )).replace(/s$/u, '')
+      ]],
+      nbsp.repeat(2),
       ['button', {$on: {click (/** @type {Event} */ e) {
         e.preventDefault();
         const {target} = e;
@@ -539,14 +544,25 @@ const arrayType = {
       }}}, ['-']],
       ['div', {class: 'arrayContents'}, [
         this.array
-          ? ['div', [
+          ? ['div', {
+            title: specificSchemaObject
+              ? (type === 'filelist'
+                ? '(a FileList)'
+                : type === 'set'
+                  ? '(a Set)'
+                  : type === 'map'
+                    ? '(a Map)'
+                    : '(an Array)')
+              : undefined
+          }, [
             type === 'filelist'
-              ? 'FileList length: '
+              ? (specificSchemaObject?.description ?? 'FileList') + ' length: '
               : type === 'set'
-                ? 'Set size: '
+                ? (specificSchemaObject?.description ?? 'Set') + ' size: '
                 : type === 'map'
-                  ? 'Map size: '
-                  : 'Array length: ',
+                  ? (specificSchemaObject?.description ?? 'Map') + ' size: '
+                  : (specificSchemaObject?.description ?? 'Array') +
+                    ' length: ',
             ['span', [
               (value && (type === 'set' || type === 'map')
                 ? value.size
@@ -1988,7 +2004,9 @@ const arrayType = {
             }
           }
         }), /** @type {import('jamilih').JamilihChildren} */ ([
-          [specificSchemaObject ? 'span' : 'b', [
+          [specificSchemaObject ? 'span' : 'b', {
+            title: specificSchemaObject?.description
+          }, [
             specificSchemaObject
               ? '—'
               : DOM.initialCaps(

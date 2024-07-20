@@ -368,7 +368,7 @@ setTimeout(async function () {
         format: 'structuredCloning',
         setValue: true,
         value: [
-          42, 123n, 'test123', new Date('1999-01-01'), badDate,
+          42, 123n, 'test123', new Date('1999-01-01T20:00'), badDate,
           // eslint-disable-next-line require-unicode-regexp -- Testing
           /.*?/,
           // eslint-disable-next-line @stylistic/max-len -- Long

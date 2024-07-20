@@ -103,6 +103,10 @@ Supported supertypes include:
 - Certain cyclical structures may have issues
 - `typeson-registry`'s structured cloning should throw on more objects, so
    bad data doesn't end up stored
+- Currently requires `SpecialRealNumber` for `Infinity`/`-Infinity` despite
+    Zodex number type supporting a `finite` schema property.
+- Currently doesn't support using `isNullable`; instead just use `null` with
+    a `union`.
 - Lacks support for certain Structured Cloning types. See to-dos below.
 
 ## To-dos

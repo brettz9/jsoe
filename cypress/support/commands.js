@@ -123,12 +123,13 @@ Cypress.Commands.add(
   /**
    * @param {string} sel
    * @param {string} text
-   * @returns {void}
+   * @returns {Cypress.Chainable}
    */
   (sel, text) => {
     cy.get(sel).clear();
     cy.get(sel).type(text);
     cy.get(sel).blur();
+    return cy.get(sel);
   }
 );
 

@@ -66,3 +66,28 @@ describe('undefined spec', () => {
     cy.get('@consoleLog').should('be.calledWith', undefined);
   });
 });
+
+describe('Undefined spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 4');
+
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'Explicit undefined (An undefined)'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="undef"]').should('exist');
+    cy.get('#viewUIResults i[data-type="undef"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('An undefined');
+    });
+  });
+});

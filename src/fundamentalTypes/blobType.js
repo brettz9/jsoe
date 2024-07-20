@@ -396,7 +396,7 @@ const blobType = {
         ['label', [
           'Size (in bytes) ',
           ['input', {
-            type: 'number', disabled: true, class: 'size',
+            type: 'number', step: '1', disabled: true, class: 'size',
             value: String(value.size)
           }]
         ]],

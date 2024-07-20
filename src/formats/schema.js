@@ -664,7 +664,9 @@ const schema = {
             )
           );
 
+        console.log('trying valueMatch');
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
+          console.log('matched', v, type, schema);
           return {
             type,
             schema

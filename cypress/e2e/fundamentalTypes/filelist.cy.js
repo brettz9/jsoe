@@ -152,3 +152,34 @@ describe('FileList spec', () => {
   //   ).should('be.checked');
   // });
 });
+
+describe('FileList spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'filelist'
+    );
+    cy.get(
+      sel + 'input[name="demo-keypath-not-expected-filelist"]'
+    ).selectFile([
+      'package.json', 'README.md'
+    ]);
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="filelist"]').should('exist');
+    cy.get(
+      '#viewUIResults div[data-type="filelist"] .arrayContents > div[title]'
+    ).then((elem) => {
+      expect(elem.attr('title')).to.equal('(A FileList)');
+    });
+  });
+});

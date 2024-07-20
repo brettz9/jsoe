@@ -3,7 +3,7 @@ import {$e} from '../utils/templateUtils.js';
 
 /**
  * @typedef {(
- *   legitimateInvalid?: true|undefined
+ *   legitimateInvalid?: boolean|undefined
  * ) => void} SetValidity
  */
 
@@ -20,7 +20,9 @@ import {$e} from '../utils/templateUtils.js';
 const dateType = {
   option: ['Date'],
   // ISO Date string
-  dateRegex: /^(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d{3}Z)?|(?:\+|-)\d{6}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)$/u,
+  dateRegex: /^(?:\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)$/u, // ([+-][0-2]\d:[0-5]\d|Z)
+  // eslint-disable-next-line @stylistic/max-len -- Long
+  // /^(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d{3}Z)?|(?:\+|-)\d{6}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)$/u,
   stringRegex () {
     const regex = this.dateRegex;
     if (!this.valid) {
@@ -36,7 +38,9 @@ const dateType = {
     return {value: new Date(s)};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input[type="date"]'));
+    return /** @type {HTMLInputElement} */ (
+      $e(root, 'input[type="datetime-local"]')
+    );
   },
   setValue ({root, value}) {
     const notANum = value && Number.isNaN(value.getTime());
@@ -46,9 +50,10 @@ const dateType = {
       ).$setValidity(true);
       return;
     }
+
     const dateStr = new Date(Date.parse(value)).toISOString();
     this.getInput({root}).value = dateStr.length === 24
-      ? dateStr.slice(0, 10)
+      ? dateStr.slice(0, -8)
       // eslint-disable-next-line @stylistic/max-len -- Long
       /* istanbul ignore next -- 6 digits year not reliable through `Date.parse` */
       : dateStr.slice(3, 13); // Will cut off ten/hundred thousand years
@@ -66,6 +71,7 @@ const dateType = {
         message: 'Must not be empty`'
       };
     }
+
     return {
       valid: new RegExp(this.dateRegex, 'u').test(val),
       message: 'Must match a valid date'
@@ -99,13 +105,19 @@ const dateType = {
         dataset: {type: 'date'}, class: 'ValidDate',
         title: specificSchemaObject?.description ?? '(a `Date`)'
       }, [
-        value.toISOString().slice(0, 10)
+        value.toISOString().slice(0, -8)
       ]];
   },
   // Change to default to `new Date()` when can't be `NaN`
   //   value (keys)?
-  editUI ({typeNamespace, types, value = ''}) {
-    const notANum = this.isValueInvalid(value);
+  editUI ({typeNamespace, specificSchemaObject, types, value}) {
+    const dateSchemaObject = /** @type {import('zodex').SzDate} */ (
+      specificSchemaObject
+    );
+    const val = value ?? (specificSchemaObject?.defaultValue
+      ? new Date(specificSchemaObject?.defaultValue)
+      : '');
+    const notANum = this.isValueInvalid(val);
     const invalid = this.valid
       ? ''
       : jml('div', [
@@ -145,9 +157,11 @@ const dateType = {
             },
             $on: {
               click (/* e */) {
-                /** @type {HTMLElement & {$setValidity: SetValidity}} */ (
+                /** @type {HTMLInputElement & {$setValidity: SetValidity}} */ (
                   this
-                ).$setValidity();
+                ).$setValidity(/** @type {HTMLInputElement} */ (
+                  this
+                ).checked);
               }
             }
           }]
@@ -160,9 +174,17 @@ const dateType = {
         'Date: ',
         ['input', {
           name: `${typeNamespace}-date`,
-          type: 'date',
+          type: 'datetime-local',
           // Required yyyy-MM-dd format
-          value: !value || notANum ? '' : value.toISOString().slice(0, 10)
+          value: !val || notANum
+            ? ''
+            : val.toISOString().slice(0, -8),
+          min: dateSchemaObject?.min
+            ? new Date(dateSchemaObject.min).toISOString().slice(0, -8)
+            : undefined,
+          max: dateSchemaObject?.max
+            ? new Date(dateSchemaObject.max).toISOString().slice(0, -8)
+            : undefined
         }]
       ]],
       invalid

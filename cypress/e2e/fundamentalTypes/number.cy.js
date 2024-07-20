@@ -93,7 +93,7 @@ describe('number spec', () => {
   });
 });
 
-describe('number spec', () => {
+describe('number spec (schemas)', () => {
   beforeEach(() => {
     cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
       onBeforeLoad (win) {
@@ -114,12 +114,173 @@ describe('number spec', () => {
       '123.45'
     );
 
-    cy.get('#viewUIResults i[data-type="number"]').then((elem) => {
-      expect(elem.attr('title')).to.equal('A number');
-    });
-
     cy.get('button#viewUI').click();
     cy.get('#viewUIResults i[data-type="number"]').should('exist');
     cy.get('#viewUIResults i[data-type="number"]').should('contain', '123.45');
+    cy.get('#viewUIResults i[data-type="number"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A number');
+    });
+  });
+
+  it('creates form control (with `defaultValue`)', () => {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 6');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'number'
+    );
+    cy.get('input[name="demo-keypath-not-expected-number"]').should(
+      'have.value', '15'
+    );
+  });
+
+  it('sets mins and maxes (int)', () => {
+    cy.get('.formatChoices').select(
+      'Schema: Zodex schema instance mins and maxes'
+    );
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'number'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '400'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(true);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '700'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(true);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '603'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '444.44'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+      expect(elem[0].validity.stepMismatch).to.equal(true);
+    });
+  });
+
+  it('sets mins and maxes (multipleOf, inclusive)', () => {
+    cy.get('.formatChoices').select(
+      'Schema: Zodex schema instance mins and maxes 2'
+    );
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'number'
+    );
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '399'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(true);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '400'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '700'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '701'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(true);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '603'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+      expect(elem[0].validity.stepMismatch).to.equal(true);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '444.44'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+      expect(elem[0].validity.stepMismatch).to.equal(true);
+    });
+  });
+
+  it('sets mins and maxes (decimal)', () => {
+    cy.get('.formatChoices').select(
+      'Schema: Zodex schema instance mins and maxes 3'
+    );
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'number'
+    );
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '400'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(true);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '400.1'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '700'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(true);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '699.9'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
+
+    cy.clearTypeAndBlur(
+      'input[name="demo-keypath-not-expected-number"]',
+      '603'
+    ).then((elem) => {
+      expect(elem[0].validity.rangeUnderflow).to.equal(false);
+      expect(elem[0].validity.rangeOverflow).to.equal(false);
+    });
   });
 });

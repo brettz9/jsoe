@@ -10,6 +10,9 @@ const dompointType = {
   option: ['DOMPoint'],
   childTypes: ['dompointreadonly'],
   stringRegex: /^(?<domPointClass>DOMPoint|DOMPointReadOnly)\((?<innerContent>.*)\)$/u,
+  valueMatch (x) {
+    return ['DOMPoint', 'DOMPointReadOnly'].includes(toStringTag(x));
+  },
   toValue (s, rootInfo) {
     const {groups: {
       domPointClass
@@ -101,6 +104,7 @@ const dompointType = {
     w: ''
   }}) {
     idx++;
+    const step = 'any'; // Proper step?
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'dompoint'}}, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
@@ -129,6 +133,8 @@ const dompointType = {
       ['label', [
         'x: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'x',
           name: `${typeNamespace}-dompoint-x`, value: value.x
         }]
@@ -137,6 +143,8 @@ const dompointType = {
       ['label', [
         'y: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'y',
           name: `${typeNamespace}-dompoint-y`, value: value.y
         }]
@@ -145,6 +153,8 @@ const dompointType = {
       ['label', [
         'z: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'z',
           name: `${typeNamespace}-dompoint-z`, value: value.z
         }]
@@ -153,6 +163,8 @@ const dompointType = {
       ['label', [
         'w: ',
         ['input', {
+          type: 'number',
+          step,
           class: 'w',
           name: `${typeNamespace}-dompoint-w`, value: value.w
         }]

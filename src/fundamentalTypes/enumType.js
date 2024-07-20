@@ -5,7 +5,7 @@ import {$e} from '../utils/templateUtils.js';
  */
 const enumType = {
   option: ['Enum'],
-  stringRegex: /^Enum\((?<innerContent>[^|]*)(?<choices>.*)\)$/u,
+  stringRegex: /^Enum\((?<innerContent>[^|]*)\|(?<choices>.*)\)$/u,
   valueMatch (x) {
     return typeof x === 'string';
   },

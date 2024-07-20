@@ -1,6 +1,6 @@
 import {error as errorTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
-import {jml, toStringTag} from '../vendor-imports.js';
+import {jml, toStringTag, hasConstructorOf} from '../vendor-imports.js';
 
 /**
  * @type {import('../types.js').TypeObject}
@@ -9,7 +9,9 @@ const errorType = {
   option: ['Error'],
   stringRegex: /^Error\((.*)\)$/u,
   valueMatch (x) {
-    return toStringTag(x) === 'Error';
+    return toStringTag(x) === 'Error' &&
+      // Exclude special errors to let it be handled elsewhere
+      hasConstructorOf(x, Error);
   },
   toValue (s) {
     const obj = JSON.parse(s);

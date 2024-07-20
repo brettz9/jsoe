@@ -142,3 +142,53 @@ describe('SpecialRealNumber spec', () => {
     }
   );
 });
+
+describe('SpecialRealNumber spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'SpecialRealNumber'
+    );
+    cy.get(
+      sel + 'select[name="demo-keypath-not-expected-SpecialRealNumber"]'
+    ).select('-Infinity');
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').should('exist');
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').should(
+      'contain', '-Infinity'
+    );
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A special real number');
+    });
+  });
+
+  it('views UI (-0)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'SpecialRealNumber'
+    );
+    cy.get(
+      sel + 'select[name="demo-keypath-not-expected-SpecialRealNumber"]'
+    ).select('-0');
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').should('exist');
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').should(
+      'contain', '-0'
+    );
+    cy.get('#viewUIResults i[data-type="SpecialRealNumber"]').then((elem) => {
+      expect(elem.attr('title')).to.equal('A special real number');
+    });
+  });
+});

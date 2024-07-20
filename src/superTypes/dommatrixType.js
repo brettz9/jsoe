@@ -10,6 +10,9 @@ const dommatrixType = {
   option: ['DOMMatrix'],
   childTypes: ['dommatrixreadonly'],
   stringRegex: /^(?<domMatrixClass>DOMMatrix|DOMMatrixReadOnly)\((?<innerContent>.*)\)$/u,
+  valueMatch (x) {
+    return ['DOMMatrix', 'DOMMatrixReadOnly'].includes(toStringTag(x));
+  },
   toValue (s, rootInfo) {
     const {groups: {
       domMatrixClass
@@ -310,6 +313,8 @@ const dommatrixType = {
   editUI ({typeNamespace, value = {}}) {
     idx++;
     const {is2D} = value;
+    const step = 'any'; // Proper step?
+
     // eslint-disable-next-line @stylistic/max-len -- Long
     return ['div', {dataset: {type: 'dommatrix'}}, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
@@ -382,6 +387,8 @@ const dommatrixType = {
           ['label', [
             label + ': ',
             ['input', {
+              type: 'number',
+              step,
               class: label,
               name: `${typeNamespace}-dommatrix-${label}`,
               value: value[label] ?? ''
@@ -403,6 +410,8 @@ const dommatrixType = {
           ['label', [
             label + ': ',
             ['input', {
+              type: 'number',
+              step,
               class: label,
               name: `${typeNamespace}-dommatrix-${label}`,
               value: value[label] ?? ''

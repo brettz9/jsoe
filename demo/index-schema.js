@@ -40,29 +40,6 @@ const schemaInstanceJSON = {
     {
       description: 'A string',
       type: 'string'
-    },
-    {
-      description: 'Email',
-      type: 'string',
-      kind: 'email'
-    },
-    {
-      description: 'URL',
-      type: 'string',
-      kind: 'url'
-    },
-    {
-      description: 'Date',
-      type: 'string',
-      kind: 'date'
-    },
-    {
-      description: 'A date',
-      type: 'date'
-    },
-    {
-      description: 'An undefined',
-      type: 'undefined'
     }
   ]
 };
@@ -73,10 +50,6 @@ const schemaInstanceJSON2 = {
     {
       description: 'A void',
       type: 'void'
-    },
-    {
-      description: 'A null',
-      type: 'null'
     },
     {
       description: 'An enum',
@@ -172,6 +145,17 @@ const schemaInstanceJSON2 = {
       value: {
         type: 'number'
       }
+    },
+    {
+      description: 'A FileList',
+      type: 'effect',
+      effects: [
+        {
+          name: 'filelist',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
     },
     // `never` could technically be in the following, too, but probably
     //    not meaningful:
@@ -409,44 +393,11 @@ const schemaInstanceJSON2 = {
       inner: {type: 'any'}
     },
     {
-      description: 'A FileList',
-      type: 'effect',
-      effects: [
-        {
-          name: 'filelist',
-          type: 'refinement'
-        }
-      ],
-      inner: {type: 'any'}
-    },
-    {
       description: 'A File',
       type: 'effect',
       effects: [
         {
           name: 'file',
-          type: 'refinement'
-        }
-      ],
-      inner: {type: 'any'}
-    },
-    {
-      description: 'A Non-editable',
-      type: 'effect',
-      effects: [
-        {
-          name: 'resurrectable', // noneditable
-          type: 'refinement'
-        }
-      ],
-      inner: {type: 'any'}
-    },
-    {
-      description: 'An HTML Blob',
-      type: 'effect',
-      effects: [
-        {
-          name: 'blobHTML',
           type: 'refinement'
         }
       ],
@@ -518,21 +469,331 @@ const schemaInstanceJSON2 = {
       ],
       inner: {type: 'any'}
     }
-
-    // Todo: test editing, including fixing aggregate errors and aggregate error
-    //         as cause
-    // Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
-    //         `getValue`, `viewUI` (and check coverage of `valueMatch`)
-
-    // Todo: If Zod starts to do circular data, support with reference types
-    // Todo: If Zod starts to allow specific types for our effects, use those
-    //         instead, not just for more standard semanticness, but for any
-    //         additional validations
-    // Todo: allow function/promise/symbol to be cloneable albeit not through
-    //        structured cloneable; note that typeson has an issue for
-    //        symbol-iterating keys; then add to regular demo and test
   ]
 };
+
+const schemaInstanceJSON3 = {
+  type: 'union',
+  options: [
+    {
+      description: 'A date',
+      type: 'date'
+    },
+    {
+      type: 'string',
+      kind: 'date'
+    },
+    {
+      description: 'An HTML Blob',
+      type: 'effect',
+      effects: [
+        {
+          name: 'blobHTML',
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    },
+    {
+      description: 'A Non-editable',
+      type: 'effect',
+      effects: [
+        {
+          name: 'resurrectable', // noneditable
+          type: 'refinement'
+        }
+      ],
+      inner: {type: 'any'}
+    }
+  ]
+};
+
+const schemaInstanceJSON4 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'email'
+    },
+    {
+      description: 'An undefined',
+      type: 'undefined'
+    }
+  ]
+};
+
+const schemaInstanceJSON5 = {
+  type: 'union',
+  options: [
+    {
+      description: 'A null',
+      type: 'null'
+    },
+    {
+      type: 'string',
+      kind: 'url'
+    }
+  ]
+};
+
+const schemaInstanceJSON6 = {
+  type: 'union',
+  options: [
+    {
+      type: 'boolean',
+      defaultValue: false
+    },
+    {
+      type: 'number',
+      defaultValue: 15
+    },
+    {
+      type: 'bigInt',
+      defaultValue: '1234567890'
+    },
+    {
+      type: 'string',
+      defaultValue: 'something to default'
+    },
+    {
+      type: 'date',
+      defaultValue: '1999-01-01'
+    }
+  ]
+};
+
+const schemaInstanceJSONMinsMaxes = {
+  type: 'union',
+  options: [
+    {
+      type: 'number',
+      min: 400,
+      max: 700,
+      int: true
+    },
+    {
+      type: 'bigInt',
+      min: '400',
+      max: '700'
+    },
+    {
+      type: 'date',
+      min: new Date('1999-01-01').getTime(),
+      max: new Date('2001-01-01').getTime()
+    },
+    {
+      type: 'string',
+      min: 5,
+      max: 10
+    }
+  ]
+};
+
+const schemaInstanceJSONMinsMaxes2 = {
+  type: 'union',
+  options: [
+    {
+      type: 'number',
+      min: 400,
+      minInclusive: true,
+      max: 700,
+      maxInclusive: true,
+      multipleOf: 5
+    },
+    {
+      type: 'bigInt',
+      min: '400',
+      minInclusive: true,
+      max: '700',
+      maxInclusive: true,
+      multipleOf: '5'
+    },
+    {
+      type: 'date',
+      min: new Date('1999-01-01').getTime(),
+      max: new Date('2001-01-01').getTime()
+    },
+    {
+      type: 'string',
+      length: 10
+    }
+  ]
+};
+
+const schemaInstanceJSONMinsMaxes3 = {
+  type: 'union',
+  options: [
+    {
+      type: 'number',
+      min: 400,
+      max: 700
+    },
+    {
+      type: 'bigInt'
+    },
+    {
+      type: 'date',
+      min: new Date('1999-01-01').getTime(),
+      max: new Date('2001-01-01').getTime()
+    },
+    {
+      type: 'string',
+      startsWith: 'abc',
+      endsWith: 'xyz',
+      toLowerCase: true,
+      trim: true
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings1 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      includes: 'GHI',
+      position: 5,
+      toUpperCase: true
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings2 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      includes: 'GHI',
+      regex: 'a[a-z]c'
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings3 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      regex: 'a[a-z]c',
+      flags: 'i'
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings4 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'time',
+      precision: 3
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings5 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'time'
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings6 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'datetime',
+      offset: true,
+      local: true,
+      precision: 3
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings7 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'ip',
+      version: 'v4'
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings8 = {
+  type: 'union',
+  options: [
+    {
+      type: 'string',
+      kind: 'ip',
+      version: 'v6'
+    }
+  ]
+};
+
+const schemaInstanceJSONStrings9 = {
+  type: 'union',
+  options: [
+    {
+      description: 'Emoji',
+      type: 'string',
+      kind: 'emoji'
+    },
+    {
+      description: 'UUID',
+      type: 'string',
+      kind: 'uuid'
+    },
+    {
+      description: 'Nanoid',
+      type: 'string',
+      kind: 'nanoid'
+    },
+    {
+      description: 'CUID',
+      type: 'string',
+      kind: 'cuid'
+    },
+    {
+      description: 'CUID2',
+      type: 'string',
+      kind: 'cuid2'
+    },
+    {
+      description: 'ULID',
+      type: 'string',
+      kind: 'ulid'
+    },
+    {
+      description: 'Duration',
+      type: 'string',
+      kind: 'duration'
+    },
+    {
+      description: 'Base64',
+      type: 'string',
+      kind: 'base64'
+    }
+  ]
+};
+
+// Todo: test editing, including fixing aggregate errors and aggregate error
+//         as cause
+// Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
+//         `getValue`, `viewUI` (and check coverage of `valueMatch`)
+
+// Todo: If Zod starts to do circular data, support with reference types
+// Todo: If Zod starts to allow specific types for our effects, use those
+//         instead, not just for more standard semanticness, but for any
+//         additional validations
+// Todo: allow function/promise/symbol to be cloneable albeit not through
+//        structured cloneable; note that typeson has an issue for
+//        symbol-iterating keys; then add to regular demo and test
 
 /**
  * @param {string} schema
@@ -546,6 +807,38 @@ function getSchemaContent (schema) {
     return schemaInstanceJSON;
   case 'Zodex schema instance 2':
     return schemaInstanceJSON2;
+  case 'Zodex schema instance 3':
+    return schemaInstanceJSON3;
+  case 'Zodex schema instance 4':
+    return schemaInstanceJSON4;
+  case 'Zodex schema instance 5':
+    return schemaInstanceJSON5;
+  case 'Zodex schema instance 6':
+    return schemaInstanceJSON6;
+  case 'Zodex schema instance mins and maxes':
+    return schemaInstanceJSONMinsMaxes;
+  case 'Zodex schema instance mins and maxes 2':
+    return schemaInstanceJSONMinsMaxes2;
+  case 'Zodex schema instance mins and maxes 3':
+    return schemaInstanceJSONMinsMaxes3;
+  case 'Zodex schema instance strings 1':
+    return schemaInstanceJSONStrings1;
+  case 'Zodex schema instance strings 2':
+    return schemaInstanceJSONStrings2;
+  case 'Zodex schema instance strings 3':
+    return schemaInstanceJSONStrings3;
+  case 'Zodex schema instance strings 4':
+    return schemaInstanceJSONStrings4;
+  case 'Zodex schema instance strings 5':
+    return schemaInstanceJSONStrings5;
+  case 'Zodex schema instance strings 6':
+    return schemaInstanceJSONStrings6;
+  case 'Zodex schema instance strings 7':
+    return schemaInstanceJSONStrings7;
+  case 'Zodex schema instance strings 8':
+    return schemaInstanceJSONStrings8;
+  case 'Zodex schema instance strings 9':
+    return schemaInstanceJSONStrings9;
   case 'any schema':
     return anySchemaJSON;
   case 'unknown schema':
@@ -561,6 +854,20 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   typeNamespace: 'demo-keypath-not-expected',
   schemas: [
     'Zodex schema', 'Zodex schema instance', 'Zodex schema instance 2',
+    'Zodex schema instance 3', 'Zodex schema instance 4',
+    'Zodex schema instance 5', 'Zodex schema instance 6',
+    'Zodex schema instance mins and maxes',
+    'Zodex schema instance mins and maxes 2',
+    'Zodex schema instance mins and maxes 3',
+    'Zodex schema instance strings 1',
+    'Zodex schema instance strings 2',
+    'Zodex schema instance strings 3',
+    'Zodex schema instance strings 4',
+    'Zodex schema instance strings 5',
+    'Zodex schema instance strings 6',
+    'Zodex schema instance strings 7',
+    'Zodex schema instance strings 8',
+    'Zodex schema instance strings 9',
     'any schema', 'unknown schema'
   ],
   selectedSchema: 'Zodex schema instance 2',
@@ -659,11 +966,21 @@ setTimeout(function () {
       placeholder: 'e.g., ["abc", 17]',
       $on: {
         change () {
+          const union = {
+            type: 'union',
+            options: [
+              ...schemaInstanceJSON.options,
+              ...schemaInstanceJSON2.options,
+              ...schemaInstanceJSON3.options,
+              ...schemaInstanceJSON4.options,
+              ...schemaInstanceJSON5.options
+            ]
+          };
           const types = new Types();
           const value = types.getValueForString(this.value, {
             format: 'schema',
-            schemaObject: schemaInstanceJSON,
-            schemaOriginal: schemaInstanceJSON
+            schemaObject: union,
+            schemaOriginal: union
           })[0];
           console.log(value);
         }

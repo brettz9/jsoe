@@ -106,8 +106,10 @@ const blobHTMLType = {
     // eslint-disable-next-line promise/prefer-await-to-then
     }).catch(
       /* istanbul ignore next -- How to simulate? */
-      () => {
-      // Todo: Show an error message?
+      // eslint-disable-next-line promise/prefer-await-to-callbacks -- Not async
+      (err) => {
+        // Todo: Show an error message?
+        console.error('Err', err);
       }
     );
     return [div];

@@ -1,7 +1,7 @@
 /* globals InternalError */
 import {errors as errorsTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
-import {jml} from '../vendor-imports.js';
+import {jml, hasConstructorOf} from '../vendor-imports.js';
 import arrayType from '../fundamentalTypes/arrayType.js';
 
 /**
@@ -48,6 +48,13 @@ const specialErrors = [...specialErrorsMap.keys()];
  */
 const errorsSpecialType = {
   option: ['Special errors'],
+  valueMatch (x) {
+    return [
+      TypeError, RangeError, SyntaxError, ReferenceError,
+      EvalError, URIError,
+      AggregateError
+    ].some((Ctor) => hasConstructorOf(x, Ctor));
+  },
   childTypes: specialErrors.map((err) => {
     return err.toLowerCase();
   }),

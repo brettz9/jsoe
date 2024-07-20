@@ -303,3 +303,50 @@ describe('DOMMatrix spec', () => {
     });
   });
 });
+
+describe('DOMMatrix spec (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('views UI', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dommatrix'
+    );
+    cy.get(sel + '.d2').click();
+    input2dMatrix(sel);
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"] .emphasis').then(
+      (elem) => {
+        expect(elem.attr('title')).to.equal('(a `DOMMatrix`)');
+      }
+    );
+  });
+
+  it('views UI (readonly)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'dommatrix'
+    );
+    cy.get('[name="demo-keypath-not-expected-dommatrix-readonly-1"]').check(
+      'readonly'
+    );
+    cy.get(sel + '.d2').click();
+    input2dMatrix(sel);
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults div[data-type="dommatrix"] .emphasis').then(
+      (elem) => {
+        expect(elem.attr('title')).to.equal('(a `DOMMatrixReadOnly`)');
+      }
+    );
+  });
+});

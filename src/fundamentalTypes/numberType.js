@@ -58,11 +58,36 @@ const numberType = {
   },
   editUI ({typeNamespace, specificSchemaObject, value = ''}) {
     const isLiteral = specificSchemaObject?.type === 'literal';
+    const numberSchemaObject = /** @type {import('zodex').SzNumber} */ (
+      specificSchemaObject
+    );
+    // Seems to need a multiplier of around these sizes to have a noticeable
+    //   effect on the inputs; shouldn't need any though
+    const epsilon = 150 * Number.EPSILON;
+    const maxEpsilon = 300 * Number.EPSILON;
+
     return ['div', {dataset: {type: 'number'}}, [
       ['input', {
         disabled: isLiteral,
-        name: `${typeNamespace}-number`, type: 'number', step: 'any',
-        value: isLiteral ? specificSchemaObject?.value : value
+        name: `${typeNamespace}-number`,
+        type: 'number',
+        min: numberSchemaObject?.min
+          ? numberSchemaObject?.minInclusive
+            ? numberSchemaObject?.min
+            : numberSchemaObject?.min +
+              (numberSchemaObject?.int ? 1 : epsilon)
+          : undefined,
+        max: numberSchemaObject?.max
+          ? numberSchemaObject?.maxInclusive
+            ? numberSchemaObject?.max
+            : numberSchemaObject?.max -
+              (numberSchemaObject?.int ? 1 : maxEpsilon)
+          : undefined,
+        step: numberSchemaObject?.multipleOf ??
+          (numberSchemaObject?.int ? '1' : 'any'),
+        value: isLiteral
+          ? specificSchemaObject?.value
+          : (specificSchemaObject?.defaultValue ?? value)
       }]
     ]];
   }
