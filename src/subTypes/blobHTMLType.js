@@ -1,4 +1,4 @@
-/* globals sceditor */
+/* globals sceditor -- No ESM version yet */
 import {jml} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 
@@ -93,7 +93,8 @@ const blobHTMLType = {
         }
       }}, ['View source']]
     ]);
-    // eslint-disable-next-line promise/prefer-await-to-then
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line promise/prefer-await-to-then -- Not an async method
     this.loadBlob(value).then((
       result
     ) => {
@@ -103,7 +104,8 @@ const blobHTMLType = {
         srcdoc: val
       }, div);
       return undefined;
-    // eslint-disable-next-line promise/prefer-await-to-then
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line promise/prefer-await-to-then -- Not an async method
     }).catch(
       /* istanbul ignore next -- How to simulate? */
       // eslint-disable-next-line promise/prefer-await-to-callbacks -- Not async

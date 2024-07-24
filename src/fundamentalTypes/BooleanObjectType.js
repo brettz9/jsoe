@@ -12,7 +12,8 @@ const BooleanObjectType = {
   },
   toValue (s) {
     return {
-      // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins
+      // eslint-disable-next-line @stylistic/max-len -- Long
+      // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Deliberate creation here
       value: new Boolean(s === 'true')
     };
   },
@@ -39,7 +40,8 @@ const BooleanObjectType = {
   },
   ct: 0,
   editUI ({
-    // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Deliberate creation here
     typeNamespace, value = new Boolean(true)
   }) {
     this.ct++;

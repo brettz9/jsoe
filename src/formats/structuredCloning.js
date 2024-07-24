@@ -445,7 +445,7 @@ const structuredCloning = {
       stateObj.format = 'structuredCloning';
     }
     // Todo: Replace this with async typeson?
-    // eslint-disable-next-line promise/avoid-new
+    // eslint-disable-next-line promise/avoid-new -- Our own API for now
     return new Promise((resolve, reject) => {
       const structuredCloningFixed = structuredCloningThrowing.filter(
         (typeSpecSet) => {

@@ -66,7 +66,6 @@ export default [
 
       // Disable until find time
       'prefer-named-capture-group': 0,
-      '@eslint-community/eslint-comments/require-description': 0,
       // Disable; waiting on https://github.com/mysticatea/eslint-plugin-node/issues/162
       'n/no-unpublished-import': 0,
       'unicorn/no-this-assignment': 0

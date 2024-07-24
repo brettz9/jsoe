@@ -1,4 +1,4 @@
-/* globals InternalError */
+/* globals InternalError -- Non-standard */
 import {errors as errorsTypesonRegistry} from 'typeson-registry';
 import {$e} from '../utils/templateUtils.js';
 import {jml, hasConstructorOf} from '../vendor-imports.js';

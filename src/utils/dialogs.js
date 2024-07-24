@@ -1,4 +1,4 @@
-/* eslint-disable promise/avoid-new */
+/* eslint-disable promise/avoid-new -- Our own API */
 import {jml, nbsp, body} from '../vendor-imports.js';
 import {$e} from './templateUtils.js';
 

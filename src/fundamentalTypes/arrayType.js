@@ -590,7 +590,7 @@ const arrayType = {
     type, forcedState, topRoot, value, bringIntoFocus = true
   }) {
     const {sparse} = this;
-    // eslint-disable-next-line consistent-this
+    // eslint-disable-next-line consistent-this -- Clearer
     const parentTypeObject = this;
     const itemAdjust = type === 'object' ? 1 : 0;
     let itemIndex = itemAdjust - 1;

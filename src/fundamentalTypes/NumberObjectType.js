@@ -12,7 +12,8 @@ const NumberObjectType = {
     return toStringTag(x) === 'Number' && typeof x === 'object';
   },
   toValue (s) {
-    // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Deliberate creation here
     return {value: new Number(s)};
   },
   validate ({root}) {
