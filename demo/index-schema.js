@@ -141,9 +141,10 @@ const schemaInstanceJSON2 = {
       type: 'record',
       key: {
         type: 'symbol'
+        // type: 'number'
       },
       value: {
-        type: 'number'
+        type: 'string'
       }
     },
     {

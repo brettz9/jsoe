@@ -85,7 +85,7 @@ const stringType = {
           ? `(an ${kind} string)`
           : kind
             ? `(a ${kind} string)` // url, date
-            : '(s string)')
+            : '(a string)')
     }, [value]];
   },
   editUI ({typeNamespace, specificSchemaObject, value = ''}) {

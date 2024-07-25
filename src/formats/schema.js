@@ -685,6 +685,14 @@ const schema = {
     if (!schemaObject) {
       throw new Error('Missing schema object');
     }
+
+    // We don't care about the current schema, as these are inner types
+    if (state === 'array') {
+      return structuredCloning.getTypesAndSchemasForState(
+        types, state, schemaObject, schemaOriginal
+      );
+    }
+
     // alert(JSON.stringify(schemaObject));
     const schemaObjects = [...getTypesForSchema(
       schemaObject,

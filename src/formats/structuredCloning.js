@@ -428,6 +428,7 @@ const canonicalTypeToAvailableTypeAndSchema = (
       return false;
     });
     if (ret === undefined) {
+      console.log('AALLLowableTypes', state, allowableTypes, '::', valType);
       return isInvalid(valType);
     }
   }

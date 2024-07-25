@@ -366,7 +366,19 @@ const arrayType = {
             const key = select.$getValue();
             return [key, /** @type {any[]} */ (ret)[idx]];
           }))
-          : ret;
+          : this.record
+            ? arrayItems.$getMapKeySelects().reduce((obj, select, idx) => {
+              const key = select.$getValue();
+              const val = /** @type {any[]} */ (ret)[idx];
+              obj[key] = val;
+              // Todo: Reenable for native enums
+              // The nature of native enums
+              // if (typeof val === 'number') {
+              //   obj[val] = key;
+              // }
+              return obj;
+            }, /** @type {{[key: string]: any}} */ ({}))
+            : ret;
   },
 
   // Try to keep in sync with basic structure of `editUI`

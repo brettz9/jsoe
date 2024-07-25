@@ -31,12 +31,10 @@ const functionType = {
   },
   editUI ({
     format, type, buildTypeChoices, specificSchemaObject,
-    topRoot, schemaContent, typeNamespace
+    topRoot, // schemaContent,
+    typeNamespace
   }) {
-    // Todo: Could make a function instance result type which builds a Function
-    //        like `new Function('arg1', 'return !arg1');` this just builds a
-    //        specific function schema instance, and can't have a meaningful
-    //        `getValue`, etc.; add to demo with tests; could also add to
+    // Todo: Support `getValue`; add to demo with tests; could also add to
     //        use with `Promise` so that could also build a meaningful
     //        implementation; use schema to inform user of types of args,
     //        but remember we are not reimplementing the function schema to
@@ -49,11 +47,50 @@ const functionType = {
     )?.args ?? {type: 'tuple', items: [], rest: {type: 'any'}};
     argsTuple.description = '';
     // This `description` not in use, but could support
-    argsTuple.rest.description = 'Argument';
+    if (argsTuple.rest) {
+      argsTuple.rest.description = 'Argument';
+    }
+
+    const size = argsTuple.items.length + (argsTuple.rest ? 1 : 0);
+    const args = /** @type {import('zodex').SzType} */ (
+      {
+        type: 'set',
+        minSize: size,
+        maxSize: size,
+        value: {
+          type: 'string',
+          // See https://github.com/tc39/proposal-regexp-unicode-property-escapes#other-examples
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          regex: String.raw`^(?:[$_\p{ID_Start}])(?:[$_\u200C\u200D\p{ID_Continue}])*$`,
+          flags: 'v'
+        }
+      }
+    );
 
     return ['div', {dataset: {type: 'function'}}, [
       ['b', ['Arguments']],
       ['br'],
+
+      // This was working to allow choice of specific function argument types,
+      //   but we want function argument names to build a real function; the
+      //   specific attached schema should already specify function argument
+      //   types.
+      // ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
+      //   buildTypeChoices
+      // )({
+      //   // resultType,
+      //   // eslint-disable-next-line object-shorthand -- TS
+      //   topRoot: /** @type {HTMLDivElement} */ (topRoot),
+      //   // eslint-disable-next-line object-shorthand -- TS
+      //   format:
+      //     /** @type {import('../formats.js').AvailableFormat} */ (format),
+      //   schemaOriginal: schemaContent,
+      //   schemaContent: argsTuple,
+      //   state: type,
+      //   // itemIndex,
+      //   typeNamespace
+      // }).domArray),
+
       ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
       )({
@@ -62,13 +99,14 @@ const functionType = {
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
         // eslint-disable-next-line object-shorthand -- TS
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-        schemaOriginal: schemaContent,
-        schemaContent: argsTuple,
+        // schemaOriginal: schemaContent,
+        schemaContent: args,
         state: type,
         // itemIndex,
         typeNamespace
       }).domArray),
-      ['b', ['Returns']],
+
+      ['b', ['Function body']],
       ['br'],
       ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
@@ -78,14 +116,33 @@ const functionType = {
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
         // eslint-disable-next-line object-shorthand -- TS
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-        schemaOriginal: schemaContent,
-        schemaContent: /** @type {import('zodex').SzFunction<any, any>} */ (
-          specificSchemaObj
-        )?.returns ?? {type: 'any'},
+        // schemaOriginal: schemaContent,
+        schemaContent: {type: 'string'},
         state: type,
         // itemIndex,
         typeNamespace
       }).domArray)
+
+      // This was previously working (see commented out block above)
+      // ['b', ['Returns']],
+      // ['br'],
+      // ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
+      //   buildTypeChoices
+      // )({
+      //   // resultType,
+      //   // eslint-disable-next-line object-shorthand -- TS
+      //   topRoot: /** @type {HTMLDivElement} */ (topRoot),
+      //   // eslint-disable-next-line object-shorthand -- TS
+      //   format:
+      //     /** @type {import('../formats.js').AvailableFormat} */ (format),
+      //   schemaOriginal: schemaContent,
+      //   schemaContent: /** @type {import('zodex').SzFunction<any, any>} */ (
+      //     specificSchemaObj
+      //   )?.returns ?? {type: 'any'},
+      //   state: type,
+      //   // itemIndex,
+      //   typeNamespace
+      // }).domArray)
     ]];
   }
 };
