@@ -140,8 +140,10 @@ const schemaInstanceJSON2 = {
       description: 'A record',
       type: 'record',
       key: {
-        type: 'symbol'
-        // type: 'number'
+        // Todo: Reenable and fix for symbol keys and viewUI (need to first add
+        //         typeson support for symbol key iteration?)
+        // type: 'symbol'
+        type: 'number'
       },
       value: {
         type: 'string'

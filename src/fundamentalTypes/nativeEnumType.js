@@ -1,6 +1,7 @@
 import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
 import {copyObject} from '../utils/objects.js';
+import recordType from './recordType.js';
 
 /**
  * @type {import('../types.js').TypeObject}
@@ -28,8 +29,10 @@ const nativeEnumType = {
   setValue ({root, value}) {
     this.getInput({root}).value = value;
   },
-  getValue ({root}) {
-    return this.getInput({root}).value;
+  getValue ({root, stateObj, currentPath}) {
+    const value = recordType.getValue({root, stateObj, currentPath});
+    // Todo: Add any numeric keys
+    return value;
   },
   viewUI ({value, specificSchemaObject}) {
     return ['span', {
