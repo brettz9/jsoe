@@ -94,12 +94,29 @@ const schemaInstanceJSON2 = {
       }
     },
     {
+      description: 'With optional property',
+      type: 'object',
+      properties: {
+        requiredProperty: {
+          description: 'Required',
+          type: 'number'
+        },
+        okProperty: {
+          description: 'Ok',
+          type: 'string',
+          isOptional: true
+        }
+      }
+    },
+    {
       description: 'A symbol',
       type: 'symbol'
     },
     {
       description: 'An array',
       type: 'array',
+      minLength: 2,
+      maxLength: 4,
       element: {
         description: 'Cat',
         type: 'string'
@@ -108,6 +125,8 @@ const schemaInstanceJSON2 = {
     {
       description: 'A set',
       type: 'set',
+      minSize: 2,
+      maxSize: 4,
       value: {
         type: 'string'
       }
@@ -158,7 +177,17 @@ const schemaInstanceJSON2 = {
           type: 'refinement'
         }
       ],
-      inner: {type: 'any'}
+      inner: {
+        type: 'effect',
+        description: 'A File',
+        effects: [
+          {
+            name: 'file',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      }
     },
     // `never` could technically be in the following, too, but probably
     //    not meaningful:
@@ -221,6 +250,7 @@ const schemaInstanceJSON2 = {
       unknownKeys: 'strict',
       properties: {
         okProperty: {
+          description: 'OK property',
           type: 'string',
           isOptional: true
         }

@@ -625,10 +625,6 @@ const schema = {
     default:
       break;
     }
-    console.log(
-      'v and schemaContent', v, currentSchema,
-      arrayOrObjectPropertyName, parentSchema
-    );
     if (!currentSchema) {
       return {type: typesonType};
     }
@@ -636,6 +632,11 @@ const schema = {
       /** @type {import('zodex').SzType} */ (currentSchema),
       /** @type {import('zodex').SzType} */ (currentSchema)
     )];
+    console.log(
+      'v etc.', v, currentSchema,
+      arrayOrObjectPropertyName, parentSchema, schemaObjects
+    );
+    // console.log('schemaObjects', schemaObjects);
     for (const schema of schemaObjects) {
       if (schema.type === 'object') {
         // We don't want to eagerly match, e.g., if there are other objects
@@ -645,7 +646,7 @@ const schema = {
       }
       const dezSchema = dezerialize(schema);
       const parsed = dezSchema.safeParse(v);
-      console.log('parsed', parsed.success, schema);
+      // console.log('parsed', parsed.success, schema);
       if (parsed.success) {
         if (currentSchema.type === 'any' && schema.description) {
           schema.description += ' (any)';
@@ -664,7 +665,6 @@ const schema = {
             )
           );
 
-        console.log('trying valueMatch');
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
           console.log('matched', v, type, schema);
           return {

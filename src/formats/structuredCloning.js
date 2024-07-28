@@ -137,6 +137,11 @@ const encapsulateObserver = (stateObj) => {
         stateObj
       )); // Todo (low): Add accurate state for second argument
     } else {
+      console.log(
+        // keypath
+        'schemaParents', keypath, parentPath, value,
+        arrayOrObjectPropertyName, schemaParents[parentPath]
+      );
       try {
         ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
           /** @type {import('../types.js').default} */ (types),
@@ -173,9 +178,9 @@ const encapsulateObserver = (stateObj) => {
       mapPaths.push(keypath);
     }
 
-    console.log('is', stateObj.schemaContent);
-    console.log('but could set to', schema);
-    console.log('arrayOrObjectPropertyName', arrayOrObjectPropertyName);
+    // console.log('is', stateObj.schemaContent);
+    // console.log('but could set to', schema);
+    // console.log('arrayOrObjectPropertyName', arrayOrObjectPropertyName);
 
     if (!stateObj.rootUI) {
       // console.log('vvvv0', newType, newValue);

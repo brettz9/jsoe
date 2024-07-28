@@ -405,7 +405,9 @@ const arrayType = {
     }) => {
       return ['legend', [
         this.array
-          ? 'Item'
+          ? /** @type {import('zodex').SzArray} */ (
+            specificSchemaObject
+          )?.element?.description ?? 'Item'
           : specificSchemaObject ? '' : 'Property',
         specificSchemaObject ? '' : ':',
         nbsp.repeat(2),
@@ -416,7 +418,7 @@ const arrayType = {
           propName !== undefined
             ? /** @type {import('zodex').SzObject} */ (
               specificSchemaObject
-            )?.properties[propName].description ?? propName
+            )?.properties?.[propName]?.description ?? propName
             // eslint-disable-next-line @stylistic/max-len -- Long
             /* istanbul ignore next -- Won't reach here as typeson will always give keypath? */
             : itemIndex
@@ -840,16 +842,18 @@ const arrayType = {
             'array item beyond the length. Click "Ok" to allow to ' +
             'permit and extend the array length or "Cancel" otherwise.'
         });
-        const arrLengthInput = /** @type {HTMLInputElement} */ (
-          $e(
-            /** @type {HTMLElement} */ (arrayItems.previousElementSibling),
-            'input'
-          )
-        );
+        const arrLengthInput =
+          /** @type {HTMLInputElement & {$oldvalue: string}} */ (
+            $e(
+              /** @type {HTMLElement} */ (arrayItems.previousElementSibling),
+              'input'
+            )
+          );
         const highest = /** @type {number} */ (inputsExceedingLength.map(
           (i) => Number.parseInt(i.value)
         ).sort().at(-1));
         arrLengthInput.value = String(highest + 1);
+        arrLengthInput.$oldvalue = String(highest + 1);
         return this.$validateLength(true);
       };
       if (mapProperties) {
@@ -920,10 +924,18 @@ const arrayType = {
                     return;
                   }
 
-                  select.setCustomValidity(
-                    'Duplicate Map key value'
+                  const control = select.hidden
+                    ? /** @type {HTMLInputElement|HTMLTextAreaElement} */ ($e(
+                      /** @type {HTMLDivElement} */ (
+                        select.nextElementSibling
+                      ), 'input,textarea'
+                    ))
+                    : select;
+
+                  control.setCustomValidity(
+                    `Duplicate ${type === 'map' ? 'Map' : 'Record'} key value`
                   );
-                  select.reportValidity();
+                  control.reportValidity();
                 });
               }
             }
@@ -975,7 +987,12 @@ const arrayType = {
             list: specificSchemaObject && !required
               ? `optionalProperties_${optionalPropertyId}`
               : undefined,
-            style: {display: required ? 'none' : 'block'},
+            style: {
+              display: required && type !== 'arrayNonindexKeys'
+                ? 'none'
+                : 'block'
+            },
+            disabled: required && type === 'arrayNonindexKeys',
             value: sparse
               ? (
                 splice === 'append'
@@ -1296,14 +1313,18 @@ const arrayType = {
               ? /** @type {import('zodex').SzSet} */ (
                 specificSchemaObject
               )?.value
-              : type === 'array' || type === 'arrayNonindexKeys'
-                ? /** @type {import('zodex').SzArray} */ (
+              : type === 'filelist'
+                ? /** @type {import('zodex').SzEffect} */ (
                   specificSchemaObject
-                )?.element
-                : /** @type {import('zodex').SzObject} */ (
-                  specificSchemaObject
-                )?.properties?.[/** @type {string} */ (propName)] ??
-                  fallbackSchema,
+                )?.inner
+                : type === 'array' || type === 'arrayNonindexKeys'
+                  ? /** @type {import('zodex').SzArray} */ (
+                    specificSchemaObject
+                  )?.element
+                  : /** @type {import('zodex').SzObject} */ (
+                    specificSchemaObject
+                  )?.properties?.[/** @type {string} */ (propName)] ??
+                    fallbackSchema,
         state: parentTypeObject.filelist
           ? 'filelistArray'
           : forcedState ?? type,
@@ -1315,17 +1336,68 @@ const arrayType = {
     /**
      * @returns {boolean}
      */
-    function checkTupleRest () {
-      if (
-        type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
+    function preventAdding () {
+      switch (type) {
+      case 'tuple':
+        if (/** @type {import('zodex').SzTuple} */ (
           specificSchemaObject
-        )?.rest?.type === 'never'
-      ) {
-        dialogs.alert(
-          'Tuple has rest type "never", so one cannot add to it.'
-        );
-        return true;
+        )?.rest?.type === 'never') {
+          dialogs.alert(
+            'Tuple has rest type "never", so one cannot add to it.'
+          );
+          return true;
+        }
+        if (
+          /** @type {import('zodex').SzTuple} */ (
+            specificSchemaObject
+          )?.items?.[0]?.type === 'never'
+        ) {
+          dialogs.alert(
+            'Tuple has items type "never", so one cannot add to it.'
+          );
+          return true;
+        }
+        break;
+      case 'set': {
+        if (/** @type {import('zodex').SzSet} */ (
+          specificSchemaObject
+        )?.value?.type === 'never') {
+          dialogs.alert('Set has type "never", so one cannot add to it.');
+          return true;
+        }
+
+        const {maxSize} = /** @type {import('zodex').SzSet} */ (
+          specificSchemaObject
+        ) ?? {};
+        if (maxSize !== undefined &&
+          [...arrayItems.children].length >= maxSize
+        ) {
+          dialogs.alert(`You cannot add beyond the \`maxSize\` of the Set`);
+          return true;
+        }
+        break;
+      } case 'array': case 'arrayNonindexKeys': {
+        if (/** @type {import('zodex').SzArray} */ (
+          specificSchemaObject
+        )?.element?.type === 'never') {
+          dialogs.alert('Array has type "never", so one cannot add to it.');
+          return true;
+        }
+
+        const {maxLength} = /** @type {import('zodex').SzArray} */ (
+          specificSchemaObject
+        ) ?? {};
+        if (maxLength !== undefined &&
+          arrayItems.$getArrayLength() >= maxLength
+        ) {
+          dialogs.alert(`You cannot add beyond the \`maxLength\` of the array`);
+          return true;
+        }
+        break;
+      } default:
+        break;
       }
+
       return false;
     }
 
@@ -1484,7 +1556,7 @@ const arrayType = {
           e.preventDefault();
           // e.stopPropagation();
 
-          if (checkTupleRest()) {
+          if (preventAdding()) {
             return;
           }
 
@@ -1667,31 +1739,10 @@ const arrayType = {
           }
         },
         $on: {click () {
-          if (
-            type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
-              specificSchemaObject
-            )?.items?.[0]?.type === 'never'
-          ) {
-            dialogs.alert(
-              'Tuple has items type "never", so one cannot add to it.'
-            );
+          if (preventAdding()) {
             return;
           }
-          if (checkTupleRest()) {
-            return;
-          }
-          if (/** @type {import('zodex').SzArray} */ (
-            specificSchemaObject
-          )?.element?.type === 'never') {
-            dialogs.alert('Array has type "never", so one cannot add to it.');
-            return;
-          }
-          if (/** @type {import('zodex').SzSet} */ (
-            specificSchemaObject
-          )?.value?.type === 'never') {
-            dialogs.alert('Set has type "never", so one cannot add to it.');
-            return;
-          }
+
           // Todo: Should really check if all object properties have been used,
           //        and stop and warn if so
           /**
@@ -1720,6 +1771,7 @@ const arrayType = {
             value: (value && value.length) || 0,
             step: 1,
             size: 4,
+            class: 'arrayLength',
             pattern: String.raw`\d`,
             $on: {
               /**
@@ -1729,6 +1781,11 @@ const arrayType = {
                * @returns {Promise<void>}
                */
               async change () {
+                if (preventAdding()) {
+                  this.value = this.$oldvalue ?? this.defaultValue;
+                  return;
+                }
+
                 const arrayItems = $e(
                   /** @type {HTMLElement} */ (
                     this.closest('.arrayContents')
@@ -1752,7 +1809,22 @@ const arrayType = {
                       const fieldset = /** @type {HTMLFieldSetElement} */ (
                         input.closest('fieldset')
                       );
-                      fieldset.remove();
+                      if (!fieldset.matches('[data-required]')) {
+                        fieldset.remove();
+                      } else {
+                        // If not truncating the array, put the length back
+                        const arrayLengthInput =
+                          /**
+                           * @type {HTMLInputElement & {
+                           *   $oldvalue: string
+                           * }}
+                           */ (
+                            $e(div, '.arrayLength')
+                          );
+                        arrayLengthInput.value = String(Number.parseInt(
+                          arrayLengthInput.value
+                        ) + 1);
+                      }
                     });
                     // Maybe not needed as removal would remove circular
                     types.validateAllReferences({
@@ -1771,47 +1843,50 @@ const arrayType = {
       ]]
       : '';
 
-    const arrayItems = ['div', {
-      class: 'arrayItems',
-      $custom: {
-        $swapGroup, $redrawMoveArrows, $getArrayLength,
-        $inputsExceedingLength,
+    const arrayItems =
+      /** @type {HTMLDivElement & {$getArrayLength: GetArrayLength}} */ (
+        jml('div', {
+          class: 'arrayItems',
+          $custom: {
+            $swapGroup, $redrawMoveArrows, $getArrayLength,
+            $inputsExceedingLength,
 
-        /**
-         * Only relevant for maps.
-         * @type {GetMapKeySelects}
-         * @this {HTMLDivElement}
-         */
-        $getMapKeySelects () {
-          const selects =
             /**
-             * @type {(HTMLSelectElement & {
-             *   $getValue: import('../typeChoices.js').GetValue}
-             * )[]}
-             */ (DOM.filterChildElements(
-              this,
-              [
-                'fieldset',
-                'legend:first-child',
-                'span.mapKey',
-                'select.typeChoices-key-type-choices-only'
-              ]
-            ));
-          return selects;
-        },
+             * Only relevant for maps.
+             * @type {GetMapKeySelects}
+             * @this {HTMLDivElement}
+             */
+            $getMapKeySelects () {
+              const selects =
+                /**
+                 * @type {(HTMLSelectElement & {
+                 *   $getValue: import('../typeChoices.js').GetValue}
+                 * )[]}
+                 */ (DOM.filterChildElements(
+                  this,
+                  [
+                    'fieldset',
+                    'legend:first-child',
+                    'span.mapKey',
+                    'select.typeChoices-key-type-choices-only'
+                  ]
+                ));
+              return selects;
+            },
 
-        /**
-         * @type {GetPropertyInputs}
-         * @this {HTMLDivElement}
-         */
-        $getPropertyInputs () {
-          return /** @type {HTMLInputElement[]} */ (DOM.filterChildElements(
-            this,
-            ['fieldset', 'legend', `input.propertyName-${typeNamespace}`]
-          ));
-        }
-      }
-    }];
+            /**
+             * @type {GetPropertyInputs}
+             * @this {HTMLDivElement}
+             */
+            $getPropertyInputs () {
+              return /** @type {HTMLInputElement[]} */ (DOM.filterChildElements(
+                this,
+                ['fieldset', 'legend', `input.propertyName-${typeNamespace}`]
+              ));
+            }
+          }
+        })
+      );
 
     const minusButton = ['button', {$on: {click (/** @type {Event} */ e) {
       e.preventDefault();
@@ -2063,7 +2138,8 @@ const arrayType = {
     topRoot = topRoot || div;
 
     if (!value && specificSchemaObject) {
-      if (type === 'object') {
+      switch (type) {
+      case 'object': {
         for (const [prop, val] of
           Object.entries(
             /** @type {import('zodex').SzObject} */ (
@@ -2075,12 +2151,13 @@ const arrayType = {
             div.$addArrayElement({propName: prop, required: true});
           }
         }
-      } else if (type === 'tuple') {
+        break;
+      } case 'tuple': {
         const specificSchemaObj = /** @type {import('zodex').SzTuple} */ (
           specificSchemaObject
         );
         if (
-          type !== 'tuple' || /** @type {import('zodex').SzTuple} */ (
+          /** @type {import('zodex').SzTuple} */ (
             specificSchemaObject
           )?.items?.[0]?.type !== 'never'
         ) {
@@ -2088,6 +2165,32 @@ const arrayType = {
             div.$addArrayElement({tupleSchema, required: true});
           }
         }
+        break;
+      } case 'array': case 'arrayNonindexKeys': {
+        const {minLength = 0} = /** @type {import('zodex').SzArray} */ (
+          specificSchemaObject
+        ) ?? {};
+        const arrayLengthInput =
+          /** @type {HTMLInputElement & {$oldvalue: string}} */ (
+            $e(div, '.arrayLength')
+          );
+        arrayLengthInput.value = String(minLength);
+        arrayLengthInput.$oldvalue = String(minLength);
+
+        for (let i = 0; i < minLength; i++) {
+          div.$addArrayElement({required: true});
+        }
+        break;
+      } case 'set': {
+        const {minSize = 0} = /** @type {import('zodex').SzSet} */ (
+          specificSchemaObject
+        ) ?? {};
+        for (let i = 0; i < minSize; i++) {
+          div.$addArrayElement({required: true});
+        }
+        break;
+      } default:
+        break;
       }
     }
 

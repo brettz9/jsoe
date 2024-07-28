@@ -179,7 +179,7 @@ describe('FileList spec (schemas)', () => {
     cy.get(
       '#viewUIResults div[data-type="filelist"] .arrayContents > div[title]'
     ).then((elem) => {
-      expect(elem.attr('title')).to.equal('(A FileList)');
+      expect(elem.attr('title')).to.equal('(a FileList)');
     });
   });
 });
