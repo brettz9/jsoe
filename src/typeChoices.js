@@ -66,6 +66,7 @@ import dialogs from './utils/dialogs.js';
 /**
  * @callback BuildTypeChoices
  * @param {{
+ *   autoTrigger?: boolean,
  *   format: import('./formats.js').AvailableFormat,
  *   typeNamespace?: string,
  *   value?: import('./formats.js').StructuredCloneValue,
@@ -95,6 +96,7 @@ import dialogs from './utils/dialogs.js';
  * @type {BuildTypeChoices}
  */
 export const buildTypeChoices = ({
+  autoTrigger = true,
   format,
   typeNamespace,
   value,
@@ -291,7 +293,7 @@ export const buildTypeChoices = ({
       }
     )
   ]));
-  if (typeOptions.length === 1) {
+  if (autoTrigger && typeOptions.length === 1) {
     setTimeout(() => {
       sel.selectedIndex = 1;
       sel.dispatchEvent(new Event('change'));

@@ -1243,8 +1243,12 @@ const arrayType = {
         ]]);
       }
 
+      const fileDesc = /** @type {import('zodex').SzEffect} */ (
+        specificSchemaObject
+      )?.inner?.description;
+
       return /** @type {import('jamilih').JamilihArray} */ (['legend', [
-        elementDesc ? '' : 'Item ',
+        elementDesc ? '' : fileDesc ? `${fileDesc} ` : 'Item ',
         ['span', {
           dataset: {prop: true, array: true},
           className
@@ -1285,15 +1289,17 @@ const arrayType = {
      * @param {{
      *   propName: string|undefined,
      *   tupleSchema?: import('zodex').SzType,
-     *   fallbackSchema?: import('zodex').SzType
+     *   fallbackSchema?: import('zodex').SzType,
+     *   autoTrigger?: boolean
      * }} cfg
      */
     const buildTypeChoicesForProperty = ({
-      propName, tupleSchema, fallbackSchema
+      propName, tupleSchema, fallbackSchema, autoTrigger
     }) => {
       return /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
       )({
+        autoTrigger,
         // resultType,
         // eslint-disable-next-line object-shorthand -- TS
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
@@ -1408,6 +1414,7 @@ const arrayType = {
      *   splice?: "append"|number,
      *   alwaysFocus?: true
      *   required?: true
+     *   autoTrigger?: boolean,
      *   tupleSchema?: import('zodex').SzType
      * }} cfg
      * @returns {void}
@@ -1422,7 +1429,7 @@ const arrayType = {
      * }}
      */
     const $addArrayElement = function ({
-      propName, splice, alwaysFocus, required, tupleSchema
+      propName, splice, alwaysFocus, required, tupleSchema, autoTrigger
     }) {
       const arrayItems = this.$getArrayItems();
       if (sparse) {
@@ -1550,7 +1557,7 @@ const arrayType = {
           ? [jml('span', {
             className: `optionalProperties-placeholder${optionalPropertyId}`
           })]
-          : buildTypeChoicesForProperty({propName, tupleSchema})),
+          : buildTypeChoicesForProperty({propName, tupleSchema, autoTrigger})),
         nbsp.repeat(2),
         ['button', {$on: {click (/** @type {Event} */ e) {
           e.preventDefault();
@@ -2005,7 +2012,7 @@ const arrayType = {
                   return keyTypeChoices.$getTypeRoot();
                 }
               } else {
-                this.$addArrayElement({propName});
+                this.$addArrayElement({propName, autoTrigger: false});
               }
               const typeChoices = this.$getTypeChoices();
               typeChoices.$setType({type, baseValue: value, bringIntoFocus});
@@ -2045,7 +2052,8 @@ const arrayType = {
              */
             // @ts-expect-error TS is apparently getting wrong $addArrayElement
             $addArrayElement ({
-              propName, splice, alwaysFocus, required, tupleSchema
+              propName, splice, alwaysFocus, required, tupleSchema,
+              autoTrigger
             }) {
               const addArrayElement = this.$getAddArrayElement();
               /**
@@ -2055,7 +2063,8 @@ const arrayType = {
                * }}
                */
               (addArrayElement).$addArrayElement({
-                propName, splice, alwaysFocus, required, tupleSchema
+                propName, splice, alwaysFocus, required, tupleSchema,
+                autoTrigger
               });
             },
             $getArrayItems () {
