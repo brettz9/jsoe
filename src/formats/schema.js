@@ -638,7 +638,9 @@ const schema = {
     );
     // console.log('schemaObjects', schemaObjects);
     for (const schema of schemaObjects) {
+      let unknownKeys;
       if (schema.type === 'object') {
+        ({unknownKeys} = schema);
         // We don't want to eagerly match, e.g., if there are other objects
         //  which include the optional properties; this could cause a problem,
         //  however, if the tested object has extra non-standard properties
@@ -646,6 +648,10 @@ const schema = {
       }
       const dezSchema = dezerialize(schema);
       const parsed = dezSchema.safeParse(v);
+
+      if (schema.type === 'object') {
+        schema.unknownKeys = unknownKeys;
+      }
       // console.log('parsed', parsed.success, schema);
       if (parsed.success) {
         if (currentSchema.type === 'any' && schema.description) {

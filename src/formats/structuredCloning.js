@@ -137,11 +137,11 @@ const encapsulateObserver = (stateObj) => {
         stateObj
       )); // Todo (low): Add accurate state for second argument
     } else {
-      console.log(
-        // keypath
-        'schemaParents', keypath, parentPath, value,
-        arrayOrObjectPropertyName, schemaParents[parentPath]
-      );
+      // console.log(
+      //   // keypath
+      //   'schemaParents', keypath, parentPath, value,
+      //   arrayOrObjectPropertyName, schemaParents[parentPath]
+      // );
       try {
         ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
           /** @type {import('../types.js').default} */ (types),

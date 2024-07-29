@@ -12,8 +12,8 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1
       jamilih:
-        specifier: 0.59.0
-        version: 0.59.0
+        specifier: 0.59.2
+        version: 0.59.2
       sceditor:
         specifier: 3.2.0
         version: 3.2.0
@@ -3413,8 +3413,8 @@ packages:
     peerDependencies:
       core-js-bundle: ^3.3.5
 
-  jamilih@0.59.0:
-    resolution: {integrity: sha512-fdFXbmp9RuGo/SzHaZtlD2JjRMAAyQowSYemiGHV0aekXXhxhP6vLy8X2nmSBzV5+9Dj2zxJDL6ep+3Zg25ubQ==}
+  jamilih@0.59.2:
+    resolution: {integrity: sha512-s2pMuzbwvpH+G+7K7Z4qSfj9/iODriF/w8HU5MuhTaQuFhw2yRogPYqvqB/MZsAtuGb6wXh8qu7OeBnY3jJofA==}
     engines: {node: '>=16.9.0'}
 
   jest-worker@27.5.1:
@@ -9567,7 +9567,7 @@ snapshots:
       - canvas
       - utf-8-validate
 
-  jamilih@0.59.0: {}
+  jamilih@0.59.2: {}
 
   jest-worker@27.5.1:
     dependencies:

@@ -109,9 +109,47 @@ const schemaInstanceJSON2 = {
       }
     },
     {
-      description: 'A symbol',
-      type: 'symbol'
+      description: 'With never property',
+      type: 'object',
+      properties: {
+        badProperty: {
+          type: 'never'
+        }
+      }
     },
+    {
+      description: 'With unknown keys strict',
+      type: 'object',
+      unknownKeys: 'strict',
+      properties: {
+        okProperty: {
+          description: 'OK property',
+          type: 'string',
+          isOptional: true
+        }
+      }
+    },
+    {
+      description: 'With catchall schema',
+      type: 'object',
+      catchall: {
+        type: 'number'
+      },
+      properties: {
+        requiredProperty: {
+          type: 'boolean'
+        },
+        okProperty: {
+          type: 'string',
+          isOptional: true
+        }
+      }
+    },
+    // Todo: Support `symbol`
+    // {
+    //   description: 'A symbol',
+    //   type: 'symbol'
+    // },
     {
       description: 'An array',
       type: 'array',
@@ -123,12 +161,26 @@ const schemaInstanceJSON2 = {
       }
     },
     {
+      description: 'With never',
+      type: 'array',
+      element: {
+        type: 'never'
+      }
+    },
+    {
       description: 'A set',
       type: 'set',
       minSize: 2,
       maxSize: 4,
       value: {
         type: 'string'
+      }
+    },
+    {
+      description: 'With never',
+      type: 'set',
+      value: {
+        type: 'never'
       }
     },
     {
@@ -144,6 +196,30 @@ const schemaInstanceJSON2 = {
       ],
       rest: {
         type: 'null'
+      }
+    },
+    {
+      description: 'With never rest',
+      type: 'tuple',
+      items: [
+        {
+          type: 'string'
+        }
+      ],
+      rest: {
+        type: 'never'
+      }
+    },
+    {
+      description: 'With never items and rest',
+      type: 'tuple',
+      items: [
+        {
+          type: 'never'
+        }
+      ],
+      rest: {
+        type: 'never'
       }
     },
     {
@@ -197,124 +273,53 @@ const schemaInstanceJSON2 = {
       description: 'A never',
       type: 'never'
     },
-    {
-      description: 'With never',
-      type: 'array',
-      element: {
-        type: 'never'
-      }
-    },
-    {
-      description: 'With never',
-      type: 'set',
-      value: {
-        type: 'never'
-      }
-    },
-    {
-      description: 'With never rest',
-      type: 'tuple',
-      items: [
-        {
-          type: 'string'
-        }
-      ],
-      rest: {
-        type: 'never'
-      }
-    },
-    {
-      description: 'With never items and rest',
-      type: 'tuple',
-      items: [
-        {
-          type: 'never'
-        }
-      ],
-      rest: {
-        type: 'never'
-      }
-    },
-    {
-      description: 'With never property',
-      type: 'object',
-      properties: {
-        badProperty: {
-          type: 'never'
-        }
-      }
-    },
-    {
-      description: 'With unknown keys strict',
-      type: 'object',
-      unknownKeys: 'strict',
-      properties: {
-        okProperty: {
-          description: 'OK property',
-          type: 'string',
-          isOptional: true
-        }
-      }
-    },
-    {
-      description: 'With catchall schema',
-      type: 'object',
-      catchall: {
-        type: 'number'
-      },
-      properties: {
-        requiredProperty: {
-          type: 'boolean'
-        },
-        okProperty: {
-          type: 'string',
-          isOptional: true
-        }
-      }
-    },
-    {
-      description: 'A Promise',
-      type: 'promise',
-      value: {
-        type: 'number'
-      }
-    },
-    {
-      description: 'A function',
-      type: 'function',
-      args: {
-        type: 'tuple',
-        items: [
-          {
-            type: 'number'
-          }
-        ],
-        rest: {
-          type: 'string'
-        }
-      },
-      returns: {
-        type: 'boolean'
-      }
-    },
-    {
-      type: 'function',
-      description: 'With never',
-      args: {
-        type: 'tuple',
-        items: [
-          {
-            type: 'never'
-          }
-        ],
-        rest: {
-          type: 'never'
-        }
-      },
-      returns: {
-        type: 'never'
-      }
-    },
+
+    // Todo: Support `Promise`
+    // {
+    //   description: 'A Promise',
+    //   type: 'promise',
+    //   value: {
+    //     type: 'number'
+    //   }
+    // },
+
+    // Todo: Support functions
+    // {
+    //   description: 'A function',
+    //   type: 'function',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'number'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'string'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'boolean'
+    //   }
+    // },
+    // {
+    //   type: 'function',
+    //   description: 'With never',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'never'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'never'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'never'
+    //   }
+    // },
 
     {
       description: 'A catch',
@@ -967,6 +972,7 @@ setTimeout(function () {
               keyPathNotExpectedTypeChoices.getValue(),
               {
                 readonly: true,
+                typeNamespace: 'demo-keypath-not-expected',
                 // schemaContent: anySchemaJSON
                 schemaContent: await getSchemaContent(
                   keyPathNotExpectedTypeChoices.formatChoices.

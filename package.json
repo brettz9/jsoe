@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@brettz9/node-static": "^0.1.1",
-    "jamilih": "0.59.0",
+    "jamilih": "0.59.2",
     "sceditor": "3.2.0",
     "typeson-registry": "11.0.0",
     "zod": "^3.23.8",

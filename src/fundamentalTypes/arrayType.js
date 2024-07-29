@@ -1190,7 +1190,20 @@ const arrayType = {
                * }}
                */
               change (e) {
-                if (this.list && !parentTypeObject.array) {
+                const neverProperty = /** @type {import('zodex').SzObject} */ (
+                  specificSchemaObject
+                )?.properties?.[
+                /** @type {string} */ (this.value)
+                ]?.type === 'never';
+
+                let invalid = false;
+                if (neverProperty) {
+                  this.setCustomValidity('Never value');
+                  this.reportValidity();
+                  this.style.backgroundColor = 'pink';
+
+                  invalid = true;
+                } else if (this.list && !parentTypeObject.array) {
                   const dataListValues = [
                     ...this.list.options
                   ].map(({value}) => value);
@@ -1204,6 +1217,7 @@ const arrayType = {
                     this.setCustomValidity('Bad value');
                     this.reportValidity();
                     this.style.backgroundColor = 'pink';
+                    invalid = true;
                   } else {
                     this.style.backgroundColor = 'revert-layer';
                     const {optionalPropertyId} = this.dataset;
@@ -1230,8 +1244,18 @@ const arrayType = {
                   }
                 }
 
-                // Should this be awaited or awaited after stopPropagation?
-                this.$validate();
+                if (invalid) {
+                  const placeholder = /** @type {HTMLElement} */ (
+                    $e(
+                      arrayItems,
+                      `.optionalProperties-placeholder${optionalPropertyId}`
+                    )
+                  );
+                  DOM.removeChildren(placeholder);
+                } else {
+                  // Should this be awaited or awaited after stopPropagation?
+                  this.$validate();
+                }
                 // We don't want form `onchange` to run
                 //   `$checkForKeyDuplicates` again
                 e.stopPropagation();

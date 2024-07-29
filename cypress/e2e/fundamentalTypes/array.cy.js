@@ -1427,3 +1427,340 @@ describe('Array spec', function () {
     });
   });
 });
+
+describe('Object spec (schema)', function () {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it('Generates UI for empty object', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'Object (An object)'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get(
+      '#viewUIResults div[data-type="object"]'
+    ).should('exist');
+
+    cy.get(
+      '#viewUIResults div[data-type="object"] > span'
+    ).then((elem) => {
+      expect(elem.attr('title')).to.equal('An object');
+    });
+  });
+
+  it('Generates UI for object with required properties', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'Object (With properties)'
+    );
+
+    cy.get(sel + '.objectItem').then((elem) => {
+      expect(elem.text()).to.equal('Abc');
+      expect(elem.attr('title')).to.equal('abc');
+    });
+
+    cy.get(sel + '.typeContainer .typeContainer .objectItem').then((elem) => {
+      expect(elem.text()).to.equal('A count');
+      expect(elem.attr('title')).to.equal('def');
+    });
+
+    cy.clearTypeAndBlur(
+      sel + 'input[name="demo-keypath-not-expected-number"]',
+      '123'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get(
+      '#viewUIResults div[data-type="object"]'
+    ).should('exist');
+
+    cy.get(
+      '#viewUIResults span[class^="propertyName-"][title="abc"]'
+    ).then((elem) => {
+      expect(elem.text()).to.equal('Abc');
+      expect(elem.attr('title')).to.equal('abc');
+    });
+
+    cy.get(
+      '#viewUIResults fieldset > .arrayHolder span[class^="propertyName-"]'
+    ).then((elem) => {
+      expect(elem.text()).to.equal('A count');
+      expect(elem.attr('title')).to.equal('def');
+    });
+  });
+
+  it(
+    'Generates UI for object with required and optional property',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Object (With optional property)'
+      );
+
+      cy.get(sel + '.objectItem').then((elem) => {
+        expect(elem.text()).to.equal('Required');
+        expect(elem.attr('title')).to.equal('requiredProperty');
+      });
+
+      cy.clearTypeAndBlur(
+        sel + 'input[name="demo-keypath-not-expected-number"]',
+        '123'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'okProperty'
+      );
+      cy.clearTypeAndBlur(
+        sel + 'div[data-type="string"] > textarea', 'test456'
+      );
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults div[data-type="object"]'
+      ).should('exist');
+
+      cy.get(
+        '#viewUIResults span[class^="propertyName-"][title="requiredProperty"]'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('Required');
+        expect(elem.attr('title')).to.equal('requiredProperty');
+      });
+
+      cy.get(
+        '#viewUIResults span[class^="propertyName-"][title="okProperty"]'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('Ok');
+        expect(elem.attr('title')).to.equal('okProperty');
+      });
+
+      cy.get('#viewUIResults i[data-type="number"][title="Required"]').should(
+        'have.text', '123'
+      );
+      cy.get(
+        '#viewUIResults span[data-type="string"][title="Ok"]'
+      ).should(
+        'have.text', 'test456'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(3) ' +
+        'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'asdf'
+      );
+
+      cy.get(
+        sel + 'fieldset:nth-of-type(3) ' +
+        'select[class^="typeChoices-demo-keypath-not-expected"]'
+      ).select(
+        'boolean'
+      );
+
+      cy.get('button#viewUI').click();
+      // With a custom property, will now not be recognizable
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(1) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'requiredProperty'
+      );
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(2) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'okProperty'
+      );
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(3) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'asdf'
+      );
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(1) i[data-type="number"]'
+      ).should(
+        'have.text', '123'
+      );
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(2) span[data-type="string"]'
+      ).should(
+        'have.text', 'test456'
+      );
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(3) i[data-type="true"]'
+      ).should(
+        'have.text', 'true'
+      );
+    }
+  );
+
+  it(
+    'Prevents UI for object with never property',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Object (With never property)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'okProperty'
+      );
+
+      cy.get(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]'
+      ).should(($input) => {
+        expect(/** @type {HTMLInputElement} */ (
+          $input[0]
+        ).checkValidity()).to.equal(true);
+      });
+
+      cy.clearTypeAndBlur(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'badProperty'
+      );
+
+      cy.get(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]'
+      ).should(($input) => {
+        expect(/** @type {HTMLInputElement} */ (
+          $input[0]
+        ).checkValidity()).to.equal(false);
+      });
+    }
+  );
+
+  it(
+    'Generates UI for object with unknown keys strict',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Object (With unknown keys strict)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'okProperty'
+      );
+
+      cy.get(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]'
+      ).should(($input) => {
+        expect(/** @type {HTMLInputElement} */ (
+          $input[0]
+        ).checkValidity()).to.equal(true);
+      });
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(2) ' +
+          'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'unknownProperty'
+      );
+
+      cy.get(
+        sel + 'fieldset:nth-of-type(2) ' +
+          'input[class^="propertyName-"][list^="optionalProperties_"]'
+      ).should(($input) => {
+        expect(/** @type {HTMLInputElement} */ (
+          $input[0]
+        ).checkValidity()).to.equal(false);
+      });
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(1) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'OK property'
+      );
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(2) span[class^="propertyName-"]'
+      ).should('not.exist');
+    }
+  );
+
+  it(
+    'Generates UI for object with catchall schema',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Object (With catchall schema)'
+      );
+
+      cy.get(sel + '.objectItem').should('have.text', 'requiredProperty');
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'okProperty'
+      );
+
+      cy.get(
+        sel + 'input[class^="propertyName-"][list^="optionalProperties_"]'
+      ).should(($input) => {
+        expect(/** @type {HTMLInputElement} */ (
+          $input[0]
+        ).checkValidity()).to.equal(true);
+      });
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(3) ' +
+          'input[class^="propertyName-"][list^="optionalProperties_"]',
+        'unknownProperty'
+      );
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(3) ' +
+          'div[data-type="number"] > input',
+        '123'
+      );
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(1) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'requiredProperty'
+      );
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(2) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'okProperty'
+      );
+
+      cy.get(
+        '#viewUIResults fieldset:nth-of-type(3) span[class^="propertyName-"]'
+      ).should(
+        'have.text', 'unknownProperty'
+      );
+    }
+  );
+});
