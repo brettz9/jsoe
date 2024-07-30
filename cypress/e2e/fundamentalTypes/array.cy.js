@@ -1764,3 +1764,95 @@ describe('Object spec (schema)', function () {
     }
   );
 });
+
+describe('Array spec (schema)', function () {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it(
+    'Generates UI for array with `minLength` and `maxLength`',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Array (An array with mins and maxes)'
+      );
+
+      cy.get(
+        sel + 'fieldset:nth-of-type(1) > legend[data-type="string"]'
+      ).should('contain', 'Cat');
+      cy.get(
+        sel + 'fieldset:nth-of-type(2) > legend[data-type="string"]'
+      ).should('contain', 'Cat');
+      cy.get(
+        sel + 'fieldset:nth-of-type(3) > legend[data-type="string"]'
+      ).should('not.exist');
+
+      cy.clearTypeAndBlur(sel + '.arrayLength', '4');
+      cy.get(sel + '.arrayLength').should('have.value', '4');
+
+      cy.clearTypeAndBlur(sel + '.arrayLength', '5');
+      cy.get(sel + '.arrayLength').should('have.value', '4');
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'You cannot add beyond the `maxLength` of the array'
+      );
+
+      cy.get('dialog[open] .submit > button').click();
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'You cannot add beyond the `maxLength` of the array'
+      );
+
+      cy.get('dialog[open] .submit > button').click();
+
+      cy.clearTypeAndBlur(sel + 'fieldset:nth-of-type(1) textarea', 'abc123');
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults .arrayItems ' +
+          'fieldset:nth-of-type(1) > legend'
+      ).should('contain', 'Cat');
+
+      cy.get(
+        '#viewUIResults .arrayItems ' +
+          'fieldset:nth-of-type(1) [data-type="string"]'
+      ).should('have.text', 'abc123');
+    }
+  );
+
+  it.only(
+    'Generates UI for array with `minLength` and `maxLength`',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Array (With never)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'Array has type "never", so one cannot add to it.'
+      );
+      cy.get('dialog[open] .submit > button').click();
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults .arrayContents > div '
+      ).should('contain', 'With never length:');
+    }
+  );
+});

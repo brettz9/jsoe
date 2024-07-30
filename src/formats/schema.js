@@ -672,7 +672,7 @@ const schema = {
           );
 
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
-          console.log('matched', v, type, schema);
+          console.log('matched', v, v?.length, type, schema);
           return {
             type,
             schema

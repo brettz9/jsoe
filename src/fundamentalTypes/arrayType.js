@@ -830,12 +830,12 @@ const arrayType = {
        */
       const $validateLength = async function (avoidDialog) {
         if (!sparse) {
-          return undefined;
+          return;
         }
         const inputsExceedingLength = arrayItems.$inputsExceedingLength();
         const exceedsLength = inputsExceedingLength.length;
         if (avoidDialog || !exceedsLength || !(/^\d+$/u).test(this.value)) {
-          return undefined;
+          return;
         }
         await dialogs.confirm({
           message: 'You are attempting to add an (integer-based) ' +
@@ -854,7 +854,6 @@ const arrayType = {
         ).sort().at(-1));
         arrLengthInput.value = String(highest + 1);
         arrLengthInput.$oldvalue = String(highest + 1);
-        return this.$validateLength(true);
       };
       if (mapProperties) {
         const keyTypeSelection =
@@ -1364,9 +1363,10 @@ const arrayType = {
     };
 
     /**
+     * @param {Integer} [offset]
      * @returns {boolean}
      */
-    function preventAdding () {
+    function preventAdding (offset = 0) {
       switch (type) {
       case 'tuple':
         if (/** @type {import('zodex').SzTuple} */ (
@@ -1400,7 +1400,7 @@ const arrayType = {
           specificSchemaObject
         ) ?? {};
         if (maxSize !== undefined &&
-          [...arrayItems.children].length >= maxSize
+          [...arrayItems.children].length + offset > maxSize
         ) {
           dialogs.alert(`You cannot add beyond the \`maxSize\` of the Set`);
           return true;
@@ -1417,8 +1417,9 @@ const arrayType = {
         const {maxLength} = /** @type {import('zodex').SzArray} */ (
           specificSchemaObject
         ) ?? {};
+
         if (maxLength !== undefined &&
-          arrayItems.$getArrayLength() >= maxLength
+          arrayItems.$getArrayLength() + offset > maxLength
         ) {
           dialogs.alert(`You cannot add beyond the \`maxLength\` of the array`);
           return true;
@@ -1587,7 +1588,7 @@ const arrayType = {
           e.preventDefault();
           // e.stopPropagation();
 
-          if (preventAdding()) {
+          if (preventAdding(1)) {
             return;
           }
 
@@ -1770,7 +1771,7 @@ const arrayType = {
           }
         },
         $on: {click () {
-          if (preventAdding()) {
+          if (preventAdding(1)) {
             return;
           }
 
@@ -1862,6 +1863,29 @@ const arrayType = {
                       // eslint-disable-next-line object-shorthand -- TS
                       topRoot: /** @type {HTMLDivElement} */ (topRoot)
                     });
+                  } else {
+                    const element = /** @type {import('zodex').SzArray} */ (
+                      specificSchemaObject
+                    )?.element;
+                    if (!['void', 'undefined'].includes(
+                      element?.type
+                    ) && (
+                      element?.type !== 'union' ||
+                      /** @type {import('zodex').SzUnion} */
+                      (element)?.options?.every((option) => {
+                        return !['void', 'undefined'].includes(option.type);
+                      })
+                    )) {
+                      const diff = Number.parseInt(this.value) -
+                        Number.parseInt(this.$oldvalue ?? this.defaultValue);
+                      for (let i = 0; i < diff; i++) {
+                        // Timeout needed by Cypress at least or will get
+                        //   validation triggerred which prevents moving forward
+                        setTimeout(() => {
+                          div.$addArrayElement({});
+                        });
+                      }
+                    }
                   }
                   this.$oldvalue = this.value;
                 } catch {

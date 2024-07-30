@@ -151,7 +151,7 @@ const schemaInstanceJSON2 = {
     //   type: 'symbol'
     // },
     {
-      description: 'An array',
+      description: 'An array with mins and maxes',
       type: 'array',
       minLength: 2,
       maxLength: 4,
@@ -168,7 +168,7 @@ const schemaInstanceJSON2 = {
       }
     },
     {
-      description: 'A set',
+      description: 'A set with mins and maxes',
       type: 'set',
       minSize: 2,
       maxSize: 4,
