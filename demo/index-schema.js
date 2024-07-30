@@ -215,138 +215,6 @@ const schemaInstanceJSON2 = {
       }
     },
     {
-      description: 'With never items and rest',
-      type: 'tuple',
-      items: [
-        {
-          type: 'never'
-        }
-      ],
-      rest: {
-        type: 'never'
-      }
-    },
-    {
-      type: 'map',
-      key: {
-        type: 'number'
-      },
-      value: {
-        type: 'string'
-      }
-    },
-    {
-      description: 'A record',
-      type: 'record',
-      key: {
-        // Todo: Reenable and fix for symbol keys and viewUI (need to first add
-        //         typeson support for symbol key iteration?)
-        // type: 'symbol'
-        type: 'number'
-      },
-      value: {
-        type: 'string'
-      }
-    },
-    {
-      description: 'A FileList',
-      type: 'effect',
-      effects: [
-        {
-          name: 'filelist',
-          type: 'refinement'
-        }
-      ],
-      inner: {
-        type: 'effect',
-        description: 'A File',
-        effects: [
-          {
-            name: 'file',
-            type: 'refinement'
-          }
-        ],
-        inner: {type: 'any'}
-      }
-    },
-    // `never` could technically be in the following, too, but probably
-    //    not meaningful:
-    //    catchall, record value, map key/value, promise value
-    //    effect inner, catch innerType
-    {
-      description: 'A never',
-      type: 'never'
-    },
-
-    // Todo: Support `Promise`
-    // {
-    //   description: 'A Promise',
-    //   type: 'promise',
-    //   value: {
-    //     type: 'number'
-    //   }
-    // },
-
-    // Todo: Support functions
-    // {
-    //   description: 'A function',
-    //   type: 'function',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'number'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'string'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'boolean'
-    //   }
-    // },
-    // {
-    //   type: 'function',
-    //   description: 'With never',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'never'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'never'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'never'
-    //   }
-    // },
-
-    {
-      description: 'A catch',
-      type: 'catch',
-      value: 'abc',
-      innerType: {
-        type: 'string'
-      }
-    },
-    {
-      description: 'A native enum',
-      type: 'nativeEnum',
-      values: {
-        type: 'record',
-        key: {
-          type: 'number'
-        },
-        value: {
-          type: 'string'
-        }
-      }
-    },
-    {
       description: 'A RegExp',
       type: 'effect',
       effects: [
@@ -604,6 +472,140 @@ const schemaInstanceJSON6 = {
   ]
 };
 
+const schemaInstanceJSON7 = {
+  type: 'union',
+  options: [
+    {
+      description: 'With no items and never rest',
+      type: 'tuple',
+      items: [],
+      rest: {
+        type: 'never'
+      }
+    },
+    {
+      type: 'map',
+      key: {
+        type: 'number'
+      },
+      value: {
+        type: 'string'
+      }
+    },
+    {
+      description: 'A record',
+      type: 'record',
+      key: {
+        // Todo: Reenable and fix for symbol keys and viewUI (need to first add
+        //         typeson support for symbol key iteration?)
+        // type: 'symbol'
+        type: 'number'
+      },
+      value: {
+        type: 'string'
+      }
+    },
+    {
+      description: 'A FileList',
+      type: 'effect',
+      effects: [
+        {
+          name: 'filelist',
+          type: 'refinement'
+        }
+      ],
+      inner: {
+        type: 'effect',
+        description: 'A File',
+        effects: [
+          {
+            name: 'file',
+            type: 'refinement'
+          }
+        ],
+        inner: {type: 'any'}
+      }
+    },
+    // `never` could technically be in the following, too, but probably
+    //    not meaningful:
+    //    catchall, record value, map key/value, promise value
+    //    effect inner, catch innerType
+    {
+      description: 'A never',
+      type: 'never'
+    },
+
+    // Todo: Support `Promise`
+    // {
+    //   description: 'A Promise',
+    //   type: 'promise',
+    //   value: {
+    //     type: 'number'
+    //   }
+    // },
+
+    // Todo: Support functions
+    // {
+    //   description: 'A function',
+    //   type: 'function',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'number'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'string'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'boolean'
+    //   }
+    // },
+    // {
+    //   type: 'function',
+    //   description: 'With never',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'never'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'never'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'never'
+    //   }
+    // },
+
+    {
+      description: 'A catch',
+      type: 'catch',
+      value: 'abc',
+      innerType: {
+        type: 'string'
+      }
+    },
+    {
+      description: 'A native enum',
+      type: 'nativeEnum',
+      values: {
+        type: 'record',
+        key: {
+          type: 'number'
+        },
+        value: {
+          type: 'string'
+        }
+      }
+    }
+  ]
+};
+
 const schemaInstanceJSONMinsMaxes = {
   type: 'union',
   options: [
@@ -857,6 +859,8 @@ function getSchemaContent (schema) {
     return schemaInstanceJSON5;
   case 'Zodex schema instance 6':
     return schemaInstanceJSON6;
+  case 'Zodex schema instance 7':
+    return schemaInstanceJSON7;
   case 'Zodex schema instance mins and maxes':
     return schemaInstanceJSONMinsMaxes;
   case 'Zodex schema instance mins and maxes 2':
@@ -898,6 +902,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
     'Zodex schema', 'Zodex schema instance', 'Zodex schema instance 2',
     'Zodex schema instance 3', 'Zodex schema instance 4',
     'Zodex schema instance 5', 'Zodex schema instance 6',
+    'Zodex schema instance 7',
     'Zodex schema instance mins and maxes',
     'Zodex schema instance mins and maxes 2',
     'Zodex schema instance mins and maxes 3',

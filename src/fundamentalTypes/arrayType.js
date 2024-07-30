@@ -576,7 +576,9 @@ const arrayType = {
                   ? '(a Set)'
                   : type === 'map'
                     ? '(a Map)'
-                    : '(an Array)')
+                    : type === 'tuple'
+                      ? '(a tuple)'
+                      : '(an Array)')
               : undefined
           }, [
             type === 'filelist'
@@ -1292,7 +1294,7 @@ const arrayType = {
               ? `${tupleSchema?.description} `
               : type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
                 specificSchemaObject
-              )?.rest
+              )?.rest?.description
                 ? `${/** @type {import('zodex').SzTuple} */ (
                   specificSchemaObject
                 )?.rest?.description} `

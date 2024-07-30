@@ -1856,3 +1856,184 @@ describe('Array spec (schema)', function () {
     }
   );
 });
+
+describe('Tuple spec (schema)', function () {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it(
+    'Generates UI for tuple with `items` and `rest`',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Tuple (A tuple)'
+      );
+
+      cy.clearTypeAndBlur(
+        'input[name="demo-keypath-not-expected-number"]', '1234'
+      );
+      cy.clearTypeAndBlur(
+        'textarea[name="demo-keypath-not-expected-string"]', 'hello'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > span'
+      ).then((elem) => {
+        expect(elem.attr('title')).to.equal('A tuple');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > .arrayContents > div[title]'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('A tuple length: 3');
+        expect(elem.attr('title')).to.equal('(a tuple)');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(1) > legend'
+      ).should('contain', 'A number');
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(1) > i'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('1234');
+        expect(elem.attr('title')).to.equal('A number');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(2) > legend'
+      ).should('contain', 'A string');
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(2) > span'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('hello');
+        expect(elem.attr('title')).to.equal('A string');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(3) > legend'
+      ).should('contain', 'A null');
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(3) > i'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('null');
+        expect(elem.attr('title')).to.equal('A null');
+      });
+    }
+  );
+
+  it(
+    'Generates UI for tuple with `items` and never `rest`',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Tuple (With never rest)'
+      );
+
+      cy.clearTypeAndBlur(
+        'textarea[name="demo-keypath-not-expected-string"]', 'hello'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'Tuple has rest type "never", so one cannot add to it.'
+      );
+
+      cy.get('dialog[open] .submit > button').click();
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > span'
+      ).then((elem) => {
+        expect(elem.attr('title')).to.equal('With never rest');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > .arrayContents > div[title]'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('With never rest length: 1');
+        expect(elem.attr('title')).to.equal('(a tuple)');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(1) > legend'
+      ).should('contain', 'Item');
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(1) > span'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('hello');
+        expect(elem.attr('title')).to.equal('(a string)');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(2)'
+      ).should('not.exist');
+    }
+  );
+
+  it(
+    'Generates UI for tuple with no `items` and never `rest`',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Tuple (With no items and never rest)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'Tuple has rest type "never", so one cannot add to it.'
+      );
+
+      cy.get('dialog[open] .submit > button').click();
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > span'
+      ).then((elem) => {
+        expect(elem.attr('title')).to.equal('With no items and never rest');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] > .arrayContents > div[title]'
+      ).then((elem) => {
+        expect(elem.text()).to.equal('With no items and never rest length: 0');
+        expect(elem.attr('title')).to.equal('(a tuple)');
+      });
+
+      cy.get(
+        '#viewUIResults div[data-type="tuple"] .arrayItems > ' +
+        'fieldset:nth-of-type(1)'
+      ).should('not.exist');
+    }
+  );
+});
