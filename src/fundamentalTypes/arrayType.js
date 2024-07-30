@@ -403,11 +403,21 @@ const arrayType = {
       /* className, type, arrayItems, */
       itemIndex, typeNamespace, propName
     }) => {
+      const tupleItem = /** @type {import('zodex').SzTuple} */ (
+        specificSchemaObject
+      )?.items?.[itemIndex];
+      const restItem = /** @type {import('zodex').SzTuple} */ (
+        specificSchemaObject
+      )?.rest;
       return ['legend', [
         this.array
           ? /** @type {import('zodex').SzArray} */ (
             specificSchemaObject
-          )?.element?.description ?? 'Item'
+          )?.element?.description ?? /** @type {import('zodex').SzSet} */ (
+            specificSchemaObject
+          )?.value?.description ?? (
+            tupleItem?.description ?? restItem?.description
+          ) ?? 'Item'
           : specificSchemaObject ? '' : 'Property',
         specificSchemaObject ? '' : ':',
         nbsp.repeat(2),
@@ -615,7 +625,9 @@ const arrayType = {
 
     const elementDesc = /** @type {import('zodex').SzArray} */ (
       specificSchemaObject
-    )?.element?.description;
+    )?.element?.description ?? /** @type {import('zodex').SzSet} */ (
+      specificSchemaObject
+    )?.value?.description;
 
     /**
      * @param {HTMLInputElement} input
@@ -808,13 +820,14 @@ const arrayType = {
      *   typeNamespace: string|undefined,
      *   arrayItems: ArrayItems,
      *   propName: string|undefined,
-     *   required?: true
+     *   required?: true,
+     *   tupleSchema?: import('zodex').SzType
      * }} cfg
      * @returns {import('jamilih').JamilihArray}
      */
     const buildLegend = ({
       className, splice, itemIndex, /* type, */ typeNamespace,
-      arrayItems, propName, required
+      arrayItems, propName, required, tupleSchema
     }) => {
       /**
        * @callback ValidateLength
@@ -1271,7 +1284,19 @@ const arrayType = {
       )?.inner?.description;
 
       return /** @type {import('jamilih').JamilihArray} */ (['legend', [
-        elementDesc ? '' : fileDesc ? `${fileDesc} ` : 'Item ',
+        elementDesc
+          ? ''
+          : fileDesc
+            ? `${fileDesc} `
+            : tupleSchema?.description
+              ? `${tupleSchema?.description} `
+              : type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
+                specificSchemaObject
+              )?.rest
+                ? `${/** @type {import('zodex').SzTuple} */ (
+                  specificSchemaObject
+                )?.rest?.description} `
+                : 'Item ',
         ['span', {
           dataset: {prop: true, array: true},
           className
@@ -1571,7 +1596,8 @@ const arrayType = {
             typeNamespace,
             arrayItems,
             propName,
-            required
+            required,
+            tupleSchema
           })
         ],
         arrayItems);
@@ -1584,64 +1610,71 @@ const arrayType = {
           })]
           : buildTypeChoicesForProperty({propName, tupleSchema, autoTrigger})),
         nbsp.repeat(2),
-        ['button', {$on: {click (/** @type {Event} */ e) {
-          e.preventDefault();
-          // e.stopPropagation();
+        ['button', {
+          disabled: type === 'tuple' && required &&
+            // The last item of a tuple can have content after it, but earlier
+            //   items cannot
+            /** @type {import('zodex').SzTuple} */
+            (specificSchemaObject)?.items?.length - 1 > itemIndex,
+          $on: {click (/** @type {Event} */ e) {
+            e.preventDefault();
+            // e.stopPropagation();
 
-          if (preventAdding(1)) {
-            return;
-          }
+            if (preventAdding(1)) {
+              return;
+            }
 
-          /** @type {number | "append" | undefined} */
-          let splice;
-          if (sparse) {
-            const prevInputVal =
-              /**
-               * @type {HTMLInputElement & {
-               *   $parseInt: ParseInt
-               * }}
-               */ (
+            /** @type {number | "append" | undefined} */
+            let splice;
+            if (sparse) {
+              const prevInputVal =
                 /**
-                 * @type {HTMLFieldSetElement & {
-                 *   $getPropertyInput: GetPropertyInput
+                 * @type {HTMLInputElement & {
+                 *   $parseInt: ParseInt
                  * }}
                  */ (
-                  fieldset
-                ).$getPropertyInput()).$parseInt();
-            splice = prevInputVal === false ? 'append' : prevInputVal;
-          }
-          thisButton.$addArrayElement({
-            splice, alwaysFocus: true
-          });
-          const newArrayFieldset =
-            /** @type {Element & {$getPropertyInput: GetPropertyInput}} */ (
-              arrayItems.lastElementChild
-            );
-          fieldset.after(newArrayFieldset);
-          if (sparse || (specificSchemaObject && !parentTypeObject.array)) {
-            const newPrevInput = /** @type {HTMLInputElement} */ (
-              newArrayFieldset.$getPropertyInput()
-            );
-            bringFocus(newPrevInput, true);
-          } else {
-            DOM.filterChildElements(
-              arrayItems, [
-                'fieldset', 'legend', '.' + className
-              ]
-            ).forEach((span, i) => {
-              span.textContent = elementDesc
-                ? `${elementDesc} ${i + itemAdjust + 1}`
-                : String(i + itemAdjust);
+                  /**
+                   * @type {HTMLFieldSetElement & {
+                   *   $getPropertyInput: GetPropertyInput
+                   * }}
+                   */ (
+                    fieldset
+                  ).$getPropertyInput()).$parseInt();
+              splice = prevInputVal === false ? 'append' : prevInputVal;
+            }
+            thisButton.$addArrayElement({
+              splice, alwaysFocus: true
             });
-          }
-          // Maybe not needed as addition (without renumbering)
-          //   wouldn't yet add type
-          types.validateAllReferences({
-            // eslint-disable-next-line object-shorthand -- TS
-            topRoot: /** @type {HTMLDivElement} */ (topRoot)
-          });
-          arrayItems.$redrawMoveArrows();
-        }}}, ['+']],
+            const newArrayFieldset =
+              /** @type {Element & {$getPropertyInput: GetPropertyInput}} */ (
+                arrayItems.lastElementChild
+              );
+            fieldset.after(newArrayFieldset);
+            if (sparse || (specificSchemaObject && !parentTypeObject.array)) {
+              const newPrevInput = /** @type {HTMLInputElement} */ (
+                newArrayFieldset.$getPropertyInput()
+              );
+              bringFocus(newPrevInput, true);
+            } else {
+              DOM.filterChildElements(
+                arrayItems, [
+                  'fieldset', 'legend', '.' + className
+                ]
+              ).forEach((span, i) => {
+                span.textContent = elementDesc
+                  ? `${elementDesc} ${i + itemAdjust + 1}`
+                  : String(i + itemAdjust);
+              });
+            }
+            // Maybe not needed as addition (without renumbering)
+            //   wouldn't yet add type
+            types.validateAllReferences({
+              // eslint-disable-next-line object-shorthand -- TS
+              topRoot: /** @type {HTMLDivElement} */ (topRoot)
+            });
+            arrayItems.$redrawMoveArrows();
+          }}
+        }, ['+']],
         /**
          * @type {import('jamilih').JamilihArray}
          */

@@ -1831,8 +1831,8 @@ describe('Array spec (schema)', function () {
     }
   );
 
-  it.only(
-    'Generates UI for array with `minLength` and `maxLength`',
+  it(
+    'Generates UI for array with `never`',
     function () {
       cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
       const sel = '#formatAndTypeChoices ';

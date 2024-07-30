@@ -173,6 +173,7 @@ const schemaInstanceJSON2 = {
       minSize: 2,
       maxSize: 4,
       value: {
+        description: 'A Set item',
         type: 'string'
       }
     },
@@ -188,13 +189,16 @@ const schemaInstanceJSON2 = {
       type: 'tuple',
       items: [
         {
+          description: 'A number',
           type: 'number'
         },
         {
+          description: 'A string',
           type: 'string'
         }
       ],
       rest: {
+        description: 'A null',
         type: 'null'
       }
     },
