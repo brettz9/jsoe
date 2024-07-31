@@ -11,7 +11,9 @@ describe('Map spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
     cy.get(sel + '.addArrayElement').click();
 
-    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('null');
+    cy.get(
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
+    ).select('null');
 
     cy.get(
       sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
@@ -20,7 +22,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      sel + 'fieldset:nth-of-type(2) .mapKeyHolder > ' +
       '.typeChoices-key-type-choices-only'
     ).select('false');
 
@@ -57,7 +59,7 @@ describe('Map spec', () => {
     ).click();
 
     cy.get(
-      sel + '.mapKey > .typeChoices-key-type-choices-only'
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
     ).select('true');
 
     cy.get(
@@ -102,12 +104,14 @@ describe('Map spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
     cy.get(sel + '.addArrayElement').click();
 
-    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('map');
+    cy.get(
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
+    ).select('map');
 
-    cy.get(sel + '.mapKey .addArrayElement').click();
+    cy.get(sel + '.mapKeyHolder .addArrayElement').click();
 
     cy.get(
-      sel + '.arrayItems .arrayItems .mapKey > ' +
+      sel + '.arrayItems .arrayItems .mapKeyHolder > ' +
       '.typeChoices-key-type-choices-only'
     ).select('false');
 
@@ -152,7 +156,9 @@ describe('Map spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select('map');
     cy.get(sel + '.addArrayElement').click();
 
-    cy.get(sel + '.mapKey > .typeChoices-key-type-choices-only').select('null');
+    cy.get(
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
+    ).select('null');
 
     cy.get(
       sel + '.arrayItems .typeChoices-demo-keypath-not-expected'
@@ -161,7 +167,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      sel + 'fieldset:nth-of-type(2) .mapKeyHolder > ' +
       '.typeChoices-key-type-choices-only'
     ).select('null');
 
@@ -193,7 +199,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + '.mapKey > .typeChoices-key-type-choices-only'
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
     ).select('number');
 
     cy.clearAndType(
@@ -208,7 +214,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      sel + 'fieldset:nth-of-type(2) .mapKeyHolder > ' +
       '.typeChoices-key-type-choices-only'
     ).select('SpecialNumber');
 
@@ -244,7 +250,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + '.mapKey > .typeChoices-key-type-choices-only'
+      sel + '.mapKeyHolder > .typeChoices-key-type-choices-only'
     ).select('SpecialNumber');
 
     cy.get(
@@ -254,7 +260,7 @@ describe('Map spec', () => {
     cy.get(sel + '.addArrayElement').click();
 
     cy.get(
-      sel + 'fieldset:nth-of-type(2) .mapKey > ' +
+      sel + 'fieldset:nth-of-type(2) .mapKeyHolder > ' +
       '.typeChoices-key-type-choices-only'
     ).select('SpecialNumber');
 
@@ -307,4 +313,73 @@ describe('Map spec', () => {
     cy.typeAndBlur('#getValueForString', 'Map([3, "abc"])');
     cy.get('@consoleLog').should('be.calledWith', new Map([[3, 'abc']]));
   });
+});
+
+describe('Map spec (schema)', function () {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it(
+    'Generates UI for map',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Map (A map)'
+      );
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get(sel + '.mapKey').should(($span) => {
+        expect($span.text()).to.contain('A map key number');
+        expect($span.attr('title')).to.equal('(map key)');
+      });
+
+      cy.get(sel + '.mapValue').should(($span) => {
+        expect($span.text()).to.contain('A map value string');
+        expect($span.attr('title')).to.equal('(map value)');
+      });
+
+      cy.clearAndType(
+        sel + 'input[name="key-type-choices-only-number"]',
+        '123'
+      );
+
+      cy.clearAndType(
+        sel + 'textarea[name="demo-keypath-not-expected-string"]',
+        'abc'
+      );
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults > div[data-type="map"] > div'
+      ).should('contain', 'A map size');
+
+      cy.get('#viewUIResults i[data-type="number"]').should('contain', '123');
+      cy.get(
+        '#viewUIResults span[data-type="string"]'
+      ).should('contain', 'abc');
+
+      cy.get(
+        '#viewUIResults .arrayItems > fieldset > fieldset:nth-of-type(1) ' +
+        'legend'
+      ).should(($span) => {
+        expect($span.text()).to.contain('A map key number');
+        expect($span.attr('title')).to.equal('(map key)');
+      });
+
+      cy.get(
+        '#viewUIResults .arrayItems > fieldset > fieldset:nth-of-type(2) ' +
+        'legend'
+      ).should(($span) => {
+        expect($span.text()).to.contain('A map value string');
+        expect($span.attr('title')).to.equal('(map value)');
+      });
+    }
+  );
 });

@@ -484,11 +484,14 @@ const schemaInstanceJSON7 = {
       }
     },
     {
+      description: 'A map',
       type: 'map',
       key: {
+        description: 'A map key number',
         type: 'number'
       },
       value: {
+        description: 'A map value string',
         type: 'string'
       }
     },
@@ -496,13 +499,24 @@ const schemaInstanceJSON7 = {
       description: 'A record',
       type: 'record',
       key: {
+        description: 'A record key number',
         // Todo: Reenable and fix for symbol keys and viewUI (need to first add
         //         typeson support for symbol key iteration?)
         // type: 'symbol'
         type: 'number'
       },
       value: {
+        description: 'A record value string',
         type: 'string'
+      }
+    },
+    {
+      type: 'record',
+      key: {
+        type: 'string'
+      },
+      value: {
+        type: 'number'
       }
     },
     {
@@ -587,6 +601,7 @@ const schemaInstanceJSON7 = {
       type: 'catch',
       value: 'abc',
       innerType: {
+        description: 'An overpassed string',
         type: 'string'
       }
     },
@@ -596,9 +611,11 @@ const schemaInstanceJSON7 = {
       values: {
         type: 'record',
         key: {
+          description: 'A native enum key number',
           type: 'number'
         },
         value: {
+          description: 'A native enum value string',
           type: 'string'
         }
       }
@@ -917,7 +934,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
     'Zodex schema instance strings 9',
     'any schema', 'unknown schema'
   ],
-  selectedSchema: 'Zodex schema instance 2',
+  selectedSchema: 'Zodex schema instance 7',
   getSchemaContent
 });
 

@@ -413,11 +413,16 @@ const arrayType = {
         this.array
           ? /** @type {import('zodex').SzArray} */ (
             specificSchemaObject
-          )?.element?.description ?? /** @type {import('zodex').SzSet} */ (
-            specificSchemaObject
-          )?.value?.description ?? (
-            tupleItem?.description ?? restItem?.description
-          ) ?? 'Item'
+          )?.element?.description ??
+            ((type === 'set' && /** @type {import('zodex').SzSet} */ (
+              specificSchemaObject
+            )?.value?.description)
+              ? /** @type {import('zodex').SzSet} */ (
+                specificSchemaObject
+              )?.value?.description
+              : (
+                tupleItem?.description ?? restItem?.description
+              )) ?? 'Item'
           : specificSchemaObject ? '' : 'Property',
         specificSchemaObject ? '' : ':',
         nbsp.repeat(2),
@@ -468,14 +473,35 @@ const arrayType = {
               this._lastFieldset = fieldset;
               const keyFieldset = jml(
                 'fieldset', [
-                  ['legend', ['Key']]
+                  ['legend', {
+                    title: /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.key?.description
+                      ? '(map key)'
+                      : undefined
+                  }, [
+                    /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.key?.description ?? 'Key'
+                  ]]
                 ], fieldset
               );
               jml(root, keyFieldset);
             } else { // propName === '1'
               const valueFieldset = jml(
                 'fieldset', [
-                  ['legend', ['Value']]
+                  ['legend', {
+                    title: /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.value?.description
+                      ? '(map value)'
+                      : undefined
+                  }, [
+                    /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.value?.description ??
+                    'Value'
+                  ]]
                 ], this._lastFieldset
               );
               this._lastFieldset = null;
@@ -627,9 +653,11 @@ const arrayType = {
 
     const elementDesc = /** @type {import('zodex').SzArray} */ (
       specificSchemaObject
-    )?.element?.description ?? /** @type {import('zodex').SzSet} */ (
-      specificSchemaObject
-    )?.value?.description;
+    )?.element?.description ?? type === 'set'
+      ? /** @type {import('zodex').SzSet} */ (
+        specificSchemaObject
+      )?.value?.description
+      : undefined;
 
     /**
      * @param {HTMLInputElement} input
@@ -887,7 +915,33 @@ const arrayType = {
             typeNamespace: 'key-type-choices-only'
           });
         return ['legend', [
-          'Key ',
+          ['span', {
+            class: 'mapKey',
+            title: (
+              type === 'map' &&
+              /** @type {import('zodex').SzMap<any, any>} */ (
+                specificSchemaObject
+              )?.key?.description
+            )
+              ? '(map key)'
+              : type === 'record' &&
+              /** @type {import('zodex').SzRecord} */ (
+                specificSchemaObject
+              // @ts-expect-error Should work if Zodex updated with fix
+              )?.key?.description
+                ? '(record key)'
+                : undefined
+          }, [
+            type === 'map'
+              ? /** @type {import('zodex').SzMap<any, any>} */ (
+                specificSchemaObject
+              )?.key?.description ?? 'Map key'
+              : /** @type {import('zodex').SzRecord} */ (
+                specificSchemaObject
+              // @ts-expect-error Should work if Zodex updated with fix
+              )?.key?.description ?? 'Record key',
+            ' '
+          ]],
           ['span', {
             dataset: {prop: 'true'},
             className
@@ -896,7 +950,7 @@ const arrayType = {
           nbsp.repeat(2),
 
           ['span', {
-            class: 'mapKey',
+            class: 'mapKeyHolder',
             $on: {
               change: [function () {
                 /**
@@ -1606,6 +1660,29 @@ const arrayType = {
 
       // We must ensure fieldset is built before passing it
       jml({'#': [
+        ['span', {
+          class: 'mapValue',
+          title: type === 'map' &&
+          /** @type {import('zodex').SzMap<any, any>} */ (
+            specificSchemaObject
+          )?.value?.description
+            ? '(map value)'
+            : type === 'record' &&
+            /** @type {import('zodex').SzRecord} */ (
+              specificSchemaObject
+            )?.value?.description
+              ? '(record value)'
+              : undefined
+        }, [
+          type === 'map'
+            ? /** @type {import('zodex').SzMap<any, any>} */ (
+              specificSchemaObject
+            )?.value?.description ?? 'Map value'
+            : /** @type {import('zodex').SzRecord} */ (
+              specificSchemaObject
+            )?.value?.description ?? 'Record value',
+          ' '
+        ]],
         ...(specificSchemaObject && !propName && !parentTypeObject.array
           ? [jml('span', {
             className: `optionalProperties-placeholder${optionalPropertyId}`
@@ -1957,7 +2034,7 @@ const arrayType = {
                   [
                     'fieldset',
                     'legend:first-child',
-                    'span.mapKey',
+                    'span.mapKeyHolder',
                     'select.typeChoices-key-type-choices-only'
                   ]
                 ));
@@ -2085,7 +2162,10 @@ const arrayType = {
                   * }}
                   */ (DOM.filterChildElements(
                       arrayItems,
-                      ['fieldset:last-of-type', 'legend', '.mapKey', 'select']
+                      [
+                        'fieldset:last-of-type', 'legend',
+                        '.mapKeyHolder', 'select'
+                      ]
                     )[0]);
                   keyTypeChoices.$setType({
                     type, baseValue: value, bringIntoFocus

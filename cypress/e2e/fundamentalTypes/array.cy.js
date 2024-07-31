@@ -2037,3 +2037,49 @@ describe('Tuple spec (schema)', function () {
     }
   );
 });
+
+
+describe('Record spec (schema)', function () {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
+
+  it.only(
+    'Generates UI for record',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Record (A record)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get(sel + '.mapKey').should(($span) => {
+        expect($span.text()).to.contain('A record key number');
+        expect($span.attr('title')).to.equal('(record key)');
+      });
+
+      cy.get(sel + '.mapValue').should(($span) => {
+        expect($span.text()).to.contain('A record value string');
+        expect($span.attr('title')).to.equal('(record value)');
+      });
+
+      cy.clearAndType(
+        sel + 'input[name="key-type-choices-only-number"]',
+        '123'
+      );
+
+      cy.clearAndType(
+        sel + 'textarea[name="demo-keypath-not-expected-string"]',
+        'abc'
+      );
+
+      cy.get('button#viewUI').click();
+    }
+  );
+});
