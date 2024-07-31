@@ -513,9 +513,11 @@ const schemaInstanceJSON7 = {
     {
       type: 'record',
       key: {
+        description: 'A record key string',
         type: 'string'
       },
       value: {
+        description: 'A record value number',
         type: 'number'
       }
     },

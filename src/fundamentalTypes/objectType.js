@@ -25,8 +25,10 @@ const objectType = {
   getInput (...args) {
     return arrayType.getInput.apply(this, args);
   },
-  viewUI (...args) {
-    return arrayType.viewUI.apply(this, args);
+  viewUI ({...args}) {
+    return arrayType.viewUI.call(this, {
+      ...args, type: 'object'
+    });
   },
   editUI ({...args}) {
     return arrayType.editUI.call(this, {

@@ -410,7 +410,7 @@ const arrayType = {
         specificSchemaObject
       )?.rest;
       return ['legend', [
-        this.array
+        this.array && type !== 'record'
           ? /** @type {import('zodex').SzArray} */ (
             specificSchemaObject
           )?.element?.description ??
@@ -428,7 +428,15 @@ const arrayType = {
         nbsp.repeat(2),
         ['span', {
           class: `propertyName-${typeNamespace}`,
-          title: specificSchemaObject ? propName : undefined
+          title: type === 'record' && /** @type {import('zodex').SzRecord} */ (
+            specificSchemaObject
+          // @ts-expect-error Update to Zodex should remove need
+          )?.key?.description
+            ? /** @type {import('zodex').SzRecord} */ (
+              specificSchemaObject
+            // @ts-expect-error Update to Zodex should remove need
+            )?.key?.description
+            : specificSchemaObject ? propName : undefined
         }, [
           propName !== undefined
             ? /** @type {import('zodex').SzObject} */ (
@@ -593,7 +601,7 @@ const arrayType = {
         ).textContent = arrayContents.hidden ? '+' : '-';
       }}}, ['-']],
       ['div', {class: 'arrayContents'}, [
-        this.array
+        this.array && type !== 'record'
           ? ['div', {
             title: specificSchemaObject
               ? (type === 'filelist'
@@ -621,7 +629,9 @@ const arrayType = {
                 : value.length) || 0
             ]]
           ]]
-          : '',
+          : (type === 'record'
+            ? specificSchemaObject?.description ?? 'Record'
+            : ''),
         ['div', {
           class: 'arrayItems'
         }]

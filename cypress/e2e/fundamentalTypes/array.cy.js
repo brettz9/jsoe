@@ -2048,8 +2048,8 @@ describe('Record spec (schema)', function () {
     });
   });
 
-  it.only(
-    'Generates UI for record',
+  it(
+    'Generates UI for record with numeric keys',
     function () {
       cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
       const sel = '#formatAndTypeChoices ';
@@ -2080,6 +2080,77 @@ describe('Record spec (schema)', function () {
       );
 
       cy.get('button#viewUI').click();
+
+      // A regular object since we can't distinguish numeric keys
+      cy.get('#viewUIResults > div[data-type="object"]').should('exist');
+
+      cy.get('#viewUIResults .arrayItems fieldset > legend').should(
+        'contain', 'Property'
+      );
+      cy.get('#viewUIResults .arrayItems fieldset > legend > span').should(
+        'contain', '123'
+      );
+
+      cy.get(
+        '#viewUIResults .arrayItems fieldset > span[data-type="string"]'
+      ).should(
+        'contain', 'abc'
+      );
+    }
+  );
+
+  it.only(
+    'Generates UI for record with string keys',
+    function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Record'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get(sel + '.mapKey').should(($span) => {
+        expect($span.text()).to.contain('A record key string');
+        expect($span.attr('title')).to.equal('(record key)');
+      });
+
+      cy.get(sel + '.mapValue').should(($span) => {
+        expect($span.text()).to.contain('A record value number');
+        expect($span.attr('title')).to.equal('(record value)');
+      });
+
+      cy.clearAndType(
+        sel + 'textarea[name="key-type-choices-only-string"]',
+        'abc'
+      );
+
+      cy.clearAndType(
+        sel + 'input[name="demo-keypath-not-expected-number"]',
+        '123'
+      );
+
+      cy.get('button#viewUI').click();
+
+      cy.get(
+        '#viewUIResults .arrayContents'
+      ).should(
+        'contain', 'Record'
+      );
+
+      cy.get(
+        '#viewUIResults .arrayItems legend span'
+      ).should(($span) => {
+        expect($span.text()).to.contain('abc');
+        expect($span.attr('title')).to.equal('A record key string');
+      });
+
+      cy.get(
+        '#viewUIResults .arrayItems i'
+      ).should(($span) => {
+        expect($span.text()).to.contain('123');
+        expect($span.attr('title')).to.equal('(a number)');
+      });
     }
   );
 });

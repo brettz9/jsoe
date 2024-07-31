@@ -27,8 +27,10 @@ const recordType = {
   getInput (...args) {
     return arrayType.getInput.apply(this, args);
   },
-  viewUI (...args) {
-    return arrayType.viewUI.apply(this, args);
+  viewUI ({...args}) {
+    return arrayType.viewUI.call(this, {
+      ...args, type: 'record'
+    });
   },
   editUI ({...args}) {
     return arrayType.editUI.call(this, {
