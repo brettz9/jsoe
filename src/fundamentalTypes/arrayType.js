@@ -1688,9 +1688,11 @@ const arrayType = {
             ? /** @type {import('zodex').SzMap<any, any>} */ (
               specificSchemaObject
             )?.value?.description ?? 'Map value'
-            : /** @type {import('zodex').SzRecord} */ (
-              specificSchemaObject
-            )?.value?.description ?? 'Record value',
+            : type === 'record'
+              ? /** @type {import('zodex').SzRecord} */ (
+                specificSchemaObject
+              )?.value?.description ?? 'Record value'
+              : '',
           ' '
         ]],
         ...(specificSchemaObject && !propName && !parentTypeObject.array

@@ -163,10 +163,10 @@ describe('FileList spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
-      'filelist'
+      'FileList (A FileList)'
     );
     cy.get(
       sel + 'input[name="demo-keypath-not-expected-filelist"]'
@@ -178,8 +178,15 @@ describe('FileList spec (schemas)', () => {
     cy.get('#viewUIResults div[data-type="filelist"]').should('exist');
     cy.get(
       '#viewUIResults div[data-type="filelist"] .arrayContents > div[title]'
-    ).then((elem) => {
-      expect(elem.attr('title')).to.equal('(a FileList)');
+    ).should(($elem) => {
+      expect($elem.attr('title')).to.equal('(a FileList)');
     });
+
+    // Apparent bug in Cypress not getting full results
+    // cy.get(
+    //   '#viewUIResults div[data-type="file"] > b[title]'
+    // ).then(($elem) => {
+    //   expect($elem.attr('title')).to.equal('(a File)');
+    // });
   });
 });
