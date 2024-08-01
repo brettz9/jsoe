@@ -4,12 +4,12 @@
 // import './map.cy.js';
 // import './null.cy.js';
 // import './undefined.cy.js';
-import './number.cy.js';
+// import './number.cy.js';
 import './literal.cy.js';
 // import './bigint.cy.js';
 // import './bigintObject.cy.js';
 // import './date.cy.js';
-// import './string.cy.js';
+import './string.cy.js';
 // import './regexp.cy.js';
 // import './array.cy.js';
 // import './arrayReference.cy.js';
@@ -23,6 +23,8 @@ import './literal.cy.js';
 // import './void.cy.js';
 // import './enum.cy.js';
 // import './catch.cy.js';
+// import './nativeEnum.cy.js';
+// import './boolean.cy.js';
 
 // import './BooleanObject.cy.js';
 // import './NumberObject.cy.js';

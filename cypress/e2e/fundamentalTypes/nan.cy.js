@@ -64,6 +64,23 @@ describe('NaN spec', () => {
 
     cy.get('button#viewUI').click();
     cy.get('#viewUIResults i[data-type="nan"]').should('exist');
+    cy.get('#viewUIResults i[data-type="nan"]').should(($i) => {
+      expect($i.attr('title')).to.equal('A NaN');
+    });
+  });
+
+  it('views UI (without description)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 9');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'nan'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="nan"]').should('exist');
+    cy.get('#viewUIResults i[data-type="nan"]').should(($i) => {
+      expect($i.attr('title')).to.equal('(a `NaN`)');
+    });
   });
 
   it('gets value', function () {

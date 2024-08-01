@@ -27,7 +27,7 @@ const domrectType = {
       )(x, y, width, height)};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value}) {
     /** @type {HTMLInputElement} */ (

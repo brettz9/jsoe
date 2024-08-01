@@ -121,4 +121,9 @@ describe('bigintObject spec (schemas)', () => {
       expect(elem.attr('title')).to.equal('A BigInt object');
     });
   });
+
+  it('gets value', function () {
+    cy.clearTypeAndBlur('#getValueForString', 'BigIntObject123n');
+    cy.get('@consoleLog').should('be.calledWith', new Object(123n));
+  });
 });

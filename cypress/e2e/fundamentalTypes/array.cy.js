@@ -2099,7 +2099,7 @@ describe('Record spec (schema)', function () {
     }
   );
 
-  it.only(
+  it(
     'Generates UI for record with string keys',
     function () {
       cy.get('.formatChoices').select('Schema: Zodex schema instance 7');

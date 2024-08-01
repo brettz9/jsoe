@@ -537,7 +537,7 @@ describe('Special Errors spec', () => {
   });
 });
 
-describe('File spec (schemas)', () => {
+describe('Errors spec (schemas)', () => {
   beforeEach(() => {
     cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
       onBeforeLoad (win) {

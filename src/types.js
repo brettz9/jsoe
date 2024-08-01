@@ -1053,7 +1053,7 @@ Types.validValuesSet = ({form, typeNamespace, keySelectClass}) => {
  * @param {string} str
  * @returns {string}
  */
-function escapeRegex (str) {
+export function escapeRegex (str) {
   return String(str).
     replaceAll(/[.\\+*?^[\]$(){}=!<>|:-]/gu, String.raw`\$&`);
 }

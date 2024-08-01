@@ -5,12 +5,12 @@ import {$e} from '../utils/templateUtils.js';
  */
 const enumType = {
   option: ['Enum'],
-  stringRegex: /^Enum\((?<innerContent>[^|]*)\|(?<choices>.*)\)$/u,
+  stringRegex: /^Enum\((.*)\)$/u,
   valueMatch (x) {
     return typeof x === 'string';
   },
   toValue (s) {
-    return {value: s};
+    return {value: s.slice(1, -1)};
   },
   getInput ({root}) {
     return /** @type {HTMLSelectElement} */ ($e(root, 'select'));

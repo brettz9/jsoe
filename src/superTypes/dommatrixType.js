@@ -38,7 +38,7 @@ const dommatrixType = {
     return {value: dommatrix};
   },
   getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input:not([type])'));
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
   setValue ({root, value: o}) {
     const {is2D} = o;

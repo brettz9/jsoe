@@ -6,16 +6,18 @@ import {$e} from '../utils/templateUtils.js';
 const catchType = {
   option: ['Catch'],
   stringRegex: /^catch\((.*)\)$/u,
-  valueMatch () {
-    return true;
+  valueMatch (x) {
+    // Todo: Should expand types here and in `toValue`
+    return ['number', 'string'].includes(typeof x);
   },
-  // Todo: Fix all the following methods up to `editUI` to work with children
   toValue (s) {
-    return {value: s.slice(6, -1)};
+    const value = s.charAt(0) === '"' ? s.slice(1, -1) : Number(s);
+    return {value};
   },
   getInput ({root}) {
     return /** @type {HTMLTextAreaElement} */ ($e(root, 'input,textarea'));
   },
+  // Todo: Fix/Test the following method
   setValue ({root, value}) {
     this.getInput({root}).value = value;
   },
@@ -122,7 +124,7 @@ const catchType = {
           schemaOriginal: schemaContent,
           schemaContent: /** @type {import('zodex').SzCatch} */ (
             specificSchemaObject
-          )?.innerType ?? {type: 'any'},
+          )?.innerType,
           state: type,
           // itemIndex,
           typeNamespace

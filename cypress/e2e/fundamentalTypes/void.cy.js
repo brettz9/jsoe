@@ -64,7 +64,22 @@ describe('void spec', () => {
     );
 
     cy.get('button#viewUI').click();
-    cy.get('#viewUIResults i[data-type="void"]').should('exist');
+    cy.get('#viewUIResults i[data-type="void"]').should(($i) => {
+      expect($i.attr('title')).to.equal('A void');
+    });
+  });
+
+  it('views UI (without description)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 9');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'void'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="void"]').should(($i) => {
+      expect($i.attr('title')).to.equal('(a `void`)');
+    });
   });
 
   it('gets value', function () {

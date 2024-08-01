@@ -8,6 +8,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens schema boolean option', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'

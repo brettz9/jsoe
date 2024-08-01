@@ -229,7 +229,7 @@ describe('DOMMatrix spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="dommatrix"] input:not([type])'
+        'div[data-type="dommatrix"] input'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.equal('red');
       });

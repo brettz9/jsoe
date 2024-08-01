@@ -663,11 +663,11 @@ const arrayType = {
 
     const elementDesc = /** @type {import('zodex').SzArray} */ (
       specificSchemaObject
-    )?.element?.description ?? type === 'set'
+    )?.element?.description ?? (type === 'set'
       ? /** @type {import('zodex').SzSet} */ (
         specificSchemaObject
       )?.value?.description
-      : undefined;
+      : undefined);
 
     /**
      * @param {HTMLInputElement} input

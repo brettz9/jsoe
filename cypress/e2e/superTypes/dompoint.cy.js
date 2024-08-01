@@ -168,7 +168,7 @@ describe('DOMPoint spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="dompoint"] input:not([type])'
+        'div[data-type="dompoint"] input'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.equal('red');
       });
@@ -178,7 +178,7 @@ describe('DOMPoint spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="dompoint"] input:not([type])'
+        'div[data-type="dompoint"] input'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.not.equal('red');
       });

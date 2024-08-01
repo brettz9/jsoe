@@ -74,7 +74,48 @@ describe('boolean spec', () => {
     );
 
     cy.get('button#viewUI').click();
-    cy.get('#viewUIResults i[data-type="boolean"]').should('exist');
+    cy.get('#viewUIResults i[data-type="boolean"]').should('have.text', 'true');
+
+    cy.get(
+      'input[name="demo-keypath-not-expected-boolean1"][value=false]'
+    ).click();
+
+    cy.get('button#viewUI').click();
+    cy.get(
+      '#viewUIResults i[data-type="boolean"]'
+    ).should('have.text', 'false');
+
+    cy.get(
+      '#viewUIResults i[data-type="boolean"]'
+    ).should(($input) => {
+      expect($input.attr('title')).to.equal('A boolean');
+    });
+  });
+
+  it('views UI (no description)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 9');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'boolean'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults i[data-type="boolean"]').should('have.text', 'true');
+
+    cy.get(
+      'input[name="demo-keypath-not-expected-boolean1"][value=false]'
+    ).click();
+
+    cy.get('button#viewUI').click();
+    cy.get(
+      '#viewUIResults i[data-type="boolean"]'
+    ).should('have.text', 'false');
+
+    cy.get(
+      '#viewUIResults i[data-type="boolean"]'
+    ).should(($input) => {
+      expect($input.attr('title')).to.equal('(a boolean)');
+    });
   });
 
   it('gets value', function () {

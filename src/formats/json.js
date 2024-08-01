@@ -49,7 +49,7 @@ const json = {
         schemaObjects: []
       };
     }
-    // Shouldn't normally reach here
+    /* istanbul ignore next -- Shouldn't normally reach here */
     return undefined;
   }
 };

@@ -34,13 +34,15 @@ const indexedDBKey = {
     return structuredCloning.iterate(records, stateObj);
   },
   getTypesAndSchemasForState (types, state) {
+    /* istanbul ignore else -- See below */
     if (!state || ['array'].includes(state)) {
       return {
         types: this.types(),
         schemaObjects: []
       };
     }
-    // Can't be object, so shouldn't normally reach here
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    /* istanbul ignore next -- Can't be object, so shouldn't normally reach here */
     return undefined;
   }
 };

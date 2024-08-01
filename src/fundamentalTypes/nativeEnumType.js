@@ -1,7 +1,6 @@
-import {toStringTag} from '../vendor-imports.js';
 import {$e} from '../utils/templateUtils.js';
-import {copyObject} from '../utils/objects.js';
-import recordType from './recordType.js';
+import {escapeRegex} from '../types.js';
+import {jml} from '../vendor-imports.js';
 
 /**
  * @type {import('../types.js').TypeObject}
@@ -9,93 +8,120 @@ import recordType from './recordType.js';
 const nativeEnumType = {
   option: ['Native enum'],
   stringRegex: /^nativeEnum\((.*)\)$/u,
-  valueMatch (x) { // Like `object` type, can also match
-    return x && typeof x === 'object' &&
-      // Exclude other special object types
-      toStringTag(x) === 'Object' &&
-      // Check it is specifically like a native enum
-      Object.entries(x).every(([key, val]) => {
-        return ((/^\d+$/u).test(key) && typeof val === 'string') ||
-          ['number', 'string'].includes(typeof val);
-      });
+  valueMatch (x) {
+    return ['number', 'string'].includes(typeof x);
   },
-  // Todo: Fix all the following methods up to `editUI` to work with children
-  toValue (s) {
-    return {value: s.slice(8, -1)};
+  toValue (s, rootInfo) {
+    const key = s.charAt(0) === '"' ? s.slice(1, -1) : Number(s);
+
+    let schema = rootInfo?.schemaObject;
+    /* istanbul ignore else -- Most likely is if */
+    if (rootInfo?.schemaObject?.type === 'union') {
+      const schemas = /** @type {import('zodex').SzUnion} */ (
+        rootInfo.schemaObject
+      ).options.filter((option) => {
+        return option.type === 'nativeEnum';
+      });
+      schema = schemas.find((schema) => {
+        return key in schema.values;
+      });
+    }
+    const value = /** @type {import('zodex').SzNativeEnum} */ (schema)?.values[
+      key
+    ];
+    return {value};
   },
   getInput ({root}) {
     return /** @type {HTMLTextAreaElement} */ ($e(root, 'input'));
   },
+  // Todo: Fix next method
   setValue ({root, value}) {
     this.getInput({root}).value = value;
   },
-  getValue ({root, stateObj, currentPath}) {
-    const value = recordType.getValue({root, stateObj, currentPath});
-    // Todo: Add any numeric keys
-    return value;
+  getValue ({root}) {
+    const {value, $schemaNativeEnumValues} =
+      /**
+       * @type {HTMLInputElement & {
+       *   $schemaNativeEnumValues: import('zodex').SzNativeEnum['values']
+       * }}
+       */ (
+        this.getInput({root})
+      );
+
+    return $schemaNativeEnumValues[value];
   },
   viewUI ({value, specificSchemaObject}) {
-    return ['span', {
-      dataset: {type: 'nativeEnum'},
-      title: specificSchemaObject?.description ?? '(a native enum)'
-    }, [value]];
+    return ['div', [
+      'Native enum: ',
+      ['span', {
+        dataset: {type: 'nativeEnum'},
+        title: specificSchemaObject?.description ?? '(a native enum)'
+      }, [value]]
+    ]];
   },
   editUI ({
-    format, type, buildTypeChoices, specificSchemaObject,
-    topRoot, schemaContent, typeNamespace
+    specificSchemaObject
+    // typeNamespace
   }) {
-    // We want to allow overriding its descriptions
-    const specificSchemaObj = copyObject(specificSchemaObject);
-    const nativeEnumValues = specificSchemaObj?.values ?? {
-      type: 'union',
-      options: [
-        {
-          description: 'Numeric',
-          type: 'record',
-          key: {
-            type: 'number'
-          },
-          value: {
-            type: 'string'
+    const schemaNativeEnumValues = /** @type {import('zodex').SzNativeEnum} */ (
+      specificSchemaObject
+    )?.values;
+    const nativeEnumKeys = Object.keys(schemaNativeEnumValues);
+
+    const nativeEnumPattern = nativeEnumKeys.map((nativeEnumKey) => {
+      // Zod seems to prohibit numerically-indexed strings so we prevent here,
+      //   but it seems the generated JavaScript allows them (?)
+      if (
+        (/^\d$/u).test(nativeEnumKey) &&
+        Object.values(schemaNativeEnumValues).includes(
+          Number.parseInt(nativeEnumKey)
+        )
+      ) {
+        return null;
+      }
+      return escapeRegex(nativeEnumKey);
+    }).filter(Boolean).join('|');
+
+    const input =
+      /**
+       * @type {HTMLInputElement & {
+       *   $schemaNativeEnumValues: import('zodex').SzNativeEnum['values']
+       * }}
+       */ (jml(
+        'input',
+        /** @type {import('jamilih').JamilihAttributes} */ ({
+          class: 'nativeEnumKey',
+          placeholder: nativeEnumPattern,
+          title: nativeEnumPattern,
+          // Implicitly already wrapped by HTML in `^(?:...)$`
+          pattern: nativeEnumPattern,
+          $on: {
+            input () {
+              const ev = /** @type {HTMLSpanElement} */ (
+                this.parentElement?.parentElement?.querySelector(
+                  '.enumeratedValue'
+                )
+              );
+              ev.textContent = String(schemaNativeEnumValues[
+                /** @type {HTMLInputElement} */
+                (this).value
+              ] ?? '');
+            }
           }
-        },
-        {
-          description: 'String',
-          type: 'record',
-          key: {
-            type: 'string'
-          },
-          value: {
-            type: 'union',
-            options: [
-              {
-                type: 'string'
-              },
-              {
-                type: 'number'
-              }
-            ]
-          }
-        }
-      ]
-    };
-    nativeEnumValues.description = 'Native Enum';
+        })
+      ));
+    input.$schemaNativeEnumValues = schemaNativeEnumValues;
 
     return ['div', {dataset: {type: 'nativeEnum'}}, [
-      ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
-        buildTypeChoices
-      )({
-        // resultType,
-        // eslint-disable-next-line object-shorthand -- TS
-        topRoot: /** @type {HTMLDivElement} */ (topRoot),
-        // eslint-disable-next-line object-shorthand -- TS
-        format: /** @type {import('../formats.js').AvailableFormat} */ (format),
-        schemaOriginal: schemaContent,
-        schemaContent: nativeEnumValues,
-        state: type,
-        // itemIndex,
-        typeNamespace
-      }).domArray)
+      ['label', [
+        'Enumerated key ',
+        input
+      ]],
+      ['br'],
+      'Enumerated value: ',
+      ['span', {
+        class: 'enumeratedValue'
+      }]
     ]];
   }
 };

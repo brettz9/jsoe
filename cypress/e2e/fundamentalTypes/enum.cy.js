@@ -66,11 +66,31 @@ describe('enum spec', () => {
     );
 
     cy.get('button#viewUI').click();
-    cy.get('#viewUIResults span[data-type="enum"]').should('contain', 'ghi');
+    cy.get('#viewUIResults span[data-type="enum"]').should(($span) => {
+      expect($span.text()).to.contain('ghi');
+      expect($span.attr('title')).to.equal('An enum');
+    });
   });
 
-  it.skip('gets value', function () {
-    cy.clearTypeAndBlur('#getValueForString', 'false');
-    cy.get('@consoleLog').should('be.calledWith', false);
+  it('views UI (no description)', function () {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance 9');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'enum'
+    );
+    cy.get(sel + 'select[name="demo-keypath-not-expected-enum"]').select(
+      'efgh'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults span[data-type="enum"]').should(($span) => {
+      expect($span.text()).to.contain('efgh');
+      expect($span.attr('title')).to.equal('(an enum)');
+    });
+  });
+
+  it('gets value', function () {
+    cy.clearTypeAndBlur('#getValueForString', 'Enum("abc")');
+    cy.get('@consoleLog').should('be.calledWith', 'abc');
   });
 });

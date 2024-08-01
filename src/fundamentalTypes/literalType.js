@@ -14,10 +14,17 @@ const literalType = {
     return typeof x === 'boolean' || typeof x === 'number' ||
       typeof x === 'string';
   },
-  // Todo: Fix all the following methods up to `setValue` to work with children
   toValue (s) {
-    return {value: s.slice(8, -1)};
+    const value = s === 'true'
+      ? true
+      : s === 'false'
+        ? false
+        : s.charAt(0) === '"'
+          ? s.slice(1, -1)
+          : Number(s);
+    return {value};
   },
+  // Todo: Fix all the following methods up to `setValue` to work with children
   getInput ({root}) {
     return /** @type {HTMLTextAreaElement} */ ($e(root, 'input,textarea'));
   },

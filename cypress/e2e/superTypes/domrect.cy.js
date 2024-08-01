@@ -170,7 +170,7 @@ describe('DOMRect spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="domrect"] input:not([type])'
+        'div[data-type="domrect"] input'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.equal('red');
       });
@@ -180,7 +180,7 @@ describe('DOMRect spec', () => {
 
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
-        'div[data-type="domrect"] input:not([type])'
+        'div[data-type="domrect"] input'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.not.equal('red');
       });

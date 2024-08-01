@@ -549,7 +549,7 @@ const schemaInstanceJSON7 = {
     {
       description: 'A never',
       type: 'never'
-    },
+    }
 
     // Todo: Support `Promise`
     // {
@@ -597,7 +597,69 @@ const schemaInstanceJSON7 = {
     //     type: 'never'
     //   }
     // },
+  ]
+};
 
+const schemaInstanceJSON8 = {
+  type: 'union',
+  options: [
+    {
+      type: 'null'
+    },
+    {
+      description: 'A native enum',
+      type: 'nativeEnum',
+      values: {
+        0: 'abc',
+        abc: 0,
+        def: 'ghi'
+      }
+    }
+  ]
+};
+
+const schemaInstanceJSON9 = {
+  type: 'union',
+  options: [
+    {
+      description: 'A null',
+      type: 'null'
+    },
+    {
+      type: 'nativeEnum',
+      values: {
+        0: 'abc',
+        abc: 0,
+        def: 'ghi'
+      }
+    },
+    {
+      type: 'boolean'
+    },
+    {
+      type: 'literal',
+      value: 135
+    },
+    {
+      type: 'nan'
+    },
+    {
+      type: 'void'
+    },
+    {
+      type: 'enum',
+      values: ['abcd', 'efgh', 'ijkl'],
+      defaultValue: 'efgh'
+    }
+  ]
+};
+
+const schemaInstanceJSON10 = {
+  type: 'union',
+  options: [
+    {
+      type: 'nan'
+    },
     {
       description: 'A catch',
       type: 'catch',
@@ -606,20 +668,21 @@ const schemaInstanceJSON7 = {
         description: 'An overpassed string',
         type: 'string'
       }
+    }
+  ]
+};
+
+const schemaInstanceJSON11 = {
+  type: 'union',
+  options: [
+    {
+      type: 'nan'
     },
     {
-      description: 'A native enum',
-      type: 'nativeEnum',
-      values: {
-        type: 'record',
-        key: {
-          description: 'A native enum key number',
-          type: 'number'
-        },
-        value: {
-          description: 'A native enum value string',
-          type: 'string'
-        }
+      type: 'catch',
+      value: 'abc',
+      innerType: {
+        type: 'string'
       }
     }
   ]
@@ -880,6 +943,14 @@ function getSchemaContent (schema) {
     return schemaInstanceJSON6;
   case 'Zodex schema instance 7':
     return schemaInstanceJSON7;
+  case 'Zodex schema instance 8':
+    return schemaInstanceJSON8;
+  case 'Zodex schema instance 9':
+    return schemaInstanceJSON9;
+  case 'Zodex schema instance 10':
+    return schemaInstanceJSON10;
+  case 'Zodex schema instance 11':
+    return schemaInstanceJSON11;
   case 'Zodex schema instance mins and maxes':
     return schemaInstanceJSONMinsMaxes;
   case 'Zodex schema instance mins and maxes 2':
@@ -921,7 +992,9 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
     'Zodex schema', 'Zodex schema instance', 'Zodex schema instance 2',
     'Zodex schema instance 3', 'Zodex schema instance 4',
     'Zodex schema instance 5', 'Zodex schema instance 6',
-    'Zodex schema instance 7',
+    'Zodex schema instance 7', 'Zodex schema instance 8',
+    'Zodex schema instance 9', 'Zodex schema instance 10',
+    'Zodex schema instance 11',
     'Zodex schema instance mins and maxes',
     'Zodex schema instance mins and maxes 2',
     'Zodex schema instance mins and maxes 3',
@@ -936,7 +1009,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
     'Zodex schema instance strings 9',
     'any schema', 'unknown schema'
   ],
-  selectedSchema: 'Zodex schema instance 7',
+  selectedSchema: 'Zodex schema instance 2',
   getSchemaContent
 });
 
@@ -1040,7 +1113,12 @@ setTimeout(function () {
               ...schemaInstanceJSON2.options,
               ...schemaInstanceJSON3.options,
               ...schemaInstanceJSON4.options,
-              ...schemaInstanceJSON5.options
+              ...schemaInstanceJSON5.options,
+              ...schemaInstanceJSON6.options,
+              ...schemaInstanceJSON7.options,
+              ...schemaInstanceJSON8.options,
+              ...schemaInstanceJSON9.options,
+              ...schemaInstanceJSON10.options
             ]
           };
           const types = new Types();
