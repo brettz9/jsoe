@@ -22,6 +22,7 @@ import './literal.cy.js';
 // import './nan.cy.js';
 // import './void.cy.js';
 // import './enum.cy.js';
+// import './catch.cy.js';
 
 // import './BooleanObject.cy.js';
 // import './NumberObject.cy.js';

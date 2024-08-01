@@ -200,6 +200,8 @@ function addModifiers (schemaObject, set) {
  */
 function getTypesForSchema (schemaObject, originalJSON) {
   switch (schemaObject.type) {
+  case 'never':
+    return new Set();
   case 'object': {
     const set = new Set();
     // const {properties} = schemaObject;

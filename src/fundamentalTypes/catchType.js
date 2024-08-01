@@ -7,7 +7,7 @@ const catchType = {
   option: ['Catch'],
   stringRegex: /^catch\((.*)\)$/u,
   valueMatch () {
-    return false;
+    return true;
   },
   // Todo: Fix all the following methods up to `editUI` to work with children
   toValue (s) {
@@ -24,32 +24,70 @@ const catchType = {
   },
   viewUI ({
     specificSchemaObject, types,
-    resultType, typeNamespace, type, topRoot, format,
-    bringIntoFocus, buildTypeChoices, schemaContent, replaced
+    resultType, typeNamespace, topRoot, format,
+    bringIntoFocus, buildTypeChoices, // schemaContent,
+    replaced, value
   }) {
     return ['span', {
       dataset: {type: 'catch'},
       title: specificSchemaObject?.description ?? '(a catch)'
     }, [
-      'A Catch',
+      ['b', ['Catch']],
       ['br'],
-      types.getUIForModeAndType({
-        readonly: true,
-        specificSchemaObject: /** @type {import('zodex').SzCatch} */ (
-          specificSchemaObject
-        )?.innerType,
-        hasValue: true,
-        value: /** @type {import('zodex').SzCatch} */ (
-          specificSchemaObject
-        // @ts-expect-error Wait until change Zodex fork
-        ).value,
-        resultType, typeNamespace,
-        // eslint-disable-next-line object-shorthand -- TS
-        type: /** @type {import('../types.js').AvailableType} */ (type),
-        topRoot, bringIntoFocus,
-        buildTypeChoices, format, schemaContent,
-        replaced
-      })
+      'Default value',
+      ['br'],
+      ['div', {
+        class: 'defaultValue'
+      }, [
+        types.getUIForModeAndType({
+          readonly: true,
+          specificSchemaObject: /** @type {import('zodex').SzCatch} */ (
+            specificSchemaObject
+          )?.innerType,
+          hasValue: true,
+          value,
+          resultType, typeNamespace,
+          type: /** @type {import('../types.js').AvailableType} */ (
+            /** @type {import('zodex').SzCatch} */ (
+              specificSchemaObject
+            )?.innerType?.type
+          ),
+          topRoot, bringIntoFocus,
+          buildTypeChoices, format,
+          // schemaContent,
+          replaced
+        })
+      ]],
+      'Catch value',
+      ['br'],
+      ['div', {
+        class: 'catchValue'
+      }, [
+        types.getUIForModeAndType({
+          readonly: true,
+          specificSchemaObject: {
+            ...(/** @type {import('zodex').SzCatch} */ (
+              specificSchemaObject
+            )?.innerType),
+            description: '(catch value)'
+          },
+          hasValue: true,
+          value: /** @type {import('zodex').SzCatch} */ (
+            specificSchemaObject
+          // @ts-expect-error Wait until change Zodex fork
+          ).value,
+          resultType, typeNamespace,
+          type: /** @type {import('../types.js').AvailableType} */ (
+            /** @type {import('zodex').SzCatch} */ (
+              specificSchemaObject
+            )?.innerType?.type
+          ),
+          topRoot, bringIntoFocus,
+          buildTypeChoices, format,
+          // schemaContent,
+          replaced
+        })
+      ]]
     ]];
   },
   editUI ({
@@ -66,7 +104,9 @@ const catchType = {
       title: specificSchemaObject?.description ?? '(a `catch`)'
     }, [
       ['label', [
-        ['b', ['Value']],
+        ['b', {
+          title: String(schemaValue)
+        }, ['Value']],
         ' ',
         ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
           buildTypeChoices
