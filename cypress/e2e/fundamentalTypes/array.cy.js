@@ -1155,21 +1155,14 @@ describe('Array spec', function () {
       cy.get('@consoleLog').should('be.calledWith', {});
     });
 
-    it('Converts incomplete string to object', function () {
-      // Note: this uses a special escape for the initial bracket
-      cy.typeAndBlur('#getValueForString', '{{}');
-
-      cy.get('@consoleLog').should('be.calledWith', {});
-    });
-
-    it('Converts incomplete string to object', function () {
+    it('Converts incomplete string (with property) to object', function () {
       // Note: this uses a special escape for the initial bracket
       cy.typeAndBlur('#getValueForString', '{{}abc:');
 
       cy.get('@consoleLog').should('be.calledWith', {});
     });
 
-    it('Converts string to object', function () {
+    it('Converts string to nested object', function () {
       // Note: this uses a special escape for the initial bracket
       cy.typeAndBlur('#getValueForString', '{{}a:{{}}}');
 

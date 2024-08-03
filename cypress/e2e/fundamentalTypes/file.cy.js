@@ -538,7 +538,7 @@ describe('file spec', () => {
       );
       cy.get(sel + '.device').select('screenShare');
     });
-    it('should share screen', function () {
+    it('should share screen and video', function () {
       const sel = '#formatAndTypeChoices ';
       cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
         'file'

@@ -86,13 +86,13 @@ describe('literal (boolean) spec', () => {
   });
 
   // For the "Type choices with initial value set" control
-  it.skip('gets a value set onload', function () {
-    cy.get(
-      'input[name="demo-type-choices-only-initial-value-literal"]'
-    ).should(($input) => {
-      expect($input.val()).to.equal('135');
-    });
-  });
+  // it.skip('gets a value set onload', function () {
+  //   cy.get(
+  //     'input[name="demo-type-choices-only-initial-value-literal"]'
+  //   ).should(($input) => {
+  //     expect($input.val()).to.equal('135');
+  //   });
+  // });
 });
 
 describe('literal (number) spec', () => {
@@ -192,13 +192,13 @@ describe('literal (number) spec', () => {
   });
 
   // For the "Type choices with initial value set" control
-  it.skip('gets a value set onload', function () {
-    cy.get(
-      'input[name="demo-type-choices-only-initial-value-literal"]'
-    ).should(($input) => {
-      expect($input.val()).to.equal('135');
-    });
-  });
+  // it.skip('gets a value set onload', function () {
+  //   cy.get(
+  //     'input[name="demo-type-choices-only-initial-value-literal"]'
+  //   ).should(($input) => {
+  //     expect($input.val()).to.equal('135');
+  //   });
+  // });
 });
 
 describe('literal (string) spec', () => {
@@ -284,11 +284,11 @@ describe('literal (string) spec', () => {
   });
 
   // For the "Type choices with initial value set" control
-  it.skip('gets a value set onload', function () {
-    cy.get(
-      'input[name="demo-type-choices-only-initial-value-literal"]'
-    ).should(($input) => {
-      expect($input.val()).to.equal('abcde');
-    });
-  });
+  // it.skip('gets a value set onload', function () {
+  //   cy.get(
+  //     'input[name="demo-type-choices-only-initial-value-literal"]'
+  //   ).should(($input) => {
+  //     expect($input.val()).to.equal('abcde');
+  //   });
+  // });
 });

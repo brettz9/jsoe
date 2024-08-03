@@ -33,6 +33,14 @@ describe('Demo spec', () => {
     });
   });
 
+  it('Initializes a form control with a value (type choices only)', () => {
+    cy.get('#typeChoicesOnly-initializeWithValue').click();
+    cy.get('#typeChoicesOnly input[type=number]').should(($input) => {
+      expect($input.val()).to.equal('42');
+    });
+  });
+
+
   it('gets type', function (done) {
     cy.on('window:alert', (t) => {
       expect(t).to.eq('bigint');
@@ -78,13 +86,6 @@ describe('Demo spec', () => {
 
     cy.get('button#typeChoicesOnly-logValue').click();
     cy.get('@consoleLog').should('be.calledWith', 12345n);
-  });
-
-  it('Initializes a form control with a value', () => {
-    cy.get('#typeChoicesOnly-initializeWithValue').click();
-    cy.get('#typeChoicesOnly input[type=number]').should(($input) => {
-      expect($input.val()).to.equal('42');
-    });
   });
 
   it('gets value from root ancestor', function () {

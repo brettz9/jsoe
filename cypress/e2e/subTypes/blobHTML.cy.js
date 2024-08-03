@@ -69,14 +69,14 @@ describe('blobHTML spec', () => {
   });
 
   // Not triggered
-  it.skip('throws if retrieving too early', function () {
-    const sel = '#formatAndTypeChoices ';
-    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
-      'blobHTML'
-    );
+  // it.skip('throws if retrieving too early', function () {
+  //   const sel = '#formatAndTypeChoices ';
+  //   cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+  //     'blobHTML'
+  //   );
 
-    cy.get('button#logValue').click();
-  });
+  //   cy.get('button#logValue').click();
+  // });
 
   it('logs value', function () {
     const sel = '#formatAndTypeChoices ';
