@@ -289,28 +289,30 @@ function getTypesForSchema (schemaObject, originalJSON) {
         properties: {},
         unknownKeys: 'passthrough'
       },
-      {
-        type: 'symbol'
-      },
-      {
-        type: 'promise',
-        value: {
-          type: 'any'
-        }
-      },
-      {
-        type: 'function',
-        args: {
-          type: 'tuple',
-          items: [],
-          rest: {
-            type: 'any'
-          }
-        },
-        returns: {
-          type: 'any'
-        }
-      },
+
+      // Todo: support these types separately
+      // {
+      //   type: 'symbol'
+      // },
+      // {
+      //   type: 'promise',
+      //   value: {
+      //     type: 'any'
+      //   }
+      // },
+      // {
+      //   type: 'function',
+      //   args: {
+      //     type: 'tuple',
+      //     items: [],
+      //     rest: {
+      //       type: 'any'
+      //     }
+      //   },
+      //   returns: {
+      //     type: 'any'
+      //   }
+      // },
       {
         type: 'nativeEnum',
         values: {
