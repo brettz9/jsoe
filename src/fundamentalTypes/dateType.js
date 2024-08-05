@@ -167,7 +167,10 @@ const dateType = {
           }]
         ]]
       ]);
-    return ['div', {dataset: {type: this.valid ? 'ValidDate' : 'date'}}, [
+    return ['div', {
+      dataset: {type: this.valid ? 'ValidDate' : 'date'},
+      title: specificSchemaObject?.description ?? 'Date'
+    }, [
       ['label', {
         hidden: notANum
       }, [

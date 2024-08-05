@@ -20,7 +20,7 @@ import dialogs from '../utils/dialogs.js';
  *   name?: string,
  *   type?: string
  * }} value
- * @returns {void}
+ * @returns {Blob}
  */
 function newBlobForBinary (viewBinary, value) {
   const oldBlob = /** @type {Blob|undefined} */ (
@@ -52,6 +52,7 @@ function newBlobForBinary (viewBinary, value) {
     }
   );
   viewBinary.$value = blob;
+  return blob;
 }
 
 /**
@@ -97,9 +98,12 @@ function binaryButton (value, editable) {
               const textarea = /** @type {HTMLTextAreaElement} */ (
                 $e(dialog, '.view-binary')
               );
-              newBlobForBinary(viewBinary, {
+              const blob = newBlobForBinary(viewBinary, {
                 stringContents: textarea.value
               });
+              // May need to update size:
+              /** @type {HTMLFieldSetElement & {$setValue: SetValue}} */
+              (viewBinary.parentElement).$setValue(blob);
               dialog.close();
             },
             // @ts-expect-error TS bug
@@ -355,10 +359,13 @@ const blobType = {
         : ''
     ]];
   },
-  editUI ({typeNamespace, value = {}}) {
+  editUI ({typeNamespace, specificSchemaObject, value = {}}) {
     // Todo: Could add way to preview blob in edit mode (whether
     //         recorded or uploaded)
-    return ['div', {dataset: {type: 'blob'}}, [
+    return ['div', {
+      dataset: {type: 'blob'},
+      title: specificSchemaObject?.description ?? 'Blob'
+    }, [
       ['fieldset', {
         class: 'blobMetaData',
         $custom: {

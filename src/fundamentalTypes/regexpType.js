@@ -72,7 +72,9 @@ const regexpType = {
       String(value)
     ]];
   },
-  editUI ({typeNamespace, types, value = {source: '', flags: ''}}) {
+  editUI ({
+    typeNamespace, specificSchemaObject, types, value = {source: '', flags: ''}
+  }) {
     // Todo (low): Add RegExp syntax highlighter
     const select = jml('select', {
       multiple: true, size: 5, $custom: {
@@ -102,7 +104,10 @@ const regexpType = {
         selected: value.flags.includes(flag)
       }, [flag]];
     }));
-    const root = jml('div', {dataset: {type: 'regexp'}}, [
+    const root = jml('div', {
+      dataset: {type: 'regexp'},
+      title: specificSchemaObject?.description ?? 'RegExp'
+    }, [
       ['label', [
         'Source ',
         ['input', {

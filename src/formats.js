@@ -77,7 +77,8 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *   stateObj?: import('./types.js').StateObject,
  * ) => {
  *   type: import('./types.js').AvailableType|undefined
- *   schema?: import('zodex').SzType|undefined
+ *   schema?: import('zodex').SzType|undefined,
+ *   mustBeOptional?: boolean
  * }} [convertFromTypeson]
  */
 

@@ -49,14 +49,17 @@ const bigintType = {
       `${String(value)}n`
     ]];
   },
-  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value}) {
     const bigintSchemaObject = /** @type {import('zodex').SzBigInt} */ (
       specificSchemaObject
     );
-    return ['div', {dataset: {type: 'bigint'}}, [
+    return ['div', {
+      dataset: {type: 'bigint'},
+      title: specificSchemaObject?.description ?? 'BigInt'
+    }, [
       ['input', {
         name: `${typeNamespace}-bigint`, type: 'number',
-        value: specificSchemaObject?.defaultValue ?? value,
+        value: value ?? specificSchemaObject?.defaultValue ?? '',
         min: bigintSchemaObject?.min
           ? bigintSchemaObject?.minInclusive
             ? bigintSchemaObject?.min

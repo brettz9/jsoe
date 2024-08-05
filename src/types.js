@@ -820,6 +820,8 @@ class Types {
           : message || 'Invalid'
       );
       formControl.reportValidity();
+      // We don't want a focus as `reportValidity` does in at least some cases
+      formControl.blur();
       return valid;
     }
     return true;

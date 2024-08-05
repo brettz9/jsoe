@@ -42,10 +42,13 @@ const BooleanObjectType = {
   editUI ({
     // eslint-disable-next-line @stylistic/max-len -- Long
     // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Deliberate creation here
-    typeNamespace, value = new Boolean(true)
+    typeNamespace, specificSchemaObject, value = new Boolean(true)
   }) {
     this.ct++;
-    return ['div', {dataset: {type: 'BooleanObject'}}, [
+    return ['div', {
+      dataset: {type: 'BooleanObject'},
+      title: specificSchemaObject?.description ?? 'Boolean object'
+    }, [
       ['label', [
         'True',
         ['input', {

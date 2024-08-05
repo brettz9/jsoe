@@ -56,7 +56,7 @@ const numberType = {
       String(value)
     ]];
   },
-  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value}) {
     const isLiteral = specificSchemaObject?.type === 'literal';
     const numberSchemaObject = /** @type {import('zodex').SzNumber} */ (
       specificSchemaObject
@@ -66,7 +66,10 @@ const numberType = {
     const epsilon = 150 * Number.EPSILON;
     const maxEpsilon = 300 * Number.EPSILON;
 
-    return ['div', {dataset: {type: 'number'}}, [
+    return ['div', {
+      dataset: {type: 'number'},
+      title: specificSchemaObject?.description ?? 'Number'
+    }, [
       ['input', {
         disabled: isLiteral,
         name: `${typeNamespace}-number`,
@@ -87,7 +90,7 @@ const numberType = {
           (numberSchemaObject?.int ? '1' : 'any'),
         value: isLiteral
           ? specificSchemaObject?.value
-          : (specificSchemaObject?.defaultValue ?? value)
+          : (value ?? specificSchemaObject?.defaultValue ?? '')
       }]
     ]];
   }

@@ -406,6 +406,7 @@ const errorsSpecialType = {
   },
   editUI ({
     typeNamespace,
+    specificSchemaObject,
     types,
 
     // Pass these to `errors` array
@@ -461,7 +462,10 @@ const errorsSpecialType = {
 
     const div = jml(
       'div',
-      {dataset: {type: 'errors'}},
+      {
+        dataset: {type: 'errors'},
+        title: specificSchemaObject?.description ?? 'Special error'
+      },
       /** @type {import('jamilih').JamilihChildren} */ ([
         ['div', [
           ['label', [

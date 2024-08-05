@@ -48,8 +48,11 @@ const bigintObjectType = {
       title: specificSchemaObject?.description ?? '(a BigInt Object)'
     }, [`${String(value)}n`]];
   },
-  editUI ({typeNamespace, value = ''}) {
-    return ['div', {dataset: {type: 'bigintObject'}}, [
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    return ['div', {
+      dataset: {type: 'bigintObject'},
+      title: specificSchemaObject?.description ?? 'BigInt object'
+    }, [
       ['input', {
         name: `${typeNamespace}-bigintObject`, type: 'number', step: '1',
         value

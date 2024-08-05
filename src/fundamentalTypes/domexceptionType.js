@@ -51,16 +51,19 @@ const domexceptionType = {
       value.code
     ]];
   },
-  editUI ({typeNamespace, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
     domExceptionNameId++;
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    return ['div', {dataset: {type: 'domexception'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+    return ['div', {
+      dataset: {type: 'domexception'},
+      title: specificSchemaObject?.description ?? 'DOMException'
+    }, /** @type {import('jamilih').JamilihChildren} */ ([
       ['label', [
         'Name: ',
         ['input', {
           class: 'name',
           list: `domExceptionNames-${domExceptionNameId}`,
-          name: `${typeNamespace}-domexception-name`, value,
+          name: `${typeNamespace}-domexception-name`,
+          value: value?.name ?? '',
           size: 30,
           placeholder: '(Optional predefined name)'
         }]
@@ -108,7 +111,8 @@ const domexceptionType = {
         'Message: ',
         ['input', {
           class: 'message',
-          name: `${typeNamespace}-domexception-message`, value
+          name: `${typeNamespace}-domexception-message`,
+          value: value?.message ?? ''
         }]
       ]]
     ])];

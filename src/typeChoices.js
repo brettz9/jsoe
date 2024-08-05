@@ -305,7 +305,7 @@ export const buildTypeChoices = ({
       }
     )
   ]));
-  if (autoTrigger && typeOptions.length === 1 && !schemaObjs) {
+  if (autoTrigger && typeOptions.length === 1 && !setValue) {
     setTimeout(() => {
       sel.selectedIndex = 1;
       sel.dispatchEvent(new Event('change'));

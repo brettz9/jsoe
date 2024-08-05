@@ -401,7 +401,7 @@ const buffersourceType = {
       }, ['View data']]
     ]];
   },
-  editUI ({typeNamespace, value}) {
+  editUI ({typeNamespace, specificSchemaObject, value}) {
     idx++;
 
     /**
@@ -409,7 +409,8 @@ const buffersourceType = {
      */
 
     const div = jml('div', {
-      dataset: {type: 'buffersource'}
+      dataset: {type: 'buffersource'},
+      title: specificSchemaObject?.description ?? 'BufferSource'
     }, [
       ['fieldset', {
         class: 'returnType',

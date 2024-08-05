@@ -52,10 +52,14 @@ const SpecialRealNumberSuperType = {
   getInput ({root}) {
     return /** @type {HTMLSelectElement} */ ($e(root, 'select'));
   },
-  editUI ({typeNamespace, value = Number.POSITIVE_INFINITY}) {
-    return ['div', {dataset: {type: 'SpecialRealNumber'}}, [
+  editUI ({
+    typeNamespace, specificSchemaObject, value = Number.POSITIVE_INFINITY
+  }) {
+    return ['div', {
+      dataset: {type: 'SpecialRealNumber'},
+      title: specificSchemaObject?.description ?? 'Special Real Number'
+    }, [
       ['label', [
-        'Special Real Number: ',
         ['select', {name: `${typeNamespace}-SpecialRealNumber`}, [
           ['option', {
             value: 'Infinity', selected: value === Number.POSITIVE_INFINITY

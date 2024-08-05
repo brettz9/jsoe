@@ -11,18 +11,21 @@ const nullType = {
   },
   toValue: () => ({value: null}),
   getValue: () => null,
+  /* istanbul ignore next -- No dupe keys, array refs, or validation */
+  getInput ({root}) {
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+  },
   viewUI ({specificSchemaObject}) {
     return ['i', {
       dataset: {type: 'null'},
       title: specificSchemaObject?.description ?? '(a `null`)'
     }, ['null']];
   },
-  /* istanbul ignore next -- No dupe keys, array refs, or validation */
-  getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
-  },
-  editUI ({typeNamespace}) {
-    return ['div', {dataset: {type: 'null'}}, [
+  editUI ({typeNamespace, specificSchemaObject}) {
+    return ['div', {
+      dataset: {type: 'null'},
+      title: specificSchemaObject?.description ?? 'Null'
+    }, [
       ['label', [
         'Null',
         ['input', {

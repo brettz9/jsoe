@@ -17,18 +17,21 @@ const voidType = {
       this.toValue
     )('').value;
   },
+  /* istanbul ignore next -- No dupe keys, array refs, or validation */
+  getInput ({root}) {
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+  },
   viewUI ({specificSchemaObject}) {
     return ['i', {
       dataset: {type: 'void'},
       title: specificSchemaObject?.description ?? '(a `void`)'
     }, ['void']];
   },
-  /* istanbul ignore next -- No dupe keys, array refs, or validation */
-  getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
-  },
-  editUI ({typeNamespace}) {
-    return ['div', {dataset: {type: 'void'}}, [
+  editUI ({typeNamespace, specificSchemaObject}) {
+    return ['div', {
+      dataset: {type: 'void'},
+      title: specificSchemaObject?.description ?? 'Void'
+    }, [
       ['label', [
         'Void',
         ['input', {

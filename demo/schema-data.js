@@ -93,7 +93,8 @@ const schemaInstanceJSON2 = {
       type: 'object',
       properties: {
         badProperty: {
-          type: 'never'
+          type: 'never',
+          isOptional: true
         }
       }
     },
@@ -113,6 +114,7 @@ const schemaInstanceJSON2 = {
       description: 'With catchall schema',
       type: 'object',
       catchall: {
+        description: 'Catchall number',
         type: 'number'
       },
       properties: {
@@ -338,7 +340,7 @@ const schemaInstanceJSON2 = {
       inner: {type: 'any'}
     },
     {
-      description: 'An Errors',
+      description: 'A special error',
       type: 'effect',
       effects: [
         {
@@ -668,9 +670,30 @@ const schemaInstanceJSON11 = {
   ]
 };
 
+/**
+ *
+ */
+const makeNoneditableType = () => {
+  /**
+   *
+   */
+  class NonEditableType {
+    /* eslint-disable class-methods-use-this -- `this` not needed */
+    /**
+     * @returns {string}
+     */
+    get [Symbol.toStringTag] () {
+      /* eslint-enable class-methods-use-this -- `this` not needed */
+      return 'NonEditableType';
+    }
+  }
+  return new NonEditableType();
+};
+
 export {
   schemaInstanceJSON, schemaInstanceJSON2, schemaInstanceJSON3,
   schemaInstanceJSON4, schemaInstanceJSON5, schemaInstanceJSON6,
   schemaInstanceJSON7, schemaInstanceJSON8, schemaInstanceJSON9,
-  schemaInstanceJSON10, schemaInstanceJSON11
+  schemaInstanceJSON10, schemaInstanceJSON11,
+  makeNoneditableType
 };

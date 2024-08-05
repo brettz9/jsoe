@@ -58,8 +58,11 @@ const noneditableType = {
       stringTag
     ]];
   },
-  editUI ({typeNamespace, value}) {
-    return ['div', {dataset: {type: 'resurrectable'}}, [
+  editUI ({typeNamespace, specificSchemaObject, value}) {
+    return ['div', {
+      dataset: {type: 'resurrectable'},
+      title: specificSchemaObject?.description ?? 'Non-editable'
+    }, [
       ['a', {
         // eslint-disable-next-line no-script-url -- Safe
         href: 'javascript:void(0)',

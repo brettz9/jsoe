@@ -88,7 +88,7 @@ const stringType = {
             : '(a string)')
     }, [value]];
   },
-  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+  editUI ({typeNamespace, specificSchemaObject, value}) {
     const stringSchemaObject = /** @type {import('zodex').SzString} */ (
       specificSchemaObject
     );
@@ -227,7 +227,10 @@ const stringType = {
       return value;
     };
 
-    return ['div', {dataset: {type: 'string'}}, [
+    return ['div', {
+      dataset: {type: 'string'},
+      title: specificSchemaObject?.description ?? 'String'
+    }, [
       [
         // There is a `time` and `datetime-local` but they don't
         //    support milliseconds
@@ -245,7 +248,7 @@ const stringType = {
           },
           name: `${typeNamespace}-string`,
           type: kind,
-          value: specificSchemaObject?.defaultValue ?? value,
+          value: value ?? specificSchemaObject?.defaultValue ?? '',
 
           // Form doesn't support for date
           minlength: kind === 'date' ? undefined : minlength,
@@ -267,7 +270,7 @@ const stringType = {
         }, [
           isLiteral
             ? specificSchemaObject?.value
-            : (specificSchemaObject?.defaultValue ?? value)
+            : (value ?? specificSchemaObject?.defaultValue ?? '')
         ]]
     ]];
   }

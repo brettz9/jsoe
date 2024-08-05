@@ -388,10 +388,13 @@ const fileType = {
         : ''
     ]];
   },
-  editUI ({typeNamespace, value = {}}) {
+  editUI ({typeNamespace, specificSchemaObject, value = {}}) {
     // Todo: Could add way to preview file in edit mode (whether
     //         recorded or uploaded)
-    return ['div', {dataset: {type: 'file'}}, [
+    return ['div', {
+      dataset: {type: 'file'},
+      title: specificSchemaObject?.description ?? 'File'
+    }, [
       ['fieldset', {
         class: 'fileMetaData',
         $custom: {

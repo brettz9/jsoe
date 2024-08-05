@@ -97,7 +97,7 @@ const dompointType = {
       value.w
     ]];
   },
-  editUI ({typeNamespace, value = {
+  editUI ({typeNamespace, specificSchemaObject, value = {
     x: '',
     y: '',
     z: '',
@@ -105,8 +105,10 @@ const dompointType = {
   }}) {
     idx++;
     const step = 'any'; // Proper step?
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    return ['div', {dataset: {type: 'dompoint'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+    return ['div', {
+      dataset: {type: 'dompoint'},
+      title: specificSchemaObject?.description ?? 'DOMPoint'
+    }, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
         ['label', [
           ['input', {

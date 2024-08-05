@@ -40,8 +40,11 @@ const NumberObjectType = {
       specificSchemaObject ? `${value}` : `Number(${value})`
     ]];
   },
-  editUI ({typeNamespace, value}) {
-    return ['div', {dataset: {type: 'NumberObject'}}, [
+  editUI ({typeNamespace, specificSchemaObject, value}) {
+    return ['div', {
+      dataset: {type: 'NumberObject'},
+      title: specificSchemaObject?.description ?? 'Number object'
+    }, [
       ['input', {
         name: `${typeNamespace}-NumberObject`,
         type: 'number',

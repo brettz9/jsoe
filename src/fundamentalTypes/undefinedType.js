@@ -27,8 +27,11 @@ const undefinedType = {
   getInput ({root}) {
     return /** @type {HTMLInputElement} */ ($e(root, 'input'));
   },
-  editUI ({typeNamespace}) {
-    return ['div', {dataset: {type: 'undef'}}, [
+  editUI ({typeNamespace, specificSchemaObject}) {
+    return ['div', {
+      dataset: {type: 'undef'},
+      title: specificSchemaObject?.description ?? 'Undefined'
+    }, [
       ['label', [
         'Undefined',
         ['input', {

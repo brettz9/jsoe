@@ -29,8 +29,11 @@ const booleanType = {
     const isLiteral = specificSchemaObject?.type === 'literal';
     const val = isLiteral
       ? specificSchemaObject?.value
-      : (specificSchemaObject?.defaultValue ?? value);
-    return ['div', {dataset: {type: 'boolean'}}, [
+      : (value ?? specificSchemaObject?.defaultValue);
+    return ['div', {
+      dataset: {type: 'boolean'},
+      title: specificSchemaObject?.description ?? 'Boolean'
+    }, [
       ['label', [
         'True',
         ['input', {

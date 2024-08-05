@@ -7,27 +7,11 @@ import {
   Types
 } from '../src/index.js';
 
-const types = new Types();
+import {
+  makeNoneditableType
+} from './schema-data.js';
 
-/**
- *
- */
-const makeNoneditableType = () => {
-  /**
-   *
-   */
-  class NonEditableType {
-    /* eslint-disable class-methods-use-this -- `this` not needed */
-    /**
-     * @returns {string}
-     */
-    get [Symbol.toStringTag] () {
-      /* eslint-enable class-methods-use-this -- `this` not needed */
-      return 'NonEditableType';
-    }
-  }
-  return new NonEditableType();
-};
+const types = new Types();
 
 const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,

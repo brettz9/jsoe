@@ -59,14 +59,23 @@ const nativeEnumType = {
       }, [value]]
     ]];
   },
-  editUI ({
-    specificSchemaObject
-    // typeNamespace
-  }) {
+  editUI (info) {
+    const {
+      specificSchemaObject,
+      value
+      // typeNamespace
+    } = info;
     const schemaNativeEnumValues = /** @type {import('zodex').SzNativeEnum} */ (
       specificSchemaObject
     )?.values;
     const nativeEnumKeys = Object.keys(schemaNativeEnumValues);
+
+    let keyForValue;
+    if (schemaNativeEnumValues && 'value' in info) {
+      keyForValue = Object.entries(schemaNativeEnumValues).find(([, val]) => {
+        return val === value;
+      })?.[0];
+    }
 
     const nativeEnumPattern = nativeEnumKeys.map((nativeEnumKey) => {
       // Zod seems to prohibit numerically-indexed strings so we prevent here,
@@ -95,6 +104,7 @@ const nativeEnumType = {
           title: nativeEnumPattern,
           // Implicitly already wrapped by HTML in `^(?:...)$`
           pattern: nativeEnumPattern,
+          value: keyForValue ?? '',
           $on: {
             input () {
               const ev = /** @type {HTMLSpanElement} */ (
@@ -112,7 +122,10 @@ const nativeEnumType = {
       ));
     input.$schemaNativeEnumValues = schemaNativeEnumValues;
 
-    return ['div', {dataset: {type: 'nativeEnum'}}, [
+    return ['div', {
+      dataset: {type: 'nativeEnum'},
+      title: specificSchemaObject?.description ?? 'Native Enum'
+    }, [
       ['label', [
         'Enumerated key ',
         input
@@ -121,7 +134,9 @@ const nativeEnumType = {
       'Enumerated value: ',
       ['span', {
         class: 'enumeratedValue'
-      }]
+      }, [
+        value ?? ''
+      ]]
     ]];
   }
 };

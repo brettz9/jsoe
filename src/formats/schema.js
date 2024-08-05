@@ -582,16 +582,20 @@ const schema = {
       throw new Error('State object expected for schema');
     }
     let currentSchema = stateObj.schemaContent;
+    let mustBeOptional = false;
     switch (parentSchema?.type) {
     case 'object':
       currentSchema = /** @type {import('zodex').SzObject} */ (
         parentSchema
       ).properties[
         /** @type {string} */ (arrayOrObjectPropertyName)
-      ] ??
-      /** @type {import('zodex').SzObject} */ (
-        parentSchema
-      ).catchall;
+      ];
+      if (!currentSchema) {
+        currentSchema = /** @type {import('zodex').SzObject} */ (
+          parentSchema
+        ).catchall;
+        mustBeOptional = true;
+      }
       break;
     case 'array':
       currentSchema = /** @type {import('zodex').SzArray} */ (
@@ -679,7 +683,8 @@ const schema = {
           console.log('matched', v, v?.length, type, schema);
           return {
             type,
-            schema
+            schema,
+            mustBeOptional
           };
         }
       }

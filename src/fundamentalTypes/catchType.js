@@ -94,7 +94,7 @@ const catchType = {
   },
   editUI ({
     format, type, buildTypeChoices, specificSchemaObject,
-    topRoot, schemaContent, typeNamespace
+    topRoot, schemaContent, typeNamespace, value
   }) {
     const schemaValue =
       /** @type {import('zodex').SzCatch} */ (
@@ -120,7 +120,8 @@ const catchType = {
           format: /** @type {import('../formats.js').AvailableFormat} */ (
             format
           ),
-          value: schemaValue,
+          setValue: true,
+          value: value ?? schemaValue,
           schemaOriginal: schemaContent,
           schemaContent: /** @type {import('zodex').SzCatch} */ (
             specificSchemaObject

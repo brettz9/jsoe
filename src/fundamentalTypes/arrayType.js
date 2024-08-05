@@ -649,7 +649,7 @@ const arrayType = {
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
     formats, types, specificSchemaObject, schemaContent,
-    type, forcedState, topRoot, value, bringIntoFocus = true
+    type, forcedState, topRoot, value: objectValue, bringIntoFocus = true
   }) {
     const {sparse} = this;
     // eslint-disable-next-line consistent-this -- Clearer
@@ -861,13 +861,13 @@ const arrayType = {
      *   arrayItems: ArrayItems,
      *   propName: string|undefined,
      *   required?: true,
-     *   tupleSchema?: import('zodex').SzType
+     *   schema?: import('zodex').SzType
      * }} cfg
      * @returns {import('jamilih').JamilihArray}
      */
     const buildLegend = ({
       className, splice, itemIndex, /* type, */ typeNamespace,
-      arrayItems, propName, required, tupleSchema
+      arrayItems, propName, required, schema
     }) => {
       /**
        * @callback ValidateLength
@@ -913,6 +913,7 @@ const arrayType = {
           /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
             buildTypeChoices
           )({
+            autoTrigger: false, // At least needed when value supplied
             // eslint-disable-next-line object-shorthand -- TS
             format: /** @type {import('../formats.js').AvailableFormat} */ (
               format
@@ -1021,6 +1022,7 @@ const arrayType = {
         ]];
       }
       if (editableProperties) {
+        console.log('PROPNAME', propName, schema, specificSchemaObject);
         const description = /** @type {import('zodex').SzObject} */ (
           specificSchemaObject
         )?.properties?.[/** @type {string} */ (propName)]?.description;
@@ -1035,22 +1037,48 @@ const arrayType = {
           return prop;
         }).filter(Boolean);
         optionalPropertyId++;
+        const initialValue = sparse
+          ? (
+            splice === 'append'
+              ? ''
+              : (propName !== undefined ? propName : itemIndex)
+          )
+          : propName || '';
         return /** @type {import('jamilih').JamilihArray} */ (['legend', [
           sparse
             ? elementDesc ?? 'Item'
             : {'#': required
               ? [
                 ['b', {className, title: description ? propName : undefined}, [
-                  description ?? propName ?? ''
+                  elementDesc ?? description ?? propName ?? ''
                 ]]
               ]
               : [
                 ['span', {
                   className: `${className}_propertyHolder${optionalPropertyId}`
                 }, [
-                  'Property ',
-                  ['span', {className}, [String(itemIndex)]],
-                  ':'
+                  ...(specificSchemaObject && propName) // Optional but has name
+                    ? [
+                      ['b', [
+                        /** @type {import('zodex').SzObject} */
+                        (specificSchemaObject)?.properties?.[
+                          propName
+                        ]
+                          ? /** @type {import('zodex').SzObject} */ (
+                            specificSchemaObject
+                          )?.properties?.[
+                            propName
+                          ]?.description ?? propName
+                          : /** @type {import('zodex').SzObject} */ (
+                            specificSchemaObject
+                          )?.catchall?.description ?? propName
+                      ]]
+                    ]
+                    : [
+                      'Property ',
+                      ['span', {className}, [String(itemIndex)]],
+                      ':'
+                    ]
                 ]]
               ]},
           nbsp.repeat(2),
@@ -1071,13 +1099,7 @@ const arrayType = {
                 : 'block'
             },
             disabled: required && type === 'arrayNonindexKeys',
-            value: sparse
-              ? (
-                splice === 'append'
-                  ? ''
-                  : (propName !== undefined ? propName : itemIndex)
-              )
-              : propName || '',
+            value: initialValue,
             dataset: {prop: true, object: true, optionalPropertyId},
             /*
             // Works but we do want to let the user input non-integer
@@ -1247,7 +1269,7 @@ const arrayType = {
                * @this {HTMLInputElement}
                */
               input () {
-                if (!specificSchemaObject) {
+                if (!specificSchemaObject && !schema) {
                   return;
                 }
                 const propHolder = /** @type {HTMLElement} */ (
@@ -1257,7 +1279,18 @@ const arrayType = {
                 );
                 DOM.removeChildren(propHolder);
                 jml('b', [
-                  this.value
+                  /** @type {import('zodex').SzObject} */
+                  (specificSchemaObject)?.properties?.[
+                    this.value
+                  ]
+                    ? /** @type {import('zodex').SzObject} */ (
+                      specificSchemaObject
+                    )?.properties?.[
+                      this.value
+                    ]?.description ?? this.value
+                    : /** @type {import('zodex').SzObject} */ (
+                      specificSchemaObject
+                    )?.catchall?.description ?? this.value
                 ], propHolder);
               },
               /**
@@ -1298,13 +1331,24 @@ const arrayType = {
                     invalid = true;
                   } else {
                     this.style.backgroundColor = 'revert-layer';
+                    this.setCustomValidity('');
+                    this.reportValidity();
                     const {optionalPropertyId} = this.dataset;
-                    const placeholder = /** @type {HTMLElement} */ (
+                    let placeholder = /** @type {HTMLElement} */ (
                       $e(
                         arrayItems,
                         `.optionalProperties-placeholder${optionalPropertyId}`
                       )
                     );
+                    if (!placeholder) {
+                      placeholder = /** @type {HTMLElement} */ ($e(
+                        /** @type {HTMLElement} */
+                        (this.parentElement?.parentElement),
+                        `.property-placeholder`
+                      )?.previousElementSibling);
+                      // Remove extra select element too
+                      placeholder.previousElementSibling?.remove();
+                    }
                     placeholder.replaceWith(
                       jml('div', {
                         className:
@@ -1312,10 +1356,13 @@ const arrayType = {
                       }, [
                         ...buildTypeChoicesForProperty({
                           propName: this.value,
-                          fallbackSchema:
+                          schema:
+                          /** @type {import('zodex').SzObject} */
+                          (specificSchemaObject)?.properties?.[this.value] ??
                           /** @type {import('zodex').SzObject} */ (
                             specificSchemaObject
-                          )?.catchall ?? {type: 'any'}
+                          )?.catchall ??
+                          {type: 'any'}
                         })
                       ])
                     );
@@ -1354,8 +1401,8 @@ const arrayType = {
           ? ''
           : fileDesc
             ? `${fileDesc} `
-            : tupleSchema?.description
-              ? `${tupleSchema?.description} `
+            : schema?.description
+              ? `${schema?.description} `
               : type === 'tuple' && /** @type {import('zodex').SzTuple} */ (
                 specificSchemaObject
               )?.rest?.description
@@ -1367,10 +1414,10 @@ const arrayType = {
           dataset: {prop: true, array: true},
           className
         }, [
-          propName !== undefined
-            ? propName
-            : elementDesc
-              ? `${elementDesc} ${itemIndex + 1}`
+          elementDesc
+            ? `${elementDesc} ${itemIndex + 1}`
+            : propName !== undefined
+              ? propName
               : String(itemIndex)
         ]]
       ]]);
@@ -1402,13 +1449,13 @@ const arrayType = {
     /**
      * @param {{
      *   propName: string|undefined,
-     *   tupleSchema?: import('zodex').SzType,
+     *   schema?: import('zodex').SzType,
      *   fallbackSchema?: import('zodex').SzType,
      *   autoTrigger?: boolean
      * }} cfg
      */
     const buildTypeChoicesForProperty = ({
-      propName, tupleSchema, fallbackSchema, autoTrigger
+      propName, schema, fallbackSchema, autoTrigger
     }) => {
       return /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
@@ -1420,10 +1467,10 @@ const arrayType = {
         // eslint-disable-next-line object-shorthand -- TS
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
         schemaOriginal: schemaContent,
-        schemaContent: type === 'tuple'
-          ? tupleSchema ?? /** @type {import('zodex').SzTuple} */ (
+        schemaContent: schema || type === 'tuple'
+          ? (schema ?? /** @type {import('zodex').SzTuple} */ (
             specificSchemaObject
-          ).rest
+          ).rest)
           : mapProperties
             // Can also be a `Record`
             ? /** @type {import('zodex').SzMap<any, any>} */ (
@@ -1531,7 +1578,7 @@ const arrayType = {
      *   alwaysFocus?: true
      *   required?: true
      *   autoTrigger?: boolean,
-     *   tupleSchema?: import('zodex').SzType
+     *   schema?: import('zodex').SzType
      * }} cfg
      * @returns {void}
      */
@@ -1545,7 +1592,7 @@ const arrayType = {
      * }}
      */
     const $addArrayElement = function ({
-      propName, splice, alwaysFocus, required, tupleSchema, autoTrigger
+      propName, splice, alwaysFocus, required, schema, autoTrigger
     }) {
       const arrayItems = this.$getArrayItems();
       if (sparse) {
@@ -1663,7 +1710,7 @@ const arrayType = {
             arrayItems,
             propName,
             required,
-            tupleSchema
+            schema
           })
         ],
         arrayItems);
@@ -1699,7 +1746,8 @@ const arrayType = {
           ? [jml('span', {
             className: `optionalProperties-placeholder${optionalPropertyId}`
           })]
-          : buildTypeChoicesForProperty({propName, tupleSchema, autoTrigger})),
+          : buildTypeChoicesForProperty({propName, schema, autoTrigger})),
+        ['span', {className: 'property-placeholder'}],
         nbsp.repeat(2),
         ['button', {
           disabled: type === 'tuple' && required &&
@@ -1924,7 +1972,7 @@ const arrayType = {
           'Array length: ',
           ['input', {
             type: 'number',
-            value: (value && value.length) || 0,
+            value: (objectValue && objectValue.length) || 0,
             step: 1,
             size: 4,
             class: 'arrayLength',
@@ -2160,11 +2208,17 @@ const arrayType = {
             // eslint-disable-next-line @stylistic/max-len -- Long
             /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
             $addAndSetArrayElement ({
-              propName, type, value, bringIntoFocus, setAValue
+              propName, type, value, bringIntoFocus, setAValue,
+              schemaContent: schema, mustBeOptional
             }) {
               if (mapProperties) {
+                console.log('propName', propName, propName === '0');
                 if (propName === '0') {
-                  this.$addArrayElement({propName});
+                  this.$addArrayElement({
+                    propName,
+                    // At least needed when value supplied
+                    autoTrigger: false
+                  });
                   const arrayItems = this.$getArrayItems();
                   const keyTypeChoices = /**
                   * @type {HTMLSelectElement & {
@@ -2187,7 +2241,11 @@ const arrayType = {
                   return keyTypeChoices.$getTypeRoot();
                 }
               } else {
-                this.$addArrayElement({propName, autoTrigger: false});
+                this.$addArrayElement({
+                  propName, schema, autoTrigger: false,
+                  required: !mustBeOptional && schema && !schema.isOptional &&
+                    schema.type !== 'never'
+                });
               }
               const typeChoices = this.$getTypeChoices();
               typeChoices.$setType({type, baseValue: value, bringIntoFocus});
@@ -2227,7 +2285,7 @@ const arrayType = {
              */
             // @ts-expect-error TS is apparently getting wrong $addArrayElement
             $addArrayElement ({
-              propName, splice, alwaysFocus, required, tupleSchema,
+              propName, splice, alwaysFocus, required, schema,
               autoTrigger
             }) {
               const addArrayElement = this.$getAddArrayElement();
@@ -2238,7 +2296,7 @@ const arrayType = {
                * }}
                */
               (addArrayElement).$addArrayElement({
-                propName, splice, alwaysFocus, required, tupleSchema,
+                propName, splice, alwaysFocus, required, schema,
                 autoTrigger
               });
             },
@@ -2276,7 +2334,10 @@ const arrayType = {
           }
         }), /** @type {import('jamilih').JamilihChildren} */ ([
           [specificSchemaObject ? 'span' : 'b', {
-            title: specificSchemaObject?.description
+            title: specificSchemaObject?.description ?? (DOM.initialCaps(
+              /** @type {import('../types.js').AvailableType} */
+              (type)
+            ).replace(/s$/u, ''))
           }, [
             specificSchemaObject
               ? '—'
@@ -2321,7 +2382,7 @@ const arrayType = {
       );
     topRoot = topRoot || div;
 
-    if (!value && specificSchemaObject) {
+    if (!objectValue && specificSchemaObject) {
       switch (type) {
       case 'object': {
         for (const [prop, val] of
@@ -2345,8 +2406,8 @@ const arrayType = {
             specificSchemaObject
           )?.items?.[0]?.type !== 'never'
         ) {
-          for (const tupleSchema of specificSchemaObj.items) {
-            div.$addArrayElement({tupleSchema, required: true});
+          for (const schema of specificSchemaObj.items) {
+            div.$addArrayElement({schema, required: true});
           }
         }
         break;

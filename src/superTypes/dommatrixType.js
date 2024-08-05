@@ -310,13 +310,15 @@ const dommatrixType = {
         ]]
     ]];
   },
-  editUI ({typeNamespace, value = {}}) {
+  editUI ({typeNamespace, specificSchemaObject, value = {}}) {
     idx++;
     const {is2D} = value;
     const step = 'any'; // Proper step?
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    return ['div', {dataset: {type: 'dommatrix'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+    return ['div', {
+      dataset: {type: 'dommatrix'},
+      title: specificSchemaObject?.description ?? 'DOMMatrix'
+    }, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
         ['label', [
           ['input', {

@@ -30,7 +30,10 @@ const enumType = {
     ]];
   },
   editUI ({typeNamespace, specificSchemaObject, value = ''}) {
-    return ['div', {dataset: {type: 'enum'}}, [
+    return ['div', {
+      dataset: {type: 'enum'},
+      title: specificSchemaObject?.description ?? 'Enum'
+    }, [
       ['select', {
         name: `${typeNamespace}-enum`
       }, /** @type {import('zodex').SzEnum} */ (

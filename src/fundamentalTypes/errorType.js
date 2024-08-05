@@ -227,7 +227,7 @@ const errorType = {
       ]
     ]);
   },
-  editUI ({typeNamespace, types, value = {
+  editUI ({typeNamespace, types, specificSchemaObject, value = {
     message: '',
     name: '',
     fileName: '',
@@ -264,7 +264,10 @@ const errorType = {
 
     const div = jml(
       'div',
-      {dataset: {type: 'error'}},
+      {
+        dataset: {type: 'error'},
+        title: specificSchemaObject?.description ?? 'Error'
+      },
       /** @type {import('jamilih').JamilihChildren} */ ([
         ['div', [
           ['label', [

@@ -29,6 +29,7 @@ import json from './json.js';
  *   bringIntoFocus?: boolean,
  *   setAValue?: boolean,
  *   schemaContent?: import('../formats/schema.js').ZodexSchema,
+ *   mustBeOptional?: boolean
  * }) => HTMLElement|null} AddAndSetArrayElement
  */
 
@@ -124,11 +125,13 @@ const encapsulateObserver = (stateObj) => {
       unescapeKeyPathComponent(keypath.slice(li + 1));
     const parentPath = li === -1 ? '' : keypath.slice(0, li);
 
-    let schema;
+    let schema, mustBeOptional;
     if (typeof cyclicKeypath === 'string') {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
-      ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
+      ({
+        newType, schema, mustBeOptional
+      } = canonicalTypeToAvailableTypeAndSchema(
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
         format, state, newType, value,
@@ -143,7 +146,9 @@ const encapsulateObserver = (stateObj) => {
       //   arrayOrObjectPropertyName, schemaParents[parentPath]
       // );
       try {
-        ({newType, schema} = canonicalTypeToAvailableTypeAndSchema(
+        ({
+          newType, schema, mustBeOptional
+        } = canonicalTypeToAvailableTypeAndSchema(
           /** @type {import('../types.js').default} */ (types),
           /** @type {import('../formats.js').default} */ (formats),
           format,
@@ -263,6 +268,7 @@ const encapsulateObserver = (stateObj) => {
       // console.log('vvvv', newType, '::', newValue, '::', newValue?.cause);
 
       const root = ui.$addAndSetArrayElement({
+        mustBeOptional,
         propName: arrayOrObjectPropertyName,
         type: newType,
         value: newValue,
@@ -347,7 +353,8 @@ const replaceTypes = (originTypes, replacements) => {
  * @throws {Error} May throw if data found to be invalid.
  * @returns {{
  *   newType: import('../types.js').AvailableType,
- *   schema?: import('zodex').SzType|undefined
+ *   schema?: import('zodex').SzType|undefined,
+ *   mustBeOptional?: boolean
  * }} Schema and type info.
  */
 const canonicalTypeToAvailableTypeAndSchema = (
@@ -385,9 +392,11 @@ const canonicalTypeToAvailableTypeAndSchema = (
   let schema;
   if (convertFromTypeson) {
     let newValType;
+    let mustBeOptional;
     ({
       type: newValType,
-      schema
+      schema,
+      mustBeOptional
     } = convertFromTypeson(
       valType, types, v, arrayOrObjectPropertyName, parentSchema, stateObj
     ));
@@ -399,7 +408,8 @@ const canonicalTypeToAvailableTypeAndSchema = (
       if (schema) {
         return {
           newType: valType,
-          schema
+          schema,
+          mustBeOptional
         };
       }
     }

@@ -11,18 +11,21 @@ const nanType = {
   },
   toValue: () => ({value: Number.NaN}),
   getValue: () => Number.NaN,
+  /* istanbul ignore next -- No dupe keys, array refs, or validation */
+  getInput ({root}) {
+    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
+  },
   viewUI ({specificSchemaObject}) {
     return ['i', {
       dataset: {type: 'nan'},
       title: specificSchemaObject?.description ?? '(a `NaN`)'
     }, ['NaN']];
   },
-  /* istanbul ignore next -- No dupe keys, array refs, or validation */
-  getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input'));
-  },
-  editUI ({typeNamespace}) {
-    return ['div', {dataset: {type: 'nan'}}, [
+  editUI ({typeNamespace, specificSchemaObject}) {
+    return ['div', {
+      dataset: {type: 'nan'},
+      title: specificSchemaObject?.description ?? 'NaN'
+    }, [
       ['label', [
         'NaN',
         ['input', {

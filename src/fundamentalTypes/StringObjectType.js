@@ -38,8 +38,11 @@ const StringObjectType = {
       specificSchemaObject ? '' : ['i', [')']]
     ]];
   },
-  editUI ({typeNamespace, value = ''}) {
-    return ['div', {dataset: {type: 'StringObject'}}, [
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    return ['div', {
+      dataset: {type: 'StringObject'},
+      title: specificSchemaObject?.description ?? 'String object'
+    }, [
       ['textarea', {name: `${typeNamespace}-StringObject`}, [value]]
     ]];
   }

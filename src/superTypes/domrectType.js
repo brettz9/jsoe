@@ -102,7 +102,7 @@ const domrectType = {
       value.height
     ]];
   },
-  editUI ({typeNamespace, value = {
+  editUI ({typeNamespace, specificSchemaObject, value = {
     x: '',
     y: '',
     width: '',
@@ -110,8 +110,10 @@ const domrectType = {
   }}) {
     idx++;
     const step = 'any'; // Proper step?
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    return ['div', {dataset: {type: 'domrect'}}, /** @type {import('jamilih').JamilihChildren} */ ([
+    return ['div', {
+      dataset: {type: 'domrect'},
+      title: specificSchemaObject?.description ?? 'DOMRect'
+    }, /** @type {import('jamilih').JamilihChildren} */ ([
       ['div', [
         ['label', [
           ['input', {

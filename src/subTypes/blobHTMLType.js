@@ -117,7 +117,7 @@ const blobHTMLType = {
     return [div];
     // return ['i', [`data:text/html,${value}`]];
   },
-  editUI ({typeNamespace, value}) {
+  editUI ({typeNamespace, specificSchemaObject, value}) {
     const textarea =
       /**
        * @type {SCEditorTextarea}
@@ -133,7 +133,10 @@ const blobHTMLType = {
 
     const root = jml(
       'div',
-      {dataset: {type: 'blobHTML'}},
+      {
+        dataset: {type: 'blobHTML'},
+        title: specificSchemaObject?.description ?? 'Blob (HTML)'
+      },
       [
         textarea
       ]
