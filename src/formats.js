@@ -46,7 +46,7 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  * @callback FormatIterator
  * @param {StructuredCloneValue} records
  * @param {import('./types.js').StateObject} stateObj
- * @returns {Promise<Element>}
+ * @returns {Promise<Required<import('./types.js').StateObject>>}
  */
 
 /**
@@ -125,7 +125,7 @@ class Formats {
    * @param {AvailableFormat} format
    * @param {StructuredCloneValue} record
    * @param {import('./types.js').StateObject} stateObj
-   * @returns {Promise<Element>}
+   * @returns {Promise<Required<import('./types.js').StateObject>>}
    */
   async getControlsForFormatAndValue (types, format, record, stateObj) {
     return await this.availableFormats[format].

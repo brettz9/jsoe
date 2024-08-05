@@ -11,8 +11,10 @@ const literalType = {
   option: ['Literal'],
   stringRegex: /^Literal\((.*)\)$/u,
   valueMatch (x) {
-    return typeof x === 'boolean' || typeof x === 'number' ||
-      typeof x === 'string';
+    // const schema =
+    //   /** @type {import('zodex').SzLiteral<any>} */ (cfg?.schema);
+    return (typeof x === 'boolean' || typeof x === 'number' ||
+      typeof x === 'string'); // && (!schema || schema.value === x);
   },
   toValue (s) {
     const value = s === 'true'

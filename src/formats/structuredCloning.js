@@ -178,6 +178,10 @@ const encapsulateObserver = (stateObj) => {
       mapPaths.push(keypath);
     }
 
+    if (schema) {
+      stateObj.specificSchema = schema;
+    }
+
     // console.log('is', stateObj.schemaContent);
     // console.log('but could set to', schema);
     // console.log('arrayOrObjectPropertyName', arrayOrObjectPropertyName);
@@ -483,7 +487,7 @@ const structuredCloning = {
       } else {
         resolve(/** @type {Required<import('../types.js').StateObject>} */ (
           stateObj
-        ).rootUI);
+        ));
       }
     });
   },

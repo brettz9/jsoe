@@ -165,6 +165,7 @@ export const getPropertyValueFromLegend = (legend) => {
 *   schema?: string,
 *   schemaParent?: import('./formats/schema.js').ZodexSchema,
 *   schemaContent?: import('./formats/schema.js').ZodexSchema,
+*   specificSchema?: import('./formats/schema.js').ZodexSchema,
 *   paths?: {[currentPath: string]: {
 *     referentPath: string,
 *     expectArrayReferent: boolean
@@ -328,8 +329,10 @@ export const getPropertyValueFromLegend = (legend) => {
  *   present, use `stringRegex`
  * @property {RegExp} [stringRegexEnd] Used for string parsing. If not
  *   present, use `stringRegex`
- * @property {(v: StructuredCloneValue) => boolean} [valueMatch] Function to
- *   check whether this type or subtype matches
+ * @property {(
+ *   v: StructuredCloneValue
+ * ) => boolean} [valueMatch] Function to check whether this type or subtype
+ *   matches
  * @property {string} [superType] The greater fundamental type to which
  *   the type belongs
  * @property {ToValue} [toValue] Converts from string to value. May use
@@ -627,9 +630,9 @@ class Types {
   async getControlsForFormatAndValue (
     format, record, stateObj
   ) {
-    return await this.formats.getControlsForFormatAndValue(
+    return (await this.formats.getControlsForFormatAndValue(
       this, format, record, stateObj
-    );
+    )).rootUI;
   }
 
   /**

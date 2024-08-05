@@ -29,16 +29,18 @@ const enumType = {
       value
     ]];
   },
-  editUI ({typeNamespace, specificSchemaObject /* , value = '' */}) {
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
     return ['div', {dataset: {type: 'enum'}}, [
       ['select', {
         name: `${typeNamespace}-enum`
       }, /** @type {import('zodex').SzEnum} */ (
         specificSchemaObject
-      )?.values.map((value) => {
+      )?.values.map((val) => {
         return ['option', {
-          selected: specificSchemaObject?.defaultValue === value
-        }, [value]];
+          selected: value
+            ? value === val
+            : specificSchemaObject?.defaultValue === val
+        }, [val]];
       })]
     ]];
   }

@@ -297,14 +297,14 @@ export async function formatAndTypeChoices ({
     /** @type {SetValue} */
     async setValue (value, stateObj) {
       const rootEditUI = /** @type {HTMLDivElement} */ (
-        await formats.getControlsForFormatAndValue(
+        (await formats.getControlsForFormatAndValue(
           types,
           /** @type {import('./formats.js').AvailableFormat} */ (
             formatChoices.value
           ),
           value,
           stateObj
-        )
+        )).rootUI
       );
       const type = Types.getTypeForRoot(rootEditUI);
       // eslint-disable-next-line @stylistic/max-len -- Long

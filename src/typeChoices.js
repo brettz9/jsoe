@@ -16,7 +16,11 @@ import dialogs from './utils/dialogs.js';
  */
 
 /**
- * @typedef {(info: {type: string, editUI: Element}) => void} AddTypeAndEditUI
+ * @typedef {(info: {
+ *   type: string,
+ *   editUI: Element,
+ *   specificSchema?: import('zodex').SzType
+ * }) => void} AddTypeAndEditUI
  */
 
 /**
@@ -159,10 +163,18 @@ export const buildTypeChoices = ({
         this.$addAndValidateEditUI({baseValue, bringIntoFocus});
       },
       /**
-       * @type {(info: {type: string}) => void} cfg
+       * @type {(info: {
+       *   type: string,
+       *   specificSchema?: import('zodex').SzType
+       * }) => void} cfg
        */
-      $setTypeNoEditUI ({type}) {
-        this.value = type;
+      $setTypeNoEditUI ({type, specificSchema}) {
+        if (schemaObjs && specificSchema) {
+          const idx = schemaObjs.indexOf(specificSchema);
+          this.selectedIndex = idx + 1;
+        } else {
+          this.value = type;
+        }
         this.$setStyles();
       },
 
@@ -227,8 +239,8 @@ export const buildTypeChoices = ({
       },
 
       /** @type {AddTypeAndEditUI} */
-      $addTypeAndEditUI ({type, editUI}) {
-        this.$setTypeNoEditUI({type});
+      $addTypeAndEditUI ({type, editUI, specificSchema}) {
+        this.$setTypeNoEditUI({type, specificSchema});
         this.$addEditUI({editUI});
       },
       /**
@@ -293,7 +305,7 @@ export const buildTypeChoices = ({
       }
     )
   ]));
-  if (autoTrigger && typeOptions.length === 1) {
+  if (autoTrigger && typeOptions.length === 1 && !schemaObjs) {
     setTimeout(() => {
       sel.selectedIndex = 1;
       sel.dispatchEvent(new Event('change'));
@@ -307,7 +319,10 @@ export const buildTypeChoices = ({
         value = {};
       }
       try {
-        const rootEditUI = await formats.getControlsForFormatAndValue(
+        const {
+          rootUI: rootEditUI,
+          specificSchema
+        } = await formats.getControlsForFormatAndValue(
           types,
           format,
           value,
@@ -327,7 +342,7 @@ export const buildTypeChoices = ({
         // eslint-disable-next-line @stylistic/max-len -- Long
         /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
           sel
-        ).$addTypeAndEditUI({type, editUI: rootEditUI});
+        ).$addTypeAndEditUI({type, editUI: rootEditUI, specificSchema});
       } catch (err) {
         /* istanbul ignore next -- At least some errors handled earlier */
         dialogs.alert({
@@ -371,10 +386,10 @@ export const buildTypeChoices = ({
     /** @type {SetValue} */
     async setValue (value, stateObj) {
       const rootEditUI = /** @type {HTMLDivElement} */ (
-        await formats.getControlsForFormatAndValue(
+        (await formats.getControlsForFormatAndValue(
           types,
           format, value, stateObj
-        )
+        )).rootUI
       );
       const type = Types.getTypeForRoot(rootEditUI);
       /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
