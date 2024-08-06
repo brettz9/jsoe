@@ -913,7 +913,12 @@ const arrayType = {
           /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
             buildTypeChoices
           )({
-            autoTrigger: false, // At least needed when value supplied
+            value: propName !== undefined && type === 'record'
+              ? propName
+              : undefined,
+            setValue: propName !== undefined && type === 'record',
+            // Needed as false when map value supplied
+            autoTrigger: propName === undefined || type === 'record',
             // eslint-disable-next-line object-shorthand -- TS
             format: /** @type {import('../formats.js').AvailableFormat} */ (
               format
@@ -2191,6 +2196,8 @@ const arrayType = {
       ]]
     );
 
+    const parentType = type;
+
     const div =
       /**
        * @type {HTMLDivElement & {
@@ -2211,8 +2218,7 @@ const arrayType = {
               propName, type, value, bringIntoFocus, setAValue,
               schemaContent: schema, mustBeOptional
             }) {
-              if (mapProperties) {
-                console.log('propName', propName, propName === '0');
+              if (parentType === 'map') {
                 if (propName === '0') {
                   this.$addArrayElement({
                     propName,
@@ -2240,6 +2246,11 @@ const arrayType = {
                   // The key may itself be a map, etc.
                   return keyTypeChoices.$getTypeRoot();
                 }
+              } else if (parentType === 'record') {
+                this.$addArrayElement({
+                  propName, autoTrigger: false,
+                  required: false
+                });
               } else {
                 this.$addArrayElement({
                   propName, schema, autoTrigger: false,

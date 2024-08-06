@@ -131,8 +131,8 @@ setTimeout(function () {
         {},
         {
           // Todo: Reenable these later
-          // a: 123,
-          // b: 456
+          aaaaa: 123,
+          bbbbb: 456
         },
         new FileList([
           new File(['abc'], 'someName', {
