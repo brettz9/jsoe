@@ -221,7 +221,16 @@ describe('String URL spec (schemas)', () => {
       expect(elem.attr('title')).to.equal('(a url string)');
     });
   });
+});
 
+describe('String spec - Misc. (schemas)', () => {
+  beforeEach(() => {
+    cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').as('consoleLog');
+      }
+    });
+  });
   it('creates form control (with `defaultValue`)', () => {
     cy.get('.formatChoices').select('Schema: Zodex schema instance 6');
     const sel = '#formatAndTypeChoices ';

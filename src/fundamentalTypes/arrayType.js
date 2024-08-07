@@ -648,7 +648,7 @@ const arrayType = {
   //    population of the array in the callback
   editUI ({
     typeNamespace, buildTypeChoices, format, // resultType,
-    formats, types, specificSchemaObject, schemaContent,
+    formats, types, specificSchemaObject, schemaFallingBack, schemaContent,
     type, forcedState, topRoot, value: objectValue, bringIntoFocus = true
   }) {
     const {sparse} = this;
@@ -1029,7 +1029,7 @@ const arrayType = {
         ]];
       }
       if (editableProperties) {
-        console.log('PROPNAME', propName, schema, specificSchemaObject);
+        // console.log('PROPNAME', propName, schema, specificSchemaObject);
         const description = /** @type {import('zodex').SzObject} */ (
           specificSchemaObject
         )?.properties?.[/** @type {string} */ (propName)]?.description;
@@ -2261,7 +2261,7 @@ const arrayType = {
                   required: false
                 });
               } else {
-                console.log('SCHEMA123', schema);
+                // console.log('SCHEMA123', schema);
                 this.$addArrayElement({
                   propName, schema, autoTrigger: false,
                   required: !mustBeOptional && schema && !schema.isOptional &&
@@ -2413,19 +2413,23 @@ const arrayType = {
     if (!objectValue && specificSchemaObject) {
       switch (type) {
       case 'object': {
-        for (const [prop, val] of
-          Object.entries(
-            /** @type {import('zodex').SzObject} */ (
-              specificSchemaObject
-            ).properties ?? {}
-          )
-        ) {
-          if (!val.isOptional && val.type !== 'never') {
-            div.$addArrayElement({propName: prop, required: true});
+        // See comment referencing `arrayType.js` in `typeChoices.js`
+        if (!schemaFallingBack) {
+          for (const [prop, val] of
+            Object.entries(
+              /** @type {import('zodex').SzObject} */ (
+                specificSchemaObject
+              ).properties ?? {}
+            )
+          ) {
+            if (!val.isOptional && val.type !== 'never') {
+              div.$addArrayElement({propName: prop, required: true});
+            }
           }
         }
         break;
-      } case 'tuple': {
+      }
+      case 'tuple': {
         const specificSchemaObj = /** @type {import('zodex').SzTuple} */ (
           specificSchemaObject
         );

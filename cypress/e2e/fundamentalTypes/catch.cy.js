@@ -14,7 +14,7 @@ describe('Catch spec (schemas)', () => {
       'Catch (A catch)'
     );
 
-    cy.typeAndBlur(
+    cy.clearTypeAndBlur(
       sel + 'textarea[name="demo-keypath-not-expected-string"]',
       'xyz'
     );
@@ -54,7 +54,7 @@ describe('Catch spec (schemas)', () => {
       'Catch'
     );
 
-    cy.typeAndBlur(
+    cy.clearTypeAndBlur(
       sel + 'textarea[name="demo-keypath-not-expected-string"]',
       'xyz'
     );

@@ -178,16 +178,21 @@ setTimeout(function () {
             type: 'object',
             properties: {
               a: {
+                description: 'A array',
                 type: 'array',
                 element: {
+                  description: 'A number',
                   type: 'number'
                 }
               },
               b: {
+                description: 'B array',
                 type: 'array',
                 element: {
+                  description: 'Inner B array',
                   type: 'array',
                   element: {
+                    description: 'A number',
                     type: 'number'
                   }
                 }
@@ -200,6 +205,7 @@ setTimeout(function () {
                   type: 'object',
                   properties: {
                     a: {
+                      description: 'A number',
                       type: 'number'
                     }
                   }

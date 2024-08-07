@@ -231,7 +231,13 @@ export const buildTypeChoices = ({
           format,
           topRoot,
           schemaContent: schemaOriginal ?? schemaContent,
-          specificSchemaObject: schemaObject
+          // Added `schemaContent` as inner arrays were not getting their
+          //   schema info; this apparently allows (actually requires)
+          //   commenting out the auto-adding of object content at end of
+          //   editUI in arrayType.js; we add `schemaFallingBack` to
+          //   distinguish
+          specificSchemaObject: schemaObject ?? schemaContent,
+          schemaFallingBack: Boolean(!schemaObject && schemaContent)
         });
         this.$addEditUI({editUI});
         this.$validate({

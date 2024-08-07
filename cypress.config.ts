@@ -5,6 +5,7 @@ export default defineConfig({
   defaultCommandTimeout: 8000,
   video: false,
   experimentalMemoryManagement: true,
+  numTestsKeptInMemory: 1, // 50
   projectId: 'biz82n', // Cypress Cloud
   e2e: {
     baseUrl: 'http://127.0.0.1:8087',

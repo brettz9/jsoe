@@ -190,6 +190,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   value: StructuredCloneValue,
  *   hasValue: boolean,
  *   replaced?: StructuredCloneValue,
+ *   schemaFallingBack?: boolean
  * }) => HTMLElement} GetUIForModeAndType
  */
 /* eslint-enable jsdoc/valid-types -- readonly reserved */
@@ -375,6 +376,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   topRoot?: HTMLDivElement
  *   schemaContent?: import('./formats/schema.js').ZodexSchema,
  *   specificSchemaObject?: import('./formats/schema.js').ZodexSchema,
+ *   schemaFallingBack?: boolean
  * }) => JamilihArray} editUI
  * @property {(info: {root: HTMLDivElement}) =>
  *   HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|
@@ -751,7 +753,7 @@ class Types {
   getUIForModeAndType ({
     readonly, resultType, typeNamespace, type, topRoot, bringIntoFocus,
     buildTypeChoices, format, schemaContent, value, hasValue,
-    replaced, specificSchemaObject
+    replaced, specificSchemaObject, schemaFallingBack
   }) {
     const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
     const arg = hasValue
@@ -760,7 +762,7 @@ class Types {
         format, schemaContent,
         resultType, topRoot, bringIntoFocus, value,
         replaced,
-        specificSchemaObject,
+        specificSchemaObject, schemaFallingBack,
         types: this
       }
       : {
@@ -768,7 +770,7 @@ class Types {
         format, schemaContent,
         resultType, topRoot, bringIntoFocus,
         replaced,
-        specificSchemaObject,
+        specificSchemaObject, schemaFallingBack,
         types: this
       };
     const root = /** @type {HTMLDivElement} */ (jml(
