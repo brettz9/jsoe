@@ -907,6 +907,8 @@ const arrayType = {
         ).sort().at(-1));
         arrLengthInput.value = String(highest + 1);
         arrLengthInput.$oldvalue = String(highest + 1);
+        // Does have potential side effects calling `$inputsExceedingLength`
+        return this.$validateLength(true);
       };
       if (mapProperties) {
         const keyTypeSelection =
@@ -1787,14 +1789,20 @@ const arrayType = {
               splice = prevInputVal === false ? 'append' : prevInputVal;
             }
             thisButton.$addArrayElement({
-              splice, alwaysFocus: true
+              splice, alwaysFocus: true, schema
             });
             const newArrayFieldset =
               /** @type {Element & {$getPropertyInput: GetPropertyInput}} */ (
                 arrayItems.lastElementChild
               );
             fieldset.after(newArrayFieldset);
-            if (sparse || (specificSchemaObject && !parentTypeObject.array)) {
+            if (sparse || (
+              // Because schemas (with descriptions?) don't use className for
+              //   property count (and the else block will rewrite the
+              //   property name)
+              (specificSchemaObject || schema) &&
+              !parentTypeObject.array
+            )) {
               const newPrevInput = /** @type {HTMLInputElement} */ (
                 newArrayFieldset.$getPropertyInput()
               );
@@ -2253,6 +2261,7 @@ const arrayType = {
                   required: false
                 });
               } else {
+                console.log('SCHEMA123', schema);
                 this.$addArrayElement({
                   propName, schema, autoTrigger: false,
                   required: !mustBeOptional && schema && !schema.isOptional &&

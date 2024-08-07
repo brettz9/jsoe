@@ -193,8 +193,10 @@ setTimeout(function () {
                 }
               },
               c: {
+                description: 'C array',
                 type: 'array',
                 element: {
+                  description: 'C array object',
                   type: 'object',
                   properties: {
                     a: {
