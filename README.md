@@ -108,6 +108,9 @@ Supported supertypes include:
 - Currently doesn't support using `isNullable`; instead just use `null` with
     a `union`.
 - Lacks support for certain Structured Cloning types. See to-dos below.
+- Excessive use of `reportValidity` (e.g., in BufferSource, as seen by
+    index-instrumented demo) causing focus of element; should only be triggered by
+    event (and only if not auto-triggered event)
 
 ## To-dos
 

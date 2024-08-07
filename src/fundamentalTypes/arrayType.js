@@ -2057,7 +2057,7 @@ const arrayType = {
                         Number.parseInt(this.$oldvalue ?? this.defaultValue);
                       for (let i = 0; i < diff; i++) {
                         // Timeout needed by Cypress at least or will get
-                        //   validation triggerred which prevents moving forward
+                        //   validation triggered which prevents moving forward
                         setTimeout(() => {
                           div.$addArrayElement({});
                         });
