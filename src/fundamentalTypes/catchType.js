@@ -15,11 +15,15 @@ const catchType = {
     return {value};
   },
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'input,textarea'));
+    return /** @type {HTMLTextAreaElement} */ (
+      $e(root, 'input,textarea')
+    );
   },
-  // Todo: Fix/Test the following method
   setValue ({root, value}) {
-    this.getInput({root}).value = value;
+    // input/textarea hasn't yet been added, so set timeout
+    setTimeout(() => {
+      this.getInput({root}).value = value;
+    });
   },
   getValue ({root}) {
     return this.getInput({root}).value;

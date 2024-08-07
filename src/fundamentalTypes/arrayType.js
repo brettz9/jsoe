@@ -1457,12 +1457,11 @@ const arrayType = {
      * @param {{
      *   propName: string|undefined,
      *   schema?: import('zodex').SzType,
-     *   fallbackSchema?: import('zodex').SzType,
      *   autoTrigger?: boolean
      * }} cfg
      */
     const buildTypeChoicesForProperty = ({
-      propName, schema, fallbackSchema, autoTrigger
+      propName, schema, autoTrigger
     }) => {
       return /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
@@ -1497,8 +1496,7 @@ const arrayType = {
                   )?.element
                   : /** @type {import('zodex').SzObject} */ (
                     specificSchemaObject
-                  )?.properties?.[/** @type {string} */ (propName)] ??
-                    fallbackSchema,
+                  )?.properties?.[/** @type {string} */ (propName)],
         state: parentTypeObject.filelist
           ? 'filelistArray'
           : forcedState ?? type,
@@ -2430,16 +2428,19 @@ const arrayType = {
         break;
       }
       case 'tuple': {
-        const specificSchemaObj = /** @type {import('zodex').SzTuple} */ (
-          specificSchemaObject
-        );
-        if (
-          /** @type {import('zodex').SzTuple} */ (
+        // See comment referencing `arrayType.js` in `typeChoices.js`
+        if (!schemaFallingBack) {
+          const specificSchemaObj = /** @type {import('zodex').SzTuple} */ (
             specificSchemaObject
-          )?.items?.[0]?.type !== 'never'
-        ) {
-          for (const schema of specificSchemaObj.items) {
-            div.$addArrayElement({schema, required: true});
+          );
+          if (
+            /** @type {import('zodex').SzTuple} */ (
+              specificSchemaObject
+            )?.items?.[0]?.type !== 'never'
+          ) {
+            for (const schema of specificSchemaObj.items) {
+              div.$addArrayElement({schema, required: true});
+            }
           }
         }
         break;
@@ -2459,11 +2460,14 @@ const arrayType = {
         }
         break;
       } case 'set': {
-        const {minSize = 0} = /** @type {import('zodex').SzSet} */ (
-          specificSchemaObject
-        ) ?? {};
-        for (let i = 0; i < minSize; i++) {
-          div.$addArrayElement({required: true});
+        // See comment referencing `arrayType.js` in `typeChoices.js`
+        if (!schemaFallingBack) {
+          const {minSize = 0} = /** @type {import('zodex').SzSet} */ (
+            specificSchemaObject
+          ) ?? {};
+          for (let i = 0; i < minSize; i++) {
+            div.$addArrayElement({required: true});
+          }
         }
         break;
       } default:

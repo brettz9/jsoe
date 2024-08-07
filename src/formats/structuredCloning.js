@@ -170,7 +170,7 @@ const encapsulateObserver = (stateObj) => {
     }
 
     const hasChildren = [
-      'array', 'object', 'set', 'map',
+      'array', 'object', 'set', 'map', 'tuple', 'record', 'filelist',
       // 'sparseArrays',
       'arrayNonindexKeys'
     ].includes(newType);

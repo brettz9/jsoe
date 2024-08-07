@@ -13,6 +13,16 @@ const booleanType = {
   getValue ({root}) {
     return /** @type {HTMLInputElement} */ (this.getInput({root})).checked;
   },
+  /* istanbul ignore next -- No dupe keys, array refs, or validation */
+  getInput ({root}) {
+    return /** @type {HTMLInputElement} */ ($e(root, 'input[value=true]'));
+  },
+  setValue ({root, value}) {
+    const input = value
+      ? /** @type {HTMLInputElement} */ ($e(root, 'input[value=true]'))
+      : /** @type {HTMLInputElement} */ ($e(root, 'input[value=false]'));
+    input.checked = true;
+  },
   viewUI ({value, specificSchemaObject}) {
     return ['i', {
       dataset: {type: 'boolean'},
@@ -20,10 +30,6 @@ const booleanType = {
     }, [value ? 'true' : 'false']];
   },
   ct: 0,
-  /* istanbul ignore next -- No dupe keys, array refs, or validation */
-  getInput ({root}) {
-    return /** @type {HTMLInputElement} */ ($e(root, 'input[value=true]'));
-  },
   editUI ({typeNamespace, specificSchemaObject, value}) {
     this.ct++;
     const isLiteral = specificSchemaObject?.type === 'literal';

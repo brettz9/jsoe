@@ -24,7 +24,7 @@ function getTypeChoices (values, schema) {
     return typeChoices({
       format: 'schema',
       setValue: true,
-      value,
+      value: [value], // The key difference with `schema-preloaded.js`
       schema,
       schemaContent: schema.options[idx],
       typeNamespace: 'demo-type-choices-only-initial-value'

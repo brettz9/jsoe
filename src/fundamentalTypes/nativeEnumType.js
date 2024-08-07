@@ -34,9 +34,20 @@ const nativeEnumType = {
   getInput ({root}) {
     return /** @type {HTMLTextAreaElement} */ ($e(root, 'input'));
   },
-  // Todo: Fix next method
   setValue ({root, value}) {
-    this.getInput({root}).value = value;
+    const input = /**
+    * @type {HTMLInputElement & {
+    *   $schemaNativeEnumValues: import('zodex').SzNativeEnum['values']
+    * }}
+    */ (this.getInput({root}));
+    input.value = Object.entries(
+      input.$schemaNativeEnumValues
+    ).find(([, val]) => {
+      return val === value;
+    })?.[0] ?? '';
+    /** @type {HTMLSpanElement} */ (
+      $e(root, '.enumeratedValue')
+    ).textContent = value;
   },
   getValue ({root}) {
     const {value, $schemaNativeEnumValues} =
