@@ -212,7 +212,8 @@ export const getPropertyValueFromLegend = (legend) => {
  * @typedef {(cfg: {
  *   type: AvailableType,
  *   root: RootElement,
- *   topRoot?: RootElement
+ *   topRoot?: RootElement,
+ *   avoidReport?: boolean
  * }) => boolean} Validate
  */
 
@@ -807,7 +808,7 @@ class Types {
   }
 
   /** @type {Validate} */
-  validate ({type, root, topRoot}) {
+  validate ({type, root, topRoot, avoidReport}) {
     const typeObj = /** @type {TypeObject} */ (this.availableTypes[type]);
     // Todo (low): We limit for now to input boxes which have `validate`
     if (typeObj.validate) {
@@ -819,9 +820,13 @@ class Types {
           /* istanbul ignore next -- Should always have a message */
           : message || 'Invalid'
       );
-      formControl.reportValidity();
-      // We don't want a focus as `reportValidity` does in at least some cases
-      formControl.blur();
+
+      // We don't want a focus as `reportValidity` does in at least
+      //  some cases, but blur() would cause user to
+      //   leave input (used during input handler)
+      if (!avoidReport) {
+        formControl.reportValidity();
+      }
       return valid;
     }
     return true;

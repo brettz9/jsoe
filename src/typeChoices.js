@@ -11,7 +11,8 @@ import dialogs from './utils/dialogs.js';
  * @typedef {(cfg: {
  *   type: string,
  *   baseValue?: import('./formats.js').StructuredCloneValue,
- *   bringIntoFocus?: boolean
+ *   bringIntoFocus?: boolean,
+ *   avoidReport?: boolean
  * }) => void} SetType
  */
 
@@ -27,7 +28,8 @@ import dialogs from './utils/dialogs.js';
  * @typedef {(info?: {
  *   baseValue?: import('./formats.js').StructuredCloneValue,
  *   bringIntoFocus?: boolean,
- *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema
+ *   schemaObject?: import('./formatAndTypeChoices.js').ZodexSchema,
+ *   avoidReport?: boolean
  * }) => void} AddAndValidateEditUI
  */
 
@@ -157,10 +159,10 @@ export const buildTypeChoices = ({
     $custom: {
       $getValue,
       /** @type {SetType} */
-      $setType ({type, baseValue, bringIntoFocus}) {
+      $setType ({type, baseValue, bringIntoFocus, avoidReport}) {
         this.value = type;
         this.$setStyles();
-        this.$addAndValidateEditUI({baseValue, bringIntoFocus});
+        this.$addAndValidateEditUI({baseValue, bringIntoFocus, avoidReport});
       },
       /**
        * @type {(info: {
@@ -205,7 +207,7 @@ export const buildTypeChoices = ({
 
       /** @type {AddAndValidateEditUI} */
       $addAndValidateEditUI ({
-        baseValue, bringIntoFocus, schemaObject
+        baseValue, bringIntoFocus, schemaObject, avoidReport
       } = {}) {
         const {value: type} = this;
 
@@ -232,7 +234,9 @@ export const buildTypeChoices = ({
           specificSchemaObject: schemaObject
         });
         this.$addEditUI({editUI});
-        this.$validate();
+        this.$validate({
+          avoidReport
+        });
         topRoot = this.$getTopRoot(); // May be existing now
         // Needed; Array/object ref somewhere could now be valid or invalid
         types.validateAllReferences({topRoot});
@@ -258,9 +262,10 @@ export const buildTypeChoices = ({
         return topRoot || this.$getTypeRoot();
       },
       /**
+       * @param {{avoidReport?: boolean}} cfg
        * @returns {boolean}
        */
-      $validate () {
+      $validate ({avoidReport} = {}) {
         const {value: type} = this;
         const container = this.$getContainer();
         if (!container.firstElementChild) {
@@ -268,7 +273,8 @@ export const buildTypeChoices = ({
         }
         const editUI = container.firstElementChild;
         return types.validate({
-          type, root: editUI, topRoot: this.$getTopRoot()
+          type, root: editUI, topRoot: this.$getTopRoot(),
+          avoidReport
         });
       }
     },

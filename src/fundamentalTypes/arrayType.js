@@ -2240,7 +2240,8 @@ const arrayType = {
                       ]
                     )[0]);
                   keyTypeChoices.$setType({
-                    type, baseValue: value, bringIntoFocus
+                    type, baseValue: value, bringIntoFocus,
+                    avoidReport: true
                   });
 
                   // The key may itself be a map, etc.
@@ -2259,7 +2260,10 @@ const arrayType = {
                 });
               }
               const typeChoices = this.$getTypeChoices();
-              typeChoices.$setType({type, baseValue: value, bringIntoFocus});
+              typeChoices.$setType({
+                type, baseValue: value, bringIntoFocus,
+                avoidReport: true
+              });
               const root = typeChoices.$getTypeRoot();
               // If run for all, causes problems with running `Error.cause`
               //   type twice and is inefficient;
@@ -2274,7 +2278,11 @@ const arrayType = {
                   typeObj.setValue({root, value});
                 }
               }
-              types.validate({type, root, topRoot});
+              types.validate({
+                type, root, topRoot,
+                // We don't want focus when values auto-added
+                avoidReport: true
+              });
               return root;
             },
 

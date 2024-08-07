@@ -292,7 +292,9 @@ const encapsulateObserver = (stateObj) => {
           type: newType,
           // eslint-disable-next-line object-shorthand -- TS
           root: /** @type {HTMLDivElement} */ (root),
-          topRoot: /** @type {HTMLDivElement} */ (stateObj.rootUI)
+          topRoot: /** @type {HTMLDivElement} */ (stateObj.rootUI),
+          // We don't want focus when values auto-added
+          avoidReport: true
         });
       }
 
