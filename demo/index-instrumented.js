@@ -523,21 +523,21 @@ setTimeout(async function () {
       'Convert arbitrary value to an editable menu'
     ]],
 
-    (await types.getControlsForFormatAndValue(
+    await types.getControlsForFormatAndValue(
       'structuredCloning',
       new Date('1999-01-01')
-    )).rootUI,
+    ),
 
     ['h2', [
       'Convert arbitrary value to a readonly menu'
     ]],
 
-    (await types.getControlsForFormatAndValue(
+    await types.getControlsForFormatAndValue(
       'structuredCloning',
       new Date('1999-01-01'), {
         readonly: true
       }
-    )).rootUI,
+    ),
 
     ['h2', [
       'Convert structured cloning string representation to value and log'
