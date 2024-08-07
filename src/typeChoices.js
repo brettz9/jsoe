@@ -333,7 +333,7 @@ export const buildTypeChoices = ({
       try {
         const {
           rootUI: rootEditUI,
-          specificSchema
+          specificSchemas
         } = await formats.getControlsForFormatAndValue(
           types,
           format,
@@ -354,7 +354,11 @@ export const buildTypeChoices = ({
         // eslint-disable-next-line @stylistic/max-len -- Long
         /** @type {HTMLSelectElement & {$addTypeAndEditUI: AddTypeAndEditUI}} */ (
           sel
-        ).$addTypeAndEditUI({type, editUI: rootEditUI, specificSchema});
+        ).$addTypeAndEditUI({
+          type, editUI: rootEditUI,
+          // We do actually want the first one
+          specificSchema: specificSchemas?.[0]
+        });
       } catch (err) {
         /* istanbul ignore next -- At least some errors handled earlier */
         dialogs.alert({

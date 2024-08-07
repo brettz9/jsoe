@@ -219,7 +219,82 @@ setTimeout(function () {
             }
           }
         ]
-      })
+      }),
+      ...(() => {
+        const schema = {
+          type: 'union',
+          options: [
+            {
+              type: 'string'
+            },
+            {
+              description: 'Some object',
+              type: 'object',
+              properties: {
+                a: {
+                  type: 'union',
+                  options: [
+                    {
+                      type: 'number'
+                    },
+                    {
+                      type: 'string'
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        };
+        return typeChoices({
+          format: 'schema',
+          setValue: true,
+          typeNamespace: 'demo-type-choices-only-initial-value',
+          // schema: '',
+          value: [{a: 3}],
+          schemaContent: {
+            description: 'Container',
+            type: 'array',
+            element: schema
+          }
+        }).domArray;
+      })(),
+      ...(() => {
+        const schema = {
+          type: 'union',
+          options: [
+            {
+              description: 'Some object',
+              type: 'object',
+              properties: {
+                a: {
+                  type: 'union',
+                  options: [
+                    {
+                      type: 'number'
+                    },
+                    {
+                      type: 'string'
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        };
+        return typeChoices({
+          format: 'schema',
+          setValue: true,
+          typeNamespace: 'demo-type-choices-only-initial-value',
+          // schema: '',
+          value: [{a: 3}],
+          schemaContent: {
+            description: 'Container',
+            type: 'array',
+            element: schema
+          }
+        }).domArray;
+      })()
     ]]
   ], body);
 });

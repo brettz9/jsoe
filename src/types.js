@@ -166,6 +166,7 @@ export const getPropertyValueFromLegend = (legend) => {
 *   schemaParent?: import('./formats/schema.js').ZodexSchema,
 *   schemaContent?: import('./formats/schema.js').ZodexSchema,
 *   specificSchema?: import('./formats/schema.js').ZodexSchema,
+*   specificSchemas?: import('./formats/schema.js').ZodexSchema[],
 *   paths?: {[currentPath: string]: {
 *     referentPath: string,
 *     expectArrayReferent: boolean

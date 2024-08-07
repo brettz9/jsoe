@@ -185,6 +185,10 @@ const encapsulateObserver = (stateObj) => {
 
     if (schema) {
       stateObj.specificSchema = schema;
+      if (!stateObj.specificSchemas) {
+        stateObj.specificSchemas = [];
+      }
+      stateObj.specificSchemas.push(schema);
     }
 
     // console.log('is', stateObj.schemaContent);
