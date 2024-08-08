@@ -29,7 +29,8 @@ import json from './json.js';
  *   bringIntoFocus?: boolean,
  *   setAValue?: boolean,
  *   schemaContent?: import('../formats/schema.js').ZodexSchema,
- *   mustBeOptional?: boolean
+ *   mustBeOptional?: boolean,
+ *   schemaIdx?: number
  * }) => HTMLElement|null} AddAndSetArrayElement
  */
 
@@ -61,7 +62,9 @@ const encapsulateObserver = (stateObj) => {
   const parents = {};
 
   /**
-   * @type {{[key: string]: import('zodex').SzType|undefined}}
+   * @type {{
+   *   [key: string]: [import('zodex').SzType, number|undefined]|undefined
+   * }}
    */
   const schemaParents = {};
 
@@ -125,12 +128,12 @@ const encapsulateObserver = (stateObj) => {
       unescapeKeyPathComponent(keypath.slice(li + 1));
     const parentPath = li === -1 ? '' : keypath.slice(0, li);
 
-    let schema, mustBeOptional;
+    let schema, schemaIdx, mustBeOptional;
     if (typeof cyclicKeypath === 'string') {
       newValue = typesonPathToJSONPointer(cyclicKeypath);
       newType = type === 'array' ? 'arrayReference' : 'objectReference';
       ({
-        newType, schema, mustBeOptional
+        newType, schema, schemaIdx, mustBeOptional
       } = canonicalTypeToAvailableTypeAndSchema(
         /** @type {import('../types.js').default} */ (types),
         /** @type {import('../formats.js').default} */ (formats),
@@ -146,8 +149,11 @@ const encapsulateObserver = (stateObj) => {
       //   arrayOrObjectPropertyName, schemaParents[parentPath]
       // );
       try {
+        console.log(
+          'VVVV0', JSON.stringify(parentPath), schemaParents // , stateObj
+        );
         ({
-          newType, schema, mustBeOptional
+          newType, schema, schemaIdx, mustBeOptional
         } = canonicalTypeToAvailableTypeAndSchema(
           /** @type {import('../types.js').default} */ (types),
           /** @type {import('../formats.js').default} */ (formats),
@@ -162,6 +168,9 @@ const encapsulateObserver = (stateObj) => {
           schemaParents[parentPath],
           stateObj
         )); // Todo (low): Add state for second argument
+        console.log('VVVV1', value, schema);
+        // console.log('VVVV2',
+        //   JSON.stringify(stateObj.schemaContent, null, 2));
       } catch (err) {
         console.log('err', type, err);
         stateObj.error = /** @type {Error} */ (err);
@@ -218,7 +227,7 @@ const encapsulateObserver = (stateObj) => {
       */ (stateObj.rootUI);
 
       if (schema) {
-        schemaParents[''] = schema;
+        schemaParents[''] = [schema, schemaIdx];
       }
 
       // Since we're skipping the array elements, we need to add the
@@ -234,9 +243,14 @@ const encapsulateObserver = (stateObj) => {
       }
       return;
     }
+
     if (schema) {
-      schemaParents[keypath] = schema;
+      schemaParents[keypath] = [schema, schemaIdx];
     }
+    // console.log(
+    //   'schemaParents', newValue, JSON.stringify(parentPath),
+    //   schema, schemaParents
+    // );
 
     // Todo (low): If could be async, use async encapsulate method
     // Todo (low): Handle `awaitingTypesonPromise` with place-holder
@@ -277,6 +291,7 @@ const encapsulateObserver = (stateObj) => {
         type: newType,
         value: newValue,
         bringIntoFocus: false,
+        schemaIdx,
         schemaContent: schema ?? schemaContent
       });
 
@@ -353,14 +368,15 @@ const replaceTypes = (originTypes, replacements) => {
  * @param {import('../formats.js').StructuredCloneValue} v The value being
  *   checked.
  * @param {string} arrayOrObjectPropertyName
- * @param {import('zodex').SzType|undefined} parentSchema
+ * @param {[import('zodex').SzType, number|undefined]|undefined} parentSchema
  * @param {import('../types.js').StateObject} stateObj The schema content
  *   being checked.
  * @throws {Error} May throw if data found to be invalid.
  * @returns {{
  *   newType: import('../types.js').AvailableType,
  *   schema?: import('zodex').SzType|undefined,
- *   mustBeOptional?: boolean
+ *   mustBeOptional?: boolean,
+ *   schemaIdx?: number
  * }} Schema and type info.
  */
 const canonicalTypeToAvailableTypeAndSchema = (
@@ -399,9 +415,11 @@ const canonicalTypeToAvailableTypeAndSchema = (
   if (convertFromTypeson) {
     let newValType;
     let mustBeOptional;
+    let schemaIdx;
     ({
       type: newValType,
       schema,
+      schemaIdx,
       mustBeOptional
     } = convertFromTypeson(
       valType, types, v, arrayOrObjectPropertyName, parentSchema, stateObj
@@ -415,6 +433,7 @@ const canonicalTypeToAvailableTypeAndSchema = (
         return {
           newType: valType,
           schema,
+          schemaIdx,
           mustBeOptional
         };
       }

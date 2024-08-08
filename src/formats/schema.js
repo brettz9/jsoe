@@ -576,13 +576,27 @@ const schema = {
   },
 
   convertFromTypeson (
-    typesonType, types, v, arrayOrObjectPropertyName, parentSchema, stateObj
+    typesonType, types, v, arrayOrObjectPropertyName, parentSchemaInfo, stateObj
   ) {
+    // eslint-disable-next-line prefer-const -- Convenient
+    let [parentSchema, parentSchemaIdx] = parentSchemaInfo ?? [];
     if (!stateObj) {
       throw new Error('State object expected for schema');
     }
     let currentSchema = stateObj.schemaContent;
     let mustBeOptional = false;
+    // console.log('currentSchema', currentSchema);
+    // console.log(
+    //   'parentSchema', parentSchemaIdx, parentSchema, '::',
+    //   arrayOrObjectPropertyName
+    // );
+
+    // We shouldn't have to reprocess intersections, etc., as this is our own
+    //   union
+    if (typeof parentSchemaIdx === 'number' && parentSchema?.type === 'union') {
+      parentSchema = parentSchema.options[parentSchemaIdx];
+    }
+
     switch (parentSchema?.type) {
     case 'object':
       currentSchema = /** @type {import('zodex').SzObject} */ (
@@ -641,11 +655,11 @@ const schema = {
       /** @type {import('zodex').SzType} */ (currentSchema)
     )];
     console.log(
-      'v etc.', v, currentSchema,
+      'vvv', v, currentSchema,
       arrayOrObjectPropertyName, parentSchema, schemaObjects
     );
     // console.log('schemaObjects', schemaObjects);
-    for (const schema of schemaObjects) {
+    for (const [schemaIdx, schema] of schemaObjects.entries()) {
       let unknownKeys;
       if (schema.type === 'object') {
         ({unknownKeys} = schema);
@@ -660,7 +674,7 @@ const schema = {
       if (schema.type === 'object') {
         schema.unknownKeys = unknownKeys;
       }
-      // console.log('parsed', parsed.success, schema);
+      console.log('parsed', parsed.success, v, schema);
       if (parsed.success) {
         if (currentSchema.type === 'any' && schema.description) {
           schema.description += ' (any)';
@@ -680,12 +694,18 @@ const schema = {
           );
 
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
-          console.log('matched', v, v?.length, type, schema);
+          console.log(
+            'matched', v, v?.length, type, schema, schemaIdx, schemaObjects
+          );
+          // console.log('ssss', !stateObj.rootUI ||
+          //   (stateObj.readonly || schemaObjects.length === 1),
+          //    schema, schemaObjects);
           return {
             type,
+            schemaIdx,
             // For `readonly`, we just want to show the current type (no
             //   pull-down)
-            schema: !parentSchema ||
+            schema: !stateObj.rootUI ||
               (stateObj.readonly || schemaObjects.length === 1)
               ? schema
               : {

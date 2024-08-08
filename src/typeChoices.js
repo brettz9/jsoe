@@ -86,6 +86,7 @@ import dialogs from './utils/dialogs.js';
  *   formats?: import('./formats.js').default
  *   types?: import('./types.js').default
  *   schema?: string,
+ *   schemaIdx?: number,
  *   schemaOriginal?: import('./formatAndTypeChoices.js').ZodexSchema,
  *   schemaContent?: import('./formatAndTypeChoices.js').ZodexSchema,
  * }} cfg
@@ -116,6 +117,7 @@ export const buildTypeChoices = ({
   formats = new Formats(),
   types = new Types(),
   schema,
+  schemaIdx,
   schemaOriginal,
   schemaContent
 }) => {
@@ -230,13 +232,19 @@ export const buildTypeChoices = ({
           buildTypeChoices,
           format,
           topRoot,
-          schemaContent: schemaOriginal ?? schemaContent,
+          schemaContent: schemaOriginal ??
+            (schemaContent?.type === 'union' && schemaIdx !== undefined
+              ? schemaContent.options[schemaIdx]
+              : schemaContent),
           // Added `schemaContent` as inner arrays were not getting their
           //   schema info; this apparently allows (actually requires)
           //   commenting out the auto-adding of object content at end of
           //   editUI in arrayType.js; we add `schemaFallingBack` to
           //   distinguish
-          specificSchemaObject: schemaObject ?? schemaContent,
+          specificSchemaObject: schemaObject ??
+            (schemaContent?.type === 'union' && schemaIdx !== undefined
+              ? schemaContent.options[schemaIdx]
+              : schemaContent),
           schemaFallingBack: Boolean(!schemaObject && schemaContent)
         });
         this.$addEditUI({editUI});

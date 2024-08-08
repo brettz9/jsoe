@@ -1457,11 +1457,12 @@ const arrayType = {
      * @param {{
      *   propName: string|undefined,
      *   schema?: import('zodex').SzType,
+     *   schemaIdx?: number,
      *   autoTrigger?: boolean
      * }} cfg
      */
     const buildTypeChoicesForProperty = ({
-      propName, schema, autoTrigger
+      propName, schema, schemaIdx, autoTrigger
     }) => {
       return /** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
@@ -1473,6 +1474,7 @@ const arrayType = {
         // eslint-disable-next-line object-shorthand -- TS
         format: /** @type {import('../formats.js').AvailableFormat} */ (format),
         schemaOriginal: schemaContent,
+        schemaIdx,
         schemaContent: schema || type === 'tuple'
           ? (schema ?? /** @type {import('zodex').SzTuple} */ (
             specificSchemaObject
@@ -1583,7 +1585,8 @@ const arrayType = {
      *   alwaysFocus?: true
      *   required?: true
      *   autoTrigger?: boolean,
-     *   schema?: import('zodex').SzType
+     *   schema?: import('zodex').SzType,
+     *   schemaIdx?: number
      * }} cfg
      * @returns {void}
      */
@@ -1597,7 +1600,7 @@ const arrayType = {
      * }}
      */
     const $addArrayElement = function ({
-      propName, splice, alwaysFocus, required, schema, autoTrigger
+      propName, splice, alwaysFocus, required, schema, schemaIdx, autoTrigger
     }) {
       const arrayItems = this.$getArrayItems();
       if (sparse) {
@@ -1751,7 +1754,9 @@ const arrayType = {
           ? [jml('span', {
             className: `optionalProperties-placeholder${optionalPropertyId}`
           })]
-          : buildTypeChoicesForProperty({propName, schema, autoTrigger})),
+          : buildTypeChoicesForProperty({
+            propName, schema, schemaIdx, autoTrigger
+          })),
         ['span', {className: 'property-placeholder'}],
         nbsp.repeat(2),
         ['button', {
@@ -2222,7 +2227,7 @@ const arrayType = {
             /** @type {import('../formats/structuredCloning.js').AddAndSetArrayElement} */
             $addAndSetArrayElement ({
               propName, type, value, bringIntoFocus, setAValue,
-              schemaContent: schema, mustBeOptional
+              schemaContent: schema, schemaIdx, mustBeOptional
             }) {
               if (parentType === 'map') {
                 if (propName === '0') {
@@ -2262,6 +2267,7 @@ const arrayType = {
                 // console.log('SCHEMA123', schema);
                 this.$addArrayElement({
                   propName, schema, autoTrigger: false,
+                  schemaIdx,
                   required: !mustBeOptional && schema && !schema.isOptional &&
                     schema.type !== 'never'
                 });
@@ -2311,7 +2317,7 @@ const arrayType = {
              */
             // @ts-expect-error TS is apparently getting wrong $addArrayElement
             $addArrayElement ({
-              propName, splice, alwaysFocus, required, schema,
+              propName, splice, alwaysFocus, required, schema, schemaIdx,
               autoTrigger
             }) {
               const addArrayElement = this.$getAddArrayElement();
@@ -2323,6 +2329,7 @@ const arrayType = {
                */
               (addArrayElement).$addArrayElement({
                 propName, splice, alwaysFocus, required, schema,
+                schemaIdx,
                 autoTrigger
               });
             },
