@@ -908,7 +908,7 @@ const arrayType = {
         arrLengthInput.value = String(highest + 1);
         arrLengthInput.$oldvalue = String(highest + 1);
         // Does have potential side effects calling `$inputsExceedingLength`
-        return this.$validateLength(true);
+        this.$validateLength(true);
       };
       if (mapProperties) {
         const keyTypeSelection =

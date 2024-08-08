@@ -683,7 +683,15 @@ const schema = {
           console.log('matched', v, v?.length, type, schema);
           return {
             type,
-            schema,
+            // For `readonly`, we just want to show the current type (no
+            //   pull-down)
+            schema: !parentSchema ||
+              (stateObj.readonly || schemaObjects.length === 1)
+              ? schema
+              : {
+                type: 'union',
+                options: schemaObjects
+              },
             mustBeOptional
           };
         }
