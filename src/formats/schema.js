@@ -570,7 +570,7 @@ function getTypesForSchema (schemaObject, originalJSON) {
 /** @type {import('../formats.js').Format} */
 const schema = {
   iterate (records, stateObj) {
-    console.log('records', records, stateObj);
+    // console.log('records', records, stateObj);
     stateObj.format = 'schema';
     return structuredCloning.iterate(records, stateObj);
   },
@@ -654,10 +654,10 @@ const schema = {
       /** @type {import('zodex').SzType} */ (currentSchema),
       /** @type {import('zodex').SzType} */ (currentSchema)
     )];
-    console.log(
-      'vvv', v, currentSchema,
-      arrayOrObjectPropertyName, parentSchema, schemaObjects
-    );
+    // console.log(
+    //   'vvv', v, currentSchema,
+    //   arrayOrObjectPropertyName, parentSchema, schemaObjects
+    // );
     // console.log('schemaObjects', schemaObjects);
     for (const [schemaIdx, schema] of schemaObjects.entries()) {
       let unknownKeys;
@@ -674,7 +674,7 @@ const schema = {
       if (schema.type === 'object') {
         schema.unknownKeys = unknownKeys;
       }
-      console.log('parsed', parsed.success, v, schema);
+      // console.log('parsed', parsed.success, v, schema);
       if (parsed.success) {
         if (currentSchema.type === 'any' && schema.description) {
           schema.description += ' (any)';
@@ -694,9 +694,9 @@ const schema = {
           );
 
         if (typeObject.valueMatch && typeObject.valueMatch(v)) {
-          console.log(
-            'matched', v, v?.length, type, schema, schemaIdx, schemaObjects
-          );
+          // console.log(
+          //   'matched', v, v?.length, type, schema, schemaIdx, schemaObjects
+          // );
           // console.log('ssss', !stateObj.rootUI ||
           //   (stateObj.readonly || schemaObjects.length === 1),
           //    schema, schemaObjects);

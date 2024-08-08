@@ -20,22 +20,24 @@ import FileList from '../src/utils/FileList.js';
  * @returns {import('jamilih').JamilihChildren}
  */
 function getTypeChoices (values, schema) {
-  return values.flatMap((value, idx) => {
-    return typeChoices({
-      format: 'schema',
-      setValue: true,
-      typeNamespace: 'demo-type-choices-only-initial-value',
-      // schema: '',
+  return [['section', values.map((value, idx) => {
+    return ['div', {class: 'innerItem'}, [
+      ...typeChoices({
+        format: 'schema',
+        setValue: true,
+        typeNamespace: 'demo-type-choices-only-initial-value',
+        // schema: '',
 
-      // The key differences with `schema-preloaded.js`
-      value: [value],
-      schemaContent: {
-        description: 'Container',
-        type: 'array',
-        element: schema.options[idx]
-      }
-    }).domArray;
-  });
+        // The key differences with `schema-preloaded.js`
+        value: [value],
+        schemaContent: {
+          description: 'Container',
+          type: 'array',
+          element: schema.options[idx]
+        }
+      }).domArray
+    ]];
+  })]];
 }
 
 setTimeout(function () {

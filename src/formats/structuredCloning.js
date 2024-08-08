@@ -149,9 +149,9 @@ const encapsulateObserver = (stateObj) => {
       //   arrayOrObjectPropertyName, schemaParents[parentPath]
       // );
       try {
-        console.log(
-          'VVVV0', JSON.stringify(parentPath), schemaParents // , stateObj
-        );
+        // console.log(
+        //   'VVVV0', JSON.stringify(parentPath), schemaParents // , stateObj
+        // );
         ({
           newType, schema, schemaIdx, mustBeOptional
         } = canonicalTypeToAvailableTypeAndSchema(
@@ -168,7 +168,7 @@ const encapsulateObserver = (stateObj) => {
           schemaParents[parentPath],
           stateObj
         )); // Todo (low): Add state for second argument
-        console.log('VVVV1', value, schema);
+        // console.log('VVVV1', value, schema);
         // console.log('VVVV2',
         //   JSON.stringify(stateObj.schemaContent, null, 2));
       } catch (err) {
