@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.17.0
+
+- feat: Zodex schema support
+
 ## 0.16.0
 
 - feat(regexp): support v flag
