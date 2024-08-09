@@ -149,12 +149,15 @@ export type SzEnum<Values extends [string, ...string[]] = [string, ...string[]]>
     type: "enum";
     values: Values;
 };
-export type SzNativeEnum = {
+export type SzNativeEnum<Values extends {
+    [key: string]: string | number;
+    [key: number]: string;
+} = {
+    [key: string]: string | number;
+    [key: number]: string;
+}> = {
     type: "nativeEnum";
-    values: {
-        [key: string]: string | number;
-        [key: number]: string;
-    };
+    values: Values;
 };
 export type SzPromise<T extends SzType = SzType> = {
     type: "promise";
@@ -162,7 +165,7 @@ export type SzPromise<T extends SzType = SzType> = {
 };
 export type SzCatch<T extends SzType = SzType> = {
     type: "catch";
-    name: string;
+    value: any;
     innerType: T;
 };
 export type SzEffect<T extends SzType = SzType> = {
@@ -191,7 +194,8 @@ export type SzReadonly = {
 export type SzRef = {
     $ref: string;
 };
-export type SzKey = SzString | SzNumber | SzSymbol;
+export type SzExtras = Partial<SzNullable & SzOptional & SzDefault<any> & SzDescription & SzReadonly>;
+export type SzKey = (SzString | SzNumber | SzSymbol) & SzExtras;
 export type SzDefaultOrNullable = SzDefault<any> | SzNullable;
-export type SzType = (SzPrimitive | SzLiteral<any> | SzArray<any> | SzObject<any, any> | SzUnion<any> | SzDiscriminatedUnion<any, any> | SzIntersection<any, any> | SzTuple<any> | SzRecord<any, any> | SzMap<any, any> | SzSet<any> | SzFunction<any, any> | SzEnum<any> | SzNativeEnum | SzPromise<any> | SzEffect<any> | SzCatch<any>) & Partial<SzNullable & SzOptional & SzDefault<any> & SzDescription & SzReadonly>;
+export type SzType = (SzPrimitive | SzLiteral<any> | SzArray<any> | SzObject<any, any> | SzUnion<any> | SzDiscriminatedUnion<any, any> | SzIntersection<any, any> | SzTuple<any> | SzRecord<any, any> | SzMap<any, any> | SzSet<any> | SzFunction<any, any> | SzEnum<any> | SzNativeEnum<any> | SzPromise<any> | SzEffect<any> | SzCatch<any>) & SzExtras;
 export type SzUnionize<T extends SzType | SzRef> = T | (T extends SzArray<infer T> ? SzUnionize<T> : T extends SzObject<infer Properties> ? SzUnionize<ValueOf<Properties>> : T extends SzUnion<infer Options> ? SzUnionize<Options[number]> : T extends SzDiscriminatedUnion<infer _D, infer Options> ? SzUnionize<Options[number]> : T extends SzIntersection<infer L, infer R> ? SzUnionize<L | R> : T extends SzTuple<infer Items> ? SzUnionize<Items[number]> : T extends SzRecord<infer _Key, infer Value> ? SzUnionize<Value> : T extends SzMap<infer _Key, infer Value> ? SzUnionize<Value> : T extends SzSet<infer T> ? SzUnionize<T> : T extends SzFunction<infer Args, infer Return> ? SzUnionize<Args | Return> : T extends SzPromise<infer Value> ? SzUnionize<Value> : never);

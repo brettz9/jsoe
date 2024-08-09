@@ -44,9 +44,6 @@ type ZerializerOptions = {
     };
     currentPath: string[];
     seenObjects: WeakMap<z.ZodTypeDef, string>;
-    catches?: {
-        [key: string]: any;
-    };
 };
 export declare function zerializeRefs<T extends ZodTypes>(schema: T, opts: ZerializerOptions, wrapReferences?: boolean): Zerialize<T> | SzRef;
 export declare function zerialize<T extends ZodTypes>(schema: T, opts?: Partial<ZerializerOptions>): Zerialize<T>;

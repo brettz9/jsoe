@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { STRING_KINDS, } from "./types.js";
 export const PRIMITIVES = {
     ZodString: "string",
@@ -26,7 +27,11 @@ const zerializers = {
     }),
     ZodDefault: (def, opts) => ({
         ...s(def.innerType, opts, true),
-        defaultValue: def.defaultValue(),
+        defaultValue: def.innerType._def.typeName === "ZodBigInt"
+            ? String(def.defaultValue())
+            : def.innerType._def.typeName === "ZodDate"
+                ? def.defaultValue().getTime()
+                : def.defaultValue(),
     }),
     ZodNumber: (def) => {
         const checks = def.checks.reduce((o, check) => ({
@@ -354,29 +359,25 @@ const zerializers = {
             effects,
             inner: s(lastDef.schema, {
                 ...opts,
-                currentPath: [...opts.currentPath, "schema"],
+                currentPath: [...opts.currentPath, "inner"],
             }),
         };
     },
     ZodBranded: (def, opts) => s(def.type, opts),
     ZodPipeline: (def, opts) => s(def.out, opts),
     ZodCatch: (def, opts) => {
-        if (!opts.catches) {
-            return s(def.innerType, opts);
-        }
-        // @ts-expect-error API wrong?
-        const catchValue = def.catchValue();
-        const ctch = Object.entries(opts.catches).find(([, ctchVal]) => {
-            return typeof ctchVal === "function"
-                ? ctchVal() === catchValue
-                : ctchVal === catchValue;
+        const catchValue = def.catchValue({
+            // No errors to report, so just add an empty set
+            get error() {
+                /* c8 ignore next 2 -- Unused */
+                return new z.ZodError([]);
+            },
+            // We don't have any input yet, so just provide `undefined`
+            input: undefined,
         });
-        if (!ctch) {
-            return s(def.innerType, opts);
-        }
         return {
             type: "catch",
-            name: ctch[0],
+            value: catchValue,
             innerType: s(def.innerType, opts),
         };
     },

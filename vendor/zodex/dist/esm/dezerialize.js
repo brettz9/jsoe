@@ -277,13 +277,9 @@ const dezerializers = {
                 ...opts,
                 path: opts.path + "/innerType",
             });
-        if (!opts.catches) {
-            opts.pathToSchema.set(opts.path, base);
-            return base;
-        }
-        // @ts-expect-error TS error?
-        base = base.catch(opts.catches[shape.name]);
+        base = base.catch(shape.value);
         opts.pathToSchema.set(opts.path, base);
+        return base;
     }),
     effect: ((shape, opts) => {
         let base = checkRef(shape.inner, opts) ||
@@ -332,7 +328,11 @@ export function dezerializeRefs(shape, opts) {
     if ("defaultValue" in shape) {
         const { defaultValue, ...rest } = shape;
         const inner = d(rest, opts);
-        const result = inner.default(defaultValue);
+        const result = inner.default(shape.type === "bigInt"
+            ? BigInt(defaultValue)
+            : shape.type === "date"
+                ? new Date(defaultValue)
+                : defaultValue);
         opts.pathToSchema.set(opts.path, result);
         return result;
     }
