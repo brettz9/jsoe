@@ -1,3 +1,7 @@
 cypress
 coverage
 instrumented
+.nyc_output
+.github
+cypress.config.ts
+demo
