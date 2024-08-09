@@ -430,11 +430,9 @@ const arrayType = {
           class: `propertyName-${typeNamespace}`,
           title: type === 'record' && /** @type {import('zodex').SzRecord} */ (
             specificSchemaObject
-          // @ts-expect-error Update to Zodex should remove need
           )?.key?.description
             ? /** @type {import('zodex').SzRecord} */ (
               specificSchemaObject
-            // @ts-expect-error Update to Zodex should remove need
             )?.key?.description
             : specificSchemaObject ? propName : undefined
         }, [
@@ -945,7 +943,6 @@ const arrayType = {
               : type === 'record' &&
               /** @type {import('zodex').SzRecord} */ (
                 specificSchemaObject
-              // @ts-expect-error Should work if Zodex updated with fix
               )?.key?.description
                 ? '(record key)'
                 : undefined
@@ -956,7 +953,6 @@ const arrayType = {
               )?.key?.description ?? 'Map key'
               : /** @type {import('zodex').SzRecord} */ (
                 specificSchemaObject
-              // @ts-expect-error Should work if Zodex updated with fix
               )?.key?.description ?? 'Record key',
             ' '
           ]],

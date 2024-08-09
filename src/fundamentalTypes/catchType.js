@@ -80,7 +80,6 @@ const catchType = {
           hasValue: true,
           value: /** @type {import('zodex').SzCatch} */ (
             specificSchemaObject
-          // @ts-expect-error Wait until change Zodex fork
           ).value,
           resultType, typeNamespace,
           type: /** @type {import('../types.js').AvailableType} */ (
@@ -103,7 +102,6 @@ const catchType = {
     const schemaValue =
       /** @type {import('zodex').SzCatch} */ (
         specificSchemaObject
-      // @ts-expect-error Undo when Zodex may update to support
       )?.value;
     return ['div', {
       dataset: {type: 'catch'},

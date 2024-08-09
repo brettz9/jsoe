@@ -240,7 +240,6 @@ function getTypesForSchema (schemaObject, originalJSON) {
     addModifiers(schemaObject, set);
     return new Set(set);
   } case 'any': case 'unknown':
-    // @ts-expect-error Problem with `nativeEnum` type
     return new Set([
       {
         type: 'boolean'
