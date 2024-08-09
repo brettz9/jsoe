@@ -2,6 +2,9 @@
 
 ## 0.17.0
 
+BREAKING CHANGES: API changes to `formatAndTypeChoices` and
+    `getFormatAndSchemaChoices`
+
 - feat: Zodex schema support
 
 ## 0.16.0
