@@ -119,6 +119,7 @@ export async function formatAndTypeChoices ({
        * Sets the desired format and rebuilds the type choices.
        * @callback SetFormat
        * @param {string} valueFormat
+       * @param {boolean} [autoTrigger]
        * @this {HTMLSelectElement & {
        *   $buildTypeChoices: TypeChoiceBuilder
        * }}
@@ -128,6 +129,7 @@ export async function formatAndTypeChoices ({
       /**
        * Rebuilds the type choices.
        * @callback TypeChoiceBuilder
+       * @param {boolean} [autoTrigger]
        * @this {HTMLSelectElement & {
        *   $buildTypeChoices: TypeChoiceBuilder
        * }}
@@ -144,18 +146,19 @@ export async function formatAndTypeChoices ({
       /**
        * @type {SetFormat}
        */
-      async $setFormat (valueFormat) {
+      async $setFormat (valueFormat, autoTrigger) {
         this.value = valueFormat;
-        await this.$buildTypeChoices();
+        await this.$buildTypeChoices(autoTrigger);
       },
 
       /**
        * @type {TypeChoiceBuilder}
        */
-      async $buildTypeChoices () {
+      async $buildTypeChoices (autoTrigger) {
         DOM.removeChildren(typesHolder);
         const {schema} = this.selectedOptions[0].dataset;
         jml({'#': buildTypeChoices({
+          autoTrigger,
           topRoot: /** @type {HTMLDivElement} */ (
             $e(typesHolder, 'div[data-type]')
           ),

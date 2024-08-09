@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.18.0
+
+- feat: give option to disable `autoTrigger` for building type choices, e.g.,
+    with `$setFormat(format, autoTrigger)`
+
 ## 0.17.0
 
 BREAKING CHANGES: API changes to `formatAndTypeChoices` and
