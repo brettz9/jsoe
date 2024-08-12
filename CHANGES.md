@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.19.0
+
+- feat: change API for `$setFormat` to accept `schema` and change API to object with
+    `valueFormat`, `autoTrigger`, and `schema` properties.
+
 ## 0.18.0
 
 - feat: give option to disable `autoTrigger` for building type choices, e.g.,

@@ -147,7 +147,9 @@ setTimeout(async function () {
       id: 'programmaticallySetFormatToJSON',
       $on: {
         async click () {
-          await keyPathNotExpectedTypeChoices.formatChoices.$setFormat('json');
+          await keyPathNotExpectedTypeChoices.formatChoices.$setFormat({
+            valueFormat: 'json'
+          });
         }
       }
     }, [

@@ -118,8 +118,11 @@ export async function formatAndTypeChoices ({
       /**
        * Sets the desired format and rebuilds the type choices.
        * @callback SetFormat
-       * @param {string} valueFormat
-       * @param {boolean} [autoTrigger]
+       * @param {{
+       *   valueFormat?: import('./formats.js').AvailableFormat,
+       *   autoTrigger: boolean,
+       *   schema?: string
+       * }} cfg
        * @this {HTMLSelectElement & {
        *   $buildTypeChoices: TypeChoiceBuilder
        * }}
@@ -146,8 +149,15 @@ export async function formatAndTypeChoices ({
       /**
        * @type {SetFormat}
        */
-      async $setFormat (valueFormat, autoTrigger) {
-        this.value = valueFormat;
+      async $setFormat ({valueFormat, autoTrigger, schema}) {
+        if (schema) {
+          const idx = [...this.options].findIndex((option) => {
+            return option.dataset.schema === schema;
+          });
+          this.selectedIndex = idx === -1 ? 0 : idx;
+        } else if (valueFormat) {
+          this.value = valueFormat;
+        }
         await this.$buildTypeChoices(autoTrigger);
       },
 
