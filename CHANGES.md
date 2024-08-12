@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.19.1
+
+- fix: ensure `originalShape` passed to `dezerialize()` (`$ref`'s require)
+
 ## 0.19.0
 
 - feat: change API for `$setFormat` to accept `schema` and change API to object with

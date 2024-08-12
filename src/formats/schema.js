@@ -667,7 +667,9 @@ const schema = {
         //  however, if the tested object has extra non-standard properties
         schema.unknownKeys = 'strict';
       }
-      const dezSchema = dezerialize(schema);
+      const dezSchema = dezerialize(schema, {
+        originalShape: stateObj.schemaContent
+      });
       const parsed = dezSchema.safeParse(v);
 
       if (schema.type === 'object') {
