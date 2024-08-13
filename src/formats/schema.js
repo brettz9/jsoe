@@ -651,7 +651,7 @@ const schema = {
     }
     const schemaObjects = [...getTypesForSchema(
       /** @type {import('zodex').SzType} */ (currentSchema),
-      /** @type {import('zodex').SzType} */ (currentSchema)
+      /** @type {import('zodex').SzType} */ (stateObj.schemaContent)
     )];
     // console.log(
     //   'vvv', v, currentSchema,
