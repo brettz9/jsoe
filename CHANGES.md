@@ -1,5 +1,11 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.1
+
+- fix: allow detection of matching schema which are copies and not references
+- fix: should pass original schema to editUI for `schemaContent`
+- fix: refer to original JSON
+
 ## 0.20.0
 
 - feat: make `getTypesForSchema` public
