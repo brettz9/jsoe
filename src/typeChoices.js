@@ -12,7 +12,8 @@ import dialogs from './utils/dialogs.js';
  *   type: string,
  *   baseValue?: import('./formats.js').StructuredCloneValue,
  *   bringIntoFocus?: boolean,
- *   avoidReport?: boolean
+ *   avoidReport?: boolean,
+ *   specificSchema?: import('zodex').SzType
  * }) => void} SetType
  */
 
@@ -161,8 +162,22 @@ export const buildTypeChoices = ({
     $custom: {
       $getValue,
       /** @type {SetType} */
-      $setType ({type, baseValue, bringIntoFocus, avoidReport}) {
-        this.value = type;
+      $setType ({
+        type, baseValue, bringIntoFocus, avoidReport, specificSchema
+      }) {
+        if (schemaObjs && specificSchema) {
+          const idx = schemaObjs.map((obj) => {
+            return JSON.stringify(obj);
+          }).indexOf(JSON.stringify(specificSchema));
+          if (idx === -1) {
+            console.log('schemaObjs', schemaObjs, specificSchema);
+            this.value = type;
+          } else {
+            this.selectedIndex = idx + 1;
+          }
+        } else {
+          this.value = type;
+        }
         this.$setStyles();
         this.$addAndValidateEditUI({baseValue, bringIntoFocus, avoidReport});
       },

@@ -555,6 +555,7 @@ export function getTypesForSchema (schemaObject, originalJSON) {
     ]);
   default: {
     if ('$ref' in schemaObject) {
+      // console.log('originalJSON', originalJSON, schemaObject.$ref);
       const refObj = resolveJSONPointer({
         obj: originalJSON,
         path: /** @type {import('zodex').SzRef} */ (schemaObject).$ref

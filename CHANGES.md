@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.2
+
+- fix: setting of pull-downs with schemas
+
 ## 0.20.1
 
 - fix: allow detection of matching schema which are copies and not references

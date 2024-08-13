@@ -2271,6 +2271,10 @@ const arrayType = {
               const typeChoices = this.$getTypeChoices();
               typeChoices.$setType({
                 type, baseValue: value, bringIntoFocus,
+                specificSchema:
+                  schema?.type === 'union' && schemaIdx !== undefined
+                    ? schema.options[schemaIdx]
+                    : schema,
                 avoidReport: true
               });
               const root = typeChoices.$getTypeRoot();
