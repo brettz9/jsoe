@@ -174,7 +174,9 @@ export const buildTypeChoices = ({
        */
       $setTypeNoEditUI ({type, specificSchema}) {
         if (schemaObjs && specificSchema) {
-          const idx = schemaObjs.indexOf(specificSchema);
+          const idx = schemaObjs.map((obj) => {
+            return JSON.stringify(obj);
+          }).indexOf(JSON.stringify(specificSchema));
           this.selectedIndex = idx + 1;
         } else {
           this.value = type;
