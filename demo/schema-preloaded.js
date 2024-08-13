@@ -14,6 +14,8 @@ import {
 
 import FileList from '../src/utils/FileList.js';
 
+const zodexSchemaJSON = await (await fetch('./schema.zodex.json')).json();
+
 /**
  * @param {any[]} values
  * @param {import('zodex').SzType} schema
@@ -29,7 +31,8 @@ function getTypeChoices (values, schema) {
         // schema: '',
 
         value,
-        schemaContent: schema.options[idx]
+        schemaContent: schema.options[idx],
+        schemaOriginal: schema.options[idx]
       }).domArray
     ]];
   })]];
@@ -283,7 +286,31 @@ setTimeout(function () {
           value: {a: 3},
           schemaContent: schema
         }).domArray;
-      })()
+      })(),
+      ['section', [
+        (() => {
+          const value = {
+            type: 'object',
+            catchall: {
+              type: 'bigInt'
+            },
+            properties: {}
+          };
+          const schema = zodexSchemaJSON;
+          return ['div', {class: 'innerItem'}, [
+            ...typeChoices({
+              autoTrigger: true,
+              format: 'schema',
+              setValue: true,
+              typeNamespace: 'demo-type-choices-only-initial-value',
+              // schema: '',
+              value,
+              schemaContent: schema,
+              schemaOriginal: schema
+            }).domArray
+          ]];
+        })()
+      ]]
     ]]
   ], body);
 });
