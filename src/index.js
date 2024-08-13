@@ -21,3 +21,7 @@ export {
   formatAndTypeChoices,
   getFormatAndSchemaChoices
 } from './formatAndTypeChoices.js';
+
+export {
+  getTypesForSchema
+} from './formats/schema.js';

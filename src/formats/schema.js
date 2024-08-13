@@ -198,7 +198,7 @@ function addModifiers (schemaObject, set) {
  * @param {ZodexSchema} originalJSON
  * @returns {Set<ZodexSchema>}
  */
-function getTypesForSchema (schemaObject, originalJSON) {
+export function getTypesForSchema (schemaObject, originalJSON) {
   switch (schemaObject.type) {
   case 'never':
     return new Set();

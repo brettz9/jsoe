@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.0
+
+- feat: make `getTypesForSchema` public
+
 ## 0.19.1
 
 - fix: ensure `originalShape` passed to `dezerialize()` (`$ref`'s require)
