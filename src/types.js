@@ -13,7 +13,6 @@ import nullType from './fundamentalTypes/nullType.js';
 import trueType from './subTypes/trueType.js';
 import falseType from './subTypes/falseType.js';
 import nanType from './fundamentalTypes/nanType.js';
-import symbolType from './fundamentalTypes/symbolType.js';
 import blobHTMLType from './subTypes/blobHTMLType.js';
 import booleanType from './fundamentalTypes/booleanType.js';
 import numberType from './fundamentalTypes/numberType.js';
@@ -53,10 +52,13 @@ import dommatrixType from './superTypes/dommatrixType.js';
 import buffersourceType from './superTypes/buffersourceType.js';
 import noneditableType from './fundamentalTypes/noneditableType.js';
 import neverType from './fundamentalTypes/neverType.js';
-import promiseType from './fundamentalTypes/promiseType.js';
-import functionType from './fundamentalTypes/functionType.js';
 import catchType from './fundamentalTypes/catchType.js';
 import nativeEnumType from './fundamentalTypes/nativeEnumType.js';
+
+// Todo: Reenable
+// import symbolType from './fundamentalTypes/symbolType.js';
+// import promiseType from './fundamentalTypes/promiseType.js';
+// import functionType from './fundamentalTypes/functionType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -417,11 +419,11 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "int32array"|"uint32array"|"float32array"|"float64array"|"ValidDate"|
  *   "arrayNonindexKeys"|"error"|"errors"|"blob"|"domexception"|"domrect"|
  *   "dompoint"|"dommatrix"|"resurrectable"|"boolean"|"nan"|"tuple"|
- *   "record"|"void"|"enum"|"literal"|"symbol"|"never"|"promise"|
- *   "function"|"catch"|"nativeEnum"
+ *   "record"|"void"|"enum"|"literal"|"never"|"catch"|"nativeEnum"
  * } AvailableType
  */
-// Todo: When done with function/promise/symbol, move off here
+// Todo: Add to own section when ready for these non-structured-cloning:
+// "symbol"|"promise"|"function"
 
 /**
  * @typedef {TypeObject & {
@@ -451,7 +453,6 @@ class Types {
       true: trueType,
       false: falseType,
       nan: nanType, // Schema type
-      symbol: symbolType, // Non-cloning type
       boolean: booleanType, // Schema type
       number: numberType,
       bigint: bigintType,
@@ -504,8 +505,12 @@ class Types {
 
       resurrectable: noneditableType,
       never: neverType,
-      promise: promiseType,
-      function: functionType,
+
+      // Todo: Reenable
+      // symbol: symbolType, // Non-cloning type
+      // promise: promiseType,
+      // function: functionType,
+
       catch: catchType,
       nativeEnum: nativeEnumType,
 

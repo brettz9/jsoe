@@ -54,20 +54,24 @@ Supported types include:
 - string
 - `undefined`
 
-There are also the following fundamental (Zodex) schema types:
+There are also the following fundamental (structured-cloning capable
+Zodex) schema types:
 
 - `boolean` (using in place of true/false when schema specifies)
 - `catch`
 - `enum`
-- `function` (not structured cloning)
 - `literal`
 - `nan` (standalone in Zodex)
 - `nativeEnum`
-- `promise` (not structured cloning)
 - `record`
-- `symbol` (not structured cloning)
 - `tuple`
 - `void` (preferred in Zodex when specified as such)
+
+Work has begun on the following non-structured-cloning Zodex schema types:
+
+- `function`
+- `promise`
+- `symbol`
 
 ## Subtypes
 

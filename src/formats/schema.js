@@ -43,14 +43,13 @@ const zodexToStructuredCloningTypeMap = new Map([
   ['map', 'map'],
   ['set', 'set'],
 
-  ['symbol', 'symbol'],
-
   ['never', 'never'],
 
   // Todo: Allow non-cloning version to return these too, but filter out
   //         otherwise
-  ['function', 'function'],
-  ['promise', 'promise'],
+  // ['symbol', 'symbol'],
+  // ['function', 'function'],
+  // ['promise', 'promise'],
 
   ['catch', 'catch'],
   ['nativeEnum', 'nativeEnum']

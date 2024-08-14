@@ -1,5 +1,10 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.4
+
+- fix: disable incomplete symbol/function/promise support (leaving Zodex
+    schema)
+
 ## 0.20.3
 
 - fix: require object only if no schema

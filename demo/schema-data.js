@@ -127,11 +127,7 @@ const schemaInstanceJSON2 = {
         }
       }
     },
-    // Todo: Support `symbol`
-    // {
-    //   description: 'A symbol',
-    //   type: 'symbol'
-    // },
+
     {
       description: 'An array with mins and maxes',
       type: 'array',
@@ -532,6 +528,12 @@ const schemaInstanceJSON7 = {
       description: 'A never',
       type: 'never'
     }
+
+    // Todo: Support `symbol`
+    // {
+    //   description: 'A symbol',
+    //   type: 'symbol'
+    // },
 
     // Todo: Support `Promise`
     // {

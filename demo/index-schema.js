@@ -256,7 +256,7 @@ const schemaInstanceJSONStrings9 = {
 //         additional validations
 // Todo: allow function/promise/symbol to be cloneable albeit not through
 //        structured cloneable; note that typeson has an issue for
-//        symbol-iterating keys; then add to regular demo and test
+//        symbol-iterating keys; then add to regular demo and test; add tests
 
 /**
  * @param {string} schema
