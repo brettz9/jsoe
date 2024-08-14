@@ -42,6 +42,30 @@ export default [{
     commonjs()
   ]
 }, {
+  input: 'demo/schema-preloaded.js',
+  output: {
+    file: 'instrumented/demo/schema-preloaded.js',
+    format: 'es'
+  },
+  plugins: [
+    noOp({ids: ['react']}), // todo: remove when Zodex may remove dep.
+    istanbul(),
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
+  input: 'demo/schema-preloaded-array.js',
+  output: {
+    file: 'instrumented/demo/schema-preloaded-array.js',
+    format: 'es'
+  },
+  plugins: [
+    noOp({ids: ['react']}), // todo: remove when Zodex may remove dep.
+    istanbul(),
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
   input: 'node_modules/fast-deep-equal/es6/index.js',
   output: {
     file: 'src/deepEqual.js',

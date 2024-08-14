@@ -60,6 +60,9 @@ importers:
       axe-core:
         specifier: ^4.10.0
         version: 4.10.0
+      coveradge:
+        specifier: ^0.8.2
+        version: 0.8.2
       cypress:
         specifier: ^13.13.2
         version: 13.13.2
@@ -1452,6 +1455,10 @@ packages:
     resolution: {integrity: sha512-M1HQyIXcBGtVywBt8WVdim+lrNaK7VHp99Qt5pSNziXznKHViIBbXWtfRTpEFpF/c4FdfxNAsCCwPp5phBYJtw==}
     engines: {node: '>=0.10.0'}
 
+  array-flat-polyfill@1.0.1:
+    resolution: {integrity: sha512-hfJmKupmQN0lwi0xG6FQ5U8Rd97RnIERplymOv/qpq8AoNKPPAnxJadjFA23FNWm88wykh9HmpLJUUwUtNU/iw==}
+    engines: {node: '>=6.0.0'}
+
   array-includes@3.1.8:
     resolution: {integrity: sha512-itaWrbYbqpGXkGhZPGUulwnhVf5Hpy1xiCFsGqyIGglbBxmG5vSjxQen3/WGOjPpNEv1RtBLKxbmVXm8HpJStQ==}
     engines: {node: '>= 0.4'}
@@ -1925,6 +1932,11 @@ packages:
 
   correct-license-metadata@1.4.0:
     resolution: {integrity: sha512-nvbNpK/aYCbztZWGi9adIPqR+ZcQmZTWNT7eMYLvkaVGroN1nTHiVuuNPl7pK6ZNx1mvDztlRBJtfUdrVwKJ5A==}
+
+  coveradge@0.8.2:
+    resolution: {integrity: sha512-r8uGTbyHV9/lGntb2MqawOpyFDL4sI0UFTuucwNeACgUVMGAC9Dmeoa5FPjt1+Dfhm7SBg6NWLQpZ3ocpw+MRg==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
 
   create-ecdh@4.0.4:
     resolution: {integrity: sha512-mf+TCx8wWc9VpuxfP2ht0iSISLZnt0JgWlrOKZiNqyUZWnjIaCIVNQArMHnCZKfEYRg6IM7A+NeJoN8gf/Ws0A==}
@@ -7172,6 +7184,8 @@ snapshots:
 
   array-find-index@1.0.2: {}
 
+  array-flat-polyfill@1.0.1: {}
+
   array-includes@3.1.8:
     dependencies:
       call-bind: 1.0.7
@@ -7725,6 +7739,15 @@ snapshots:
   correct-license-metadata@1.4.0:
     dependencies:
       spdx-expression-validate: 2.0.0
+
+  coveradge@0.8.2:
+    dependencies:
+      '@istanbuljs/load-nyc-config': 1.1.0
+      '@rpl/badge-up': 3.0.0
+      array-flat-polyfill: 1.0.1
+      command-line-basics: 1.1.0
+      es6-template-strings: 2.0.1
+      istanbul-lib-report: 3.0.1
 
   create-ecdh@4.0.4:
     dependencies:

@@ -52,6 +52,9 @@ const dateType = {
     }
 
     const dateStr = new Date(Date.parse(value)).toISOString();
+    /* istanbul ignore next -- See below */
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    /* istanbul ignore next -- 6 digits year not reliable through `Date.parse` */
     this.getInput({root}).value = dateStr.length === 24
       ? dateStr.slice(0, -8)
       // eslint-disable-next-line @stylistic/max-len -- Long

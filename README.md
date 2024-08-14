@@ -1,4 +1,5 @@
-[![Licenses badge](https://raw.githubusercontent.com/brettz9/integrity-matters/master/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
+[![Licenses badge](https://raw.githubusercontent.com/es-joy/jsoe/main/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
+[![coverage badge](https://raw.githubusercontent.com/es-joy/jsoe/main/badges/coverage-badge.svg?sanitize=true)](badges/coverage-badge.svg)
 
 # @es-joy/jsoe
 

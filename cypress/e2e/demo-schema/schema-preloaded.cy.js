@@ -11,7 +11,7 @@
     beforeEach(() => {
       cy.visit(`http://127.0.0.1:8087/demo/schema-preloaded${
         item ? '-array' : ''
-      }.html`, {
+      }-instrumented.html`, {
         onBeforeLoad (win) {
           cy.stub(win.console, 'log').as('consoleLog');
         }

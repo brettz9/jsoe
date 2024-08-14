@@ -430,7 +430,10 @@ setTimeout(function () {
       id: 'initializeWithValue',
       $on: {
         async click () {
-          await keyPathNotExpectedTypeChoices.setValue(42);
+          await keyPathNotExpectedTypeChoices.setValue({
+            type: 'literal',
+            value: 42
+          });
         }
       }
     }, ['Initialize with a value']],

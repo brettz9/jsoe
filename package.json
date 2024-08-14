@@ -36,8 +36,9 @@
     "copy-zodex": "cp -R node_modules/zodex/dist/esm vendor/zodex/dist",
     "copy": "run-p copy-jamilih copy-typeson-registry copy-zod copy-zodex",
     "instrument": "run-s -c instrument-remove instrument-add copy-index rollup",
-    "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; nyc report",
-    "cypress": "cypress run; nyc report",
+    "coveradge": "coveradge badges/coverage-badge.svg",
+    "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; npm run report",
+    "cypress": "cypress run --spec cypress/e2e/all.cy.js; npm run report && npm run coveradge",
     "cypress:record": "cypress run --record --parallel",
     "report": "nyc report",
     "test": "npm run eslint && npm run rollup && npm run cypress"
@@ -49,6 +50,9 @@
     "excludeAfterRemap": true,
     "exclude": [
       "node_modules/**",
+      "src/fundamentalTypes/functionType.js",
+      "src/fundamentalTypes/promiseType.js",
+      "src/fundamentalTypes/symbolType.js",
       "src/fundamentalTypes/sparseUndefinedType.js"
     ]
   },
@@ -72,6 +76,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.1.0",
     "axe-core": "^4.10.0",
+    "coveradge": "^0.8.2",
     "cypress": "^13.13.2",
     "cypress-axe": "^1.5.0",
     "eslint": "^9.8.0",

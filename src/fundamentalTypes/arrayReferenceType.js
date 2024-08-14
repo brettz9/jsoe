@@ -161,10 +161,13 @@ const arrayReferenceType = {
       // 'sparseArrays'
     ]).includes(referentType)
       ? 'array'
-      : (referentType === 'object'
-        ? 'object'
+      /* istanbul ignore next -- Bad ref should have been caught earlier */
+      : (
         /* istanbul ignore next -- Bad ref should have been caught earlier */
-        : null);
+        referentType === 'object'
+          ? 'object'
+          /* istanbul ignore next -- Bad ref should have been caught earlier */
+          : null);
 
     if (referentBaseType !== type) {
       return invalidMessage(

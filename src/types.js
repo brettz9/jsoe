@@ -665,6 +665,7 @@ class Types {
       ]
     );
     // Ensure `stateObj` remains a reference if present
+    /* istanbul ignore next -- Guard */
     return typeObject.getValue({
       root,
       /* istanbul ignore next -- Guard */
