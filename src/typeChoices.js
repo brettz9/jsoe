@@ -123,7 +123,7 @@ export const buildTypeChoices = ({
   schemaContent
 }) => {
   // console.log('format', format, 'state', state, 'path', typeNamespace);
-  const typeAndSchemaInfo = requireObject
+  const typeAndSchemaInfo = requireObject && !schemaContent
     ? {
       typeOptions: [types.getOptionForType('object')], schemaObjects: undefined
     }

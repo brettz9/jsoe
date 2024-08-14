@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.3
+
+- fix: require object only if no schema
+
 ## 0.20.2
 
 - fix: setting of pull-downs with schemas
