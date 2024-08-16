@@ -310,6 +310,33 @@ setTimeout(function () {
             }).domArray
           ]];
         })()
+      ]],
+      ['br'], ['br'],
+      ['section', [
+        (() => {
+          const value = {
+            type: 'object',
+            properties: {
+              id: {
+                isOptional: true,
+                type: 'number'
+              }
+            }
+          };
+          const schema = zodexSchemaJSON;
+          return ['div', {class: 'innerItem'}, [
+            ...typeChoices({
+              autoTrigger: true,
+              format: 'schema',
+              setValue: true,
+              typeNamespace: 'demo-type-choices-only-initial-value',
+              // schema: '',
+              value,
+              schemaContent: schema,
+              schemaOriginal: schema
+            }).domArray
+          ]];
+        })()
       ]]
     ]]
   ], body);
