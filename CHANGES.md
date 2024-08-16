@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.20.5
+
+- fix: supply flattened schema for type choices
+
 ## 0.20.4
 
 - fix: disable incomplete symbol/function/promise support (leaving Zodex

@@ -259,6 +259,10 @@ export const buildTypeChoices = ({
           //   editUI in arrayType.js; we add `schemaFallingBack` to
           //   distinguish
           specificSchemaObject: schemaObject ??
+
+            // Avoid JSON references by using this by default (or only?)
+            (schemaObjs?.[sel.selectedIndex - 1]) ??
+
             (schemaContent?.type === 'union' && schemaIdx !== undefined
               ? schemaContent.options[schemaIdx]
               : schemaContent),
