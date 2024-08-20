@@ -627,12 +627,13 @@ const schema = {
         parentSchema
       ).inner;
       break;
-    // eslint-disable-next-line sonarjs/no-duplicated-branches -- Maintenance
-    case 'promise':
-      currentSchema = /** @type {import('zodex').SzPromise} */ (
-        parentSchema
-      ).value;
-      break;
+    // Todo: Reenable
+    // // eslint-disable-next-line sonarjs/no-duplicated-branches -- Maintenance
+    // case 'promise':
+    //   currentSchema = /** @type {import('zodex').SzPromise} */ (
+    //     parentSchema
+    //   ).value;
+    //   break;
     case 'tuple':
       currentSchema = /** @type {import('zodex').SzTuple} */ (
         parentSchema
@@ -723,7 +724,9 @@ const schema = {
     return {type: typesonType};
   },
 
+  /* istanbul ignore next -- Not in use */
   types () {
+    /* istanbul ignore next -- Not in use */
     return structuredCloning.types();
   },
 

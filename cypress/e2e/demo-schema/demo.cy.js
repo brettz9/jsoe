@@ -37,8 +37,28 @@ describe('Demo spec', () => {
     cy.get('#viewUIResults').should('contain', 'true');
   });
 
-  it('Opens unknown schema (boolean) option', function () {
+  it('Opens any schema (never) option', function () {
     cy.get('.formatChoices').select('Schema: any schema');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'Never'
+    );
+
+    Cypress.on('uncaught:exception', (/* err, runnable */) => {
+      // returning false here prevents Cypress from
+      // failing the test
+      return false;
+    });
+
+    cy.get('#viewUI').click();
+
+    cy.get('#viewUIResults').should(
+      'not.contain', 'Never (no value present here)'
+    );
+  });
+
+  it('Opens unknown schema (boolean) option', function () {
+    cy.get('.formatChoices').select('Schema: unknown schema');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'

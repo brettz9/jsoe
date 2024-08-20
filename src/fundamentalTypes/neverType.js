@@ -11,16 +11,11 @@ const neverType = {
     /* istanbul ignore next -- Back-up in case shows */
     return false;
   },
-  /* istanbul ignore next -- Back-up in case shows */
   toValue (/* _s */) {
-    /* istanbul ignore next -- Back-up in case shows */
     throw new Error('Cannot convert to value');
   },
-  /* istanbul ignore next -- Back-up in case shows */
   getValue () {
-    /* istanbul ignore next -- Back-up in case shows */
     return /** @type {import('../types.js').ToValue} */ (
-      /* istanbul ignore next -- Back-up in case shows */
       this.toValue
     )('');
   },

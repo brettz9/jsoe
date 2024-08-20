@@ -63,6 +63,7 @@ const errorsSpecialType = {
       String.raw`)\((?<innerContent>.*)\)$`, 'u'
   ),
   toValue (s, rootInfo) {
+    /* istanbul ignore next -- Just a guard */
     const {groups: {
       errorClass
     /* istanbul ignore next -- Should always be found */
@@ -366,6 +367,7 @@ const errorsSpecialType = {
                 ).textContent = aggregateErrorsContents.hidden ? '+' : '-';
               }}}, ['-']],
               ['div', {class: 'aggregateErrorsContents'}, [
+                /* istanbul ignore next -- Just a guard */
                 (o.errors
                   ? (() => {
                     const [div] = arrayType.viewUI({
