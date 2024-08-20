@@ -69,10 +69,12 @@ const zodexToStructuredCloningTypeMap = new Map([
  * @returns {ZodexSchema}
  */
 function mergeSchema (leftItem, rightItem) {
+  /* istanbul ignore if -- Guard */
   if (leftItem.type !== 'object') {
     console.log('leftItem', leftItem);
     throw new Error('Unexpected leftItem of type ' + leftItem.type);
   }
+  /* istanbul ignore if -- Guard */
   if (rightItem.type !== 'object') {
     console.log('rightItem', rightItem);
     throw new Error('Unexpected rightItem of type ' + rightItem.type);
