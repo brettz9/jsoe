@@ -1349,6 +1349,9 @@ describe('Array spec', function () {
         'aaa'
       );
 
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needs time
+      cy.wait(1000);
+
       cy.get(
         sel +
         'fieldset:nth-of-type(2) input.propertyName-demo-keypath-not-expected'
@@ -1384,6 +1387,9 @@ describe('Array spec', function () {
         'fieldset:nth-of-type(3) input.propertyName-demo-keypath-not-expected',
         'aaa'
       );
+
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needs time
+      cy.wait(1000);
 
       cy.get(
         sel +

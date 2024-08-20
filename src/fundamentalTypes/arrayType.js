@@ -835,7 +835,11 @@ const arrayType = {
           input.setCustomValidity(
             invalidStr
           );
-          // input.reportValidity(); // Might not want this as changes focus
+          if (invalidStr) {
+            // Might not want this as changes focus; if ok, will hopefully be
+            //   marked as such elsewhere
+            input.reportValidity();
+          }
         }
         return invalidStr; // Don't give a chance to become valid
       });

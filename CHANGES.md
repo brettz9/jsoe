@@ -3,6 +3,7 @@
 ## ?
 
 - fix(`recordType`): failing `toValue` conversion
+- fix(`objectType`): resume reporting duplicate property names
 
 ## 0.20.5
 
