@@ -111,9 +111,9 @@ const arrayType = {
     const state = sparse
       ? 'arrayNonindexKeys'
     // ? 'sparseArrays'
-      : (this.array ? 'array' : 'object');
+      : (this.array && !this.record ? 'array' : 'object');
     /** @type {{[key: (string|number)]: any}} */
-    const retObj = this.array ? [] : {};
+    const retObj = this.array && !this.record ? [] : {};
     let stringVal = innerContents !== undefined
       ? innerContents
       /* istanbul ignore next -- Unreachable? */
@@ -140,7 +140,7 @@ const arrayType = {
       }
       return false;
     };
-    if (this.array) {
+    if (this.array && !this.record) {
       let idx = 0;
       const parse = () => {
         if (!stringVal) {

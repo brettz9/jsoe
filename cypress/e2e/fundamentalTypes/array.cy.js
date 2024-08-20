@@ -2146,4 +2146,13 @@ describe('Record spec (schema)', function () {
       });
     }
   );
+
+  describe('toValue()', function () {
+    it('Converts string to simple object', function () {
+      // Note: this uses a special escape for the initial bracket
+      cy.typeAndBlur('#getValueForString', 'Record{{}a: 3}');
+
+      cy.get('@consoleLog').should('be.calledWith', {a: 3});
+    });
+  });
 });
