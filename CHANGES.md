@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## ?
+
+- fix(`recordType`): failing `toValue` conversion
+
 ## 0.20.5
 
 - fix: supply flattened schema for type choices
