@@ -438,6 +438,24 @@ setTimeout(function () {
       }
     }, ['Initialize with a value']],
 
+    ['button', {
+      id: 'showRootFormControl',
+      $on: {
+        click () {
+          const root = $(
+            '#formatAndTypeChoices > .typesHolder > ' +
+              '.typeContainer > div[data-type]'
+          );
+          const formControl =
+            keyPathNotExpectedTypeChoices.types.getFormControlForRoot(root);
+          formControl.style.backgroundColor = 'red';
+          setTimeout(() => {
+            formControl.style.backgroundColor = 'white';
+          }, 3000);
+        }
+      }
+    }, ['Show root form control']],
+
     ['h2', [
       'Convert structured cloning string representation to value and log'
     ]],

@@ -2155,4 +2155,34 @@ describe('Record spec (schema)', function () {
       cy.get('@consoleLog').should('be.calledWith', {a: 3});
     });
   });
+
+  describe('getInput()', function () {
+    it('Shows the record root form control', function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+
+      cy.get(
+        sel + 'select.typeChoices-demo-keypath-not-expected'
+      ).select('Record (A record)');
+
+      cy.get('#showRootFormControl').click();
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="record"] > button'
+      ).should(($button) => {
+        expect($button[0].style.backgroundColor).to.equal('red');
+      });
+
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needed
+      cy.wait(3000);
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="record"] > button'
+      ).should(($button) => {
+        expect($button[0].style.backgroundColor).to.not.equal('red');
+      });
+    });
+  });
 });
