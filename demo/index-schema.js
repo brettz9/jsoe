@@ -431,6 +431,11 @@ setTimeout(function () {
           await keyPathNotExpectedTypeChoices.setValue({
             type: 'literal',
             value: 42
+          }, {
+            schemaContent: await getSchemaContent(
+              keyPathNotExpectedTypeChoices.formatChoices.
+                selectedOptions[0].dataset.schema
+            )
           });
         }
       }

@@ -46,4 +46,12 @@ describe('Demo spec', () => {
     cy.get('#viewUI').click();
     cy.get('#viewUIResults').should('contain', 'true');
   });
+
+  it('Initializes a form control with a value', () => {
+    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+    cy.get('#initializeWithValue').click();
+    cy.get('#formatAndTypeChoices input[type=number]').should(($input) => {
+      expect($input.val()).to.equal('42');
+    });
+  });
 });
