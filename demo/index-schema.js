@@ -260,6 +260,7 @@ const schemaInstanceJSONStrings9 = {
 
 /**
  * @param {string} schema
+ * @throws {Error}
  * @returns {import('zodex').SzType}
  */
 function getSchemaContent (schema) {
@@ -316,10 +317,11 @@ function getSchemaContent (schema) {
     return anySchemaJSON;
   case 'unknown schema':
     return unknownSchemaJSON;
+  /* istanbul ignore next -- Guard */
   default:
-    break;
+    /* istanbul ignore next -- Guard */
+    throw new Error('Unexpected schema');
   }
-  return {};
 }
 
 const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
@@ -397,10 +399,6 @@ setTimeout(function () {
       id: 'viewUI',
       $on: {
         async click () {
-          console.log('getting', await getSchemaContent(
-            keyPathNotExpectedTypeChoices.formatChoices.
-              selectedOptions[0].dataset.schema
-          ));
           const controls =
             // eslint-disable-next-line @stylistic/max-len -- Long
             (await keyPathNotExpectedTypeChoices.formats.getControlsForFormatAndValue(
