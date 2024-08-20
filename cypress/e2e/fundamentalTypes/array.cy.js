@@ -2029,6 +2029,45 @@ describe('Tuple spec (schema)', function () {
       ).should('not.exist');
     }
   );
+
+  describe('toValue()', function () {
+    it('Converts string to simple object', function () {
+      // Note: this uses a special escape for the initial bracket
+      cy.typeAndBlur('#getValueForString', 'Tuple[3, 4]');
+
+      cy.get('@consoleLog').should('be.calledWith', [3, 4]);
+    });
+  });
+
+  describe('getInput()', function () {
+    it('Shows the record root form control', function () {
+      cy.get('.formatChoices').select('Schema: Zodex schema instance 7');
+      const sel = '#formatAndTypeChoices ';
+
+      cy.get(
+        sel + 'select.typeChoices-demo-keypath-not-expected'
+      ).select('tuple');
+
+      cy.get('#showRootFormControl').click();
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="tuple"] > button'
+      ).should(($button) => {
+        expect($button[0].style.backgroundColor).to.equal('red');
+      });
+
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needed
+      cy.wait(3000);
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="tuple"] > button'
+      ).should(($button) => {
+        expect($button[0].style.backgroundColor).to.not.equal('red');
+      });
+    });
+  });
 });
 
 
