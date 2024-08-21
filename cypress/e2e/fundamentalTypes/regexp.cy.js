@@ -137,7 +137,7 @@ describe('regexp spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 2');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 2');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(

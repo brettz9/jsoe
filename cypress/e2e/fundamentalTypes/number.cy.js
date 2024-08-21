@@ -103,7 +103,7 @@ describe('number spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -123,7 +123,7 @@ describe('number spec (schemas)', () => {
   });
 
   it('creates form control (with `defaultValue`)', () => {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 6');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 6');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'number'
@@ -134,7 +134,7 @@ describe('number spec (schemas)', () => {
   });
 
   it('sets mins and maxes (int)', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes'
     );
     const sel = '#formatAndTypeChoices ';
@@ -176,7 +176,7 @@ describe('number spec (schemas)', () => {
   });
 
   it('sets mins and maxes (multipleOf, inclusive)', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes 2'
     );
     const sel = '#formatAndTypeChoices ';
@@ -236,7 +236,7 @@ describe('number spec (schemas)', () => {
   });
 
   it('sets mins and maxes (decimal)', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes 3'
     );
     const sel = '#formatAndTypeChoices ';

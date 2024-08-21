@@ -105,7 +105,7 @@ describe('String spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -137,7 +137,7 @@ describe('String date spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 3');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 3');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -169,7 +169,7 @@ describe('String email spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 4');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 4');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -201,7 +201,7 @@ describe('String URL spec (schemas)', () => {
   });
 
   it('views UI', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 5');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 5');
 
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
@@ -232,7 +232,7 @@ describe('String spec - Misc. (schemas)', () => {
     });
   });
   it('creates form control (with `defaultValue`)', () => {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance 6');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance 6');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'string'
@@ -243,7 +243,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('sets mins and maxes', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes'
     );
     const sel = '#formatAndTypeChoices ';
@@ -278,7 +278,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('sets mins and maxes (length)', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes 2'
     );
     const sel = '#formatAndTypeChoices ';
@@ -313,7 +313,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks startsWith/endsWith and applies transforms', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance mins and maxes 3'
     );
     const sel = '#formatAndTypeChoices ';
@@ -347,7 +347,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks includes and applies transforms', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 1'
     );
     cy.clearTypeAndBlur(
@@ -368,7 +368,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks includes and regex', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 2'
     );
     cy.clearTypeAndBlur(
@@ -398,7 +398,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks regex and flags', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 3'
     );
     cy.clearTypeAndBlur(
@@ -419,7 +419,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks time and precision', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 4'
     );
     cy.clearTypeAndBlur(
@@ -440,7 +440,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks time', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 5'
     );
     cy.clearTypeAndBlur(
@@ -468,7 +468,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks datetime', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 6'
     );
     cy.clearTypeAndBlur(
@@ -496,7 +496,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks ip v4', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 7'
     );
     cy.clearTypeAndBlur(
@@ -517,7 +517,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks ip v6', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 8'
     );
     cy.clearTypeAndBlur(
@@ -538,7 +538,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks emoji', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -564,7 +564,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks uuid', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -590,7 +590,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks nanoid', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -616,7 +616,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks cuid', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -642,7 +642,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks cuid2', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -668,7 +668,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks ulid', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -694,7 +694,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks duration', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';
@@ -720,7 +720,7 @@ describe('String spec - Misc. (schemas)', () => {
   });
 
   it('checks base64', () => {
-    cy.get('.formatChoices').select(
+    cy.get('.formatChoices:first').select(
       'Schema: Zodex schema instance strings 9'
     );
     const sel = '#formatAndTypeChoices ';

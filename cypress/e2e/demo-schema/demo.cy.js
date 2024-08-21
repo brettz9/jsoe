@@ -10,7 +10,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens schema object boolean option', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'Object (Boolean)'
@@ -20,7 +20,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens schema boolean option', function () {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'
@@ -30,7 +30,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens any schema (boolean) option', function () {
-    cy.get('.formatChoices').select('Schema: any schema');
+    cy.get('.formatChoices:first').select('Schema: any schema');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'
@@ -40,7 +40,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens any schema (never) option', function () {
-    cy.get('.formatChoices').select('Schema: any schema');
+    cy.get('.formatChoices:first').select('Schema: any schema');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'Never'
@@ -63,7 +63,7 @@ describe('Demo spec', () => {
   });
 
   it('Opens unknown schema (boolean) option', function () {
-    cy.get('.formatChoices').select('Schema: unknown schema');
+    cy.get('.formatChoices:first').select('Schema: unknown schema');
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'boolean'
@@ -73,7 +73,7 @@ describe('Demo spec', () => {
   });
 
   it('Initializes a form control with a value', () => {
-    cy.get('.formatChoices').select('Schema: Zodex schema instance');
+    cy.get('.formatChoices:first').select('Schema: Zodex schema instance');
     cy.get('#initializeWithValue').click();
     cy.get('#formatAndTypeChoices input[type=number]').should(($input) => {
       expect($input.val()).to.equal('42');
