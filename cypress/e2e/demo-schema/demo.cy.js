@@ -1,4 +1,4 @@
-import {getTypesForSchema} from '../../../src/index.js';
+import {getTypesForSchema} from '../../../instrumented/index.js';
 
 describe('Demo spec', () => {
   beforeEach(() => {
