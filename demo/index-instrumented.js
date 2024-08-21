@@ -522,6 +522,29 @@ setTimeout(async function () {
     ]],
 
     ['h2', [
+      'Require object'
+    ]],
+    (() => {
+      const typeSelection = typeChoices({
+        format: 'structuredCloning',
+        typeNamespace: 'demo-type-choices-only',
+        autoTrigger: false,
+        requireObject: true
+      });
+
+      return ['form', {
+        id: 'requireObject',
+        $on: {
+          submit (e) {
+            e.preventDefault();
+          }
+        }
+      }, [
+        ...typeSelection.domArray
+      ]];
+    })(),
+
+    ['h2', [
       'Convert arbitrary value to an editable menu'
     ]],
 

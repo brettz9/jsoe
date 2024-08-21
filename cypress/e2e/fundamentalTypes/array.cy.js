@@ -1424,6 +1424,11 @@ describe('Array spec', function () {
         );
       });
     });
+
+    it('adds empty object with `requireObject`', function () {
+      const sel = '#requireObject ';
+      cy.get(sel + '[data-type="object"').should('exist');
+    });
   });
 });
 
