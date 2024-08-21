@@ -1056,7 +1056,10 @@ const arrayType = {
             ? elementDesc ?? 'Item'
             : {'#': required
               ? [
-                ['b', {className, title: description ? propName : undefined}, [
+                ['b', {
+                  className,
+                  title: (elementDesc ?? description) ? propName : undefined
+                }, [
                   elementDesc ?? description ?? propName ?? ''
                 ]]
               ]
@@ -1078,6 +1081,7 @@ const arrayType = {
                           ]?.description ?? propName
                           : /** @type {import('zodex').SzObject} */ (
                             specificSchemaObject
+                          /* istanbul ignore next -- Guard */
                           )?.catchall?.description ?? propName
                       ]]
                     ]

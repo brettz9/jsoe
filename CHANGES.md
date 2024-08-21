@@ -4,6 +4,8 @@
 
 - fix(`recordType`): failing `toValue` conversion
 - fix(`objectType`): resume reporting duplicate property names
+- fix: ensure tooltip exists for base property if just an array/set
+    element description
 
 ## 0.20.5
 
