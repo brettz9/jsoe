@@ -46,10 +46,13 @@ describe('Demo spec', () => {
       'Never'
     );
 
-    Cypress.on('uncaught:exception', (/* err, runnable */) => {
-      // returning false here prevents Cypress from
-      // failing the test
-      return false;
+    cy.on('uncaught:exception', (err /* , runnable */) => {
+      if (err?.message.includes('Cannot convert to value')) {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false;
+      }
+      return undefined;
     });
 
     cy.get('#viewUI').click();

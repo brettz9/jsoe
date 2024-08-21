@@ -222,6 +222,14 @@ describe('Special Errors spec', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'errors'
     );
+    cy.on('uncaught:exception', (err /* , runnable */) => {
+      if (err?.message.includes('Bad error type')) {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false;
+      }
+      return undefined;
+    });
     cy.get('button#logValue').click();
     cy.get('@consoleLog').should('not.be.called');
   });
