@@ -118,10 +118,11 @@ function mergeSchema (leftItem, rightItem) {
     }
     /** @type {NestedObject} */ (
       newLeftObj.properties
-    )[prop] = val && typeof val === 'object'
-      ? copyObject(val)
-      /* istanbul ignore next -- Guard */
-      : val;
+    )[prop] = /* istanbul ignore next -- Guard */
+      val && typeof val === 'object'
+        ? copyObject(val)
+        /* istanbul ignore next -- Guard */
+        : val;
   }
 
   return newLeftObj;

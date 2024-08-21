@@ -224,7 +224,7 @@ export const buildTypeChoices = ({
       },
 
       /** @type {AddAndValidateEditUI} */
-      $addAndValidateEditUI ({
+      $addAndValidateEditUI (/* istanbul ignore next -- Backup */ {
         baseValue, bringIntoFocus, schemaObject, avoidReport
       /* istanbul ignore next -- Backup */
       } = {}) {
