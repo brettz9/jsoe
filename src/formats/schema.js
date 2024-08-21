@@ -583,6 +583,7 @@ const schema = {
   ) {
     // eslint-disable-next-line prefer-const -- Convenient
     let [parentSchema, parentSchemaIdx] = parentSchemaInfo ?? [];
+    /* istanbul ignore if -- Guard */
     if (!stateObj) {
       throw new Error('State object expected for schema');
     }

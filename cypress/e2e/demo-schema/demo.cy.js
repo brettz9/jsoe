@@ -257,6 +257,64 @@ describe('`getTypesForSchema`', function () {
     }]);
   });
 
+  it('copies `discriminator` to group items', function () {
+    const schema =
+      /**
+       * @type {import('zodex').SzDiscriminatedUnion<'a', any>}
+       */ ({
+        type: 'discriminatedUnion',
+        discriminator: 'a',
+        options: [
+          {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string'
+              },
+              b: {
+                type: 'number'
+              }
+            }
+          },
+          {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string'
+              },
+              c: {
+                type: 'number'
+              }
+            }
+          }
+        ]
+      });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      $discriminator: 'a',
+      properties: {
+        a: {
+          type: 'string'
+        },
+        b: {
+          type: 'number'
+        }
+      }
+    }, {
+      type: 'object',
+      $discriminator: 'a',
+      properties: {
+        a: {
+          type: 'string'
+        },
+        c: {
+          type: 'number'
+        }
+      }
+    }]);
+  });
+
   it('adds `null` type for `isNullable` group items', function () {
     const schema =
       /**
