@@ -101,6 +101,7 @@ function mergeSchema (leftItem, rightItem) {
 
         newLeftObj[prop] = val && typeof val === 'object'
           ? copyObject(val)
+          /* istanbul ignore next -- Guard */
           : val;
       }
     }
@@ -119,6 +120,7 @@ function mergeSchema (leftItem, rightItem) {
       newLeftObj.properties
     )[prop] = val && typeof val === 'object'
       ? copyObject(val)
+      /* istanbul ignore next -- Guard */
       : val;
   }
 

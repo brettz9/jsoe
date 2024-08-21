@@ -102,6 +102,32 @@ describe('`getTypesForSchema`', function () {
     ).to.throw();
   });
 
+  it("errs with duplicate properties' properties", function () {
+    const schema = /** @type {import('zodex').SzIntersection} */ ({
+      type: 'intersection',
+      left: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string'
+          }
+        }
+      },
+      right: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'number'
+          }
+        }
+      }
+    });
+
+    expect(
+      () => getTypesForSchema(schema, schema)
+    ).to.throw();
+  });
+
   it('copies properties from right', function () {
     const schema = /** @type {import('zodex').SzIntersection} */ ({
       type: 'intersection',
@@ -120,6 +146,149 @@ describe('`getTypesForSchema`', function () {
       type: 'object',
       properties: {},
       unknownKeys: 'strict'
+    }]);
+  });
+
+  it('copies `defaultValue` to group items', function () {
+    const schema =
+      /**
+       * @type {import('zodex').SzUnion<[
+       *   import('zodex').SzType,
+       *   ...import('zodex').SzType[]
+       * ]>}
+       */ ({
+        type: 'union',
+        defaultValue: {},
+        options: [
+          {
+            type: 'object',
+            properties: {}
+          },
+          {
+            type: 'object',
+            properties: {},
+            unknownKeys: 'strict'
+          }
+        ]
+      });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {},
+      $defaultValue: {},
+      $unionGroupID: 1
+    }, {
+      type: 'object',
+      properties: {},
+      unknownKeys: 'strict',
+      $defaultValue: {},
+      $unionGroupID: 1
+    }]);
+  });
+
+  it('copies `readonly` to group items', function () {
+    const schema =
+      /**
+       * @type {import('zodex').SzUnion<[
+       *   import('zodex').SzType,
+       *   ...import('zodex').SzType[]
+       * ]>}
+       */ ({
+        type: 'union',
+        readonly: true,
+        options: [
+          {
+            type: 'object',
+            properties: {}
+          },
+          {
+            type: 'object',
+            properties: {},
+            unknownKeys: 'strict'
+          }
+        ]
+      });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {},
+      $readonlyParent: true
+    }, {
+      type: 'object',
+      properties: {},
+      unknownKeys: 'strict',
+      $readonlyParent: true
+    }]);
+  });
+
+  it('copies `description` to group items', function () {
+    const schema =
+      /**
+       * @type {import('zodex').SzUnion<[
+       *   import('zodex').SzType,
+       *   ...import('zodex').SzType[]
+       * ]>}
+       */ ({
+        type: 'union',
+        description: 'Union',
+        options: [
+          {
+            description: 'inner1',
+            type: 'object',
+            properties: {}
+          },
+          {
+            type: 'object',
+            properties: {},
+            unknownKeys: 'strict'
+          }
+        ]
+      });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {},
+      description: 'inner1 and Union'
+    }, {
+      type: 'object',
+      properties: {},
+      unknownKeys: 'strict',
+      description: 'Union'
+    }]);
+  });
+
+  it('adds `null` type for `isNullable` group items', function () {
+    const schema =
+      /**
+       * @type {import('zodex').SzUnion<[
+       *   import('zodex').SzType,
+       *   ...import('zodex').SzType[]
+       * ]>}
+       */ ({
+        type: 'union',
+        isNullable: true,
+        options: [
+          {
+            type: 'object',
+            properties: {}
+          },
+          {
+            type: 'object',
+            properties: {},
+            unknownKeys: 'strict'
+          }
+        ]
+      });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {}
+    }, {
+      type: 'object',
+      properties: {},
+      unknownKeys: 'strict'
+    }, {
+      type: 'null'
     }]);
   });
 });
