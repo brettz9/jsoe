@@ -652,6 +652,8 @@ const schema = {
     default:
       break;
     }
+
+    /* istanbul ignore if -- Guard */
     if (!currentSchema) {
       return {type: typesonType};
     }
@@ -683,9 +685,6 @@ const schema = {
       }
       // console.log('parsed', parsed.success, v, schema);
       if (parsed.success) {
-        if (currentSchema.type === 'any' && schema.description) {
-          schema.description += ' (any)';
-        }
         let type = zodexToStructuredCloningTypeMap.get(schema.type);
         if (!type && schema.type === 'effect') {
           type = /** @type {import('../types.js').AvailableType} */ (

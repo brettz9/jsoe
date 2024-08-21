@@ -66,6 +66,18 @@ describe('`Types.getTypeOptionsForFormatAndState`', function () {
       }).to.throw('Unexpected type for format and state');
     }
   );
+
+  it(
+    '`getTypeOptionsForFormatAndState` with schema format and no schema',
+    function () {
+      expect(() => {
+        const types = new Types();
+        types.getTypeOptionsForFormatAndState(
+          'schema'
+        );
+      }).to.throw('Missing schema object');
+    }
+  );
 });
 
 describe('`Types.getValueForString`', function () {
