@@ -450,6 +450,20 @@ setTimeout(function () {
     }, ['Initialize with a value']],
 
     ['button', {
+      id: 'initializeWithBadNativeEnumValue',
+      $on: {
+        click () {
+          const types = new Types();
+          types.setValue({
+            type: 'nativeEnum',
+            root: $('div[data-type="nativeEnum"]'),
+            value: 'abcdefghijkl'
+          });
+        }
+      }
+    }, ['Initialize with a bad native enum value']],
+
+    ['button', {
       id: 'showRootFormControl',
       $on: {
         click () {
@@ -528,7 +542,9 @@ setTimeout(function () {
       return ['form', {
         id: 'typeChoicesOnly',
         $on: {
+          /* istanbul ignore next -- Guard */
           submit (e) {
+            /* istanbul ignore next -- Guard */
             e.preventDefault();
           }
         }

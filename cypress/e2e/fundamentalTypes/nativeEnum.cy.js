@@ -13,6 +13,10 @@ describe('nativeEnum spec (schemas)', () => {
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'Native enum (A native enum)'
     );
+
+    // First try setting bad value
+    cy.get('#initializeWithBadNativeEnumValue').click();
+
     cy.clearTypeAndBlur(sel + '.nativeEnumKey', '0');
 
     cy.get(sel + '.nativeEnumKey').should(($input) => {

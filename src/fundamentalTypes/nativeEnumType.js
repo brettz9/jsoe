@@ -32,7 +32,7 @@ const nativeEnumType = {
     return {value};
   },
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'input'));
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'input.nativeEnumKey'));
   },
   setValue ({root, value}) {
     const input = /**
@@ -45,9 +45,11 @@ const nativeEnumType = {
     ).find(([, val]) => {
       return val === value;
     })?.[0] ?? '';
-    /** @type {HTMLSpanElement} */ (
-      $e(root, '.enumeratedValue')
-    ).textContent = value;
+    if (input.value) { // If key was found, the value is ok
+      /** @type {HTMLSpanElement} */ (
+        $e(root, '.enumeratedValue')
+      ).textContent = value;
+    }
   },
   getValue ({root}) {
     const {value, $schemaNativeEnumValues} =
