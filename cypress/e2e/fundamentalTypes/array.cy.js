@@ -2177,15 +2177,43 @@ describe('Record spec (schema)', function () {
 
       cy.clearAndType(
         sel + 'fieldset:nth-of-type(2) ' +
+          'input[name="demo-keypath-not-expected-number"]',
+        '456'
+      );
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(2) ' +
+          'textarea[name="key-type-choices-only-string"]',
+        'abc'
+      );
+
+      // eslint-disable-next-line @stylistic/max-len -- Long
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Validates late
+      cy.wait(500);
+
+      cy.get(sel + 'fieldset:nth-of-type(2) ' +
+        'textarea[name="key-type-choices-only-string"]').then(($textarea) => {
+        expect(/** @type {HTMLTextAreaElement} */ (
+          $textarea[0]
+        ).validationMessage).to.eq(
+          'Duplicate Record key value'
+        );
+      });
+
+      cy.clearTypeAndBlur(
+        sel + 'fieldset:nth-of-type(2) ' +
           'textarea[name="key-type-choices-only-string"]',
         'def'
       );
 
-      cy.clearAndType(
-        sel + 'fieldset:nth-of-type(2) ' +
-          'input[name="demo-keypath-not-expected-number"]',
-        '456'
-      );
+      cy.get(sel + 'fieldset:nth-of-type(2) ' +
+        'textarea[name="key-type-choices-only-string"]').then(($textarea) => {
+        expect(/** @type {HTMLTextAreaElement} */ (
+          $textarea[0]
+        ).validationMessage).to.eq(
+          ''
+        );
+      });
 
       // Test swapping groups (for records)
       cy.get(
