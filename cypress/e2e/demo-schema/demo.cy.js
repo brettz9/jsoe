@@ -80,6 +80,30 @@ describe('Demo spec', () => {
     });
   });
 
+  it('sets a schema format', function () {
+    const sel = '#formatAndTypeChoicesFirstPreselected ';
+    cy.get('#setASchemaFormat').click();
+    cy.get(
+      sel + '.formatChoices option:selected'
+    ).should('have.value', 'schema');
+  });
+
+  it('recovers from bad schema format', function () {
+    const sel = '#formatAndTypeChoicesFirstPreselected ';
+    cy.on('uncaught:exception', (err /* , runnable */) => {
+      if (err?.message.includes('Unexpected schema')) {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false;
+      }
+      return undefined;
+    });
+    cy.get('#setABadSchemaFormat').click();
+    cy.get(
+      sel + '.formatChoices option:selected'
+    ).should('have.value', 'json');
+  });
+
   it('falls back from `schemaOriginal` to `schemaContent`', function () {
     const sel = '#typeChoicesOnly ';
     cy.get(sel + 'select.typeChoices-demo-type-choices-only').select(

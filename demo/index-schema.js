@@ -317,9 +317,7 @@ function getSchemaContent (schema) {
     return anySchemaJSON;
   case 'unknown schema':
     return unknownSchemaJSON;
-  /* istanbul ignore next -- Guard */
   default:
-    /* istanbul ignore next -- Guard */
     throw new Error('Unexpected schema');
   }
 }
@@ -351,6 +349,16 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   selectedSchema: 'Zodex schema instance 2',
   getSchemaContent
 });
+
+const keyPathNotExpectedTypeChoicesFirstPreselected =
+  await formatAndTypeChoices({
+    hasKeyPath: false,
+    typeNamespace: 'demo-keypath-not-expected-no-preselected',
+    schemas: [
+      'Zodex schema', 'Zodex schema instance'
+    ],
+    getSchemaContent
+  });
 
 setTimeout(function () {
   jml('section', {role: 'main'}, [
@@ -527,6 +535,36 @@ setTimeout(function () {
       }, [
         ...typeSelection.domArray
       ]];
-    })()
+    })(),
+
+    ['br'], ['br'],
+    ['h2', [
+      'Default to first preselected schema'
+    ]],
+    ['form', {id: 'formatAndTypeChoicesFirstPreselected'}, [
+      ...keyPathNotExpectedTypeChoicesFirstPreselected.domArray,
+      ['button', {id: 'setASchemaFormat', $on: {
+        click (e) {
+          e.preventDefault();
+          keyPathNotExpectedTypeChoicesFirstPreselected.
+            formatChoices.$setFormat({
+              schema: 'Zodex schema instance'
+            });
+        }
+      }}, [
+        'Set a schema format'
+      ]],
+      ['button', {id: 'setABadSchemaFormat', $on: {
+        click (e) {
+          e.preventDefault();
+          keyPathNotExpectedTypeChoicesFirstPreselected.
+            formatChoices.$setFormat({
+              schema: 'non-existent schema'
+            });
+        }
+      }}, [
+        'Recovers from setting bad schema format'
+      ]]
+    ]]
   ], body);
 }, 500);
