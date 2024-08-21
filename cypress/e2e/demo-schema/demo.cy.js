@@ -79,6 +79,14 @@ describe('Demo spec', () => {
       expect($input.val()).to.equal('42');
     });
   });
+
+  it('falls back from `schemaOriginal` to `schemaContent`', function () {
+    const sel = '#typeChoicesOnly ';
+    cy.get(sel + 'select.typeChoices-demo-type-choices-only').select(
+      'number'
+    );
+    cy.get('[data-type="number"][title="Number"]').should('exist');
+  });
 });
 
 describe('`getTypesForSchema`', function () {

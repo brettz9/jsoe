@@ -5,7 +5,7 @@ import {
 } from '../src/formatAndTypeChoices.js';
 
 import {
-  Types
+  Types, typeChoices
 } from '../src/index.js';
 
 import {
@@ -491,6 +491,42 @@ setTimeout(function () {
           console.log(value);
         }
       }
-    }]
+    }],
+
+    ['br'], ['br'],
+    ['h2', ['Type choices alone']],
+    (() => {
+      // Fallback from missing `schemaOriginal` to union `schemaContent`;
+      //   trigger by change event
+      const typeSelection = typeChoices({
+        format: 'schema',
+        typeNamespace: 'demo-type-choices-only',
+        schemaIdx: 1,
+        schemaContent: {
+          type: 'union',
+          options: [
+            {
+              description: 'String',
+              type: 'string'
+            },
+            {
+              description: 'Number',
+              type: 'number'
+            }
+          ]
+        }
+      });
+
+      return ['form', {
+        id: 'typeChoicesOnly',
+        $on: {
+          submit (e) {
+            e.preventDefault();
+          }
+        }
+      }, [
+        ...typeSelection.domArray
+      ]];
+    })()
   ], body);
 }, 500);

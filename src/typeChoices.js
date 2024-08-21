@@ -170,7 +170,6 @@ export const buildTypeChoices = ({
             return JSON.stringify(obj);
           }).indexOf(JSON.stringify(specificSchema));
           if (idx === -1) {
-            console.log('schemaObjs', schemaObjs, specificSchema);
             this.value = type;
           } else {
             this.selectedIndex = idx + 1;
@@ -227,6 +226,7 @@ export const buildTypeChoices = ({
       /** @type {AddAndValidateEditUI} */
       $addAndValidateEditUI ({
         baseValue, bringIntoFocus, schemaObject, avoidReport
+      /* istanbul ignore next -- Backup */
       } = {}) {
         const {value: type} = this;
 
@@ -263,8 +263,12 @@ export const buildTypeChoices = ({
             // Avoid JSON references by using this by default (or only?)
             (schemaObjs?.[sel.selectedIndex - 1]) ??
 
+            // eslint-disable-next-line @stylistic/max-len -- Long
+            /* istanbul ignore next -- Can probably remove as `schemaObjs` will be set */
             (schemaContent?.type === 'union' && schemaIdx !== undefined
+              /* istanbul ignore next -- Can probably remove */
               ? schemaContent.options[schemaIdx]
+              // This is probably just `undefined` by here
               : schemaContent),
           schemaFallingBack: Boolean(!schemaObject && schemaContent)
         });
