@@ -181,6 +181,31 @@ describe('`getTypesForSchema`', function () {
     }]);
   });
 
+  it('copies object properties from right', function () {
+    const schema = /** @type {import('zodex').SzIntersection} */ ({
+      type: 'intersection',
+      left: {
+        type: 'object',
+        properties: {}
+      },
+      right: {
+        type: 'object',
+        properties: {},
+        catcahll: {
+          type: 'number'
+        }
+      }
+    });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {},
+      catcahll: {
+        type: 'number'
+      }
+    }]);
+  });
+
   it('copies `defaultValue` to group items', function () {
     const schema =
       /**

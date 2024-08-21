@@ -827,7 +827,7 @@ class Types {
         valid
           ? ''
           /* istanbul ignore next -- Should always have a message */
-          : message || 'Invalid'
+          : (message || 'Invalid')
       );
 
       // We don't want a focus as `reportValidity` does in at least
