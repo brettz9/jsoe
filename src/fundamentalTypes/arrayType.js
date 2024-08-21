@@ -1060,7 +1060,7 @@ const arrayType = {
                   className,
                   title: (elementDesc ?? description) ? propName : undefined
                 }, [
-                  elementDesc ?? description ?? propName ?? ''
+                  elementDesc ?? description ?? propName
                 ]]
               ]
               : [
