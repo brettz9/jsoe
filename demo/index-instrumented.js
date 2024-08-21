@@ -535,7 +535,9 @@ setTimeout(async function () {
       return ['form', {
         id: 'requireObject',
         $on: {
+          /* istanbul ignore next -- Guard */
           submit (e) {
+            /* istanbul ignore next -- Guard */
             e.preventDefault();
           }
         }

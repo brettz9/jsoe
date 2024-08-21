@@ -14,6 +14,7 @@ const dommatrixType = {
     return ['DOMMatrix', 'DOMMatrixReadOnly'].includes(toStringTag(x));
   },
   toValue (s, rootInfo) {
+    /* istanbul ignore next -- Should always be found */
     const {groups: {
       domMatrixClass
     /* istanbul ignore next -- Should always be found */

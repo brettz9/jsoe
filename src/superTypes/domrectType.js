@@ -14,6 +14,7 @@ const domrectType = {
     return ['DOMRect', 'DOMRectReadOnly'].includes(toStringTag(x));
   },
   toValue (s, rootInfo) {
+    /* istanbul ignore next -- Should always be found */
     const {groups: {
       domRectClass
     /* istanbul ignore next -- Should always be found */

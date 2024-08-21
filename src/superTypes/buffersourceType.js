@@ -136,6 +136,7 @@ const buffersourceType = {
     return bufferSourceClasses.has(toStringTag(x));
   },
   toValue (s, rootInfo) {
+    /* istanbul ignore next -- Should always be found */
     const {groups: {
       bufferSourceClass
     /* istanbul ignore next -- Should always be found */
