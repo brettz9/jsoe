@@ -2173,6 +2173,26 @@ describe('Record spec (schema)', function () {
         '123'
       );
 
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.clearAndType(
+        sel + 'fieldset:nth-of-type(2) ' +
+          'textarea[name="key-type-choices-only-string"]',
+        'def'
+      );
+
+      cy.clearAndType(
+        sel + 'fieldset:nth-of-type(2) ' +
+          'input[name="demo-keypath-not-expected-number"]',
+        '456'
+      );
+
+      // Test swapping groups (for records)
+      cy.get(
+        sel + 'fieldset:nth-of-type(2) ' +
+          '[class^="recordItem-arrowHolder-"]'
+      ).click();
+
       cy.get('button#viewUI').click();
 
       cy.get(
