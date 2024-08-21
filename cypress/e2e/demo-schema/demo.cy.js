@@ -1,3 +1,5 @@
+import {getTypesForSchema} from '../../../src/index.js';
+
 describe('Demo spec', () => {
   beforeEach(() => {
     cy.visit('http://127.0.0.1:8087/demo/index-schema-instrumented.html', {
@@ -73,5 +75,48 @@ describe('Demo spec', () => {
     cy.get('#formatAndTypeChoices input[type=number]').should(($input) => {
       expect($input.val()).to.equal('42');
     });
+  });
+});
+
+describe('`getTypesForSchema`', function () {
+  it('errs with duplicate properties', function () {
+    const schema = /** @type {import('zodex').SzIntersection} */ ({
+      type: 'intersection',
+      left: {
+        type: 'object',
+        properties: {},
+        unknownKeys: 'passthrough'
+      },
+      right: {
+        type: 'object',
+        properties: {},
+        unknownKeys: 'strict'
+      }
+    });
+
+    expect(
+      () => getTypesForSchema(schema, schema)
+    ).to.throw();
+  });
+
+  it('copies properties from right', function () {
+    const schema = /** @type {import('zodex').SzIntersection} */ ({
+      type: 'intersection',
+      left: {
+        type: 'object',
+        properties: {}
+      },
+      right: {
+        type: 'object',
+        properties: {},
+        unknownKeys: 'strict'
+      }
+    });
+
+    expect([...getTypesForSchema(schema, schema)]).to.deep.equal([{
+      type: 'object',
+      properties: {},
+      unknownKeys: 'strict'
+    }]);
   });
 });
