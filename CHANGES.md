@@ -1,6 +1,6 @@
 # CHANGES TO `@es-joy/jsoe`
 
-## ?
+## 0.20.6
 
 - fix(`recordType`): failing `toValue` conversion
 - fix(`objectType`): resume reporting duplicate property names
