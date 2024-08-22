@@ -149,6 +149,26 @@ describe('Set spec (schema)', function () {
         '#viewUIResults .arrayItems ' +
           'fieldset:nth-of-type(1) [data-type="string"]'
       ).should('have.text', 'abc123');
+
+      // Test attempt to add beyond `maxSize`
+      cy.get(sel + 'button.addArrayElement').click();
+      cy.get(sel + 'button.addArrayElement').click();
+      cy.get(sel + 'button.addArrayElement').click();
+      cy.get('dialog[open]').should(
+        'contain',
+        'You cannot add beyond the `maxSize` of the Set'
+      );
+      cy.get('dialog[open] .submit > button').click();
+
+      // Try through `+` button
+      cy.get(
+        sel + '.arrayItems > fieldset > button:nth-of-type(1)'
+      ).contains('+').click();
+      cy.get('dialog[open]').should(
+        'contain',
+        'You cannot add beyond the `maxSize` of the Set'
+      );
+      cy.get('dialog[open] .submit > button').click();
     }
   );
 
