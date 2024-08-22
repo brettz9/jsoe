@@ -1848,6 +1848,24 @@ describe('Array spec (schema)', function () {
         '#viewUIResults .arrayItems ' +
           'fieldset:nth-of-type(1) [data-type="string"]'
       ).should('have.text', 'abc123');
+
+      // Set array to delete non-required items
+      cy.get(
+        sel + 'fieldset:nth-of-type(3) > legend[data-type="string"]'
+      ).should('exist');
+      cy.clearTypeAndBlur(sel + '.arrayLength', '1');
+      cy.get('dialog[open]').should(
+        'contain',
+        'Your new length will truncate the array causing ' +
+          'items to be removed. Continue?'
+      );
+      cy.get('dialog[open] .submit > button:first').click();
+      cy.get(
+        sel + 'fieldset:nth-of-type(2) > legend[data-type="string"]'
+      ).should('exist');
+      cy.get(
+        sel + 'fieldset:nth-of-type(3) > legend[data-type="string"]'
+      ).should('not.exist');
     }
   );
 

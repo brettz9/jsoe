@@ -2006,6 +2006,7 @@ const arrayType = {
                */
               async change () {
                 if (preventAdding()) {
+                  /* istanbul ignore next -- Just a guard */
                   this.value = this.$oldvalue ?? this.defaultValue;
                   return;
                 }
