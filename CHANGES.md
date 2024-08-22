@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.23.0
+
+- chore: update jamilih, devDeps.
+
 ## 0.22.0
 
 - feat: async encapsulation

@@ -2,7 +2,7 @@ import builtins from 'rollup-plugin-node-builtins';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 // import babel from 'rollup-plugin-babel';
-// import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import istanbul from 'rollup-plugin-istanbul';
 import noOp from 'rollup-plugin-no-op';
 
@@ -15,6 +15,13 @@ export default [{
     format: 'es'
   },
   plugins: [
+    terser({
+      /* eslint-disable camelcase -- API */
+      // Needed for Typeson's `Undefined` and other constructor detection
+      keep_fnames: true,
+      keep_classnames: true // Keep in case implementing above as classes
+      /* eslint-enable camelcase -- API */
+    }),
     nodeResolve(),
     commonjs()
   ]
@@ -76,13 +83,13 @@ export default [{
   },
   plugins: [
     /*
-        babel(),
-        terser({
-            // Needed for Typeson's `Undefined` and other constructor detection
-            keep_fnames: true,
-            keep_classnames: true // Keep in case implementing above as classes
-        }),
-        */
+      babel(),
+      terser({
+          // Needed for Typeson's `Undefined` and other constructor detection
+          keep_fnames: true,
+          keep_classnames: true // Keep in case implementing above as classes
+      }),
+      */
     builtins(),
     nodeResolve(),
     commonjs({
