@@ -2433,6 +2433,7 @@ const arrayType = {
             Object.entries(
               /** @type {import('zodex').SzObject} */ (
                 specificSchemaObject
+              /* istanbul ignore next -- Should always have `properties` */
               ).properties ?? {}
             )
           ) {
@@ -2460,10 +2461,12 @@ const arrayType = {
           }
         }
         break;
-      } case 'array': case 'arrayNonindexKeys': {
+      }
+      // case 'array': // None with schemas?
+      case 'arrayNonindexKeys': {
         const {minLength = 0} = /** @type {import('zodex').SzArray} */ (
           specificSchemaObject
-        ) ?? {};
+        );
         const arrayLengthInput =
           /** @type {HTMLInputElement & {$oldvalue: string}} */ (
             $e(div, '.arrayLength')
@@ -2480,7 +2483,7 @@ const arrayType = {
         if (!schemaFallingBack) {
           const {minSize = 0} = /** @type {import('zodex').SzSet} */ (
             specificSchemaObject
-          ) ?? {};
+          );
           for (let i = 0; i < minSize; i++) {
             div.$addArrayElement({required: true});
           }
