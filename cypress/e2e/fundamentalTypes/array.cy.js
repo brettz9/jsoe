@@ -2002,6 +2002,24 @@ describe('Tuple spec (schema)', function () {
   );
 
   it(
+    'Generates UI for tuple with never `items` and no `rest`',
+    function () {
+      cy.get('.formatChoices:first').select('Schema: Zodex schema instance 8');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Tuple (With never items and no rest)'
+      );
+
+      cy.get(sel + 'button.addArrayElement').click();
+
+      cy.get('dialog[open]').should(
+        'contain',
+        'Tuple has items type "never", so one cannot add to it.'
+      );
+    }
+  );
+
+  it(
     'Generates UI for tuple with no `items` and never `rest`',
     function () {
       cy.get('.formatChoices:first').select('Schema: Zodex schema instance 7');

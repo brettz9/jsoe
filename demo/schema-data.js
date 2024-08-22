@@ -598,6 +598,15 @@ const schemaInstanceJSON8 = {
         abc: 0,
         def: 'ghi'
       }
+    },
+    {
+      description: 'With never items and no rest',
+      type: 'tuple',
+      items: [
+        {
+          type: 'never'
+        }
+      ]
     }
   ]
 };
