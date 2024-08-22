@@ -79,6 +79,7 @@
     "coveradge": "^0.8.2",
     "cypress": "^13.13.3",
     "cypress-axe": "^1.5.0",
+    "cypress-terminal-report": "^6.1.2",
     "eslint": "^9.9.0",
     "eslint-config-ash-nazg": "^36.13.0",
     "fast-deep-equal": "^3.1.3",

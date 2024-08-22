@@ -169,6 +169,14 @@ describe('Set spec (schema)', function () {
         'You cannot add beyond the `maxSize` of the Set'
       );
       cy.get('dialog[open] .submit > button').click();
+
+      // Cover legitimate removal and add
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(3) > button:nth-of-type(2)'
+      ).contains('x').click();
+      cy.get(
+        sel + '.arrayItems > fieldset > button:nth-of-type(1)'
+      ).contains('+').click();
     }
   );
 

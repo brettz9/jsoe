@@ -27,3 +27,7 @@ import '@cypress/code-coverage/support.js';
  * @see https://www.npmjs.com/package/cypress-axe
  */
 import 'cypress-axe';
+
+import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
+
+installLogsCollector();
