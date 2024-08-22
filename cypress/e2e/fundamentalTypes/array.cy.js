@@ -1500,6 +1500,22 @@ describe('Object spec (schema)', function () {
       expect(elem.text()).to.equal('A count');
       expect(elem.attr('title')).to.equal('def');
     });
+
+    // Cover adding of property through `+` button.
+    cy.get(
+      sel + '.arrayItems > fieldset > button:nth-of-type(1)'
+    ).contains('+').click();
+
+    cy.clearTypeAndBlur(
+      sel + 'fieldset:nth-of-type(2) ' +
+        'input[data-prop="true"]',
+      'abc'
+    );
+
+    cy.get(
+      sel + 'fieldset:nth-of-type(2) ' +
+        'select'
+    ).select('Boolean');
   });
 
   it(
@@ -2260,6 +2276,35 @@ describe('Record spec (schema)', function () {
         expect($span.text()).to.contain('123');
         expect($span.attr('title')).to.equal('(a number)');
       });
+
+      // Cover adding of property through `+` button.
+      cy.get(
+        sel + '.arrayItems > fieldset > button:nth-of-type(1)'
+      ).contains('+').click();
+
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(2) > legend .mapKey'
+      ).should('contain', 'A record key string');
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(2) > legend ' +
+          '[data-prop="true"]'
+      ).should('have.text', '1');
+
+      // Cover removing of property
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(2) > button:nth-of-type(2)'
+      ).contains('x').click();
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(2) > legend .mapKey'
+      ).should('contain', 'A record key string');
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(2) > legend ' +
+          '[data-prop="true"]'
+      ).should('have.text', '1');
+
+      cy.get(
+        sel + '.arrayItems > fieldset:nth-of-type(3)'
+      ).should('not.exist');
     }
   );
 
