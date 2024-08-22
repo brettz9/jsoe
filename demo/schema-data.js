@@ -655,6 +655,9 @@ const schemaInstanceJSON9 = {
           },
           {
             type: 'undefined'
+          },
+          {
+            type: 'string'
           }
         ]
       }
