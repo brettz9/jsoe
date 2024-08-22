@@ -157,6 +157,22 @@
         cy.get(sel + 'input[type=number]').should('have.value', '500');
       });
 
+      // We add this test to ensure coverage of changing an optional
+      //   property (set after load)
+      it('Allows modification of optional property', function () {
+        const sel = 'section:nth-of-type(2) > .innerItem:nth-of-type(8) ' +
+          arraySels;
+
+        cy.clearTypeAndBlur(
+          sel + 'fieldset:nth-of-type(2) input[data-prop="true"]',
+          'non-ok property'
+        );
+
+        cy.get(
+          sel + 'fieldset:nth-of-type(2) select'
+        ).should('not.be.hidden');
+      });
+
       it('Selects object with never property', function () {
         const sel = 'section:nth-of-type(2) > .innerItem:nth-of-type(9) ' +
           arraySels;
