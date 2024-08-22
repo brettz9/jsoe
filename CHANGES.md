@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.21.0
+
+- feat: use sourcemaps
+
 ## 0.20.6
 
 - fix(`recordType`): failing `toValue` conversion

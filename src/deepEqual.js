@@ -70,3 +70,4 @@ var es6 = function equal(a, b) {
 var index = /*@__PURE__*/getDefaultExportFromCjs(es6);
 
 export { index as default };
+//# sourceMappingURL=deepEqual.js.map

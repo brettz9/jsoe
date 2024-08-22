@@ -10,6 +10,7 @@ export default [{
   input: 'src/index.js',
   external: ['react'], // Todo: remove when removed from Zodex
   output: {
+    sourcemap: true,
     file: 'dist/index.js',
     format: 'es'
   },
@@ -70,6 +71,7 @@ export default [{
   output: {
     file: 'src/deepEqual.js',
     format: 'es',
+    sourcemap: true,
     name: 'deepEqual'
   },
   plugins: [
