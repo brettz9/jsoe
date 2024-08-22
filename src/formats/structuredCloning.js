@@ -484,47 +484,45 @@ const canonicalTypeToAvailableTypeAndSchema = (
 
 /** @type {import('../formats.js').Format} */
 const structuredCloning = {
-  iterate (records, stateObj) {
+  async iterate (records, stateObj) {
     /* istanbul ignore if -- Just a guard */
     if (!stateObj.format) {
       stateObj.format = 'structuredCloning';
     }
-    // Todo: Replace this with async typeson?
-    // eslint-disable-next-line promise/avoid-new -- Our own API for now
-    return new Promise((resolve, reject) => {
-      const structuredCloningFixed = structuredCloningThrowing.filter(
-        (typeSpecSet) => {
-          return ![
-            // Not yet supported within JSOE
-            'imagedata',
-            'imagebitmap',
-            'cryptokey',
-            'domquad'
-          ].some((prop) => {
-            return Object.hasOwn(typeSpecSet, prop);
-          });
-        }
-      );
-      structuredCloningFixed.splice(
-        // Add after userObjects
-        1,
-        0,
-        noneditable
-      );
-      const typeson = new Typeson({
-        encapsulateObserver: encapsulateObserver(stateObj)
-      }).register(structuredCloningFixed);
-      typeson.encapsulate(records);
-      // Todo (low): We might want to run async encapsulate for
-      //   async types (and put this after Promise resolves)
-      if (stateObj.error) {
-        reject(stateObj.error);
-      } else {
-        resolve(/** @type {Required<import('../types.js').StateObject>} */ (
-          stateObj
-        ));
+
+    const structuredCloningFixed = structuredCloningThrowing.filter(
+      (typeSpecSet) => {
+        return ![
+          // Not yet supported within JSOE
+          'imagedata',
+          'imagebitmap',
+          'cryptokey',
+          'domquad'
+        ].some((prop) => {
+          return Object.hasOwn(typeSpecSet, prop);
+        });
       }
+    );
+    structuredCloningFixed.splice(
+      // Add after userObjects
+      1,
+      0,
+      noneditable
+    );
+    const typeson = new Typeson({
+      encapsulateObserver: encapsulateObserver(stateObj)
+    }).register(structuredCloningFixed);
+
+    await typeson.encapsulateAsync(records, null, {
+      throwOnBadSyncType: false
     });
+
+    if (stateObj.error) {
+      throw stateObj.error;
+    }
+    return (/** @type {Required<import('../types.js').StateObject>} */ (
+      stateObj
+    ));
   },
   getTypesAndSchemasForState (types, state) {
     if (state && types.getContextInfo('structuredCloning', state)) {
