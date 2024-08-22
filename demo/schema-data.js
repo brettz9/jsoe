@@ -643,6 +643,21 @@ const schemaInstanceJSON9 = {
       type: 'enum',
       values: ['abcd', 'efgh', 'ijkl'],
       defaultValue: 'efgh'
+    },
+    {
+      description: 'An array with undefined elements',
+      type: 'array',
+      element: {
+        type: 'union',
+        options: [
+          {
+            type: 'void'
+          },
+          {
+            type: 'undefined'
+          }
+        ]
+      }
     }
   ]
 };

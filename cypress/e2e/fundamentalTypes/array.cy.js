@@ -1870,6 +1870,20 @@ describe('Array spec (schema)', function () {
   );
 
   it(
+    'Generates UI for array with undefined elements',
+    function () {
+      cy.get('.formatChoices:first').select('Schema: Zodex schema instance 9');
+      const sel = '#formatAndTypeChoices ';
+      cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+        'Array (An array with undefined elements)'
+      );
+      // The additional items won't be listed as this is a sparse array
+      cy.clearTypeAndBlur(sel + '.arrayLength', '4');
+      cy.get(sel + 'button.addArrayElement').click();
+    }
+  );
+
+  it(
     'Generates UI for array with `never`',
     function () {
       cy.get('.formatChoices:first').select('Schema: Zodex schema instance 2');
