@@ -317,7 +317,9 @@ function getSchemaContent (schema) {
     return anySchemaJSON;
   case 'unknown schema':
     return unknownSchemaJSON;
+  /* istanbul ignore next -- Guard */
   default:
+    /* istanbul ignore next -- Guard */
     throw new Error('Unexpected schema');
   }
 }

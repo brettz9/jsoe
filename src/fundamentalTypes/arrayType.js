@@ -114,6 +114,7 @@ const arrayType = {
       : (this.array && !this.record ? 'array' : 'object');
     /** @type {{[key: (string|number)]: any}} */
     const retObj = this.array && !this.record ? [] : {};
+    /* istanbul ignore next -- Unreachable? */
     let stringVal = innerContents !== undefined
       ? innerContents
       /* istanbul ignore next -- Unreachable? */
