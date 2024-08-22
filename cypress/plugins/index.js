@@ -2,8 +2,10 @@
 // the project's config changing)
 
 import codeCoverageTask from '@cypress/code-coverage/task.js';
-import cypressTerminalReport from
-  'cypress-terminal-report/src/installLogsPrinter.js';
+
+// Reenable to see logs (also in e2e.ts)
+// import cypressTerminalReport from
+//   'cypress-terminal-report/src/installLogsPrinter.js';
 
 /**
  * @param {Cypress.PluginEvents} on See {@link https://docs.cypress.io/api/plugins/writing-a-plugin.html#on}
@@ -22,9 +24,9 @@ const exprt = (on, config) => {
   // @ts-expect-error Why problematic?
   codeCoverageTask(on, config);
 
-  cypressTerminalReport(on, {
-    printLogsToConsole: 'always'
-  });
+  // cypressTerminalReport(on, {
+  //   printLogsToConsole: 'always'
+  // });
 
   // E.g.:
   // on('file:preprocessor', require('@cypress/code-coverage/use-babelrc.js'));

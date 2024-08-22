@@ -28,6 +28,6 @@ import '@cypress/code-coverage/support.js';
  */
 import 'cypress-axe';
 
-import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
-
-installLogsCollector();
+// Reenable to see logs (also see plugins/index.js)
+// import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
+// installLogsCollector();
