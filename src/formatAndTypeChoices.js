@@ -182,9 +182,11 @@ export async function formatAndTypeChoices ({
           requireObject: hasKeyPath,
           objectHasValue: hasValue,
           schema,
-          schemaContent: await getSchemaContent?.(
-            /** @type {string} */ (schema)
-          )
+          schemaContent: schema
+            ? await getSchemaContent?.(
+              /** @type {string} */ (schema)
+            )
+            : undefined
         }).domArray}, typesHolder);
       }
     },

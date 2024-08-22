@@ -418,10 +418,13 @@ setTimeout(function () {
                 readonly: true,
                 typeNamespace: 'demo-keypath-not-expected',
                 // schemaContent: anySchemaJSON
-                schemaContent: await getSchemaContent(
-                  keyPathNotExpectedTypeChoices.formatChoices.
-                    selectedOptions[0].dataset.schema
-                )
+                schemaContent: keyPathNotExpectedTypeChoices.formatChoices.
+                  selectedOptions[0].dataset.schema
+                  ? await getSchemaContent(
+                    keyPathNotExpectedTypeChoices.formatChoices.
+                      selectedOptions[0].dataset.schema
+                  )
+                  : undefined
               }
             )).rootUI;
           $('#viewUIResults').firstChild?.remove();

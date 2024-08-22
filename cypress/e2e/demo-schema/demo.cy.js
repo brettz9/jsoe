@@ -9,6 +9,16 @@ describe('Demo spec', () => {
     });
   });
 
+  it('Opens non-schema option amidst schema items', function () {
+    cy.get('.formatChoices:first').select('JSON only');
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'Boolean (true)'
+    );
+    cy.get('#viewUI').click();
+    cy.get('#viewUIResults').should('contain', 'true');
+  });
+
   it('Opens schema object boolean option', function () {
     cy.get('.formatChoices:first').select('Schema: Zodex schema');
     const sel = '#formatAndTypeChoices ';

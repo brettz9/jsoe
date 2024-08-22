@@ -4,6 +4,7 @@
 
 - fix(`recordType`): failing `toValue` conversion
 - fix(`objectType`): resume reporting duplicate property names
+- fix(schema demo): allow for non-schema choices
 - fix: ensure tooltip exists for base property if just an array/set
     element description
 
