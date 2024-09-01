@@ -31,7 +31,9 @@ const blobHTMLType = {
      */
     function dataURIToBlob (dataURI) {
       // Adapted from https://stackoverflow.com/a/12300351/271577
-      const [mimeInfo, bytes] = dataURI.split(',');
+      const pos = dataURI.indexOf(',');
+      const mimeInfo = dataURI.slice(0, pos);
+      const bytes = dataURI.slice(pos + 1);
       const [mimeString, encoding] = mimeInfo.split(':')[1].split(';');
       let ab;
       if (encoding === 'base64') {
