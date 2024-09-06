@@ -18,21 +18,28 @@ import {$e, DOM} from './utils/templateUtils.js';
  * @param {boolean} [cfg.hasKeyPath] Whether or not a key path is expected; if
  *   true, an indexedDB key is not allowed here as a key does not support
  *   the object type which is needed for a key path.
+ * @param {boolean} [cfg.arbitraryJS] Whether to allow the choice of
+ *   arbitrary JavaScript
  * @returns {DocumentFragment}
  */
 export const getFormatAndSchemaChoices = ({
-  schemas, selectedSchema, hasKeyPath
+  schemas, selectedSchema, hasKeyPath, arbitraryJS = false
 } = {}) => {
   const hasSchema = schemas && schemas.length;
   // eslint-disable-next-line @stylistic/max-len -- Long
-  return /** @type {[optText: string, opts: {value: string, selected?: boolean}][]} */ ([
+  return /** @type {[optText: string, opts: {value: import('./formats.js').AvailableFormat, selected?: boolean}][]} */ ([
     ['JSON only', {value: 'json'}],
     ...(hasKeyPath
       ? []
       : [['IndexedDB key', {value: 'indexedDBKey'}]]),
     ['Structured Clone (via Typeson JSON)', {
-      value: 'structuredCloning', selected: !hasSchema
+      value: 'structuredCloning', selected: !hasSchema && !arbitraryJS
     }],
+    ...(arbitraryJS
+      ? [['Arbitrary JavaScript Object', {
+        value: 'arbitraryJS', selected: !hasSchema
+      }]]
+      : []),
     ...(hasSchema
       ? schemas.map((schema, idx) => {
         return [`Schema: ${schema}`, {
@@ -79,6 +86,8 @@ export const getFormatAndSchemaChoices = ({
  *   will be set and required at the root level. This option will also
  *   prevent selection of indexedDB key at root (since a key cannot be a
  *   plain object).
+ * @param {boolean} [cfg.arbitraryJS] Whether to allow the choice of
+ *   arbitrary JavaScript
  * @param {string} [cfg.typeNamespace] Used to prevent conflicts with other
  *   instances of typeChoices on the page
  * @param {string} [cfg.selectedSchema]
@@ -104,12 +113,17 @@ export async function formatAndTypeChoices ({
   hasValue,
   singleValue,
   hasKeyPath,
+  arbitraryJS = false,
   typeNamespace,
   selectedSchema,
   formats = new Formats(),
   types = new Types()
 }) {
-  const format = schemas && schemas.length ? 'schema' : 'structuredCloning';
+  const format = schemas && schemas.length
+    ? 'schema'
+    : arbitraryJS
+      ? 'arbitraryJS'
+      : 'structuredCloning';
   const formatChoices = /** @type {FormatChoices} */ (jml('select', {
     class: 'formatChoices',
     hidden: singleValue,
@@ -201,7 +215,9 @@ export async function formatAndTypeChoices ({
         ).$buildTypeChoices();
       }
     }
-  }, [getFormatAndSchemaChoices({schemas, hasKeyPath, selectedSchema})]));
+  }, [getFormatAndSchemaChoices({
+    schemas, hasKeyPath, selectedSchema, arbitraryJS
+  })]));
 
   /**
    * @callback TypeSelectGetter

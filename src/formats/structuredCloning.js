@@ -24,7 +24,7 @@ import json from './json.js';
  *   method which is housed in the array type object).
  * @typedef {(info: {
  *   propName: string,
- *   type: import('../types.js').AvailableType,
+ *   type: import('../types.js').AvailableArbitraryType,
  *   value: import('../formats.js').StructuredCloneValue,
  *   bringIntoFocus?: boolean,
  *   setAValue?: boolean,
@@ -113,7 +113,7 @@ const encapsulateObserver = (stateObj) => {
       return;
     }
 
-    /** @type {import('../types.js').AvailableType} */
+    /** @type {import('../types.js').AvailableArbitraryType} */
     let newType;
     let newValue = value;
 
@@ -373,7 +373,7 @@ const replaceTypes = (originTypes, replacements) => {
  *   being checked.
  * @throws {Error} May throw if data found to be invalid.
  * @returns {{
- *   newType: import('../types.js').AvailableType,
+ *   newType: import('../types.js').AvailableArbitraryType,
  *   schema?: import('zodex').SzType|undefined,
  *   mustBeOptional?: boolean,
  *   schemaIdx?: number
@@ -394,7 +394,7 @@ const canonicalTypeToAvailableTypeAndSchema = (
   }
 
   /**
-   * @type {import('../types.js').AvailableType|undefined}
+   * @type {import('../types.js').AvailableArbitraryType|undefined}
    */
   let ret;
 
@@ -511,7 +511,44 @@ const structuredCloning = {
     );
     const typeson = new Typeson({
       encapsulateObserver: encapsulateObserver(stateObj)
-    }).register(structuredCloningFixed);
+    }).register(
+      stateObj.format === 'arbitraryJS'
+        ? [
+          ...structuredCloningFixed,
+          {
+            // Todo: Add to typeson-registry
+            symbol: {
+              test (x) {
+                return typeof x === 'symbol';
+              },
+              replace (sym) {
+                return {
+                  global: Symbol.keyFor(sym) !== undefined,
+                  sym: String(sym).slice(7, -1)
+                };
+              },
+              revive (o) {
+                return o.global ? Symbol.for(o.sym) : Symbol(o.sym);
+              }
+            }
+          },
+          {
+            function: {
+              test (x) {
+                return typeof x === 'function';
+              },
+              replace (funcType) {
+                return '(' + funcType.toString() + ')';
+              },
+              revive (o) {
+                // eslint-disable-next-line no-eval -- User opted in
+                return eval(o);
+              }
+            }
+          }
+        ]
+        : structuredCloningFixed
+    );
 
     await typeson.encapsulateAsync(records, null, {
       throwOnBadSyncType: false

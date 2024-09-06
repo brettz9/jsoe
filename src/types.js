@@ -55,10 +55,9 @@ import neverType from './fundamentalTypes/neverType.js';
 import catchType from './fundamentalTypes/catchType.js';
 import nativeEnumType from './fundamentalTypes/nativeEnumType.js';
 
-// Todo: Reenable
-// import symbolType from './fundamentalTypes/symbolType.js';
-// import promiseType from './fundamentalTypes/promiseType.js';
-// import functionType from './fundamentalTypes/functionType.js';
+import symbolType from './fundamentalTypes/symbolType.js';
+import promiseType from './fundamentalTypes/promiseType.js';
+import functionType from './fundamentalTypes/functionType.js';
 
 /**
  * Utility to retrieve the property value given a legend element.
@@ -135,7 +134,7 @@ export const getPropertyValueFromLegend = (legend) => {
 
 /**
  * @callback GetOptionForType
- * @param {AvailableType} type
+ * @param {AvailableArbitraryType} type
  * @param {import('./formatAndTypeChoices.js').ZodexSchema|
  *   undefined} [schemaContent]
  * @returns {[string, {value: AvailableType, title?: string}]}
@@ -183,7 +182,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   readonly?: boolean,
  *   resultType?: "both"|"keys"|"values",
  *   typeNamespace?: string,
- *   type: AvailableType,
+ *   type: AvailableArbitraryType,
  *   topRoot?: RootElement,
  *   bringIntoFocus?: boolean|undefined,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
@@ -214,7 +213,7 @@ export const getPropertyValueFromLegend = (legend) => {
 
 /**
  * @typedef {(cfg: {
- *   type: AvailableType,
+ *   type: AvailableArbitraryType,
  *   root: RootElement,
  *   topRoot?: RootElement,
  *   avoidReport?: boolean
@@ -223,7 +222,7 @@ export const getPropertyValueFromLegend = (legend) => {
 
 /**
  * @typedef {(cfg: {
- *   type: AvailableType,
+ *   type: AvailableArbitraryType,
  *   root: RootElement,
  *   value: StructuredCloneValue,
  * }) => void} SetValue
@@ -354,7 +353,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * @property {(info: {
  *   value?: StructuredCloneValue,
  *   typeNamespace?: string,
- *   type?: AvailableType,
+ *   type?: AvailableArbitraryType,
  *   topRoot?: HTMLDivElement,
  *   resultType?: "keys"|"values"|"both",
  *   format: import('./formats.js').AvailableFormat,
@@ -373,7 +372,7 @@ export const getPropertyValueFromLegend = (legend) => {
  *   formats?: import('./formats.js').default,
  *   types: Types,
  *   resultType?: "keys"|"values"|"both",
- *   type?: AvailableType,
+ *   type?: AvailableArbitraryType,
  *   forcedState?: string,
  *   buildTypeChoices?: import('./typeChoices.js').BuildTypeChoices,
  *   topRoot?: HTMLDivElement
@@ -422,8 +421,10 @@ export const getPropertyValueFromLegend = (legend) => {
  *   "record"|"void"|"enum"|"literal"|"never"|"catch"|"nativeEnum"
  * } AvailableType
  */
-// Todo: Add to own section when ready for these non-structured-cloning:
-// "symbol"|"promise"|"function"
+
+/**
+ * @typedef {AvailableType|"symbol"|"promise"|"function"} AvailableArbitraryType
+ */
 
 /**
  * @typedef {TypeObject & {
@@ -445,7 +446,7 @@ class Types {
     this.customValidateAllReferences = undefined;
     /**
      * @type {{
-     *   [key in AvailableType]: Partial<TypeObject>|string[]
+     *   [key in AvailableArbitraryType]: Partial<TypeObject>|string[]
      * }}
      */
     this.availableTypes = {
@@ -506,10 +507,9 @@ class Types {
       resurrectable: noneditableType,
       never: neverType,
 
-      // Todo: Reenable
-      // symbol: symbolType, // Non-cloning type
-      // promise: promiseType,
-      // function: functionType,
+      symbol: symbolType, // Non-cloning type
+      promise: promiseType,
+      function: functionType,
 
       catch: catchType,
       nativeEnum: nativeEnumType,
@@ -716,7 +716,7 @@ class Types {
     const availableType = /** @type {TypeObject} */ (
       this.availableTypes[type]
     );
-    /** @type {[string, {value?: AvailableType, title?: string}?]} */
+    /** @type {[string, {value?: AvailableArbitraryType, title?: string}?]} */
     const optInfo = [
       ...availableType.option
     ];
@@ -986,6 +986,9 @@ class Types {
         }
       }
       if (firstRun) {
+        // Todo: should take into account `format`, e.g., to widen to
+        //        allow `arbitraryJS` values; should also be using
+        //        `structuredCloningFixed`
         const typeson = new Typeson().register(
           structuredCloningThrowing
         );
@@ -1020,7 +1023,7 @@ class Types {
   }
 
   /**
-   * @param {AvailableType} type
+   * @param {AvailableArbitraryType} type
    * @returns {Partial<TypeObject>|string[]}
    */
   getTypeObject (type) {

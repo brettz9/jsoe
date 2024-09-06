@@ -1,6 +1,7 @@
 import indexedDBKey from './formats/indexedDBKey.js';
 import json from './formats/json.js';
 import structuredCloning from './formats/structuredCloning.js';
+import arbitraryJS from './formats/arbitraryJS.js';
 import schema from './formats/schema.js';
 
 /**
@@ -30,12 +31,13 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
 */
 
 /**
- * @typedef {"indexedDBKey"|"json"|"structuredCloning"|"schema"} AvailableFormat
+ * @typedef {"indexedDBKey"|"json"|"structuredCloning"|
+ *   "arbitraryJS"|"schema"} AvailableFormat
  */
 
 /**
  * @typedef {{
- *   types: (import('./types.js').AvailableType)[],
+ *   types: (import('./types.js').AvailableArbitraryType)[],
  *   schemaObjects: import('./formats/schema.js').ZodexSchema[]
  * }} TypesAndSchemaObjects
  */
@@ -51,7 +53,9 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
 
 /**
  * @typedef {object} Format
- * @property {() => (import('./types.js').AvailableType)[]} types Returns list
+ * @property {() => (
+ *   import('./types.js').AvailableArbitraryType
+ * )[]} types Returns list
  *   of types generally available to structured cloning. See
  *   {@link getTypesAndSchemasForState} for context-dependent method.
  * @property {FormatIterator} iterate Traverses over data to build and return
@@ -106,6 +110,9 @@ class Formats {
     //     case 'structuredCloning':
     //       formatValue = structuredCloning;
     //       break;
+    //     case 'arbitraryJS':
+    //       formatValue = arbitraryJS;
+    //       break;
     //     default:
     //       throw new Error('Unknown format');
     //     }
@@ -117,8 +124,9 @@ class Formats {
     this.availableFormats = /** @type {{[key: string]: Format}} */ ({
       indexedDBKey,
       json,
-      schema,
-      structuredCloning
+      structuredCloning,
+      arbitraryJS,
+      schema
     });
   }
 

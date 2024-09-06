@@ -50,7 +50,10 @@ const symbolType = {
     return ['span', {
       dataset: {type: 'symbol'},
       title: specificSchemaObject?.description ?? '(a Symbol)'
-    }, [value]];
+    }, [
+      Symbol.keyFor(value) === undefined ? '' : ['b', ['Global: ']],
+      String(value).slice(7, -1)
+    ]];
   },
   editUI ({typeNamespace, value = ''}) {
     return ['div', {dataset: {type: 'symbol'}}, [

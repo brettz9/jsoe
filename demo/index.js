@@ -11,6 +11,7 @@ const types = new Types();
 
 const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,
+  arbitraryJS: true,
   typeNamespace: 'demo-keypath-not-expected'
 });
 
@@ -65,7 +66,7 @@ setTimeout(async function () {
             // eslint-disable-next-line @stylistic/max-len -- Long
             (await keyPathNotExpectedTypeChoices.formats.getControlsForFormatAndValue(
               keyPathNotExpectedTypeChoices.types,
-              'structuredCloning',
+              $('#formatAndTypeChoices .formatChoices').value,
               keyPathNotExpectedTypeChoices.getValue(),
               {
                 readonly: true
