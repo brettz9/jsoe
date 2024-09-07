@@ -77,7 +77,8 @@ describe('regexp spec', () => {
     );
 
     cy.get('button#logValue').click();
-    // eslint-disable-next-line require-unicode-regexp -- Testing
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line require-unicode-regexp, sonarjs/no-empty-after-reluctant -- Testing
     cy.get('@consoleLog').should('be.calledWith', /.*?/);
   });
 
@@ -93,6 +94,7 @@ describe('regexp spec', () => {
     cy.get(sel + 'div[data-type="regexp"] select').select(['u', 'g']);
 
     cy.get('button#logValue').click();
+    // eslint-disable-next-line sonarjs/no-empty-after-reluctant -- Testing
     cy.get('@consoleLog').should('be.calledWith', /.*?/gu);
   });
 
@@ -113,7 +115,8 @@ describe('regexp spec', () => {
 
   it('gets value', function () {
     cy.clearTypeAndBlur('#getValueForString', '/.*?/');
-    // eslint-disable-next-line require-unicode-regexp -- Testing
+    // eslint-disable-next-line @stylistic/max-len -- Long
+    // eslint-disable-next-line require-unicode-regexp, sonarjs/no-empty-after-reluctant -- Testing
     cy.get('@consoleLog').should('be.calledWith', /.*?/);
   });
 

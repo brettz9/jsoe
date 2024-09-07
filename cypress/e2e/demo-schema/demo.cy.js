@@ -141,6 +141,7 @@ describe('`getTypesForSchema`', function () {
 
     expect(
       () => getTypesForSchema(schema, schema)
+    // eslint-disable-next-line sonarjs/test-check-exception -- Ok
     ).to.throw();
   });
 
@@ -167,6 +168,7 @@ describe('`getTypesForSchema`', function () {
 
     expect(
       () => getTypesForSchema(schema, schema)
+    // eslint-disable-next-line sonarjs/test-check-exception -- Ok
     ).to.throw();
   });
 

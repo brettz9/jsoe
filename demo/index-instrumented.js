@@ -355,7 +355,8 @@ setTimeout(async function () {
         setValue: true,
         value: [
           42, 123n, 'test123', new Date('1999-01-01T20:00'), badDate,
-          // eslint-disable-next-line require-unicode-regexp -- Testing
+          // eslint-disable-next-line @stylistic/max-len -- Long
+          // eslint-disable-next-line require-unicode-regexp, sonarjs/no-empty-after-reluctant -- Testing
           /.*?/,
           // eslint-disable-next-line @stylistic/max-len -- Long
           // eslint-disable-next-line no-new-wrappers, unicorn/new-for-builtins -- Testing

@@ -6,7 +6,7 @@ import arrayReferenceType from './arrayReferenceType.js';
 const objectReferenceType = {
   option: ['Object reference'],
   type: 'object',
-  stringRegex: /^objectRef\((?:|\/[^)]*)\)$/u,
+  stringRegex: /^objectRef\((?:\/[^)]*|)\)$/u,
   toValue (...args) {
     return /** @type {import('../types.js').ToValue} */ (
       arrayReferenceType.toValue

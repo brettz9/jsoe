@@ -10,7 +10,7 @@ import {
 const arrayReferenceType = {
   option: ['Array reference'],
   type: 'array',
-  stringRegex: /^arrayRef\((?:|\/[^)]*)\)$/u,
+  stringRegex: /^arrayRef\((?:\/[^)]*|)\)$/u,
   toValue (s, info) {
     const {
       rootHolder, parent, parentPath

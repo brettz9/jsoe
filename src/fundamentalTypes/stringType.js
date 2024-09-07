@@ -3,22 +3,23 @@ import {$e} from '../utils/templateUtils.js';
 
 // Adapted from Zod: https://github.com/colinhacks/zod/blob/9257ab78eec366c04331a3c2d59deb344a02d9f6/src/types.ts
 const ipv4Regex =
-  /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/u;
+  /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)$/u;
 const ipv6Regex =
-  /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/u;
+  /^(([a-f\d]{1,4}:){7}|::([a-f\d]{1,4}:){0,6}|([a-f\d]{1,4}:):([a-f\d]{1,4}:){0,5}|([a-f\d]{1,4}:){2}:([a-f\d]{1,4}:){0,4}|([a-f\d]{1,4}:){3}:([a-f\d]{1,4}:){0,3}|([a-f\d]{1,4}:){4}:([a-f\d]{1,4}:){0,2}|([a-f\d]{1,4}:){5}:([a-f\d]{1,4}:)?)([a-f\d]{1,4}|(((25[0-5])|(2[0-4]\d)|(1\d{2})|(\d{1,2}))\.){3}((25[0-5])|(2[0-4]\d)|(1\d{2})|(\d{1,2})))$/u;
 // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
 const base64Regex =
-  /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/u;
+  /^([\da-zA-Z+/]{4})*(([\da-zA-Z+/]{2}==)|([\da-zA-Z+/]{3}=))?$/u;
 // from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
 const emojiRegexStr = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
 const emojiRegex = new RegExp(emojiRegexStr, 'u');
 const cuidRegex = /^c[^\s-]{8,}$/iu;
-const cuid2Regex = /^[0-9a-z]+$/u;
-const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/iu;
+const cuid2Regex = /^[\da-z]+$/u;
+const ulidRegex = /^[\dA-HJKMNP-TV-Z]{26}$/iu;
 const uuidRegex =
-  /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/iu;
-const nanoidRegex = /^[a-z0-9_-]{21}$/iu;
+  /^[\da-f]{8}\b-[\da-f]{4}\b-[\da-f]{4}\b-[\da-f]{4}\b-[\da-f]{12}$/iu;
+const nanoidRegex = /^[a-z\d_-]{21}$/iu;
 const durationRegex =
+  // eslint-disable-next-line sonarjs/no-empty-after-reluctant -- Ok
   /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/u;
 // End adapted from Zod
 

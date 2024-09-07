@@ -10,7 +10,7 @@ const bigintObjectType = {
     '^BigIntObject' +
       '-?' + // Optional negative sign.
       // How many digits?
-      '[0-9]{1,}' +
+      String.raw`\d+` +
       'n' +
       '$', // No trailing content.
     'u'

@@ -9,11 +9,11 @@ const numberType = {
     '^' + // No leading content.
       '[-+]?' + // Optional sign.
       // Optionally 0-30 decimal digits of mantissa.
-      String.raw`(?:[0-9]{0,30}\.)?` +
+      String.raw`(?:\d{0,30}\.)?` +
       // 1-30 decimal digits of integer or fraction.
-      '[0-9]{1,30}' +
+      String.raw`\d{1,30}` +
       // Optional exponent 0-29 for scientific notation.
-      '(?:[Ee][-+]?[1-2]?[0-9])?' +
+      String.raw`(?:[Ee][-+]?[1-2]?\d)?` +
       '$', // No trailing content.
     'u'
   ),
