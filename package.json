@@ -50,9 +50,6 @@
     "excludeAfterRemap": true,
     "exclude": [
       "node_modules/**",
-      "src/fundamentalTypes/functionType.js",
-      "src/fundamentalTypes/promiseType.js",
-      "src/fundamentalTypes/symbolType.js",
       "src/fundamentalTypes/sparseUndefinedType.js"
     ]
   },

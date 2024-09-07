@@ -1,6 +1,6 @@
 import {
   Typeson, unescapeKeyPathComponent, structuredCloningThrowing,
-  resurrectable as noneditable, toStringTag
+  resurrectable as noneditable, symbol, promise, toStringTag
 } from '../vendor-imports.js';
 
 import {buildTypeChoices} from '../typeChoices.js';
@@ -363,8 +363,8 @@ const replaceTypes = (originTypes, replacements) => {
  *   containing format-specific data.
  * @param {import('../formats.js').AvailableFormat} format The current format.
  * @param {string} state The current state.
- * @param {import('../types.js').AvailableType} valType The value type being
- *   checked.
+ * @param {import('../types.js').AvailableArbitraryType} valType The value
+ *   type being checked.
  * @param {import('../formats.js').StructuredCloneValue} v The value being
  *   checked.
  * @param {string} arrayOrObjectPropertyName
@@ -382,6 +382,7 @@ const replaceTypes = (originTypes, replacements) => {
 const canonicalTypeToAvailableTypeAndSchema = (
   types, formats, format, state, valType, v, arrayOrObjectPropertyName,
   parentSchema, stateObj
+  // eslint-disable-next-line sonarjs/sonar-max-params -- Convenient
 ) => {
   const frmt = formats.getAvailableFormat(format);
   const {getTypesAndSchemasForState, convertFromTypeson, testInvalid} = frmt;
@@ -512,26 +513,17 @@ const structuredCloning = {
     const typeson = new Typeson({
       encapsulateObserver: encapsulateObserver(stateObj)
     }).register(
-      stateObj.format === 'arbitraryJS'
+      stateObj.format === 'arbitraryJS' ||
+        // Todo: Should have an arbitraryJS variant of schema instead
+        //    to allow function/promise/symbol schemas to be cloneable but not
+        //    through same schema
+        // Todo: Typeson has an issue for symbol-iterating keys; then add
+        //    to regular demo and test; add tests
+        stateObj.format === 'schema'
         ? [
           ...structuredCloningFixed,
-          {
-            // Todo: Add to typeson-registry
-            symbol: {
-              test (x) {
-                return typeof x === 'symbol';
-              },
-              replace (sym) {
-                return {
-                  global: Symbol.keyFor(sym) !== undefined,
-                  sym: String(sym).slice(7, -1)
-                };
-              },
-              revive (o) {
-                return o.global ? Symbol.for(o.sym) : Symbol(o.sym);
-              }
-            }
-          },
+          symbol,
+          promise,
           {
             function: {
               test (x) {

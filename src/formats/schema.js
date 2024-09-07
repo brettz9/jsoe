@@ -19,7 +19,13 @@ import {copyObject} from '../utils/objects.js';
 * >} AvailableZodexType
 */
 
-/** @type {Map<AvailableZodexType, import('../types.js').AvailableType>} */
+/**
+ * @type {Map<
+ *   AvailableZodexType,
+ *   import('../types.js').AvailableArbitraryType
+ * >
+ * }
+ */
 const zodexToStructuredCloningTypeMap = new Map([
   ['boolean', 'boolean'],
   ['number', 'number'],
@@ -47,7 +53,7 @@ const zodexToStructuredCloningTypeMap = new Map([
 
   // Todo: Allow non-cloning version to return these too, but filter out
   //         otherwise
-  // ['symbol', 'symbol'],
+  ['symbol', 'symbol'],
   // ['function', 'function'],
   // ['promise', 'promise'],
 

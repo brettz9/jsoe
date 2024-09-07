@@ -246,17 +246,12 @@ const schemaInstanceJSONStrings9 = {
 };
 
 // Todo: test editing, including fixing aggregate errors and aggregate error
-//         as cause
-// Todo: Test/Fix functionality for `toValue`, `getInput`, `setValue`,
-//         `getValue`, `viewUI` (and check coverage of `valueMatch`)
+//         as cause (done?)
 
 // Todo: If Zod starts to do circular data, support with reference types
 // Todo: If Zod starts to allow specific types for our effects, use those
 //         instead, not just for more standard semanticness, but for any
 //         additional validations
-// Todo: allow function/promise/symbol to be cloneable albeit not through
-//        structured cloneable; note that typeson has an issue for
-//        symbol-iterating keys; then add to regular demo and test; add tests
 
 /**
  * @param {string} schema

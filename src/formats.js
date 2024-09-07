@@ -73,14 +73,14 @@ export const getTypeForFormatStateAndValue = ({format, state, value}) => {
  *     newType: string, value: Date|Array<StructuredCloneValue>
  *   ) => boolean|undefined} [testInvalid]
  * @property {(
- *   typesonType: import('./types.js').AvailableType,
+ *   typesonType: import('./types.js').AvailableArbitraryType,
  *   types: import('./types.js').default,
  *   v?: import('./formats.js').StructuredCloneValue,
  *   arrayOrObjectPropertyName?: string,
  *   parentSchema?: [import('zodex').SzType, number|undefined]|undefined,
  *   stateObj?: import('./types.js').StateObject,
  * ) => {
- *   type: import('./types.js').AvailableType|undefined
+ *   type: import('./types.js').AvailableArbitraryType|undefined
  *   schema?: import('zodex').SzType|undefined,
  *   mustBeOptional?: boolean,
  *   schemaIdx?: number

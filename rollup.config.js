@@ -74,6 +74,18 @@ export default [{
     commonjs()
   ]
 }, {
+  input: 'demo/index-arbitraryJS.js',
+  output: {
+    file: 'instrumented/demo/index-arbitraryJS.js',
+    format: 'es'
+  },
+  plugins: [
+    noOp({ids: ['react']}), // todo: remove when Zodex may remove dep.
+    istanbul(),
+    nodeResolve(),
+    commonjs()
+  ]
+}, {
   input: 'node_modules/fast-deep-equal/es6/index.js',
   output: {
     file: 'src/deepEqual.js',

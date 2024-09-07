@@ -20,10 +20,11 @@ import {$e, DOM} from './utils/templateUtils.js';
  *   the object type which is needed for a key path.
  * @param {boolean} [cfg.arbitraryJS] Whether to allow the choice of
  *   arbitrary JavaScript
+ * @param {boolean} [cfg.preselectSchema] Whether to preselect schema
  * @returns {DocumentFragment}
  */
 export const getFormatAndSchemaChoices = ({
-  schemas, selectedSchema, hasKeyPath, arbitraryJS = false
+  schemas, selectedSchema, hasKeyPath, preselectSchema, arbitraryJS = false
 } = {}) => {
   const hasSchema = schemas && schemas.length;
   // eslint-disable-next-line @stylistic/max-len -- Long
@@ -33,11 +34,13 @@ export const getFormatAndSchemaChoices = ({
       ? []
       : [['IndexedDB key', {value: 'indexedDBKey'}]]),
     ['Structured Clone (via Typeson JSON)', {
-      value: 'structuredCloning', selected: !hasSchema && !arbitraryJS
+      value: 'structuredCloning',
+      selected: (!preselectSchema || !hasSchema) && !arbitraryJS
     }],
     ...(arbitraryJS
       ? [['Arbitrary JavaScript Object', {
-        value: 'arbitraryJS', selected: !hasSchema
+        value: 'arbitraryJS',
+        selected: !preselectSchema || !hasSchema
       }]]
       : []),
     ...(hasSchema
@@ -45,7 +48,9 @@ export const getFormatAndSchemaChoices = ({
         return [`Schema: ${schema}`, {
           value: 'schema',
           dataset: {schema},
-          selected: selectedSchema ? schema === selectedSchema : idx === 0
+          selected: preselectSchema
+            ? selectedSchema ? schema === selectedSchema : idx === 0
+            : undefined
         }];
       })
       : [])
@@ -93,6 +98,7 @@ export const getFormatAndSchemaChoices = ({
  * @param {string} [cfg.selectedSchema]
  * @param {import('./formats.js').default} [cfg.formats]
  * @param {import('./types.js').default} [cfg.types]
+ * @param {boolean} [cfg.preselectSchema]
  * @returns {Promise<{
  *   formatChoices: FormatChoices,
  *   typesHolder: TypesHolder,
@@ -114,12 +120,13 @@ export async function formatAndTypeChoices ({
   singleValue,
   hasKeyPath,
   arbitraryJS = false,
+  preselectSchema = true,
   typeNamespace,
   selectedSchema,
   formats = new Formats(),
   types = new Types()
 }) {
-  const format = schemas && schemas.length
+  const format = preselectSchema && schemas && schemas.length
     ? 'schema'
     : arbitraryJS
       ? 'arbitraryJS'
@@ -216,7 +223,7 @@ export async function formatAndTypeChoices ({
       }
     }
   }, [getFormatAndSchemaChoices({
-    schemas, hasKeyPath, selectedSchema, arbitraryJS
+    schemas, hasKeyPath, selectedSchema, arbitraryJS, preselectSchema
   })]));
 
   /**
@@ -265,7 +272,9 @@ export async function formatAndTypeChoices ({
     requireObject: hasKeyPath,
     objectHasValue: hasValue,
     schema,
-    schemaContent: await getSchemaContent?.(/** @type {string} */ (schema))
+    schemaContent: schema === undefined
+      ? undefined
+      : await getSchemaContent?.(/** @type {string} */ (schema))
   }).domArray}, typesHolder);
 
   return {

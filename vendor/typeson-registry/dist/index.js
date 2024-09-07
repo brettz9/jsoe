@@ -157,8 +157,6 @@ const bigintObject = {
         },
         replace: String,
         revive (s) {
-            // Filed this to avoid error: https://github.com/eslint/eslint/issues/11810
-            // eslint-disable-next-line no-new-object
             return new Object(BigInt(/** @type {string} */ (s)));
         }
     }
@@ -173,7 +171,8 @@ const bigint = {
             return typeof x === 'bigint';
         },
         replace: String,
-        // eslint-disable-next-line unicorn/prefer-native-coercion-functions
+        // eslint-disable-next-line @stylistic/max-len -- Long
+        // eslint-disable-next-line unicorn/prefer-native-coercion-functions -- Clearer
         revive (s) {
             return BigInt(/** @type {string} */ (s));
         }
@@ -252,7 +251,7 @@ function string2arraybuffer (str) {
     return array.buffer;
 }
 
-/* globals XMLHttpRequest, FileReader */
+/* globals XMLHttpRequest, FileReader -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -323,14 +322,12 @@ function generateUUID () { //  Adapted from original: public domain/MIT: http://
     /* c8 ignore next */
     let d = Date.now();
 
-    // eslint-disable-next-line @stylistic/max-len -- Long
-    // eslint-disable-next-line no-use-extend-native/no-use-extend-native -- Need to update plugin
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAll(/[xy]/gu, function (c) {
-        /* eslint-disable no-bitwise */
+        /* eslint-disable no-bitwise -- Convenient */
         const r = Math.trunc((d + (Math.random() * 16)) % 16);
         d = Math.floor(d / 16);
         return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16);
-        /* eslint-enable no-bitwise */
+        /* eslint-enable no-bitwise -- Convenient */
     });
 }
 
@@ -519,7 +516,7 @@ const domexception = {
     }
 };
 
-/* globals DOMMatrix, DOMMatrixReadOnly */
+/* globals DOMMatrix, DOMMatrixReadOnly -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -586,7 +583,7 @@ function create$5 (Ctor) {
     };
 }
 
-/* globals DOMPoint, DOMPointReadOnly */
+/* globals DOMPoint, DOMPointReadOnly -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -623,7 +620,7 @@ function create$4 (Ctor) {
     };
 }
 
-/* globals DOMQuad */
+/* globals DOMQuad -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -645,7 +642,7 @@ const domquad = {
     }
 };
 
-/* globals DOMRect, DOMRectReadOnly */
+/* globals DOMRect, DOMRectReadOnly -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -718,8 +715,7 @@ const error = {
     }
 };
 
-/* globals InternalError */
-/* eslint-env browser, node */
+/* globals InternalError -- Optional */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -810,7 +806,7 @@ function create$2 (Ctor) {
     };
 }
 
-/* globals XMLHttpRequest, FileReader */
+/* globals XMLHttpRequest, FileReader -- Polyfills */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -897,7 +893,7 @@ const filelist = {
                  * Set private properties and length.
                  */
                 constructor () {
-                    // eslint-disable-next-line prefer-rest-params
+                    // eslint-disable-next-line prefer-rest-params -- API
                     this._files = arguments[0];
                     this.length = this._files.length;
                 }
@@ -908,12 +904,12 @@ const filelist = {
                 item (index) {
                     return this._files[index];
                 }
-                /* eslint-disable class-methods-use-this */
+                /* eslint-disable class-methods-use-this -- Not needed */
                 /**
                  * @returns {"FileList"}
                  */
                 get [Symbol.toStringTag] () {
-                    /* eslint-enable class-methods-use-this */
+                    /* eslint-enable class-methods-use-this -- Not needed */
                     return 'FileList';
                 }
             }
@@ -922,7 +918,7 @@ const filelist = {
     }
 };
 
-/* globals document, OffscreenCanvas, createImageBitmap */
+/* globals document, OffscreenCanvas, createImageBitmap -- Polyfills */
 // `ImageBitmap` is browser / DOM specific. It also can only work
 //  same-domain (or CORS)
 
@@ -1005,7 +1001,7 @@ const imagebitmap = {
     }
 };
 
-/* globals ImageData */
+/* globals ImageData -- Polyfills */
 // `ImageData` is browser / DOM specific (though `node-canvas` has it
 //   available on `Canvas`).
 
@@ -1163,7 +1159,7 @@ const nonbuiltinIgnore = {
 
 // This module is for objectified primitives (such as `new Number(3)` or
 //      `new String("foo")`)
-/* eslint-disable no-new-wrappers, unicorn/new-for-builtins */
+/* eslint-disable no-new-wrappers, unicorn/new-for-builtins -- Deliberate */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -1183,7 +1179,10 @@ const primitiveObjects = {
             return toStringTag(x) === 'Boolean' &&
                 typeof x === 'object';
         },
-        replace: Boolean, // convert to primitive boolean
+        replace (o) {
+            // convert to primitive boolean
+            return o.valueOf();
+        },
         revive (b) {
             // Revive to an objectified Boolean
             return new Boolean(b);
@@ -1196,6 +1195,35 @@ const primitiveObjects = {
         },
         replace: Number, // convert to primitive number
         revive (n) { return new Number(n); } // Revive to an objectified number
+    }
+};
+
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const promise = {
+    promise: {
+        test (x) {
+            return toStringTag(x) === 'Promise';
+        },
+        replaceAsync (prom) {
+            return new e(async (resolve) => {
+                try {
+                    resolve({
+                        value: await prom
+                    });
+                } catch (error) {
+                    resolve({
+                        error
+                    });
+                }
+            });
+        },
+        revive (o) {
+            return o.error
+                ? Promise.reject(o.error)
+                : Promise.resolve(o.value);
+        }
     }
 };
 
@@ -1266,7 +1294,25 @@ const set = {
     }
 };
 
-/* eslint-env browser, node */
+/**
+ * @type {import('typeson').TypeSpecSet}
+ */
+const symbol = {
+    symbol: {
+        test (x) {
+            return typeof x === 'symbol';
+        },
+        replace (sym) {
+            return {
+                global: Symbol.keyFor(sym) !== undefined,
+                sym: String(sym).slice(7, -1)
+            };
+        },
+        revive (o) {
+            return o.global ? Symbol.for(o.sym) : Symbol(o.sym);
+        }
+    }
+};
 
 // Support all kinds of typed arrays (views of ArrayBuffers)
 
@@ -1333,8 +1379,6 @@ if (typeof Int8Array === 'function') {
             : [])
     ].forEach((TypedArray) => create$1(TypedArray));
 }
-
-/* eslint-env browser, node */
 
 /**
  * @type {import('typeson').TypeSpecSet}
@@ -1792,5 +1836,5 @@ const universal = [
     //   built-in into ecmasript standard.
 ];
 
-export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, domexception, dommatrix, dompoint, domquad, domrect, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
+export { u as JSON_TYPES, c as Typeson, e as TypesonPromise, s as Undefined, arrayNonindexKeys, arraybuffer, bigint, bigintObject, blob, expObj$1 as builtin, cloneable, cryptokey, dataview, date, domexception, dommatrix, dompoint, domquad, domrect, error, errors, escapeKeyPathComponent, file, filelist, getByKeyPath, getJSONType, hasConstructorOf, imagebitmap, imagedata, infinity, intlTypes, isObject, isPlainObject, isThenable, isUserObject, map, nan, negativeInfinity, negativeZero, nonbuiltinIgnore, postmessage, primitiveObjects, promise, regexp, resurrectable, set, setAtKeyPath, socketio, sparseUndefined, specialNumbers, expObj as structuredCloning, structuredCloningThrowing, symbol, toStringTag, typedArrays, typedArraysSocketIO as typedArraysSocketio, undef$1 as undef, undef as undefPreset, unescapeKeyPathComponent, universal, userObject };
 //# sourceMappingURL=index.js.map

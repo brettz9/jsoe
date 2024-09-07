@@ -5,7 +5,7 @@ import {$e} from '../utils/templateUtils.js';
  */
 const symbolType = {
   option: ['Symbol'],
-  stringRegex: /^(?<symbolClassType>Symbol|Symbol.for)\("(?<innerContent>[^\\"]|\\\\|\\")*"\)$/u,
+  stringRegex: /^(?<symbolClassType>Symbol|Symbol.for)\((?<innerContent>[^)]*)\)$/u,
   ct: 0,
   valueMatch (x) {
     return typeof x === 'symbol';
@@ -55,8 +55,12 @@ const symbolType = {
       String(value).slice(7, -1)
     ]];
   },
-  editUI ({typeNamespace, value = ''}) {
-    return ['div', {dataset: {type: 'symbol'}}, [
+  editUI ({typeNamespace, specificSchemaObject, value = ''}) {
+    this.ct++;
+    return ['div', {
+      dataset: {type: 'symbol'},
+      title: specificSchemaObject?.description ?? '(a Symbol)'
+    }, [
       ['label', [
         'Symbol()',
         ['input', {
@@ -68,13 +72,14 @@ const symbolType = {
         'Symbol.for()',
         ['input', {
           type: 'radio', name: `${typeNamespace}-symbol${this.ct}`,
-          value: 'Symbol.for', checked: value && Boolean(Symbol.keyFor(value))
+          value: 'Symbol.for',
+          checked: value && Symbol.keyFor(value) !== undefined
         }]
       ]],
       ['br'],
       ['input', {
         className: 'symbolInput',
-        name: `${typeNamespace}-string`,
+        name: `${typeNamespace}-symbol`,
         value: String(value).slice(7, -1)
       }]
     ]];

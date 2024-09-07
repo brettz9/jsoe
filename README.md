@@ -68,11 +68,15 @@ Zodex) schema types:
 - `tuple`
 - `void` (preferred in Zodex when specified as such)
 
-Work has begun on the following non-structured-cloning Zodex schema types:
+Work has been completed for the following non-structured-cloning Zodex
+schema types:
+
+- `symbol`
+
+(Work has begun on the following non-structured-cloning Zodex schema types:)
 
 - `function`
 - `promise`
-- `symbol`
 
 ## Subtypes
 

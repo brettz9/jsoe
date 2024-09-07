@@ -11,7 +11,6 @@ const types = new Types();
 
 const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   hasKeyPath: false,
-  arbitraryJS: true,
   typeNamespace: 'demo-keypath-not-expected'
 });
 
