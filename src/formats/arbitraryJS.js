@@ -1,4 +1,4 @@
-// Todo: Enable promise, function in schema
+// Todo: Enable function in schema
 
 import structuredCloning from './structuredCloning.js';
 

@@ -92,7 +92,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * Utility to retrieve the type out of a type root element.
  * @callback GetTypeForRoot
  * @param {?RootElement} root
- * @returns {string} Why would it not exist?
+ * @returns {AvailableArbitraryType} Why would it not exist?
  */
 
 /**
@@ -348,6 +348,7 @@ export const getPropertyValueFromLegend = (legend) => {
  * }) =>
  *  StructuredCloneValue
  * } getValue Gets the value for the type
+ * @property {Types} [types]
  * @property {TypeObjectSetValue} [setValue] Should set the value of the
  *   form's `getInput` element
  * @property {(info: {
@@ -1033,7 +1034,9 @@ class Types {
 
 /** @type {GetTypeForRoot} */
 Types.getTypeForRoot = (root) => {
-  return String(root ? root.dataset.type : root);
+  return /** @type {AvailableArbitraryType} */ (
+    String(root ? root.dataset.type : root)
+  );
 };
 
 /** @type {ValidValuesSet} */

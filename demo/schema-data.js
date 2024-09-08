@@ -528,59 +528,6 @@ const schemaInstanceJSON7 = {
       description: 'A never',
       type: 'never'
     }
-
-    // Todo: Support `symbol`
-    // {
-    //   description: 'A symbol',
-    //   type: 'symbol'
-    // },
-
-    // Todo: Support `Promise`
-    // {
-    //   description: 'A Promise',
-    //   type: 'promise',
-    //   value: {
-    //     type: 'number'
-    //   }
-    // },
-
-    // Todo: Support functions
-    // {
-    //   description: 'A function',
-    //   type: 'function',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'number'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'string'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'boolean'
-    //   }
-    // },
-    // {
-    //   type: 'function',
-    //   description: 'With never',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'never'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'never'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'never'
-    //   }
-    // },
   ]
 };
 

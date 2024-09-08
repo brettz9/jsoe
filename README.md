@@ -72,11 +72,11 @@ Work has been completed for the following non-structured-cloning Zodex
 schema types:
 
 - `symbol`
+- `promise`
 
 (Work has begun on the following non-structured-cloning Zodex schema types:)
 
 - `function`
-- `promise`
 
 ## Subtypes
 

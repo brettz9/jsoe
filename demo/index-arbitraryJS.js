@@ -38,15 +38,52 @@ const schemaInstanceJSONArbitraryJS = {
     {
       description: 'A symbol (global)',
       type: 'symbol'
+    },
+    {
+      description: 'A Promise',
+      type: 'promise',
+      value: {
+        type: 'number'
+      }
     }
-    // {
-    //   description: 'A promise',
-    //   type: 'promise'
-    // },
+
+    // Todo: Support functions
     // {
     //   description: 'A function',
-    //   type: 'function'
-    // }
+    //   type: 'function',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'number'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'string'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'boolean'
+    //   }
+    // },
+    // {
+    //   type: 'function',
+    //   description: 'With never',
+    //   args: {
+    //     type: 'tuple',
+    //     items: [
+    //       {
+    //         type: 'never'
+    //       }
+    //     ],
+    //     rest: {
+    //       type: 'never'
+    //     }
+    //   },
+    //   returns: {
+    //     type: 'never'
+    //   }
+    // },
   ]
 };
 
@@ -153,6 +190,24 @@ jml('section', {role: 'main'}, [
     }
   }, ['Initialize with a value']],
 
+  ['button', {
+    id: 'showRootFormControl',
+    $on: {
+      click () {
+        const root = $(
+          '#formatAndTypeChoices > .typesHolder > ' +
+            '.typeContainer > div[data-type]'
+        );
+        const formControl =
+          keyPathNotExpectedTypeChoices.types.getFormControlForRoot(root);
+        formControl.style.backgroundColor = 'red';
+        setTimeout(() => {
+          formControl.style.backgroundColor = 'white';
+        }, 3000);
+      }
+    }
+  }, ['Show root form control']],
+
   ['h2', [
     'Convert structured cloning string representation to value and log'
   ]],
@@ -179,29 +234,38 @@ jml('section', {role: 'main'}, [
       setValue: true,
       value: [
         Symbol('abcdefg'),
-        Symbol.for('abcdefg')
+        Symbol.for('abcdefgh'),
+        Promise.resolve('aaa')
       ],
-      typeNamespace: 'demo-type-choices-only-initial-value'
+      typeNamespace: 'demo-type-choices-only-initial-value1'
     });
 
     const typeSelectionSymbol = typeChoices({
       format: 'arbitraryJS',
       setValue: true,
       value: Symbol('tuv'),
-      typeNamespace: 'demo-type-choices-only-initial-value'
+      typeNamespace: 'demo-type-choices-only-initial-value2'
     });
 
     const typeSelectionSymbolFor = typeChoices({
       format: 'arbitraryJS',
       setValue: true,
       value: Symbol.for('xyz'),
-      typeNamespace: 'demo-type-choices-only-initial-value'
+      typeNamespace: 'demo-type-choices-only-initial-value3'
+    });
+
+    const typeSelectionPromise = typeChoices({
+      format: 'arbitraryJS',
+      setValue: true,
+      value: Promise.resolve(123),
+      typeNamespace: 'demo-type-choices-only-initial-value4'
     });
 
     return ['form', [
       ...typeSelection.domArray,
       ...typeSelectionSymbol.domArray,
-      ...typeSelectionSymbolFor.domArray
+      ...typeSelectionSymbolFor.domArray,
+      ...typeSelectionPromise.domArray
     ]];
   })(),
 
@@ -212,8 +276,8 @@ jml('section', {role: 'main'}, [
     ['form', [
       ...getTypeChoices([
         Symbol('abcd'),
-        Symbol.for('abcde')
-        // Promise.resolve(),
+        Symbol.for('abcde'),
+        Promise.resolve(135)
         // function () {}
       ], schemaInstanceJSONArbitraryJS)
     ]]

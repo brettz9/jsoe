@@ -54,8 +54,8 @@ const zodexToStructuredCloningTypeMap = new Map([
   // Todo: Allow non-cloning version to return these too, but filter out
   //         otherwise
   ['symbol', 'symbol'],
+  ['promise', 'promise'],
   // ['function', 'function'],
-  // ['promise', 'promise'],
 
   ['catch', 'catch'],
   ['nativeEnum', 'nativeEnum']
@@ -637,13 +637,12 @@ const schema = {
         parentSchema
       ).inner;
       break;
-    // Todo: Reenable
-    // // eslint-disable-next-line sonarjs/no-duplicated-branches -- Maintenance
-    // case 'promise':
-    //   currentSchema = /** @type {import('zodex').SzPromise} */ (
-    //     parentSchema
-    //   ).value;
-    //   break;
+    // eslint-disable-next-line sonarjs/no-duplicated-branches -- Maintenance
+    case 'promise':
+      currentSchema = /** @type {import('zodex').SzPromise} */ (
+        parentSchema
+      ).value;
+      break;
     case 'tuple':
       currentSchema = /** @type {import('zodex').SzTuple} */ (
         parentSchema
