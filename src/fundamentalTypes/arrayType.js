@@ -136,7 +136,6 @@ const arrayType = {
         if (endMatch) {
           endMatchTypeObjs.pop(); // Safe now to extract
           stringVal = stringVal.slice(endMatch[0].length);
-          console.log('11111', stringVal);
           return true;
         }
       }

@@ -1,7 +1,7 @@
 import structuredCloning from './structuredCloning.js';
 
 /**
- * @type {Map<import('../types.js').AvailableType,
+ * @type {Map<import('../types.js').AvailableArbitraryType,
  *   import('../types.js').AvailableType>
  * }
  */

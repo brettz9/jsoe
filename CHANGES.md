@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.24.0
+
+- feat: Support for non-structured cloning types (symbol, promise, function)
+
 ## 0.23.1
 
 - fix(blob HTML): truncating file size at comma

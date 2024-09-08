@@ -11,6 +11,9 @@ importers:
       '@brettz9/node-static':
         specifier: ^0.1.1
         version: 0.1.1
+      acorn:
+        specifier: ^8.12.1
+        version: 8.12.1
       jamilih:
         specifier: 0.60.0
         version: 0.60.0

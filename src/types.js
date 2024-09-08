@@ -288,10 +288,10 @@ export const getPropertyValueFromLegend = (legend) => {
 /**
  * @typedef {(
  *   info: {
-*     root: HTMLDivElement,
-*     value: StructuredCloneValue
-*   }
-* ) => void} TypeObjectSetValue
+ *     root: HTMLDivElement,
+ *     value: StructuredCloneValue
+ *   }
+ * ) => void} TypeObjectSetValue
  */
 
 /**

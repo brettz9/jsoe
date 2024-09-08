@@ -158,7 +158,7 @@ describe('Arbitrary JavaScript spec (symbols)', () => {
   it('views UI (Symbol - schema)', function () {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + '.formatChoices').select(
-      'schema'
+      'Schema: Zodex arbitrary JS schema'
     );
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'Symbol (A symbol)'
@@ -332,7 +332,7 @@ describe('Arbitrary JavaScript spec (Promises)', () => {
   it('views UI (Promise - schema)', function () {
     const sel = '#formatAndTypeChoices ';
     cy.get(sel + '.formatChoices').select(
-      'schema'
+      'Schema: Zodex arbitrary JS schema'
     );
     cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
       'Promise (A Promise)'
@@ -405,6 +405,224 @@ describe('Arbitrary JavaScript spec (Promises)', () => {
       cy.get(
         '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
         'div[data-type="promise"] input'
+      ).should(($input) => {
+        expect($input[0].style.backgroundColor).to.not.equal('red');
+      });
+    });
+  });
+});
+
+describe('Arbitrary JavaScript spec (functions)', () => {
+  let called = false;
+  beforeEach(() => {
+    called = false;
+    cy.visit('http://127.0.0.1:8087/demo/index-arbitraryJS-instrumented.html', {
+      onBeforeLoad (win) {
+        cy.stub(win.console, 'log').callsFake((msg) => {
+          if (typeof msg === 'function') {
+            called = true;
+            expect(
+              String(msg)
+            ).to.equal('function anonymous(abc\n) {\nconsole.log(abc);\n}');
+          }
+        });
+      }
+    });
+  });
+
+  it('creates form control', () => {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function'
+    );
+    cy.get(
+      '[data-type="function"] >' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]'
+    ).should('exist');
+  });
+
+  it('gets type', function (done) {
+    cy.on('window:alert', (t) => {
+      expect(t).to.eq('function');
+      done();
+    });
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function'
+    );
+    cy.clearTypeAndBlur(
+      '[data-type="function"] >' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]',
+      'abc'
+    );
+
+    cy.get('button#getType').click();
+  });
+
+  it('is valid', function (done) {
+    cy.on('window:alert', (t) => {
+      expect(t).to.eq(true);
+      done();
+    });
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function'
+    );
+    cy.clearTypeAndBlur(
+      '[data-type="function"] > ' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]',
+      'abc'
+    );
+    cy.get('button#isValid').click();
+  });
+
+  it('logs value', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function'
+    );
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] > ' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]',
+      'console.log(abc);'
+    );
+
+    cy.get(sel + '[data-type="function"] .addArrayElement').click();
+
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] [data-type="set"] ' +
+        'textarea[name="demo-keypath-not-expected-string"]',
+      'abc'
+    );
+
+    cy.get('button#logValue').click();
+
+    waitForProperty(() => {
+      return called;
+    });
+  });
+
+  it('views UI', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function'
+    );
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] > ' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]',
+      'console.log(abc);'
+    );
+
+    cy.get(sel + '[data-type="function"] .addArrayElement').click();
+
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] [data-type="set"] ' +
+        'textarea[name="demo-keypath-not-expected-string"]',
+      'abc'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults span[data-type="function"]').should('exist');
+    cy.get(
+      '#viewUIResults span[data-type="function"]'
+    ).should('contain', 'Args');
+    cy.get(
+      '#viewUIResults span[data-type="function"]'
+    ).should('contain', 'console.log(abc)');
+  });
+
+  it('views UI (function - schema)', function () {
+    const sel = '#formatAndTypeChoices ';
+    cy.get(sel + '.formatChoices').select(
+      'Schema: Zodex arbitrary JS schema'
+    );
+    cy.get(sel + 'select.typeChoices-demo-keypath-not-expected').select(
+      'function (A function)'
+    );
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] > ' +
+        'div > div > textarea[name="demo-keypath-not-expected-string"]',
+      'console.log(abc);'
+    );
+
+    cy.clearTypeAndBlur(
+      sel + '[data-type="function"] [data-type="set"] ' +
+        'textarea[name="demo-keypath-not-expected-string"]',
+      'abc'
+    );
+
+    cy.get('button#viewUI').click();
+    cy.get('#viewUIResults span[data-type="function"]').should('exist');
+    cy.get(
+      '#viewUIResults span[data-type="function"]'
+    ).should('contain', 'Args');
+    cy.get(
+      '#viewUIResults span[data-type="function"]'
+    ).should('contain', 'console.log(abc)');
+  });
+
+  it('gets value (function)', function () {
+    cy.clearTypeAndBlur(
+      '#getValueForString', 'function(abc) {{}console.log(abc);}'
+    );
+    waitForProperty(() => {
+      return called;
+    });
+  });
+
+  // For the "Type choices with initial value set" control
+  it('gets a value set onload', function () {
+    cy.get(
+      '[data-type="function"] ' +
+        'textarea[name="demo-type-choices-only-initial-value1-string"]'
+    ).should(($input) => {
+      expect(/** @type {HTMLInputElement} */ (
+        $input[0]
+      ).value).to.equal('a');
+    });
+
+    cy.get(
+      '[data-type="function"] ' +
+        'textarea[name="demo-type-choices-only-initial-value5-string"]'
+    ).should(($input) => {
+      expect(/** @type {HTMLInputElement} */ (
+        $input[0]
+      ).value).to.equal('a');
+    });
+
+    cy.get(
+      '[data-type="function"] ' +
+        'textarea[name="demo-type-choices-only-initial-value-string"]'
+    ).should(($input) => {
+      expect(/** @type {HTMLInputElement} */ (
+        $input[0]
+      ).value).to.equal('a');
+    });
+  });
+
+  describe('getInput()', function () {
+    it('Shows the function root form control', function () {
+      const sel = '#formatAndTypeChoices ';
+
+      cy.get(
+        sel + 'select.typeChoices-demo-keypath-not-expected'
+      ).select('function');
+
+      cy.get('#showRootFormControl').click();
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="function"] textarea'
+      ).should(($input) => {
+        expect($input[0].style.backgroundColor).to.equal('red');
+      });
+
+      // eslint-disable-next-line cypress/no-unnecessary-waiting -- Needed
+      cy.wait(3000);
+
+      cy.get(
+        '#formatAndTypeChoices > .typesHolder > .typeContainer > ' +
+        'div[data-type="function"] textarea'
       ).should(($input) => {
         expect($input[0].style.backgroundColor).to.not.equal('red');
       });

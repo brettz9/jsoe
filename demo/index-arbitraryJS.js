@@ -45,45 +45,53 @@ const schemaInstanceJSONArbitraryJS = {
       value: {
         type: 'number'
       }
-    }
+    },
 
-    // Todo: Support functions
-    // {
-    //   description: 'A function',
-    //   type: 'function',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'number'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'string'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'boolean'
-    //   }
-    // },
-    // {
-    //   type: 'function',
-    //   description: 'With never',
-    //   args: {
-    //     type: 'tuple',
-    //     items: [
-    //       {
-    //         type: 'never'
-    //       }
-    //     ],
-    //     rest: {
-    //       type: 'never'
-    //     }
-    //   },
-    //   returns: {
-    //     type: 'never'
-    //   }
-    // },
+    {
+      description: 'A function',
+      type: 'function',
+      args: {
+        type: 'tuple',
+        items: [
+          {
+            type: 'number'
+          }
+        ],
+        rest: {
+          type: 'string'
+        }
+      },
+      returns: {
+        type: 'boolean'
+      }
+    }
+  ]
+};
+
+// Todo: We could prevent UI from allowing 'never' types to be added (we are
+//   using a Set not a Tuple for args, so no built-in checks available
+//   currently)
+const schemaInstanceJSONArbitraryJS2 = {
+  type: 'union',
+  options: [
+    {
+      type: 'function',
+      description: 'With never',
+      args: {
+        type: 'tuple',
+        items: [
+          {
+            type: 'never'
+          }
+        ],
+        rest: {
+          type: 'never'
+        }
+      },
+      returns: {
+        type: 'never'
+      }
+    }
   ]
 };
 
@@ -96,6 +104,8 @@ function getSchemaContent (schema) {
   switch (schema) {
   case 'Zodex arbitrary JS schema':
     return schemaInstanceJSONArbitraryJS;
+  case 'Zodex arbitrary JS schema 2':
+    return schemaInstanceJSONArbitraryJS2;
   default:
     throw new Error('Unexpected schema ' + schema);
   }
@@ -106,7 +116,7 @@ const keyPathNotExpectedTypeChoices = await formatAndTypeChoices({
   arbitraryJS: true,
   preselectSchema: false,
   typeNamespace: 'demo-keypath-not-expected',
-  schemas: ['Zodex arbitrary JS schema'],
+  schemas: ['Zodex arbitrary JS schema', 'Zodex arbitrary JS schema 2'],
   getSchemaContent
 });
 
@@ -235,7 +245,10 @@ jml('section', {role: 'main'}, [
       value: [
         Symbol('abcdefg'),
         Symbol.for('abcdefgh'),
-        Promise.resolve('aaa')
+        Promise.resolve('aaa'),
+        function (a, b, c) {
+          console.log(a, b, c);
+        }
       ],
       typeNamespace: 'demo-type-choices-only-initial-value1'
     });
@@ -261,11 +274,21 @@ jml('section', {role: 'main'}, [
       typeNamespace: 'demo-type-choices-only-initial-value4'
     });
 
+    const typeSelectionFunction = typeChoices({
+      format: 'arbitraryJS',
+      setValue: true,
+      value (a, b, c) {
+        console.log(a, b, c);
+      },
+      typeNamespace: 'demo-type-choices-only-initial-value5'
+    });
+
     return ['form', [
       ...typeSelection.domArray,
       ...typeSelectionSymbol.domArray,
       ...typeSelectionSymbolFor.domArray,
-      ...typeSelectionPromise.domArray
+      ...typeSelectionPromise.domArray,
+      ...typeSelectionFunction.domArray
     ]];
   })(),
 
@@ -277,8 +300,10 @@ jml('section', {role: 'main'}, [
       ...getTypeChoices([
         Symbol('abcd'),
         Symbol.for('abcde'),
-        Promise.resolve(135)
-        // function () {}
+        Promise.resolve(135),
+        function (a, b, c) {
+          console.log(a, b, c);
+        }
       ], schemaInstanceJSONArbitraryJS)
     ]]
   ])

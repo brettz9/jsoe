@@ -1,6 +1,6 @@
 {
   "name": "@es-joy/jsoe",
-  "version": "0.23.1",
+  "version": "0.24.0",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./src/index.js",
@@ -34,7 +34,8 @@
     "copy-typeson-registry": "cp node_modules/typeson-registry/dist/index.js vendor/typeson-registry/dist/index.js",
     "copy-zod": "cp node_modules/zod/lib/index.mjs vendor/zod/lib/index.mjs",
     "copy-zodex": "cp -R node_modules/zodex/dist/esm vendor/zodex/dist",
-    "copy": "run-p copy-jamilih copy-typeson-registry copy-zod copy-zodex",
+    "copy-acorn": "cp -R node_modules/acorn/dist vendor/acorn/dist",
+    "copy": "run-p copy-jamilih copy-typeson-registry copy-zod copy-zodex copy-acorn",
     "instrument": "run-s -c instrument-remove instrument-add copy-index rollup",
     "coveradge": "coveradge badges/coverage-badge.svg",
     "cypress:log": "ELECTRON_ENABLE_LOGGING=1 cypress run; npm run report",
@@ -55,6 +56,7 @@
   },
   "dependencies": {
     "@brettz9/node-static": "^0.1.1",
+    "acorn": "^8.12.1",
     "jamilih": "0.60.0",
     "sceditor": "3.2.0",
     "typeson-registry": "11.1.0",

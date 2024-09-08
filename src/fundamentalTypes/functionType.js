@@ -1,47 +1,233 @@
-import {$e} from '../utils/templateUtils.js';
+import {$e, $$e} from '../utils/templateUtils.js';
+import {jml, parseAcorn} from '../vendor-imports.js';
 import {copyObject} from '../utils/objects.js';
+
+const observerMap = new WeakMap();
+
+// See https://github.com/tc39/proposal-regexp-unicode-property-escapes#other-examples
+const idRegex =
+  String.raw`^(?:[$_\p{ID_Start}])(?:[$_\u200C\u200D\p{ID_Continue}])*$`;
+
+/**
+ * @param {{
+ *   root: HTMLDivElement,
+ *   specificSchemaObject?: import('../formats/schema.js').ZodexSchema
+ *   textareas: HTMLTextAreaElement[]
+ *   textareaBody: HTMLTextAreaElement
+ * }} cfg
+ */
+const setTooltips = ({root, specificSchemaObject, textareas, textareaBody}) => {
+  // Todo: For these `JSON.stringify` calls, might instead use
+  //    zodex->(zod)->zod-to-json-schema instead
+  textareaBody.title = `Return type:\n\n${JSON.stringify(
+    /** @type {import('zodex').SzFunction<any, any>} */
+    (specificSchemaObject).returns,
+    null,
+    2
+  )}`;
+  // eslint-disable-next-line prefer-destructuring -- TS
+  const args = /** @type {import('zodex').SzFunction<any, any>} */
+    (specificSchemaObject).args;
+  textareas.forEach((textarea, idx) => {
+    textarea.title = JSON.stringify(
+      args.items[idx] ?? args.rest,
+      null,
+      2
+    );
+  });
+
+  if (observerMap.has(root)) {
+    return;
+  }
+
+  /**
+   * @param {Node} node
+   */
+  const addTitles = (node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+    const textarea = /** @type {Element} */ (
+      node
+    ).querySelector('textarea');
+    if (textarea) {
+      const textareas = /** @type {HTMLTextAreaElement[]} */ (
+        $$e(root, 'textarea')
+      ).slice(0, -1);
+
+      // Redo them all, as order may have changed
+      textareas.forEach((textarea, idx) => {
+        textarea.title = JSON.stringify(
+          args.items[idx] ?? args.rest,
+          null,
+          2
+        );
+      });
+    }
+  };
+
+  const observer = new MutationObserver((mutationList) => {
+    for (const mutation of mutationList) {
+      if (mutation.type === 'childList') {
+        for (const node of mutation.removedNodes) {
+          addTitles(node);
+        }
+        for (const node of mutation.addedNodes) {
+          addTitles(node);
+        }
+      }
+    }
+  });
+  observer.observe(root, {
+    attributes: false, childList: true, subtree: true
+  });
+  observerMap.set(root, observer);
+};
+
+/**
+ * @typedef {Function} ArbitraryFunction
+ */
+
+/**
+ * @param {ArbitraryFunction} func
+ */
+const getArgsAndBodyOfFunction = (func) => {
+  const funcStr = String(func);
+  const funcStrFull = String(`(${
+    funcStr.trimStart().startsWith('function')
+      ? funcStr
+      : `function ${funcStr}`
+  })`);
+  const body = funcStrFull.slice(
+    funcStrFull.indexOf('{') + 1, funcStrFull.lastIndexOf('}')
+  ).trim();
+
+  const ast = /** @type {import('acorn').ExpressionStatement} */ (
+    parseAcorn(funcStrFull, {
+      ecmaVersion: 'latest',
+      sourceType: 'module'
+    }).body[0]
+  ).expression;
+
+  const args = /** @type {import('acorn').Identifier[]} */ (
+    /** @type {import('acorn').FunctionExpression} */ (
+      ast
+    ).params
+  ).map(({name}) => name.trim());
+
+  return {args, body};
+};
+
+/**
+ * @param {{
+ *   root: HTMLDivElement,
+ *   value: import('../types.js').StructuredCloneValue
+ *   specificSchemaObject?: import('../formats/schema.js').ZodexSchema
+ * }} cfg
+ */
+const setValueAndTooltips = ({root, value, specificSchemaObject}) => {
+  const {args, body} = getArgsAndBodyOfFunction(value);
+
+  // Wait for textareas to be available
+  setTimeout(() => {
+    let textareas = /** @type {HTMLTextAreaElement[]} */ (
+      $$e(root, 'textarea[name$="-string"]')
+    );
+
+    const textareaBody = /** @type {HTMLTextAreaElement} */ (textareas.pop());
+
+    args.forEach((_arg, idx) => {
+      if (!textareas[idx]) {
+        $e(root, '.addArrayElement')?.click();
+      }
+    });
+
+    setTimeout(() => {
+      textareas = /** @type {HTMLTextAreaElement[]} */ (
+        $$e(root, 'textarea[name$="-string"]').slice(0, -1)
+      );
+
+      if (value) {
+        args.forEach((arg, idx) => {
+          textareas[idx].value = arg;
+        });
+        textareaBody.value = body;
+      }
+      if (specificSchemaObject) {
+        setTooltips({root, specificSchemaObject, textareas, textareaBody});
+      }
+    });
+  });
+};
 
 /**
  * @type {import('../types.js').TypeObject}
  */
 const functionType = {
   option: ['function'],
-  stringRegex: /^function\((.*)\): (.*)$/u,
-  // Todo: Fix all the following methods up to `editUI` to work with children
+  regexEndings: ['}'],
+  stringRegexBegin: /^function\((?<args>[^)]*?)\) \{(?<returns>.*)\}$/u,
+  stringRegexEnd: /^\}/u,
+  array: true,
+
   valueMatch (x) {
     return typeof x === 'function';
   },
-  toValue (s) {
-    return {value: s.slice(8, -1)};
+  toValue (s, rootInfo) {
+    const {groups: {
+      args, returns
+    /* istanbul ignore next -- Should always be found */
+    } = {}} = /** @type {RegExpMatchArray} */ (
+      /** @type {import('../types.js').RootInfo} */ (rootInfo).match
+    );
+
+    // Todo: Either re-use proper acorn parsing here for the `split` or
+    //         get rid of acorn
+
+    // eslint-disable-next-line no-new-func -- Needed
+    return {value: new Function(...args.split(/\s*,\s*/u), returns)};
   },
   getInput ({root}) {
-    return /** @type {HTMLTextAreaElement} */ ($e(root, 'input'));
+    return /** @type {HTMLTextAreaElement} */ ($e(root, 'textarea'));
   },
   setValue ({root, value}) {
-    this.getInput({root}).value = value;
+    setValueAndTooltips({root, value});
   },
   getValue ({root}) {
-    return this.getInput({root}).value;
+    const textareas = /** @type {HTMLTextAreaElement[]} */ (
+      $$e(root, 'textarea')
+    );
+    const textareaBody = /** @type {HTMLTextAreaElement} */ (textareas.pop());
+    // eslint-disable-next-line no-new-func -- Needed
+    return new Function(
+      ...textareas.map(({value}) => value.trim()),
+      textareaBody.value.trim()
+    );
   },
   viewUI ({value, specificSchemaObject}) {
+    const {args, body} = getArgsAndBodyOfFunction(value);
     return ['span', {
       dataset: {type: 'function'},
       title: specificSchemaObject?.description ?? '(a function)'
-    }, [value]];
+    }, [
+      ['b', ['Args']],
+      ' ',
+      `(${args.join(', ')})`,
+      ['br'],
+      ['b', ['Body']],
+      ' ',
+      body
+    ]];
   },
   editUI ({
-    format, type, buildTypeChoices, specificSchemaObject,
+    type, buildTypeChoices, specificSchemaObject,
     topRoot, // schemaContent,
-    typeNamespace
+    typeNamespace, value
   }) {
-    // Todo: Support `getValue`; add to demo with tests; could also add to
-    //        use with `Promise` so that could also build a meaningful
-    //        implementation; use schema to inform user of types of args,
-    //        but remember we are not reimplementing the function schema to
-    //        ask for argument types, etc.
-
     // We want to allow overriding its descriptions
-    const specificSchemaObj = copyObject(specificSchemaObject);
+    const specificSchemaObj = specificSchemaObject
+      ? copyObject(specificSchemaObject)
+      : undefined;
     const argsTuple = /** @type {import('zodex').SzFunction<any, any>} */ (
       specificSchemaObj
     )?.args ?? {type: 'tuple', items: [], rest: {type: 'any'}};
@@ -51,45 +237,23 @@ const functionType = {
       argsTuple.rest.description = 'Argument';
     }
 
-    const size = argsTuple.items.length + (argsTuple.rest ? 1 : 0);
+    const size = argsTuple.items.length;
     const args = /** @type {import('zodex').SzType} */ (
       {
         type: 'set',
         minSize: size,
-        maxSize: size,
+        maxSize: argsTuple.rest ? undefined : size,
         value: {
           type: 'string',
-          // See https://github.com/tc39/proposal-regexp-unicode-property-escapes#other-examples
-          // eslint-disable-next-line @stylistic/max-len -- Long
-          regex: String.raw`^(?:[$_\p{ID_Start}])(?:[$_\u200C\u200D\p{ID_Continue}])*$`,
+          regex: idRegex,
           flags: 'v'
         }
       }
     );
 
-    return ['div', {dataset: {type: 'function'}}, [
+    const div = jml('div', {dataset: {type: 'function'}}, [
       ['b', ['Arguments']],
       ['br'],
-
-      // This was working to allow choice of specific function argument types,
-      //   but we want function argument names to build a real function; the
-      //   specific attached schema should already specify function argument
-      //   types.
-      // ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
-      //   buildTypeChoices
-      // )({
-      //   // resultType,
-      //   // eslint-disable-next-line object-shorthand -- TS
-      //   topRoot: /** @type {HTMLDivElement} */ (topRoot),
-      //   // eslint-disable-next-line object-shorthand -- TS
-      //   format:
-      //     /** @type {import('../formats.js').AvailableFormat} */ (format),
-      //   schemaOriginal: schemaContent,
-      //   schemaContent: argsTuple,
-      //   state: type,
-      //   // itemIndex,
-      //   typeNamespace
-      // }).domArray),
 
       ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
         buildTypeChoices
@@ -97,8 +261,7 @@ const functionType = {
         // resultType,
         // eslint-disable-next-line object-shorthand -- TS
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
-        // eslint-disable-next-line object-shorthand -- TS
-        format: /** @type {import('../formats.js').AvailableFormat} */ (format),
+        format: 'schema', // We're always supplying a schema
         // schemaOriginal: schemaContent,
         schemaContent: args,
         state: type,
@@ -114,36 +277,41 @@ const functionType = {
         // resultType,
         // eslint-disable-next-line object-shorthand -- TS
         topRoot: /** @type {HTMLDivElement} */ (topRoot),
-        // eslint-disable-next-line object-shorthand -- TS
-        format: /** @type {import('../formats.js').AvailableFormat} */ (format),
+        format: 'schema', // We're always supplying a schema
         // schemaOriginal: schemaContent,
         schemaContent: {type: 'string'},
         state: type,
         // itemIndex,
         typeNamespace
       }).domArray)
+    ]);
 
-      // This was previously working (see commented out block above)
-      // ['b', ['Returns']],
-      // ['br'],
-      // ...(/** @type {import('../typeChoices.js').BuildTypeChoices} */ (
-      //   buildTypeChoices
-      // )({
-      //   // resultType,
-      //   // eslint-disable-next-line object-shorthand -- TS
-      //   topRoot: /** @type {HTMLDivElement} */ (topRoot),
-      //   // eslint-disable-next-line object-shorthand -- TS
-      //   format:
-      //     /** @type {import('../formats.js').AvailableFormat} */ (format),
-      //   schemaOriginal: schemaContent,
-      //   schemaContent: /** @type {import('zodex').SzFunction<any, any>} */ (
-      //     specificSchemaObj
-      //   )?.returns ?? {type: 'any'},
-      //   state: type,
-      //   // itemIndex,
-      //   typeNamespace
-      // }).domArray)
-    ]];
+    if (value) {
+      setTimeout(() => {
+        setValueAndTooltips({
+          root: div,
+          value,
+          specificSchemaObject
+        });
+      });
+    } else if (specificSchemaObject) {
+      setTimeout(() => {
+        setTimeout(() => {
+          // Should have some empty textareas by now
+          const textareas = /** @type {HTMLTextAreaElement[]} */ (
+            $$e(div, 'textarea')
+          );
+          const textareaBody = /** @type {HTMLTextAreaElement} */ (
+            textareas.pop()
+          );
+          setTooltips({
+            root: div, specificSchemaObject, textareas, textareaBody
+          });
+        });
+      });
+    }
+
+    return [div];
   }
 };
 

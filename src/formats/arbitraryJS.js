@@ -1,5 +1,3 @@
-// Todo: Enable function in schema
-
 import structuredCloning from './structuredCloning.js';
 
 /** @type {import('../formats.js').Format} */
