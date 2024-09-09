@@ -106,7 +106,9 @@ function getSchemaContent (schema) {
     return schemaInstanceJSONArbitraryJS;
   case 'Zodex arbitrary JS schema 2':
     return schemaInstanceJSONArbitraryJS2;
+  /* istanbul ignore next -- Guard */
   default:
+    /* istanbul ignore next -- Guard */
     throw new Error('Unexpected schema ' + schema);
   }
 }
