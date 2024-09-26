@@ -1,4 +1,5 @@
 import Formats from './formats.js';
+import SchemaSearch from './SchemaSearch.js';
 
 import {
   // jamilih
@@ -443,6 +444,8 @@ class Types {
   constructor () {
     this.formats = new Formats(); // Todo: Make customizable and test
 
+    this.schemaSearch = new SchemaSearch();
+
     /** @type {CustomValidateAllReferences|undefined} */
     this.customValidateAllReferences = undefined;
     /**
@@ -629,6 +632,14 @@ class Types {
         });
       }
     });
+  }
+
+  /**
+   * @param {import('zodex').SzType} schema
+   * @returns {Promise<Element>}
+   */
+  async getSearchControlsForSchema (schema) {
+    return await this.schemaSearch.getControls(this, schema);
   }
 
   /**

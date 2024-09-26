@@ -382,6 +382,263 @@ const arrayType = {
             : ret;
   },
 
+  // Try to keep in sync with basic structure of `viewUI`
+  schemaSearchUI ({
+    typeNamespace, type, types, value, topRoot, resultType, format,
+    specificSchemaObject
+  }) {
+    // const {sparse} = this;
+    let itemIndex = -1;
+
+    const parentType = type;
+
+    /**
+     * @param {{
+     *   itemIndex: number,
+     *   typeNamespace?: string,
+     *   propName?: string
+     * }} cfg
+     * @returns {import('jamilih').JamilihArray}
+     */
+    const buildLegend = ({
+      /* className, type, arrayItems, */
+      itemIndex, typeNamespace, propName
+    }) => {
+      const tupleItem = /** @type {import('zodex').SzTuple} */ (
+        specificSchemaObject
+      )?.items?.[itemIndex];
+      const restItem = /** @type {import('zodex').SzTuple} */ (
+        specificSchemaObject
+      )?.rest;
+      return ['legend', [
+        this.array && type !== 'record'
+          ? /** @type {import('zodex').SzArray} */ (
+            specificSchemaObject
+          )?.element?.description ??
+            ((type === 'set' && /** @type {import('zodex').SzSet} */ (
+              specificSchemaObject
+            )?.value?.description)
+              ? /** @type {import('zodex').SzSet} */ (
+                specificSchemaObject
+              )?.value?.description
+              : (
+                tupleItem?.description ?? restItem?.description
+              )) ?? 'Item'
+          : specificSchemaObject ? '' : 'Property',
+        specificSchemaObject ? '' : ':',
+        nbsp.repeat(2),
+        ['span', {
+          class: `propertyName-${typeNamespace}`,
+          title: type === 'record' && /** @type {import('zodex').SzRecord} */ (
+            specificSchemaObject
+          )?.key?.description
+            ? /** @type {import('zodex').SzRecord} */ (
+              specificSchemaObject
+            )?.key?.description
+            : specificSchemaObject ? propName : undefined
+        }, [
+          propName !== undefined
+            ? /** @type {import('zodex').SzObject} */ (
+              specificSchemaObject
+            )?.properties?.[propName]?.description ?? propName
+            // eslint-disable-next-line @stylistic/max-len -- Long
+            /* istanbul ignore next -- Won't reach here as typeson will always give keypath? */
+            : itemIndex
+        ]]
+      ]];
+    };
+    const div = jml('div', /** @type {import('jamilih').JamilihAttributes} */ ({
+      class: 'arrayHolder',
+      dataset: {type},
+      $custom: {
+        /**
+         * @param {{
+         *   propName: string,
+         *   type: import('../types.js').AvailableType,
+         *   value: import('../formats.js').StructuredCloneValue,
+         *   bringIntoFocus: boolean,
+         *   schemaContent: import('../formats/schema.js').ZodexSchema,
+         * }} cfg
+         * @returns {Element}
+         */
+        $addAndSetArrayElement ({
+          propName, type, value, bringIntoFocus,
+          schemaContent
+        }) {
+          if (parentType === 'map') {
+            const root = types.getUIForModeAndType({
+              resultType,
+              readonly: true,
+              typeNamespace, type, topRoot,
+              bringIntoFocus,
+              format, schemaContent,
+              value,
+              hasValue: true // type === 'sparseArrays' && value
+            });
+            if (propName === '0') {
+              const fieldset = this.$addMapElement();
+              this._lastFieldset = fieldset;
+              const keyFieldset = jml(
+                'fieldset', [
+                  ['legend', {
+                    title: /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.key?.description
+                      ? '(map key)'
+                      : undefined
+                  }, [
+                    /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.key?.description ?? 'Key'
+                  ]]
+                ], fieldset
+              );
+              jml(root, keyFieldset);
+            } else { // propName === '1'
+              const valueFieldset = jml(
+                'fieldset', [
+                  ['legend', {
+                    title: /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.value?.description
+                      ? '(map value)'
+                      : undefined
+                  }, [
+                    /** @type {import('zodex').SzMap<any, any>} */ (
+                      specificSchemaObject
+                    )?.value?.description ??
+                    'Value'
+                  ]]
+                ], this._lastFieldset
+              );
+              this._lastFieldset = null;
+              jml(root, valueFieldset);
+            }
+            return root;
+          }
+
+          const fieldset = this.$addArrayElement({propName});
+          const root = types.getUIForModeAndType({
+            resultType,
+            readonly: true,
+            typeNamespace, type, topRoot,
+            bringIntoFocus,
+            format,
+            schemaContent,
+            specificSchemaObject: schemaContent,
+            value,
+            hasValue: true // type === 'sparseArrays' && value
+          });
+          jml(root, fieldset);
+          return root;
+        },
+        /**
+         * @returns {HTMLFieldSetElement}
+         */
+        $addMapElement () {
+          itemIndex++;
+          const arrayItems = this.$getArrayItems();
+          // const className = `${type}Item`;
+          const fieldset = jml('fieldset', [
+            buildLegend({
+              // className,
+              // type,
+              // arrayItems,
+              itemIndex,
+              typeNamespace,
+              propName: undefined
+            })
+          ], arrayItems);
+          return fieldset;
+        },
+        /**
+         * @param {{propName: string}} cfg
+         * @returns {HTMLFieldSetElement}
+         */
+        $addArrayElement ({propName}) {
+          itemIndex++;
+          const arrayItems = this.$getArrayItems();
+          // const className = `${type}Item`;
+          const fieldset = jml('fieldset', [
+            buildLegend({
+              // className,
+              // type,
+              // arrayItems,
+              itemIndex,
+              typeNamespace,
+              propName
+            })
+          ], arrayItems);
+          return fieldset;
+        },
+        $getArrayItems () {
+          return this.lastElementChild.lastElementChild;
+        }
+      }
+    }), [
+      ['span', {
+        title: specificSchemaObject?.description
+      }, [
+        specificSchemaObject
+          ? '—'
+          : DOM.initialCaps(/** @type {import('../types.js').AvailableType} */ (
+            type
+          )).replace(/s$/u, '')
+      ]],
+      nbsp.repeat(2),
+      ['button', {$on: {click (/** @type {Event} */ e) {
+        e.preventDefault();
+        const {target} = e;
+        const arrayContents = /** @type {HTMLDivElement} */ ($e(
+          /** @type {HTMLElement} */
+          (/** @type {HTMLElement} */ (target).closest('.arrayHolder')),
+          '.arrayContents'
+        ));
+        arrayContents.hidden = !arrayContents.hidden;
+        /** @type {HTMLElement} */ (
+          target
+        ).textContent = arrayContents.hidden ? '+' : '-';
+      }}}, ['-']],
+      ['div', {class: 'arrayContents'}, [
+        this.array && type !== 'record'
+          ? ['div', {
+            title: specificSchemaObject
+              ? (type === 'filelist'
+                ? '(a FileList)'
+                : type === 'set'
+                  ? '(a Set)'
+                  : type === 'map'
+                    ? '(a Map)'
+                    : type === 'tuple'
+                      ? '(a tuple)'
+                      : '(an Array)')
+              : undefined
+          }, [
+            type === 'filelist'
+              ? (specificSchemaObject?.description ?? 'FileList') + ' length: '
+              : type === 'set'
+                ? (specificSchemaObject?.description ?? 'Set') + ' size: '
+                : type === 'map'
+                  ? (specificSchemaObject?.description ?? 'Map') + ' size: '
+                  : (specificSchemaObject?.description ?? 'Array') +
+                    ' length: ',
+            ['span', [
+              (value && (type === 'set' || type === 'map')
+                ? value.size
+                : value.length) || 0
+            ]]
+          ]]
+          : (type === 'record'
+            ? specificSchemaObject?.description ?? 'Record'
+            : ''),
+        ['div', {
+          class: 'arrayItems'
+        }]
+      ]]
+    ]);
+    return [div];
+  },
+
   // Try to keep in sync with basic structure of `editUI`
   viewUI ({
     typeNamespace, type, types, value, topRoot, resultType, format,
