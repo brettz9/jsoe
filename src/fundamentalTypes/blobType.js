@@ -767,7 +767,9 @@ const blobType = {
                 // Todo: Could check codecs for allowable values
                 //     as second argument
                 //  see https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static
-                const mimeType = 'video/webm';
+                // const mimeType = 'video/webm';
+                const mimeType = 'video/mp4';
+
                 const mediaRecorder = new MediaRecorder(previewMedia.$stream, {
                   mimeType
                 });
