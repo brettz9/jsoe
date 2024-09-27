@@ -61,7 +61,7 @@
     "sceditor": "3.2.0",
     "typeson-registry": "11.1.0",
     "zod": "^3.23.8",
-    "zodex": "github:brettz9/zodex#browser-dist"
+    "zodex": "^0.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
