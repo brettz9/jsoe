@@ -702,10 +702,10 @@ const arrayType = {
       }
       if (!sparse && (!specificSchemaObject || parentTypeObject.array)) {
         const swapCountElem = DOM.filterChildElements(
-          swapGroup, ['legend', `.${type}Item`]
+          swapGroup, ['legend', 'span', `.${type}Item`]
         )[0];
         const baseCountElem = DOM.filterChildElements(group, [
-          'legend', `.${type}Item`
+          'legend', 'span', `.${type}Item`
         ])[0];
 
         const swap = swapCountElem.textContent;

@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.24.2
+
+- fix: swapping of object properties regression
+
 ## 0.24.1
 
 - fix: Safari bug with `revokeObjectURL` and videos
