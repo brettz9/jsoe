@@ -382,7 +382,6 @@ const replaceTypes = (originTypes, replacements) => {
 const canonicalTypeToAvailableTypeAndSchema = (
   types, formats, format, state, valType, v, arrayOrObjectPropertyName,
   parentSchema, stateObj
-  // eslint-disable-next-line sonarjs/sonar-max-params -- Convenient
 ) => {
   const frmt = formats.getAvailableFormat(format);
   const {getTypesAndSchemasForState, convertFromTypeson, testInvalid} = frmt;

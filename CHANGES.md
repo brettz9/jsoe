@@ -1,5 +1,9 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.24.3
+
+- chore: update typeson-registry and devDeps.
+
 ## 0.24.2
 
 - fix: swapping of object properties regression
