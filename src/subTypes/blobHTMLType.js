@@ -179,7 +179,7 @@ const blobHTMLType = {
         resizeMaxWidth: -1,
         plugins: 'xhtml,plaintext,undo',
         emoticonsRoot: 'node_modules/sceditor/',
-        style: 'node_modules/sceditor/minified/themes/content/default.min.css'
+        style: '/node_modules/sceditor/minified/themes/content/default.min.css'
       });
       textarea.sceditorInstance = sceditor.instance(textarea);
       if (!isNullish(value)) {
