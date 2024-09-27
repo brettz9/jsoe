@@ -1,5 +1,11 @@
 # CHANGES TO `@es-joy/jsoe`
 
+## 0.24.1
+
+- fix: Safari bug with `revokeObjectURL` and videos
+- fix: switch to mp4 recording for now over webm for sake of Safari
+- fix: set path for now to sceditor as relative to root
+
 ## 0.24.0
 
 - feat: Support for non-structured cloning types (symbol, promise, function)

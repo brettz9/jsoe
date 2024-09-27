@@ -232,7 +232,10 @@ const blobType = {
             class: 'video',
             $on: {
               loadeddata () {
-                URL.revokeObjectURL(objURL);
+                // Bug in Safari revoking the URL here
+                if (!(/iPad|iPhone|iPod|Safari/u).test(navigator.userAgent)) {
+                  URL.revokeObjectURL(objURL);
+                }
               }
             }
           });
@@ -809,7 +812,10 @@ const blobType = {
                   recordedMedia.src = url;
 
                   recordedMedia.addEventListener('loadeddata', () => {
-                    URL.revokeObjectURL(url);
+                    // Bug in Safari revoking the URL here
+                    if (!(/iPad|iPhone|iPod|Safari/u).test(navigator.userAgent)) {
+                      URL.revokeObjectURL(url);
+                    }
                   });
 
                   const root = /** @type {HTMLDivElement} */

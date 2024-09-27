@@ -261,7 +261,9 @@ const fileType = {
             class: 'video',
             $on: {
               loadeddata () {
-                URL.revokeObjectURL(objURL);
+                if (!(/iPad|iPhone|iPod|Safari/u).test(navigator.userAgent)) {
+                  URL.revokeObjectURL(objURL);
+                }
               }
             }
           });
@@ -896,7 +898,9 @@ const fileType = {
                   recordedMedia.src = url;
 
                   recordedMedia.addEventListener('loadeddata', () => {
-                    URL.revokeObjectURL(url);
+                    if (!(/iPad|iPhone|iPod|Safari/u).test(navigator.userAgent)) {
+                      URL.revokeObjectURL(url);
+                    }
                   });
 
                   const file = new File(
